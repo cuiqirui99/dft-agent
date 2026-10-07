@@ -68,7 +68,7 @@ def test_structure_import_and_review_gate(workbench, file_format):
     assert widget(app.button, "Submit calculation").disabled
     worker.assert_not_called()
 
-    widget(app.checkbox, "I've reviewed the structure, settings and cluster resources.").check().run()
+    widget(app.checkbox, "Structure, settings and resources reviewed.").check().run()
     assert not widget(app.button, "Submit calculation").disabled
     worker.assert_not_called()
     widget(app.button, "Submit calculation").click().run()
@@ -81,7 +81,7 @@ def test_invalid_structure_cannot_be_prepared(workbench):
     app, worker, runs_root = workbench
     app.file_uploader[0].upload("POSCAR", b"This is not a crystal structure").run()
     assert not app.exception
-    assert any("Could not read the structure" in message.value for message in app.error)
+    assert any("Cannot read structure" in message.value for message in app.error)
     assert widget(app.button, "Prepare inputs").disabled
     assert not runs_root.exists()
     worker.assert_not_called()
@@ -103,7 +103,7 @@ def test_completed_result_is_visible_without_resubmission(workbench, accepted):
     (run_dir / "run.json").write_text(json.dumps(state))
     output = run_dir / stage["folder"] / "outputs"
     output.mkdir()
-    # Even an existing file must not appear as an accepted result after refusal.
+    # Rejected output must not appear as an accepted result.
     (output / "final_structure.cif").write_bytes(silicon_bytes())
     app.run()
     assert not app.exception

@@ -1,58 +1,40 @@
-# Three CLI examples
+# CLI examples
 
-Start in the repository directory with `vasp-agent` installed and a
-`cluster.json` configured for your VASP installation and Slurm account. If you
-need to create one, run `vasp-agent init --config cluster.json`, then set your
-cluster's environment commands, POTCAR choices and resources. See the
-[installation guide](../README.md#install-and-open) or [quickstart](quickstart.md).
-
-These examples use nonmagnetic PBE. Start with the defaults, then check the
-cutoff, k mesh, smearing and convergence thresholds for your material and the
-property you want to calculate. Results from the v0.1.0 cluster tests are in the
-[validation report](validation.md).
+Follow the [quickstart](quickstart.md), then work in the repository directory.
+Create `cluster.json` with `vasp-agent init --config cluster.json` and review
+its VASP, POTCAR and Slurm settings. The PBE defaults are starting points.
 
 ## Prepare locally
 
-`prepare` writes inputs and a copy of the configuration locally. It does not
-connect to the cluster or submit a job. Use a new directory for each calculation.
+Use a new directory for each run. `prepare` submits nothing.
 
-**Si: structure and cell relaxation**
+**Si: relax atoms and cell**
 
 ```bash
 vasp-agent prepare examples/Si.cif runs/si-relax --config cluster.json \
   --task relax --parameters '{"cell_relax": true}'
 ```
 
-This allows the cell to relax along with the atomic positions. Omit
-`--parameters` to keep the cell fixed.
+Omit `--parameters` to keep the cell fixed.
 
-**Al: static self-consistent calculation**
+**Al: SCF**
 
 ```bash
 vasp-agent prepare examples/Al.cif runs/al-scf --config cluster.json --task scf
 ```
 
-SCF uses the supplied structure without optimizing it. Review the k mesh and
-smearing settings for this metallic example before submission.
-
-**MgO: SCF followed by density of states**
+**MgO: SCF, then DOS**
 
 ```bash
 vasp-agent prepare examples/MgO.cif runs/mgo-dos --config cluster.json --task dos
 ```
 
-This prepares `01_scf` and `02_dos`. The DOS stage uses the SCF charge density
-and the same input structure. Run a separate relaxation first if needed.
+SCF and DOS use the supplied structure without relaxing it.
 
-## Review, then submit
+## Submit
 
-For your chosen example, inspect each stage's `inputs/INCAR`, `inputs/KPOINTS`
-and `inputs/POSCAR`, plus the run's `config.json` for the cluster and resources.
-If settings need changing, prepare and review a new run so its saved settings
-and inputs stay consistent.
-
-After reviewing the inputs, choose the matching command below.
-**`watch` submits the calculation and follows its stages.**
+Review `config.json` and each stage's `inputs/INCAR`, `KPOINTS` and `POSCAR`.
+To change settings, prepare a new run. Choose the matching command:
 
 ```bash
 vasp-agent watch runs/si-relax
@@ -60,11 +42,9 @@ vasp-agent watch runs/al-scf
 vasp-agent watch runs/mgo-dos
 ```
 
-For password login, add `--password` to get a private prompt.
+**`watch` submits the calculation.** Add `--password` for a private prompt.
 
-## Check, reconnect and export
-
-For example, after starting the Si calculation:
+## Status, recovery and download
 
 ```bash
 vasp-agent status runs/si-relax
@@ -72,21 +52,15 @@ vasp-agent resume runs/si-relax
 vasp-agent bundle runs/si-relax
 ```
 
-`status` reads saved progress. Use `resume` after an interruption or a paused
-connection: it reconnects to the same run without changing the calculation
-settings. If the state is `needs_attention`, read the error first; reconnecting
-will not resolve a convergence problem. Use `runs/al-scf` or `runs/mgo-dos` for
-the other examples.
+`status` reads saved progress. `resume` reconnects to the same run; inspect
+`needs_attention` errors first. Substitute the Al or MgO directory as needed.
 
-| Example | Main result files after successful completion |
-| --- | --- |
-| Si relaxation | `runs/si-relax/01_relax/outputs/final_structure.cif`, `relax_energy.csv`, `relax_energy.png`, `result.json` |
-| Al SCF | `runs/al-scf/01_scf/outputs/result.json` and `final_structure.cif` |
-| MgO DOS | `runs/mgo-dos/02_dos/outputs/dos.csv`, `dos.png`, `result.json`; preceding SCF results are under `01_scf/outputs/` |
+| Run | Results |
+|---|---|
+| Si | `runs/si-relax/01_relax/outputs/`: `final_structure.cif`, `relax_energy.csv`, `relax_energy.png`, `result.json` |
+| Al | `runs/al-scf/01_scf/outputs/`: `result.json`, `final_structure.cif` |
+| MgO | `runs/mgo-dos/02_dos/outputs/`: `dos.csv`, `dos.png`, `result.json`; SCF results in `01_scf/outputs/` |
 
-The run's `run.json` records stage status and Slurm job IDs. `bundle` writes
-`results.zip` in that run directory, containing prepared inputs, retained solver
-outputs, plots, numerical data and `run.json`. POTCAR is excluded. CHGCAR and
-WAVECAR stay on the cluster when present and are not included in the ZIP. You
-can also download an incomplete run, so check its saved status before using
-the results.
+`bundle` writes `results.zip` with inputs, retained outputs, plots and `run.json`.
+Check the saved status before using results. POTCAR is excluded; CHGCAR and
+WAVECAR stay remote.

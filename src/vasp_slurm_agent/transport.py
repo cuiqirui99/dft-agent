@@ -1,8 +1,6 @@
-"""OpenSSH transport with complete command output and verified file transfers.
+"""OpenSSH with full output and verified transfers. Requires remote Python 3.
 
-The remote host needs Python 3. Passwords are optional: SSH keys and the agent
-work normally. A password is supplied only to a child-process askpass helper,
-never written to disk or included in an argument list.
+Supports keys, agent or askpass; passwords never enter files or arguments.
 """
 
 from __future__ import annotations
@@ -110,10 +108,9 @@ def _kill_group(process: subprocess.Popen, sig: int) -> None:
 
 
 def _run_process(argv: list[str], *, timeout: float, **kwargs: Any) -> subprocess.CompletedProcess:
-    """Like subprocess.run, but a timeout also terminates SCP's SSH child.
+    """Kill the SSH/SCP process group on timeout.
 
-    OpenSSH's persistent master has its own session and is deliberately left
-    available for reconnection; SSHTransport.close owns that instance's master.
+    The separate master stays open until SSHTransport.close().
     """
     kwargs.pop("check", None)
     if kwargs.pop("capture_output", False):
@@ -131,16 +128,14 @@ def _run_process(argv: list[str], *, timeout: float, **kwargs: Any) -> subproces
                     try:
                         stdout, stderr = process.communicate(timeout=2)
                     except subprocess.TimeoutExpired as partial:
-                        # A detached master can retain a pipe temporarily. Do
-                        # not wait indefinitely for a process outside our group.
+                        # A detached master may hold a pipe; keep the wait bounded.
                         stdout, stderr = partial.stdout, partial.stderr
                         for stream in (process.stdout, process.stderr):
                             if stream is not None:
                                 stream.close()
                         process.wait(timeout=2)
             finally:
-                # Descendants can ignore TERM and close their inherited pipes;
-                # EOF alone is not evidence that the entire group has exited.
+                # EOF does not prove that all descendants exited.
                 _kill_group(process, signal.SIGKILL)
             raise subprocess.TimeoutExpired(
                 argv, original.timeout, output=stdout, stderr=stderr
@@ -149,13 +144,9 @@ def _run_process(argv: list[str], *, timeout: float, **kwargs: Any) -> subproces
 
 
 class SSHTransport:
-    """Use a config with ``host``, ``user``, ``port``, ``connect_timeout``.
+    """Config requires host, user, port and connect_timeout.
 
-    Every instance has a private multiplexing socket. Call ``close()`` (or use
-    a context manager) when finished to terminate only its own master session.
-    Transfers use SCP's legacy protocol for compatibility with older clusters;
-    remote path operands are shell-quoted, and filenames never enter a shell
-    unquoted. Remote paths must be absolute.
+    Close the private SSH master after use. Legacy SCP uses quoted absolute paths.
     """
 
     def __init__(self, config: Any, password: str | None = None):
@@ -414,11 +405,9 @@ class SSHTransport:
         )
 
     def upload_many(self, local_paths: Sequence[str | Path], remote_dir: str) -> dict[str, dict[str, Any]]:
-        """One SCP for reviewed input files; verify all before replacing any.
+        """Transfer allowlisted inputs; verify all before per-file atomic replacement.
 
-        Publication is atomic per file. Inputs remain unstaged at the workflow
-        level until every replacement is acknowledged. Licensed/heavy VASP
-        files are never part of either batch allowlist.
+        Mark staged after all replacements. Excludes POTCAR, CHGCAR and WAVECAR.
         """
         destination = self._remote_path(remote_dir)
         sources = [Path(path).expanduser().absolute() for path in local_paths]

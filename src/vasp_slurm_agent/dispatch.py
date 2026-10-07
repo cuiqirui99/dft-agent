@@ -1,7 +1,6 @@
-"""Remote submission transaction, uploaded as plain Python (stdlib only).
+"""Submit once under a stage lock (remote, stdlib only).
 
-Once intent exists, an uncertain submission is reconciled, never blindly retried.
-Uses one lock per stage and records a durable receipt even if the client disconnects.
+Persist intent and receipt; reconcile uncertain submissions without resubmitting.
 """
 import fcntl
 import json

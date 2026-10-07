@@ -1,8 +1,6 @@
-"""Explicit, nonmagnetic PBE VASP recipes and analysis of complete solver output.
+"""Nonmagnetic PBE inputs and output checks, adapted from AI_AGNET.
 
-Adapted from AI_AGNET's deterministic DFT input and validation routines.  These
-defaults are starting parameters, not material-specific convergence guarantees.
-Licensed POTCAR data is resolved on the execution host, never distributed here.
+Defaults need material-specific convergence checks. POTCAR stays on the host.
 """
 
 from __future__ import annotations
@@ -104,10 +102,9 @@ def prepare_inputs(
     parameters: dict[str, Any],
     potcar_symbols: dict[str, str] | None = None,
 ) -> dict[str, Any]:
-    """Write deterministic inputs without changing the supplied crystal cell.
+    """Write inputs without changing the cell.
 
-    Bands and DOS require a compatible preceding SCF CHGCAR.  The workflow
-    engine is responsible for that dependency and must not run them standalone.
+    The workflow must supply a compatible SCF CHGCAR for bands and DOS.
     """
     if task not in TASKS:
         raise ValueError(f"Unknown task {task!r}; expected one of {sorted(TASKS)}")
@@ -115,7 +112,7 @@ def prepare_inputs(
     settings = _parameters(parameters)
     structure = Structure.from_file(source)
     _validate_structure(structure)
-    # Group the atoms consistently so that species, counts, and POTCAR order agree.
+    # Match species, counts and POTCAR order.
     structure = structure.get_sorted_structure()
     poscar = Poscar(structure)
     symbols = potcar_symbols or {}
@@ -154,10 +151,7 @@ def prepare_inputs(
     if task == "bands":
         import seekpath
 
-        # The orig_cell API maps the standardized path back through both the
-        # primitive/conventional basis change AND Cartesian cell rotation.
-        # Merely converting standardized Cartesian points to our reciprocal
-        # basis is wrong for a rotated cell, including many CIF imports.
+        # orig_cell maps both the basis and rotation back to the input cell.
         path = seekpath.get_explicit_k_path_orig_cell(
             (structure.lattice.matrix, structure.frac_coords, [site.specie.Z for site in structure]),
             reference_distance=1.0 / settings["line_density"],
@@ -307,14 +301,13 @@ def _export_plots(run: Vasprun, output: Path, task: str) -> list[str]:
 
 
 def analyze_outputs(output_dir: str | Path, task: str, expected_structure_path: str | Path) -> dict[str, Any]:
-    """Parse complete XML and refuse incomplete, unconverged or mismatched output.
+    """Reject incomplete, unconverged or mismatched XML.
 
-    A successful result is numerical run acceptance, not a claim of scientific
-    accuracy: a separate convergence/validation campaign is still required.
+    Acceptance does not establish scientific accuracy.
     """
     output = Path(output_dir)
     output.mkdir(parents=True, exist_ok=True)
-    # A fresh refusal must not leave a previous successful analysis looking current.
+    # Remove stale results before checking new output.
     generated = ["final_structure.cif", "relax_energy.csv", "relax_energy.png", "bands.csv", "bands.png", "dos.csv", "dos.png"]
     for filename in generated:
         (output / filename).unlink(missing_ok=True)

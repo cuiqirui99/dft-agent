@@ -25,7 +25,7 @@ def doctor(config, transport=None):
         for name, path in (("potcar_root", config.potcar_root), ("remote_parent", str(Path(config.remote_root).parent))):
             result = remote.run("test -d " + shlex.quote(path))
             checks[name] = {"ok": result.returncode == 0, "detail": path}
-        # A user-maintained command/setup is trusted configuration, not LLM code.
+        # Launch commands come from the user's configuration.
         words = shlex.split(config.vasp_command)
         solver = next((w for w in words if "vasp" in Path(w).name.lower()), "")
         if solver:
@@ -33,7 +33,7 @@ def doctor(config, transport=None):
             result = remote.run(command)
             checks["vasp"] = {"ok": result.returncode == 0, "detail": result.stdout.strip() or result.stderr.strip()}
         else:
-            checks["vasp"] = {"ok": False, "detail": "Could not find VASP in the launch command. If you use a wrapper script, check that it starts VASP correctly."}
+            checks["vasp"] = {"ok": False, "detail": "VASP not found in launch command. Check any wrapper script."}
         return {"ok": all(value["ok"] for value in checks.values()), "checks": checks}
     finally:
         if owned:
@@ -41,27 +41,27 @@ def doctor(config, transport=None):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Run VASP calculations on your Slurm cluster.")
+    parser = argparse.ArgumentParser(description="Run VASP on Slurm.")
     commands = parser.add_subparsers(dest="command", required=True)
-    ui = commands.add_parser("ui", help="Open the app in your browser")
+    ui = commands.add_parser("ui", help="Open app")
     ui.add_argument("--port", type=int, default=8501)
-    init = commands.add_parser("init", help="Set up a cluster connection")
+    init = commands.add_parser("init", help="Set up cluster")
     init.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
-    probe = commands.add_parser("doctor", help="Check your cluster connection and VASP setup")
+    probe = commands.add_parser("doctor", help="Check cluster and VASP")
     probe.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
     probe.add_argument("--password", action="store_true", help="Ask for your SSH password")
-    prep = commands.add_parser("prepare", help="Prepare calculation files without submitting a job")
+    prep = commands.add_parser("prepare", help="Prepare inputs locally")
     prep.add_argument("structure", type=Path)
     prep.add_argument("run_dir", type=Path)
     prep.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
     prep.add_argument("--task", choices=("relax", "scf", "bands", "dos"), default="relax")
     prep.add_argument("--parameters", default="{}", help="Calculation settings as a JSON object")
     command_help = {
-        "watch": "Submit a prepared calculation and follow its progress",
-        "resume": "Reconnect to an existing calculation and keep monitoring",
-        "status": "Show the saved status without contacting the cluster",
-        "cancel": "Request cancellation of a calculation",
-        "bundle": "Save the available inputs and results as a ZIP file",
+        "watch": "Submit and monitor",
+        "resume": "Reconnect and monitor",
+        "status": "Show saved status",
+        "cancel": "Cancel job",
+        "bundle": "Export results ZIP",
     }
     for name, help_text in command_help.items():
         sub = commands.add_parser(name, help=help_text)

@@ -210,19 +210,19 @@ def _failure_diagnostic(output, scheduler):
         return {
             "failure_code": "OUT_OF_MEMORY",
             "message": "The job ran out of memory.",
-            "recovery_hint": "Check the memory available on your cluster before starting a new run with suitable resources. This run has not been resubmitted.",
+            "recovery_hint": "Use more memory in a new run.",
         }
     if scheduler == "TIMEOUT" or re.search(r"due to time limit|time limit (?:exceeded|reached)|walltime.*(?:exceeded|limit)", text, re.IGNORECASE):
         return {
             "failure_code": "TIME_LIMIT",
             "message": "The job reached its time limit.",
-            "recovery_hint": "Allow more time when you prepare a new run. Check any saved structure before reusing it; the calculation may be incomplete.",
+            "recovery_hint": "Increase the time limit in a new run. Saved structures may be incomplete.",
         }
     if re.search(r"error\s+EDDDAV\b|\b(?:EDDDAV|ZHEGV)\b[^\n]{0,160}\b(?:failed|failure|error)\b", text, re.IGNORECASE):
         return {
             "failure_code": "VASP_EDDDAV_ZHEGV",
             "message": "VASP stopped during diagonalization (EDDDAV/ZHEGV).",
-            "recovery_hint": "The log does not establish the cause. Check the structure and settings; for a small system, consider fewer MPI tasks in a new run. Your current settings have not been changed.",
+            "recovery_hint": "The log does not establish the cause. Check inputs; for small systems, consider fewer MPI tasks in a new run.",
         }
     return None
 
@@ -351,10 +351,9 @@ def advance(run_dir, transport=None):
 
 
 def resume(run_dir, transport=None):
-    """Reconnect to the same calculation; never change inputs or repeat sbatch.
+    """Resume without changing inputs or resubmitting.
 
-    A completed, unconverged calculation can be collected again, but running a
-    corrected calculation requires preparing and reviewing a separate run.
+    Unconverged output can be recollected; changed settings require a new run.
     """
     root = Path(run_dir).expanduser().resolve()
     with _lock(root):

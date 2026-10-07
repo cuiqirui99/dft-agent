@@ -1,12 +1,12 @@
 cff-version: 1.2.0
-message: "If you use this software in your research, please cite it and include the version and calculation settings."
+message: "Please cite this software and report your version and settings."
 title: "VASP Slurm Agent"
 type: software
 authors:
   - family-names: "cuiqirui99"
     website: "https://github.com/cuiqirui99"
-version: "0.1.1"
+version: "0.1.2"
 license: MIT
 repository-code: "https://github.com/cuiqirui99/vasp-slurm-agent"
 url: "https://github.com/cuiqirui99/vasp-slurm-agent"
-abstract: "Prepare, run and follow VASP calculations on your Slurm cluster."
+abstract: "Run VASP on Slurm."

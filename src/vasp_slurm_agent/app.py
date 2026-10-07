@@ -1,4 +1,4 @@
-"""Local, single-user Streamlit workbench for reviewed VASP/Slurm runs."""
+"""Local VASP/Slurm workbench."""
 
 from __future__ import annotations
 
@@ -45,7 +45,7 @@ STATUS_LABELS = {
 
 
 def _with_password(function, *args):
-    """Provide a session-only password to one local action and its worker."""
+    """Pass the session password to an action and its worker."""
     previous = os.environ.get("DFT_AGENT_SSH_PASSWORD")
     password = st.session_state.get("ssh_password", "")
     if password:
@@ -65,13 +65,13 @@ def _load_config(path: Path) -> ClusterConfig | None:
     try:
         return ClusterConfig.load(path)
     except Exception as exc:
-        st.error(f"Could not read the cluster configuration: {exc}")
+        st.error(f"Cannot read cluster settings: {exc}")
         return None
 
 
 def _config_editor(path: Path, config: ClusterConfig | None) -> None:
     st.subheader("Cluster setup")
-    st.caption("Settings are saved locally. If you need a password, enter it in the sidebar; it stays in memory for this session.")
+    st.caption("Settings are saved on this computer.")
 
     def value(name: str, default):
         return getattr(config, name, default)
@@ -89,19 +89,19 @@ def _config_editor(path: Path, config: ClusterConfig | None) -> None:
             partition = st.text_input("Slurm partition", value=value("partition", ""))
             account = st.text_input("Slurm account (optional)", value=value("account", ""))
             tasks = st.number_input("MPI tasks", 1, 4096, int(value("tasks", 8)),
-                                    help="For small cells, start with 8 MPI tasks. More cores may not be faster. Adjust for your system and cluster.")
+                                    help="Start with 8 tasks for small cells. More cores may not help.")
             walltime = st.text_input("Time limit per stage", value=value("walltime", "00:30:00"))
             timeout = st.number_input("SSH connection timeout (s)", 1, 120, int(value("connect_timeout", 15)))
             setup = st.text_area("Environment setup commands (one per line)", value="\n".join(value("setup_commands", [])),
                                  placeholder="module load your-vasp-module")
         symbols = st.text_area("POTCAR element mapping (JSON)", value=json.dumps(value("potcar_symbols", {}), ensure_ascii=False),
-                               help='For example, {"Ti": "Ti_pv"}. Use the names in your licensed pseudopotential folder.')
+                               help='Use your POTCAR folder names, e.g. {"Ti": "Ti_pv"}.')
         save = st.form_submit_button("Save cluster settings", type="primary")
     if save:
         try:
             mapping = json.loads(symbols)
             if not isinstance(mapping, dict):
-                raise ValueError("POTCAR element mapping must be a JSON object.")
+                raise ValueError("POTCAR mapping must be a JSON object.")
             candidate = ClusterConfig(
                 host=host.strip(), user=user.strip(), remote_root=remote_root.strip(),
                 vasp_command=vasp_command.strip(), potcar_root=potcar_root.strip(),
@@ -111,18 +111,18 @@ def _config_editor(path: Path, config: ClusterConfig | None) -> None:
             )
             candidate.save(path)
         except Exception as exc:
-            st.error(f"Could not save the settings: {exc}")
+            st.error(f"Cannot save settings: {exc}")
         else:
             st.success(f"Saved to {path}")
             st.rerun()
     if st.button("Check cluster connection", disabled=config is None):
         try:
-            with st.spinner("Checking SSH, Slurm and VASP using the saved settings. No job will be submitted."):
+            with st.spinner("Checking SSH, Slurm and VASP. No jobs submitted."):
                 report = _with_password(doctor, config)
             if report.get("ok"):
-                st.success("Connection checks passed. You're ready to prepare a calculation.")
+                st.success("Cluster checks passed.")
             else:
-                st.warning("Some checks failed. See the results below.")
+                st.warning("Some checks failed. See below.")
             st.json(report)
         except Exception as exc:
             st.error(f"Cluster checks failed: {exc}")
@@ -147,7 +147,7 @@ def _structure_plot(structure: Structure) -> None:
         axis.set_box_aspect(np.maximum(np.ptp(cartesian, axis=0), 1e-6))
         axis.legend(loc="upper left")
         st.pyplot(fig)
-        st.caption("Unit cell and atomic positions. Marker sizes do not represent atomic radii.")
+        st.caption("Markers do not show atomic radii.")
     finally:
         plt.close(fig)
 
@@ -163,7 +163,7 @@ def _preview(upload) -> Structure | None:
         cols[0].metric("Formula", structure.composition.reduced_formula)
         cols[1].metric("Atoms", len(structure))
         cols[2].metric("Cell volume (Å³)", f"{structure.volume:.3f}")
-        st.caption("Lattice lengths a, b, c (Å): " + ", ".join(f"{v:.4f}" for v in structure.lattice.abc))
+        st.caption("a, b, c (Å): " + ", ".join(f"{v:.4f}" for v in structure.lattice.abc))
         _structure_plot(structure)
         with st.expander("Elements and fractional coordinates"):
             st.dataframe([
@@ -172,7 +172,7 @@ def _preview(upload) -> Structure | None:
             ], hide_index=True)
         return structure
     except Exception as exc:
-        st.error(f"Could not read the structure: {exc}")
+        st.error(f"Cannot read structure: {exc}")
         return None
 
 
@@ -182,7 +182,7 @@ def _stage_results(run_dir: Path, stage: dict, scf_fermi_energy: float | None = 
         return
     st.subheader(f"{stage['name']} · Results")
     if not result.get("success"):
-        st.warning(result.get("reason", "Results have not passed the checks."))
+        st.warning(result.get("reason", "Result checks failed."))
         if result.get("recovery_hint"):
             st.info(result["recovery_hint"])
         return
@@ -199,7 +199,7 @@ def _stage_results(run_dir: Path, stage: dict, scf_fermi_energy: float | None = 
             scf_fermi_energy = result.get("energy_reference_ev", scf_fermi_energy)
         if scf_fermi_energy is not None:
             st.metric("SCF Fermi energy (eV)", f"{scf_fermi_energy:.6f}")
-        st.caption("Fixed-charge spectrum. See the preceding SCF stage for ground-state energy and atomic forces; its Fermi energy is shown here for reference.")
+        st.caption("Fixed-charge spectrum. Energy and forces are in the SCF results.")
     output = run_dir / stage["folder"] / "outputs"
     final_structure = output / "final_structure.cif"
     if final_structure.is_file():
@@ -213,20 +213,20 @@ def _stage_results(run_dir: Path, stage: dict, scf_fermi_energy: float | None = 
                                file_name=f"{run_dir.name}-{stage['name']}.cif",
                                mime="chemical/x-cif", key=f"structure_{run_dir.name}_{stage['folder']}")
         except Exception as exc:
-            st.error(f"Could not display the final structure: {exc}")
+            st.error(f"Cannot display structure: {exc}")
 
 
 def _new_run(config: ClusterConfig | None, runs_root: Path) -> None:
     st.subheader("New calculation")
-    st.write("Choose a structure and a calculation. You can review all inputs before submitting to your cluster.")
-    st.caption("Nonmagnetic PBE (ISPIN=1). Band structure and DOS runs start with SCF and use the structure as uploaded.")
-    upload = st.file_uploader("Upload a structure", help="Choose a CIF or POSCAR file. POSCAR files do not need an extension. POTCAR stays on your cluster.")
+    st.write("Prepare inputs locally. Review before submitting.")
+    st.caption("Nonmagnetic PBE (ISPIN=1). Bands and DOS run SCF first, without relaxation.")
+    upload = st.file_uploader("Upload a structure", help="CIF or POSCAR; no extension needed for POSCAR. POTCAR stays on the cluster.")
     structure = _preview(upload) if upload is not None else None
     with st.form("prepare_run"):
         task = st.selectbox("Calculation", ["relax", "scf", "bands", "dos"],
                             format_func=lambda key: {"relax": "Structure relaxation", "scf": "Self-consistent calculation (SCF)",
                                                      "bands": "Band structure", "dos": "Density of states (DOS)"}[key])
-        st.caption("Start with these settings and adjust them for your material. Check convergence before comparing properties.")
+        st.caption("Starting values. Check convergence for your material.")
         left, right = st.columns(2)
         with left:
             encut = st.number_input("ENCUT / eV", 100.0, 2000.0, 520.0, 10.0)
@@ -235,19 +235,19 @@ def _new_run(config: ClusterConfig | None, runs_root: Path) -> None:
             ismear = st.selectbox("ISMEAR", [-5, -1, 0, 1, 2], index=2)
             sigma = st.number_input("SIGMA / eV", 0.001, 1.0, 0.05, 0.01, format="%.3f")
         with right:
-            k_grid = st.text_input("Gamma-centered k-point grid", "4 4 4", help="Three positive integers, such as 4 4 4.")
+            k_grid = st.text_input("Gamma-centered k-point grid", "4 4 4", help="Three positive integers, e.g. 4 4 4.")
             nsw = st.number_input("Maximum relaxation steps (NSW)", 1, 1000, 100)
             ediffg = st.number_input("Force convergence threshold (eV/Å)", 0.0001, 1.0, 0.03, 0.005, format="%.4f")
             cell_relax = st.checkbox("Relax the cell as well as atomic positions", value=False)
         prepared = st.form_submit_button("Prepare inputs", type="primary",
                                          disabled=structure is None or config is None)
     if config is None:
-        st.info("Save your settings in Cluster setup before preparing a calculation.")
+        st.info("Save Cluster setup before preparing inputs.")
     if prepared:
         try:
             grid = [int(part) for part in k_grid.replace(",", " ").split()]
             if len(grid) != 3 or any(part < 1 for part in grid):
-                raise ValueError("The k-point grid needs three positive integers.")
+                raise ValueError("Use three positive integers for the k-point grid.")
             parameters = dict(encut=encut, ediff=ediff, ediffg=-ediffg, nsw=int(nsw),
                               kpoint_grid=grid, ismear=ismear, sigma=sigma, cell_relax=cell_relax)
             run_id = datetime.now().strftime("%Y%m%d-%H%M%S") + "-" + uuid.uuid4().hex[:8]
@@ -258,9 +258,9 @@ def _new_run(config: ClusterConfig | None, runs_root: Path) -> None:
                 source.write_bytes(upload.getvalue())
                 prepare_run(source, run_dir, config, task=task, parameters=parameters)
             st.session_state["active_run"] = str(run_dir)
-            st.success("Inputs are ready. Review the settings below, then choose Submit calculation.")
+            st.success("Inputs ready. Review below, then submit.")
         except Exception as exc:
-            st.error(f"Could not prepare the inputs: {exc}")
+            st.error(f"Cannot prepare inputs: {exc}")
 
 
 @st.fragment(run_every="5s")
@@ -268,14 +268,14 @@ def _run_panel(run_dir: Path) -> None:
     try:
         state = read_state(run_dir)
     except Exception as exc:
-        st.error(f"Could not read the run: {exc}")
+        st.error(f"Cannot read run: {exc}")
         return
     status = state.get("status", "unknown")
     stages = state.get("stages", [])
     awaiting_submission = status == "planned" and not any(stage.get("job_id") for stage in stages)
     st.subheader(f"{state.get('formula', '')} · {state.get('task', '')}")
     st.caption(str(run_dir))
-    status_label = "Preparing the next stage" if status == "planned" and not awaiting_submission else STATUS_LABELS.get(status, status)
+    status_label = "Preparing next stage" if status == "planned" and not awaiting_submission else STATUS_LABELS.get(status, status)
     st.write(f"Status: **{status_label}**")
     if state.get("last_error"):
         st.warning(str(state["last_error"]))
@@ -290,7 +290,7 @@ def _run_panel(run_dir: Path) -> None:
             run_config = ClusterConfig.load(run_dir / "config.json")
             st.json(run_config.to_dict())
         except Exception as exc:
-            st.error(f"Could not read the run settings: {exc}")
+            st.error(f"Cannot read run settings: {exc}")
     with st.expander("Stage details and run history"):
         st.json({"stages": stages, "history": state.get("history", [])})
     with st.expander("Generated INCAR and KPOINTS"):
@@ -316,31 +316,31 @@ def _run_panel(run_dir: Path) -> None:
 
     actions = st.columns(3)
     if awaiting_submission:
-        reviewed = st.checkbox("I've reviewed the structure, settings and cluster resources.", key=f"review_{run_dir.name}")
+        reviewed = st.checkbox("Structure, settings and resources reviewed.", key=f"review_{run_dir.name}")
         if actions[0].button("Submit calculation", type="primary", disabled=not reviewed, key=f"submit_{run_dir.name}"):
             try:
                 pid = _with_password(start_worker, run_dir)
-                st.success(f"Monitoring started (PID {pid}). You can close this page and check progress later in Runs.")
+                st.success(f"Monitoring started (PID {pid}). You can close this page.")
             except Exception as exc:
-                st.error(f"Could not start monitoring: {exc}")
+                st.error(f"Cannot start monitoring: {exc}")
     elif status not in TERMINAL:
         if actions[0].button("Resume monitoring", key=f"watch_{run_dir.name}",
-                             help="Resume after a local restart or an interrupted monitor. The saved state keeps track of submitted jobs."):
+                             help="Resume monitoring existing jobs after a restart or interruption."):
             try:
                 st.success(f"Monitoring started (PID {_with_password(start_worker, run_dir)}).")
             except Exception as exc:
-                st.error(f"Could not resume monitoring: {exc}")
+                st.error(f"Cannot resume monitoring: {exc}")
     elif status in {"needs_attention", "failed"}:
         if actions[0].button("Reconnect", key=f"reconnect_{run_dir.name}",
-                             help="Reconnect to the original job and collect its output with the same calculation settings. Results still need to pass convergence checks."):
+                             help="Collect output from the original job. Settings and convergence checks stay unchanged."):
             try:
                 restored = _with_password(resume, run_dir)
                 if restored.get("status") not in TERMINAL:
                     st.success(f"Monitoring started (PID {_with_password(start_worker, run_dir)}).")
                 else:
-                    st.warning(restored.get("last_error") or "This run still needs attention. Check the run history.")
+                    st.warning(restored.get("last_error") or "Check the run history.")
             except Exception as exc:
-                st.error(f"Could not reconnect: {exc}")
+                st.error(f"Cannot reconnect: {exc}")
     current_stage = stages[state.get("current_stage", 0)] if stages else {}
     has_job = bool(current_stage.get("job_id"))
     can_cancel = status not in {"succeeded", "cancelled"} and (
@@ -353,37 +353,37 @@ def _run_panel(run_dir: Path) -> None:
                 _with_password(cancel, run_dir)
                 st.rerun()
             except Exception as exc:
-                st.error(f"Cancellation was not confirmed: {exc}")
+                st.error(f"Cancellation unconfirmed: {exc}")
     bundle_key = f"bundle_{run_dir}"
     if actions[2].button("Prepare download", key=f"bundle_btn_{run_dir.name}"):
         try:
             st.session_state[bundle_key] = str(bundle_run(run_dir))
         except Exception as exc:
-            st.error(f"Could not prepare the download: {exc}")
+            st.error(f"Cannot prepare download: {exc}")
     if bundle_key in st.session_state:
         archive = Path(st.session_state[bundle_key])
         if archive.is_file():
             st.download_button("Download results (.zip)", archive.read_bytes(), file_name=archive.name,
                                mime="application/zip", key=f"download_{run_dir.name}")
     if status == "succeeded":
-        st.info("Calculation complete. Your structure and results are ready to download.")
+        st.info("Complete. Results are ready to download.")
     elif status == "needs_attention":
-        st.info("Check the error above before reconnecting or preparing a new calculation. Your settings have not been changed.")
+        st.info("Check the error before reconnecting. Settings are unchanged.")
 
 
 def main() -> None:
     st.set_page_config(page_title="VASP Slurm Agent", page_icon="⚛", layout="wide")
     st.title("VASP Slurm Agent")
-    st.caption("VASP on your Slurm cluster · Version 0.1.1")
+    st.caption("Version 0.1.2")
     with st.sidebar:
         st.header("Local settings")
         config_path = Path(st.text_input("Configuration file", value=os.environ.get(
             "VASP_AGENT_CONFIG", str(Path.home() / ".config/vasp-slurm-agent/cluster.json")))).expanduser()
         runs_root = Path(st.text_input("Run folder", value=str(Path.home() / "vasp-slurm-agent-runs"))).expanduser()
         st.text_input("SSH password (optional)", type="password", key="ssh_password",
-                      help="SSH keys are preferred. A password stays in session memory and is used only for cluster actions you start.")
+                      help="SSH keys are preferred. Passwords stay in memory and are never saved.")
         st.button("Clear password", on_click=lambda: st.session_state.update(ssh_password=""))
-        st.caption("Connect with your own Slurm account and licensed VASP installation.")
+        st.caption("Requires a Slurm account and VASP license.")
     config = _load_config(config_path)
     task_tab, history_tab, config_tab = st.tabs(["New calculation", "Runs", "Cluster setup"])
     with config_tab:
