@@ -211,12 +211,18 @@ def _codex_default_model() -> str:
 
 
 def _request_plan(payload: str, schema: dict[str, Any], settings: ModelSettings) -> str:
+    return _request_structured(payload, schema, settings, instructions=_SYSTEM, name="dft_plan")
+
+
+def _request_structured(payload: str, schema: dict[str, Any], settings: ModelSettings,
+                        *, instructions: str, name: str = "dft_response") -> str:
+    """One provider boundary shared by planning and read-only result explanations."""
     if settings.provider == "codex":
-        return _codex_plan(payload, schema, settings)
+        return _codex_plan(payload, schema, settings, instructions=instructions)
     try:
         from openai import OpenAI
     except ImportError:
-        raise AgentError('Install model support with pip install "dft-agent[agent]".') from None
+        raise AgentError('Install model support with pip install "openai>=1.99,<3".') from None
     key = settings.api_key or os.getenv("DFT_AGENT_API_KEY") or os.getenv("OPENAI_API_KEY")
     if not key:
         raise AgentError("Set an API key or choose your configured Codex CLI.")
@@ -224,19 +230,19 @@ def _request_plan(payload: str, schema: dict[str, Any], settings: ModelSettings)
         with OpenAI(api_key=key, base_url=settings.base_url, timeout=120.0, max_retries=0) as client:
             if settings.provider == "responses":
                 response = client.responses.create(
-                    model=settings.model, instructions=_SYSTEM, input=payload, store=False,
-                    text={"format": {"type": "json_schema", "name": "dft_plan", "schema": schema, "strict": True}},
+                    model=settings.model, instructions=instructions, input=payload, store=False,
+                    text={"format": {"type": "json_schema", "name": name, "schema": schema, "strict": True}},
                 )
                 return response.output_text
             response = client.chat.completions.create(
-                model=settings.model, messages=[{"role": "system", "content": _SYSTEM},
+                model=settings.model, messages=[{"role": "system", "content": instructions},
                                                 {"role": "user", "content": payload}],
                 response_format={"type": "json_schema", "json_schema": {
-                    "name": "dft_plan", "schema": schema, "strict": True}}, store=False,
+                    "name": name, "schema": schema, "strict": True}}, store=False,
             )
             message = response.choices[0].message
             if getattr(message, "refusal", None):
-                raise AgentError("The model declined to draft this plan.")
+                raise AgentError("The model declined to respond.")
             return message.content
     except AgentError:
         raise
@@ -244,7 +250,8 @@ def _request_plan(payload: str, schema: dict[str, Any], settings: ModelSettings)
         raise AgentError("The model request failed. Check the provider, model and connection.") from None
 
 
-def _codex_plan(payload: str, schema: dict[str, Any], settings: ModelSettings) -> str:
+def _codex_plan(payload: str, schema: dict[str, Any], settings: ModelSettings,
+                *, instructions: str = _SYSTEM) -> str:
     # The desktop app supplies its matching CLI; PATH may contain an older install.
     executable = shutil.which(os.environ.get("CODEX_CLI_PATH") or "codex")
     if not executable:
@@ -272,18 +279,18 @@ def _codex_plan(payload: str, schema: dict[str, Any], settings: ModelSettings) -
             if settings.model:
                 command.extend(["-m", settings.model])
             command.append("-")
-            result = subprocess.run(command, input=_SYSTEM + "\n\n" + payload, text=True,
+            result = subprocess.run(command, input=instructions + "\n\n" + payload, text=True,
                                     capture_output=True, timeout=120, cwd=temporary, env=environment,
                                     check=False)
             if result.returncode or not result_path.is_file() or result_path.stat().st_size > 1000000:
                 if "requires a newer version of Codex" in (getattr(result, "stderr", "") or ""):
                     raise AgentError("Codex CLI is too old for this model. Update it or choose another model.")
-                raise AgentError("Codex could not draft a plan. Check your CLI setup and model access.")
+                raise AgentError("Codex could not respond. Check your CLI setup and model access.")
             return result_path.read_text(encoding="utf-8")
     except AgentError:
         raise
     except Exception:
-        raise AgentError("Codex could not draft a plan. Check your CLI setup and model access.") from None
+        raise AgentError("Codex could not respond. Check your CLI setup and model access.") from None
 
 
 def _validate_plan(plan: dict[str, Any], species: list[str], settings: ModelSettings) -> dict[str, Any]:
@@ -423,6 +430,10 @@ def draft_plan(goal: str, structure_path: str | Path | None, settings: ModelSett
             raise AgentError("The model returned an invalid plan. Try again.")
         result = _validate_plan(plan, species, settings)
         result["source_sha256"] = source_sha256
+        result["goal"] = _redact(goal, secrets)
+        result["dialogue"] = [
+            {**item, "content": _redact(item["content"], secrets)} for item in history
+        ] + [{"role": "assistant", "content": json.dumps(result, ensure_ascii=False)}]
         return result
     except AgentError:
         raise

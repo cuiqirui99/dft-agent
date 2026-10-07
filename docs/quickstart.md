@@ -82,11 +82,13 @@ Three consecutive connection or collection failures pause monitoring as `needs_a
 read the error, then use **Reconnect**. Both actions keep the same job and settings.
 
 Use **Cancel calculation** to request cancellation and check the resulting
-status. For results, use **Download structure (.cif)** or **Prepare download**
+status. Use **Explain results** to review findings, then ask a follow-up question.
+Explanations use verified saved outputs and never submit calculations.
+For files, use **Download structure (.cif)** or **Prepare download**
 followed by **Download results (.zip)**. Check the saved status before using
 an incomplete run's files.
 
-The ZIP includes inputs, retained outputs, plots and saved plans. POTCAR is
+The ZIP includes inputs, retained outputs, plots, plans and saved explanations. POTCAR is
 excluded; CHGCAR and WAVECAR stay remote. Check account names and paths before sharing.
 
 ## CLI

@@ -53,6 +53,8 @@ def test_cli_model_proposal_binds_source_and_preserves_frozen_plan(local_cli, mo
     assert invoke("plan", source, "Relax, then SCF.", "--provider", "codex", "--output", proposal_path) == 0
     proposal = json.loads(proposal_path.read_text())
     assert proposal["source_sha256"] == hashlib.sha256(source.read_bytes()).hexdigest()
+    assert proposal["goal"] == "Relax, then SCF."
+    assert proposal["dialogue"][0]["role"] == "assistant"
     assert not root.exists()
     capsys.readouterr()
     assert invoke("prepare", source, root, "--config", config, "--plan", proposal_path) == 0
@@ -63,9 +65,26 @@ def test_cli_model_proposal_binds_source_and_preserves_frozen_plan(local_cli, mo
     assert frozen["stages"] and "status" not in frozen
     assert state["plan_sha256"] == hashlib.sha256((root / "plan.json").read_bytes()).hexdigest()
     workflow._check_config(root, state)
+    (root / "explanations.json").write_text('{"turns": []}\n')
     with zipfile.ZipFile(workflow.bundle_run(root)) as bundle:
         assert bundle.read("proposal.json") == (root / "proposal.json").read_bytes()
         assert bundle.read("plan.json") == (root / "plan.json").read_bytes()
+        assert bundle.read("explanations.json") == (root / "explanations.json").read_bytes()
+
+
+def test_cli_explain_does_not_submit(local_cli, monkeypatch, capsys):
+    from vasp_slurm_agent import explanation
+    _, _, root, invoke = local_cli
+    calls = []
+
+    def explain(run_dir, settings, *, question):
+        calls.append((run_dir, settings.provider, question))
+        return {"answer": "No accepted results yet.", "evidence": [], "limits": [], "next_steps": []}
+
+    monkeypatch.setattr(explanation, "explain_run", explain)
+    assert invoke("explain", root, "--provider", "codex", "--question", "Did it finish?") == 0
+    assert calls == [(root, "codex", "Did it finish?")]
+    assert json.loads(capsys.readouterr().out)["answer"] == "No accepted results yet."
 
 
 @pytest.mark.parametrize("problem", ["changed_structure", "missing_hash", "needs_input"])

@@ -5,7 +5,7 @@ type: software
 authors:
   - family-names: "cuiqirui99"
     website: "https://github.com/cuiqirui99"
-version: "0.2.0"
+version: "0.2.1"
 license: MIT
 repository-code: "https://github.com/cuiqirui99/dft-agent"
 url: "https://github.com/cuiqirui99/dft-agent"

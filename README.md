@@ -1,6 +1,6 @@
 # DFT Agent
 
-Version `0.2.0`.
+Version `0.2.1`.
 
 Describe a calculation, review the plan, and run VASP on your Slurm cluster. DFT Agent handles relaxation, SCF, bands and DOS with magnetism, SOC, DFT+U, HSE06 or PBE0.
 
@@ -24,13 +24,13 @@ dft-agent ui
 3. Select a provider in **Model**, enter your **Goal**, and click **Plan**. Or use **Manual** without a model.
 4. Review the plan and click **Prepare inputs**.
 5. Check the inputs, tick the confirmation box and click **Submit calculation**.
-6. Follow progress in **Runs** and download the results.
+6. Follow progress in **Runs**, explain the results, and download the structure.
 
 After an interruption, select the original run and use **Resume monitoring**. For `needs_attention`, read the error before using **Reconnect**.
 
 Try: “Relax this structure, then calculate its bands with SOC.” Plans can be revised before submission. Missing settings, such as U and J, trigger a question.
 
-Supports OpenAI, compatible APIs and a logged-in Codex CLI. Model calls receive your goal and structure. Manual mode needs no model account; install with `pip install .`.
+Supports OpenAI, compatible APIs and a logged-in Codex CLI. Planning shares your goal and structure; explanations share verified results and dialogue. Manual mode needs no model account; install with `pip install .`.
 
 Use ordered periodic structures. Check the starting parameters for your material. Magnetic comparisons test NM, FM and one AFM seed; they do not search all magnetic orders. Keep the app local.
 

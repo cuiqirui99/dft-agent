@@ -671,6 +671,8 @@ def bundle_run(run_dir):
         archive.write(root / "run.json", "run.json")
         if (root / "proposal.json").is_file():
             archive.write(root / "proposal.json", "proposal.json")
+        if (root / "explanations.json").is_file():
+            archive.write(root / "explanations.json", "explanations.json")
         if (root / "plan.json").is_file():
             archive.write(root / "plan.json", "plan.json")
             for source in sorted((root / "source").rglob("*")):

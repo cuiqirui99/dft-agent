@@ -66,6 +66,12 @@ def main():
     plan.add_argument("--model", default=os.environ.get("DFT_AGENT_MODEL", ""))
     plan.add_argument("--base-url", default=os.environ.get("DFT_AGENT_BASE_URL", ""))
     plan.add_argument("--output", type=Path, default=Path("plan.json"))
+    explain = commands.add_parser("explain", help="Explain saved results")
+    explain.add_argument("run_dir", type=Path)
+    explain.add_argument("--question", default="Explain the results.")
+    explain.add_argument("--provider", choices=("responses", "chat_completions", "codex"), default="responses")
+    explain.add_argument("--model", default=os.environ.get("DFT_AGENT_MODEL", ""))
+    explain.add_argument("--base-url", default=os.environ.get("DFT_AGENT_BASE_URL", ""))
     prep = commands.add_parser("prepare", help="Prepare inputs locally")
     prep.add_argument("structure", type=Path)
     prep.add_argument("run_dir", type=Path)
@@ -116,6 +122,13 @@ def main():
             args.output.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n")
             print(json.dumps(result, indent=2, ensure_ascii=False))
             return 0 if result["status"] == "ready" else 1
+        if args.command == "explain":
+            from .agent import ModelSettings
+            from .explanation import explain_run
+            settings = ModelSettings(provider=args.provider, model=args.model, base_url=args.base_url or None)
+            result = explain_run(args.run_dir, settings, question=args.question)
+            print(json.dumps(result, indent=2, ensure_ascii=False))
+            return 0
         from .workflow import prepare_run, prepare_plan, read_state, watch, resume, cancel, bundle_run, TERMINAL
         if args.command == "prepare":
             config = ClusterConfig.load(args.config)

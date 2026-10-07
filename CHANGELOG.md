@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.1 — 2026-10-07
+
+- Explain results and answer follow-up questions.
+- Save plan revisions and retain them after a failed model request.
+
 ## 0.2.0 — 2026-10-07
 
 - Plan and revise calculations with a language model.

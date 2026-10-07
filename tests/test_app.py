@@ -1,10 +1,12 @@
 """Exercise user actions through Streamlit; all remote execution is stubbed."""
 
 from importlib.resources import files
+from copy import deepcopy
 import hashlib
 import json
 from pathlib import Path
 from unittest.mock import Mock
+import matplotlib.pyplot as plt
 
 from pymatgen.core import Structure
 import pytest
@@ -22,6 +24,8 @@ def widget(elements, label):
 
 @pytest.fixture
 def workbench(tmp_path, monkeypatch):
+    from vasp_slurm_agent import explanation
+
     config = ClusterConfig(
         host="cluster.example.invalid", user="researcher", remote_root="/scratch/test",
         vasp_command="srun vasp_std", potcar_root="/licensed/pbe", partition="cpu",
@@ -35,6 +39,14 @@ def workbench(tmp_path, monkeypatch):
     monkeypatch.setattr(workflow, "SSHTransport", no_remote)
     worker = Mock(return_value=43210)
     monkeypatch.setattr(workflow, "start_worker", worker)
+
+    def fixture_context(run_dir):
+        state = workflow.read_state(run_dir)
+        return {"status": state["status"], "context_sha256": hashlib.sha256(json.dumps(state).encode()).hexdigest(),
+                "facts": {f"stage_{index}.accepted": {"value": bool((stage.get("result") or {}).get("success"))}
+                          for index, stage in enumerate(state["stages"], 1)}, "goal": "", "limits": []}
+
+    monkeypatch.setattr(explanation, "load_run_context", fixture_context)
     app = AppTest.from_file(str(files("vasp_slurm_agent").joinpath("app.py")), default_timeout=20).run()
     widget(app.text_input, "Run folder").set_value(str(tmp_path / "runs")).run()
     widget(app.radio, "Mode").set_value("Manual").run()
@@ -109,6 +121,10 @@ def test_completed_result_is_visible_without_resubmission(workbench, accepted):
     output.mkdir()
     # Rejected output must not appear as an accepted result.
     (output / "final_structure.cif").write_bytes(silicon_bytes())
+    fig, axis = plt.subplots()
+    axis.plot([0, 1], [0, 1])
+    fig.savefig(output / "result.png")
+    plt.close(fig)
     app.run()
     assert not app.exception
     assert not any(button.label == "Submit calculation" for button in app.button)
@@ -119,6 +135,8 @@ def test_completed_result_is_visible_without_resubmission(workbench, accepted):
     else:
         assert any("Electronic convergence" in item.value for item in app.warning)
         assert not any(button.label == "Download structure (.cif)" for button in app.download_button)
+    captions = [image.caption for block in app.get("image") for image in block.proto.imgs]
+    assert ("relax · result.png" in captions) is accepted
     widget(app.button, "Prepare download").click().run()
     assert not app.exception
     assert (run_dir / "results.zip").is_file()
@@ -265,6 +283,63 @@ def test_agent_questions_block_preparation(workbench, monkeypatch):
     worker.assert_not_called()
 
 
+def test_agent_revision_failure_preserves_feedback_and_blocks_stale_prepare(workbench, monkeypatch):
+    app, worker, runs_root = workbench
+    provider = Mock(side_effect=[json.dumps(model_response()), agent.AgentError("Provider unavailable"),
+                                 json.dumps(model_response(["scf"]))])
+    monkeypatch.setattr(agent, "_request_plan", provider)
+    open_agent(app)
+    widget(app.button, "Plan").click().run()
+    widget(app.text_input, "Change the plan").set_value("SCF only. Do not relax.").run()
+    assert widget(app.button, "Prepare inputs").disabled
+    widget(app.button, "Plan").click().run()
+    assert not app.exception
+    assert any("Provider unavailable" in message.value for message in app.error)
+    assert not any(button.label == "Prepare inputs" for button in app.button)
+    assert not runs_root.exists()
+    feedback = {"role": "user", "content": "SCF only. Do not relax."}
+    assert app.session_state["agent_history"][-1] == feedback
+    app.run()
+    assert widget(app.text_input, "Change the plan").value == feedback["content"]
+    widget(app.button, "Plan").click().run()
+    assert not app.exception
+    retry_payload = json.loads(provider.call_args.args[0])
+    assert retry_payload["history"].count(feedback) == 1
+    widget(app.button, "Prepare inputs").click().run()
+    assert not app.exception
+    root = Path(app.session_state["active_run"])
+    proposal = json.loads((root / "proposal.json").read_text())
+    assert proposal["goal"] == "Relax, then SCF."
+    assert proposal["dialogue"][1] == feedback
+    assert len(proposal["dialogue"]) == 3
+    assert proposal["tasks"] == ["scf"]
+    assert workflow.read_state(root)["tasks"] == ["scf"]
+    assert widget(app.button, "Submit calculation").disabled
+    worker.assert_not_called()
+
+
+def test_agent_clarification_is_saved_with_accepted_plan(workbench, monkeypatch):
+    app, worker, _ = workbench
+    reply = model_response(["scf"], missing_moments=True)
+    resolved = model_response(["scf"], missing_moments=True)
+    resolved["parameters"]["magmom"] = [1, -1]
+    provider = Mock(side_effect=[json.dumps(reply), json.dumps(resolved)])
+    monkeypatch.setattr(agent, "_request_plan", provider)
+    open_agent(app)
+    widget(app.button, "Plan").click().run()
+    assert widget(app.button, "Prepare inputs").disabled
+    widget(app.text_input, "Change the plan").set_value("Use site moments [1, -1].").run()
+    widget(app.button, "Plan").click().run()
+    widget(app.button, "Prepare inputs").click().run()
+    assert not app.exception
+    root = Path(app.session_state["active_run"])
+    proposal = json.loads((root / "proposal.json").read_text())
+    assert proposal["parameters"]["magmom"] == [1, -1]
+    assert json.loads(proposal["dialogue"][0]["content"])["status"] == "needs_input"
+    assert proposal["dialogue"][1]["content"] == "Use site moments [1, -1]."
+    worker.assert_not_called()
+
+
 @pytest.mark.parametrize("changed", ["goal", "structure"])
 def test_agent_cannot_prepare_stale_proposal(workbench, monkeypatch, changed):
     app, worker, runs_root = workbench
@@ -356,4 +431,147 @@ def test_hybrid_spectrum_uses_own_fermi_reference(workbench, task):
     assert not app.exception
     assert [item.value for item in app.metric if item.label == "Fermi energy (eV)"] == ["6.750000"]
     assert not any(item.label == "SCF Fermi energy (eV)" for item in app.metric)
+    worker.assert_not_called()
+
+
+def explanation_run(workbench, monkeypatch):
+    from vasp_slurm_agent import explanation
+
+    app, worker, _ = workbench
+    context = {"context_sha256": "a" * 64, "goal": "Relax silicon, then inspect its structure.",
+               "status": "succeeded", "outcome": "Relaxation completed.",
+               "facts": {"energy": {"label": "Final energy", "value": -10.0, "unit": "eV", "source": "01_relax/outputs/result.json"}},
+               "limits": [], "artifacts": [], "final_plan": {"tasks": ["relax"]}, "dialogue": []}
+    monkeypatch.setattr(explanation, "load_run_context", lambda _: deepcopy(context))
+
+    def answer(*args, **kwargs):
+        return {"answer": "The requested relaxation completed.", "evidence": ["energy"],
+                "limits": ["Material-specific accuracy is not established."], "next_steps": ["Download the structure."],
+                "context_sha256": context["context_sha256"], "provenance": {"provider": "codex", "model": "test"}}
+
+    explain = Mock(side_effect=answer)
+    monkeypatch.setattr(explanation, "explain_run", explain)
+    app.file_uploader[0].upload("Si.cif", silicon_bytes()).run()
+    widget(app.button, "Prepare inputs").click().run()
+    assert not app.exception
+    root = Path(app.session_state["active_run"])
+    return app, worker, root, context, explain, answer
+
+
+def test_explanation_is_explicit_grounded_and_persists_across_sessions(workbench, monkeypatch):
+    app, worker, root, context, explain, _ = explanation_run(workbench, monkeypatch)
+    original = (root / "run.json").read_bytes()
+    assert any(context["goal"] == item.value for item in app.markdown)
+    assert any("Relaxation completed." == item.value for item in app.markdown)
+    explain.assert_not_called()
+    app.run()
+    explain.assert_not_called()
+    widget(app.button, "Explain results").click().run()
+    assert not app.exception
+    assert explain.call_args.kwargs == {"question": "Explain the results.", "history": []}
+    assert any("energy · Final energy: -10.0 eV" in item.value for item in app.markdown)
+    record = json.loads((root / "explanations.json").read_text())
+    assert record["context_sha256"] == context["context_sha256"]
+    assert len(record["exchanges"]) == 1
+    app.run()
+    assert explain.call_count == 1
+    widget(app.text_input, "Ask about this run").set_value("Where is the structure?").run()
+    widget(app.button, "Ask").click().run()
+    assert not app.exception
+    assert explain.call_args.kwargs["history"] == record["history"]
+    assert explain.call_args.kwargs["question"] == "Where is the structure?"
+    assert len(json.loads((root / "explanations.json").read_text())["exchanges"]) == 2
+    reopened = AppTest.from_file(str(files("vasp_slurm_agent").joinpath("app.py")), default_timeout=20).run()
+    widget(reopened.text_input, "Or enter a run folder").set_value(str(root)).run()
+    widget(reopened.button, "Open run").click().run()
+    assert not reopened.exception
+    assert any("The requested relaxation completed." == item.value for item in reopened.markdown)
+    assert explain.call_count == 2
+    assert (root / "run.json").read_bytes() == original
+    worker.assert_not_called()
+
+
+def test_changed_result_context_hides_old_answers_and_resets_model_history(workbench, monkeypatch):
+    app, worker, root, context, explain, _ = explanation_run(workbench, monkeypatch)
+    widget(app.button, "Explain results").click().run()
+    old_record = (root / "explanations.json").read_bytes()
+    context.update(context_sha256="b" * 64, status="needs_attention", outcome="Output checks failed.")
+    app.run()
+    assert not app.exception
+    assert any("Results changed" in item.value for item in app.info)
+    assert not any("The requested relaxation completed." == item.value for item in app.markdown)
+    assert (root / "explanations.json").read_bytes() == old_record
+    assert explain.call_count == 1
+    widget(app.text_input, "Ask about this run").set_value("Why did it fail?").run()
+    widget(app.button, "Ask").click().run()
+    assert explain.call_args.kwargs["history"] == []
+    new_record = json.loads((root / "explanations.json").read_text())
+    assert new_record["context_sha256"] == "b" * 64
+    assert len(new_record["exchanges"]) == 1
+    worker.assert_not_called()
+
+
+def test_explanation_provider_failure_can_retry_without_submission(workbench, monkeypatch):
+    app, worker, root, _, explain, answer = explanation_run(workbench, monkeypatch)
+    explain.side_effect = agent.AgentError("Provider unavailable")
+    widget(app.button, "Explain results").click().run()
+    assert not app.exception
+    assert any("Provider unavailable" in item.value for item in app.error)
+    assert not (root / "explanations.json").exists()
+    app.run()
+    assert explain.call_count == 1
+    explain.side_effect = answer
+    widget(app.button, "Explain results").click().run()
+    assert not app.exception
+    assert (root / "explanations.json").is_file()
+    assert explain.call_count == 2
+    worker.assert_not_called()
+
+
+def test_current_evidence_overrules_cached_success_in_results_panel(workbench, monkeypatch):
+    app, worker, root, context, explain, _ = explanation_run(workbench, monkeypatch)
+    state = workflow.read_state(root)
+    state["status"] = "succeeded"
+    stage = state["stages"][0]
+    stage.update(status="succeeded", job_id="12345", scheduler_state="COMPLETED",
+                 result={"success": True, "final_energy_ev": -10.0})
+    (root / "run.json").write_text(json.dumps(state))
+    saved = (root / "run.json").read_bytes()
+    output = root / stage["folder"] / "outputs"
+    output.mkdir()
+    (output / "final_structure.cif").write_bytes(silicon_bytes())
+    fig, axis = plt.subplots()
+    axis.plot([0, 1], [0, 1])
+    fig.savefig(output / "result.png")
+    plt.close(fig)
+    context.update(status="needs_attention", outcome="No accepted results.")
+    context["facts"].update({"stage_1.accepted": {"value": False},
+                             "stage_1.availability": {"value": "Current output checks rejected this result."}})
+    app.run()
+    assert not app.exception
+    assert any("Needs attention" in item.value for item in app.markdown)
+    assert any("Current output checks rejected" in item.value for item in app.warning)
+    assert not any("Complete. Results are ready" in item.value for item in app.info)
+    assert not any(item.label == "Final total energy (eV)" for item in app.metric)
+    assert not any(item.label == "Download structure (.cif)" for item in app.download_button)
+    assert not any("relax · result.png" in block.captions for block in app.get("image"))
+    assert (root / "run.json").read_bytes() == saved
+    explain.assert_not_called()
+    worker.assert_not_called()
+
+
+def test_explanation_does_not_save_answer_if_results_change_during_request(workbench, monkeypatch):
+    app, worker, root, context, explain, answer = explanation_run(workbench, monkeypatch)
+
+    def changed(*args, **kwargs):
+        response = answer(*args, **kwargs)
+        context["context_sha256"] = "b" * 64
+        return response
+
+    explain.side_effect = changed
+    widget(app.button, "Explain results").click().run()
+    assert not app.exception
+    assert any("Results changed" in item.value for item in app.error)
+    assert not (root / "explanations.json").exists()
+    assert not any("The requested relaxation completed." == item.value for item in app.markdown)
     worker.assert_not_called()

@@ -18,6 +18,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import streamlit as st
 
+from vasp_slurm_agent import __version__
 from vasp_slurm_agent.cli import doctor
 from vasp_slurm_agent.config import ClusterConfig
 from vasp_slurm_agent.workflow import (
@@ -266,34 +267,42 @@ def _prepare_from_plan(upload, runs_root, config, plan):
 
 
 def _agent_plan(upload, structure, config, runs_root, settings):
-    from vasp_slurm_agent.agent import draft_plan
+    from vasp_slurm_agent.agent import _redact, _secrets, draft_plan
 
     goal = st.text_area("Goal", placeholder="Relax this structure, then calculate its bands with SOC.", max_chars=4000)
     stamp = hashlib.sha256((upload.getvalue() if upload else b"") + goal.encode()).hexdigest()
+    if st.session_state.get("agent_stamp") != stamp:
+        for key in ("agent_proposal", "agent_history", "agent_clear_revision", "plan_revision"):
+            st.session_state.pop(key, None)
+        st.session_state["agent_stamp"] = stamp
     saved = st.session_state.get("agent_proposal")
-    if saved and saved["stamp"] != stamp:
-        st.session_state.pop("agent_proposal", None)
-        st.session_state.pop("agent_history", None)
-        saved = None
-    revision = st.text_input("Change the plan", key="plan_revision") if saved else ""
+    if st.session_state.pop("agent_clear_revision", False):
+        st.session_state["plan_revision"] = ""
+    revision = st.text_input("Change the plan", key="plan_revision") if saved or st.session_state.get("agent_history") else ""
     if st.button("Plan", type="primary", disabled=structure is None or not goal.strip()):
+        history = list(st.session_state.get("agent_history", []))
+        pending = {"role": "user", "content": revision.strip()}
+        if pending["content"] and (not history or history[-1] != pending):
+            history.append(pending)
+        st.session_state["agent_history"] = history
+        st.session_state.pop("agent_proposal", None)
+        saved = None
         try:
-            history = list(st.session_state.get("agent_history", []))
-            if revision.strip():
-                history.append({"role": "user", "content": revision.strip()})
             suffix = ".cif" if upload.name.lower().endswith(".cif") else ".vasp"
             with tempfile.TemporaryDirectory(prefix="dft-agent-plan-") as directory:
                 source = Path(directory) / f"structure{suffix}"
                 source.write_bytes(upload.getvalue())
                 with st.spinner("Planning…"):
                     plan = draft_plan(goal.strip(), source, settings, history=history[-12:])
-            saved = {"stamp": stamp, "plan": plan, "goal": goal.strip()}
+            prefix = [{**item, "content": _redact(item["content"], _secrets(settings))} for item in history[:-12]]
+            history = prefix + plan.get("dialogue", history[-12:] + [{"role": "assistant", "content": json.dumps(plan, ensure_ascii=False)}])
+            saved = {"stamp": stamp, "plan": plan, "goal": plan.get("goal", goal.strip())}
             st.session_state["agent_proposal"] = saved
-            history.append({"role": "assistant", "content": json.dumps(plan, ensure_ascii=False)})
-            st.session_state["agent_history"] = history[-12:]
+            st.session_state["agent_history"] = history
+            st.session_state["agent_clear_revision"] = True
+            revision = ""
+            st.rerun()
         except Exception as exc:
-            st.session_state.pop("agent_proposal", None)
-            saved = None
             st.error(str(exc))
     if not saved:
         return
@@ -304,10 +313,13 @@ def _agent_plan(upload, structure, config, runs_root, settings):
     if plan.get("status") == "unsupported":
         st.warning("This plan cannot run yet.")
     with st.expander("Plan details", expanded=plan.get("status") == "ready"):
-        st.json({key: value for key, value in plan.items() if key != "provenance"})
-    if st.button("Prepare inputs", disabled=plan.get("status") != "ready" or config is None):
+        st.json({key: value for key, value in plan.items() if key not in {"provenance", "dialogue", "goal"}})
+    if revision.strip():
+        st.info("Update the plan before preparing inputs.")
+    if st.button("Prepare inputs", disabled=plan.get("status") != "ready" or config is None or bool(revision.strip())):
         try:
-            _prepare_from_plan(upload, runs_root, config, {**plan, "goal": saved["goal"]})
+            _prepare_from_plan(upload, runs_root, config, {**plan, "goal": saved["goal"],
+                              "dialogue": st.session_state.get("agent_history", [])})
         except Exception as exc:
             st.error(f"Cannot prepare inputs: {exc}")
     if config is None:
@@ -374,21 +386,98 @@ def _new_run(config: ClusterConfig | None, runs_root: Path, model_settings=None)
             st.error(f"Cannot prepare inputs: {exc}")
 
 
+def _result_dialogue(run_dir, settings, context):
+    from vasp_slurm_agent.explanation import explain_run, load_run_context
+
+    if context.get("goal"):
+        st.subheader("Saved goal")
+        st.write(context["goal"])
+    st.subheader("Outcome")
+    st.write(context.get("outcome") or f"Run status: {STATUS_LABELS.get(context['status'], context['status'])}.")
+    record_path = run_dir / "explanations.json"
+    record = {}
+    if record_path.is_file():
+        try:
+            record = json.loads(record_path.read_text())
+            if not isinstance(record, dict):
+                raise ValueError("Invalid dialogue record.")
+        except (OSError, ValueError) as exc:
+            st.warning(f"Cannot read saved explanations: {exc}")
+            record = {}
+    if record and record.get("context_sha256") != context["context_sha256"]:
+        st.info("Results changed. Ask again for an updated explanation.")
+        record = {}
+    question = st.text_input("Ask about this run", key=f"result_question_{run_dir}", max_chars=4000)
+    actions = st.columns(2)
+    explain = actions[0].button("Explain results", key=f"explain_{run_dir}")
+    ask = actions[1].button("Ask", disabled=not question.strip(), key=f"ask_{run_dir}")
+    if explain or ask:
+        prompt = question.strip() if ask else "Explain the results."
+        history = record.get("history", [])
+        try:
+            with st.spinner("Reading results…"):
+                response = explain_run(run_dir, settings, question=prompt, history=history[-12:])
+            if response["context_sha256"] != context["context_sha256"] or response["context_sha256"] != load_run_context(run_dir)["context_sha256"]:
+                record = {}
+                raise ValueError("Results changed. Ask again for an updated explanation.")
+            exchange = {"question": prompt, **response}
+            reply = {key: response[key] for key in ("answer", "evidence", "limits", "next_steps")}
+            record = {"context_sha256": response["context_sha256"],
+                      "history": history + [{"role": "user", "content": prompt},
+                                             {"role": "assistant", "content": json.dumps(reply, ensure_ascii=False)}],
+                      "exchanges": record.get("exchanges", []) + [exchange]}
+            with tempfile.NamedTemporaryFile(mode="w", dir=run_dir, prefix=".explanations-", delete=False) as stream:
+                temporary = Path(stream.name)
+                json.dump(record, stream, indent=2, ensure_ascii=False)
+                stream.write("\n")
+            try:
+                os.replace(temporary, record_path)
+            finally:
+                temporary.unlink(missing_ok=True)
+        except Exception as exc:
+            st.error(f"Cannot explain results: {exc}")
+    for exchange in record.get("exchanges", []):
+        with st.chat_message("user"):
+            st.write(exchange["question"])
+        with st.chat_message("assistant"):
+            st.write(exchange["answer"])
+            with st.expander("Evidence"):
+                for fact_id in exchange.get("evidence", []):
+                    fact = context["facts"].get(fact_id)
+                    if fact:
+                        unit = f" {fact['unit']}" if fact.get("unit") else ""
+                        st.write(f"{fact_id} · {fact['label']}: {fact['value']}{unit}")
+                        st.caption(fact["source"])
+            for limit in exchange.get("limits", []):
+                st.caption(limit)
+            for step in exchange.get("next_steps", []):
+                st.write(step)
+
+
 @st.fragment(run_every="5s")
-def _run_panel(run_dir: Path) -> None:
+def _run_panel(run_dir: Path, model_settings=None) -> None:
+    from vasp_slurm_agent.explanation import load_run_context
+
     try:
         state = read_state(run_dir)
+        context = load_run_context(run_dir)
     except Exception as exc:
         st.error(f"Cannot read run: {exc}")
         return
-    status = state.get("status", "unknown")
-    stages = state.get("stages", [])
+    status = context["status"]
+    stages = []
+    for index, original in enumerate(state.get("stages", []), 1):
+        stage = dict(original)
+        if (stage.get("result") or {}).get("success") and not context["facts"].get(f"stage_{index}.accepted", {}).get("value"):
+            message = context["facts"].get(f"stage_{index}.availability", {}).get("value", "Saved results could not be verified.")
+            stage = {**stage, "status": "needs_attention", "result": {"success": False, "reason": message}}
+        stages.append(stage)
     awaiting_submission = status == "planned" and not any(stage.get("job_id") for stage in stages)
     st.subheader(f"{state.get('formula', '')} · {state.get('task', '')}")
     st.caption(str(run_dir))
     status_label = "Preparing next stage" if status == "planned" and not awaiting_submission else STATUS_LABELS.get(status, status)
     st.write(f"Status: **{status_label}**")
-    if state.get("comparison"):
+    if state.get("comparison") and all((stage.get("result") or {}).get("success") for stage in stages):
         with st.expander("Magnetic comparison", expanded=True):
             st.json(state["comparison"])
     if state.get("last_error"):
@@ -424,7 +513,7 @@ def _run_panel(run_dir: Path) -> None:
             scf_fermi_energy = stage["result"].get("fermi_energy_ev")
         _stage_results(run_dir, stage, scf_fermi_energy)
         folder = stage.get("folder")
-        if folder:
+        if folder and (stage.get("result") or {}).get("success"):
             for plot in sorted((run_dir / folder / "outputs").glob("*.png")):
                 st.image(str(plot), caption=f"{stage.get('name', '')} · {plot.name}")
 
@@ -483,12 +572,13 @@ def _run_panel(run_dir: Path) -> None:
         st.info("Complete. Results are ready to download.")
     elif status == "needs_attention":
         st.info("Check the error before reconnecting. Settings are unchanged.")
+    _result_dialogue(run_dir, model_settings, context)
 
 
 def main() -> None:
     st.set_page_config(page_title="DFT Agent", page_icon="⚛", layout="wide")
     st.title("DFT Agent")
-    st.caption("Version 0.2.0")
+    st.caption(f"Version {__version__}")
     with st.sidebar:
         st.header("Local settings")
         config_path = Path(st.text_input("Configuration file", value=os.environ.get(
@@ -516,7 +606,7 @@ def main() -> None:
             st.session_state["active_run"] = str(Path(manual).expanduser())
     if st.session_state.get("active_run"):
         st.divider()
-        _run_panel(Path(st.session_state["active_run"]))
+        _run_panel(Path(st.session_state["active_run"]), model_settings)
 
 
 if __name__ == "__main__":

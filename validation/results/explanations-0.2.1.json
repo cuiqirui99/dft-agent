@@ -1,0 +1,2016 @@
+{
+  "version": "0.2.1",
+  "checked_at": "2026-10-07T16:10:37.188666+00:00",
+  "passed": true,
+  "provider": "Codex CLI",
+  "offline_tests": 291,
+  "jobs_submitted": 0,
+  "scope": "Five real model explanations of retained VASP results. API adapters have offline tests only. This is not a material-specific convergence study.",
+  "source_sha256": {
+    "src/vasp_slurm_agent/config.py": "4e36b95dfeef02e46a345b01e8ad37c3811fef73710bc2e52db35e2de6e9a4d6",
+    "src/vasp_slurm_agent/methods.py": "23ac74bce05c01ae812e34c7964c2ac39e47c16dfd5358f25664630fc7c33401",
+    "src/vasp_slurm_agent/transport.py": "d95bba5706df03d189bd0552671676493b4aa4049ee4ef40b3899c6b51d45d1c",
+    "src/vasp_slurm_agent/dispatch.py": "9c9a5a98b26a2fc8846b2ed2ab804a9a44e28383bfb3c2ea455bbadc47830aba",
+    "src/vasp_slurm_agent/__init__.py": "c8facba452c1b6e4a270e3964d4c45d4df50cb686372cd7b55c54457c41f6705",
+    "src/vasp_slurm_agent/explanation.py": "af186b224bafb6af58a2e339be0c72fd9cc7ff6eaa73ce425c75e465b6da6bf3",
+    "src/vasp_slurm_agent/cli.py": "123dfa431224c596406af4029575901ea7674ca43bfb5ca9179fad7e9a8cd1c1",
+    "src/vasp_slurm_agent/magnetic.py": "f44d748f5e50bd7ba27317236cb48f64dd9dc7a902812fd54d1ae499423477b8",
+    "src/vasp_slurm_agent/agent.py": "13bd7edeeb6d1b7b281e0c69a1d27ea8394bcdcc4e2b0e08590f73568269d005",
+    "src/vasp_slurm_agent/app.py": "d7e55cab6bd2d4b396c70ed32b8aca23a91a720b4f3dd2a9dad0240059b16e91",
+    "src/vasp_slurm_agent/workflow.py": "aa4056753bd2c9cf5ef3b0a26243506586131bcdb3f41f420b96161d94f0f58d",
+    "src/vasp_slurm_agent/vasp.py": "1c4f1e4c16fdc5a844c1a73104de9afa136bed5a9b7eec916e17312bf062825a"
+  },
+  "cases": [
+    {
+      "case": "wheel-agent-hse",
+      "checked_at": "2026-10-07T16:09:37.291003+00:00",
+      "question": "What finished? What is the band gap?",
+      "context": {
+        "goal": "Run SCF, then bands and DOS for this silicon structure with HSE06. Use no spin polarization, no SOC, no Hubbard U and no relaxation. Use ENCUT 400 eV, EDIFF 1e-5, NELM 160, a 2x2x2 grid, SIGMA 0.1 eV, line_density 1 and NEDOS 301. Use defaults for other settings.",
+        "dialogue": [],
+        "status": "succeeded",
+        "outcome": "3 of 3 stages have accepted results.",
+        "final_plan": {
+          "tasks": [
+            "scf",
+            "bands",
+            "dos"
+          ],
+          "parameters": {
+            "ediff": 1e-05,
+            "spin": "none",
+            "soc": false,
+            "nelm": 160,
+            "hubbard_u": {},
+            "ismear": 0,
+            "functional": "HSE06",
+            "sigma": 0.1,
+            "encut": 400,
+            "line_density": 1,
+            "saxis": [
+              0,
+              0,
+              1
+            ],
+            "mesh": [
+              2,
+              2,
+              2
+            ],
+            "nedos": 301
+          }
+        },
+        "facts": {
+          "stage_1.task": {
+            "label": "Calculation",
+            "value": "scf",
+            "unit": "",
+            "source": "plan.json"
+          },
+          "stage_1.accepted": {
+            "label": "scf: accepted result",
+            "value": true,
+            "unit": "",
+            "source": "01_scf/outputs/result.json"
+          },
+          "stage_1.status": {
+            "label": "scf: current status",
+            "value": "succeeded",
+            "unit": "",
+            "source": "run.json"
+          },
+          "stage_1.spin": {
+            "label": "scf: spin",
+            "value": "none",
+            "unit": "",
+            "source": "01_scf/outputs/result.json#/method"
+          },
+          "stage_1.soc": {
+            "label": "scf: soc",
+            "value": false,
+            "unit": "",
+            "source": "01_scf/outputs/result.json#/method"
+          },
+          "stage_1.functional": {
+            "label": "scf: functional",
+            "value": "HSE06",
+            "unit": "",
+            "source": "01_scf/outputs/result.json#/method"
+          },
+          "stage_1.saxis": {
+            "label": "scf: saxis",
+            "value": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "unit": "",
+            "source": "01_scf/outputs/result.json#/method"
+          },
+          "stage_1.electronic_converged": {
+            "label": "scf: electronic convergence in used settings",
+            "value": true,
+            "unit": "",
+            "source": "01_scf/outputs/result.json"
+          },
+          "stage_1.energy": {
+            "label": "scf: Total energy",
+            "value": -13.29166302,
+            "unit": "eV",
+            "source": "01_scf/outputs/result.json#/final_energy_ev"
+          },
+          "stage_1.energy_per_atom": {
+            "label": "scf: Energy per atom",
+            "value": -6.64583151,
+            "unit": "eV/atom",
+            "source": "01_scf/outputs/result.json#/final_energy_ev_per_atom"
+          },
+          "stage_1.force": {
+            "label": "scf: Maximum atomic force",
+            "value": 0.0,
+            "unit": "eV/Å",
+            "source": "01_scf/outputs/result.json#/final_max_force_ev_angstrom"
+          },
+          "stage_1.fermi_energy": {
+            "label": "scf: Fermi energy reference",
+            "value": 5.17526621,
+            "unit": "eV",
+            "source": "01_scf/outputs/result.json#/fermi_energy_ev"
+          },
+          "stage_1.structure_formula": {
+            "label": "scf: Final composition",
+            "value": "Si",
+            "unit": "",
+            "source": "01_scf/outputs/final_structure.cif"
+          },
+          "stage_1.structure_atoms": {
+            "label": "scf: Final atom count",
+            "value": 2,
+            "unit": "atoms",
+            "source": "01_scf/outputs/final_structure.cif"
+          },
+          "stage_1.structure_volume": {
+            "label": "scf: Final cell volume",
+            "value": 40.04786948934128,
+            "unit": "Å³",
+            "source": "01_scf/outputs/final_structure.cif"
+          },
+          "stage_1.final_structure.cif": {
+            "label": "scf: final_structure.cif availability",
+            "value": "verified",
+            "unit": "",
+            "source": "01_scf/outputs/final_structure.cif"
+          },
+          "stage_2.task": {
+            "label": "Calculation",
+            "value": "bands",
+            "unit": "",
+            "source": "plan.json"
+          },
+          "stage_2.accepted": {
+            "label": "bands: accepted result",
+            "value": true,
+            "unit": "",
+            "source": "02_bands/outputs/result.json"
+          },
+          "stage_2.status": {
+            "label": "bands: current status",
+            "value": "succeeded",
+            "unit": "",
+            "source": "run.json"
+          },
+          "stage_2.spin": {
+            "label": "bands: spin",
+            "value": "none",
+            "unit": "",
+            "source": "02_bands/outputs/result.json#/method"
+          },
+          "stage_2.soc": {
+            "label": "bands: soc",
+            "value": false,
+            "unit": "",
+            "source": "02_bands/outputs/result.json#/method"
+          },
+          "stage_2.functional": {
+            "label": "bands: functional",
+            "value": "HSE06",
+            "unit": "",
+            "source": "02_bands/outputs/result.json#/method"
+          },
+          "stage_2.saxis": {
+            "label": "bands: saxis",
+            "value": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "unit": "",
+            "source": "02_bands/outputs/result.json#/method"
+          },
+          "stage_2.electronic_converged": {
+            "label": "bands: electronic convergence in used settings",
+            "value": true,
+            "unit": "",
+            "source": "02_bands/outputs/result.json"
+          },
+          "stage_2.fermi_energy": {
+            "label": "bands: Fermi energy reference",
+            "value": 5.24234535,
+            "unit": "eV",
+            "source": "02_bands/outputs/result.json#/energy_reference_ev"
+          },
+          "stage_2.structure_formula": {
+            "label": "bands: Final composition",
+            "value": "Si",
+            "unit": "",
+            "source": "02_bands/outputs/final_structure.cif"
+          },
+          "stage_2.structure_atoms": {
+            "label": "bands: Final atom count",
+            "value": 2,
+            "unit": "atoms",
+            "source": "02_bands/outputs/final_structure.cif"
+          },
+          "stage_2.structure_volume": {
+            "label": "bands: Final cell volume",
+            "value": 40.04786948934128,
+            "unit": "Å³",
+            "source": "02_bands/outputs/final_structure.cif"
+          },
+          "stage_2.final_structure.cif": {
+            "label": "bands: final_structure.cif availability",
+            "value": "verified",
+            "unit": "",
+            "source": "02_bands/outputs/final_structure.cif"
+          },
+          "stage_2.bands.png": {
+            "label": "bands: bands.png availability",
+            "value": "present_unverified",
+            "unit": "",
+            "source": "02_bands/outputs/bands.png"
+          },
+          "stage_2.bands.csv": {
+            "label": "bands: bands.csv availability",
+            "value": "present_unverified",
+            "unit": "",
+            "source": "02_bands/outputs/bands.csv"
+          },
+          "stage_3.task": {
+            "label": "Calculation",
+            "value": "dos",
+            "unit": "",
+            "source": "plan.json"
+          },
+          "stage_3.accepted": {
+            "label": "dos: accepted result",
+            "value": true,
+            "unit": "",
+            "source": "03_dos/outputs/result.json"
+          },
+          "stage_3.status": {
+            "label": "dos: current status",
+            "value": "succeeded",
+            "unit": "",
+            "source": "run.json"
+          },
+          "stage_3.spin": {
+            "label": "dos: spin",
+            "value": "none",
+            "unit": "",
+            "source": "03_dos/outputs/result.json#/method"
+          },
+          "stage_3.soc": {
+            "label": "dos: soc",
+            "value": false,
+            "unit": "",
+            "source": "03_dos/outputs/result.json#/method"
+          },
+          "stage_3.functional": {
+            "label": "dos: functional",
+            "value": "HSE06",
+            "unit": "",
+            "source": "03_dos/outputs/result.json#/method"
+          },
+          "stage_3.saxis": {
+            "label": "dos: saxis",
+            "value": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "unit": "",
+            "source": "03_dos/outputs/result.json#/method"
+          },
+          "stage_3.electronic_converged": {
+            "label": "dos: electronic convergence in used settings",
+            "value": true,
+            "unit": "",
+            "source": "03_dos/outputs/result.json"
+          },
+          "stage_3.fermi_energy": {
+            "label": "dos: Fermi energy reference",
+            "value": 5.17526621,
+            "unit": "eV",
+            "source": "03_dos/outputs/result.json#/fermi_energy_ev"
+          },
+          "stage_3.structure_formula": {
+            "label": "dos: Final composition",
+            "value": "Si",
+            "unit": "",
+            "source": "03_dos/outputs/final_structure.cif"
+          },
+          "stage_3.structure_atoms": {
+            "label": "dos: Final atom count",
+            "value": 2,
+            "unit": "atoms",
+            "source": "03_dos/outputs/final_structure.cif"
+          },
+          "stage_3.structure_volume": {
+            "label": "dos: Final cell volume",
+            "value": 40.04786948934128,
+            "unit": "Å³",
+            "source": "03_dos/outputs/final_structure.cif"
+          },
+          "stage_3.final_structure.cif": {
+            "label": "dos: final_structure.cif availability",
+            "value": "verified",
+            "unit": "",
+            "source": "03_dos/outputs/final_structure.cif"
+          },
+          "stage_3.dos.png": {
+            "label": "dos: dos.png availability",
+            "value": "present_unverified",
+            "unit": "",
+            "source": "03_dos/outputs/dos.png"
+          },
+          "stage_3.dos.csv": {
+            "label": "dos: dos.csv availability",
+            "value": "present_unverified",
+            "unit": "",
+            "source": "03_dos/outputs/dos.csv"
+          },
+          "run.status": {
+            "label": "Current result status",
+            "value": "succeeded",
+            "unit": "",
+            "source": "run.json"
+          },
+          "run.accepted_stages": {
+            "label": "Stages with accepted results",
+            "value": 3,
+            "unit": "stages",
+            "source": "run.json"
+          }
+        },
+        "artifacts": [
+          {
+            "id": "stage_1.final_structure.cif",
+            "label": "scf: final_structure.cif",
+            "path": "01_scf/outputs/final_structure.cif",
+            "sha256": "b5472fc47267efb8daf52e94ad4bb60ab7d07483874ff8f4a4a516884d319a45",
+            "status": "verified"
+          },
+          {
+            "id": "stage_2.final_structure.cif",
+            "label": "bands: final_structure.cif",
+            "path": "02_bands/outputs/final_structure.cif",
+            "sha256": "b5472fc47267efb8daf52e94ad4bb60ab7d07483874ff8f4a4a516884d319a45",
+            "status": "verified"
+          },
+          {
+            "id": "stage_2.bands.png",
+            "label": "bands: bands.png",
+            "path": "02_bands/outputs/bands.png",
+            "sha256": "e696966d7f024befeb2eae88a7df4b92fddf7559776e294f2644b43868e2fd5a",
+            "status": "present_unverified"
+          },
+          {
+            "id": "stage_2.bands.csv",
+            "label": "bands: bands.csv",
+            "path": "02_bands/outputs/bands.csv",
+            "sha256": "a9eb3eaedde27f92bc04dc237d4210169cbe69981542cab3eacf7730e8ac5286",
+            "status": "present_unverified"
+          },
+          {
+            "id": "stage_3.final_structure.cif",
+            "label": "dos: final_structure.cif",
+            "path": "03_dos/outputs/final_structure.cif",
+            "sha256": "b5472fc47267efb8daf52e94ad4bb60ab7d07483874ff8f4a4a516884d319a45",
+            "status": "verified"
+          },
+          {
+            "id": "stage_3.dos.png",
+            "label": "dos: dos.png",
+            "path": "03_dos/outputs/dos.png",
+            "sha256": "d201662f3fe1ee77f7eb1ace0d4fd8f6b7a4d29c5bb087393bb53ce31efba914",
+            "status": "present_unverified"
+          },
+          {
+            "id": "stage_3.dos.csv",
+            "label": "dos: dos.csv",
+            "path": "03_dos/outputs/dos.csv",
+            "sha256": "dd0239a755ebe96a4b7fd3fbcfd8c2f8f5f1af4e90d07ad8e03cede600487c31",
+            "status": "present_unverified"
+          }
+        ],
+        "limits": [
+          "A band gap has not been quantified from these results.",
+          "These calculations do not establish a global magnetic ground state.",
+          "Passing the result checks does not establish convergence with respect to cutoff, k-point mesh or other numerical settings."
+        ],
+        "context_sha256": "4c3b65e58d814bade850c2aa61e198edc986a1d2f9dffbf53926fd0b7cc097c0"
+      },
+      "response": {
+        "answer": "The SCF, bands and DOS stages finished with accepted results and electronic convergence in the settings used. The band gap is unavailable because it has not been extracted.",
+        "evidence": [
+          "stage_1.accepted",
+          "stage_2.accepted",
+          "stage_3.accepted",
+          "stage_1.electronic_converged",
+          "stage_2.electronic_converged",
+          "stage_3.electronic_converged"
+        ],
+        "limits": [
+          "Electronic convergence does not establish convergence with respect to cutoff or k-point mesh."
+        ],
+        "next_steps": [],
+        "context_sha256": "4c3b65e58d814bade850c2aa61e198edc986a1d2f9dffbf53926fd0b7cc097c0",
+        "provenance": {
+          "provider": "codex",
+          "model": "gpt-6-astra"
+        }
+      },
+      "saved_files_unchanged": true,
+      "jobs_submitted": 0
+    },
+    {
+      "case": "wheel-agent-soc",
+      "checked_at": "2026-10-07T16:09:40.393476+00:00",
+      "question": "Did the relaxation and SOC calculations finish? What results can I download?",
+      "context": {
+        "goal": "Relax this silicon structure, then calculate its bands with SOC. Use zero initial moments, spin axis [0,0,1], PBE, ENCUT 400 eV, a 2x2x2 grid, EDIFF 1e-5, a 0.05 eV/angstrom force threshold, NSW 30 and line_density 2. No Hubbard U or hybrid functional. Use defaults for remaining settings.",
+        "dialogue": [],
+        "status": "succeeded",
+        "outcome": "3 of 3 stages have accepted results.",
+        "final_plan": {
+          "tasks": [
+            "relax",
+            "bands"
+          ],
+          "parameters": {
+            "ediff": 1e-05,
+            "spin": "noncollinear",
+            "soc": true,
+            "cell_relax": false,
+            "nelm": 120,
+            "hubbard_u": {},
+            "ismear": 0,
+            "nsw": 30,
+            "magmom": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ]
+            ],
+            "functional": "PBE",
+            "sigma": 0.05,
+            "encut": 400,
+            "line_density": 2,
+            "ediffg": -0.05,
+            "saxis": [
+              0,
+              0,
+              1
+            ],
+            "mesh": [
+              2,
+              2,
+              2
+            ],
+            "nedos": 2001
+          }
+        },
+        "facts": {
+          "stage_1.task": {
+            "label": "Calculation",
+            "value": "relax",
+            "unit": "",
+            "source": "plan.json"
+          },
+          "stage_1.accepted": {
+            "label": "relax: accepted result",
+            "value": true,
+            "unit": "",
+            "source": "01_relax/outputs/result.json"
+          },
+          "stage_1.status": {
+            "label": "relax: current status",
+            "value": "succeeded",
+            "unit": "",
+            "source": "run.json"
+          },
+          "stage_1.spin": {
+            "label": "relax: spin",
+            "value": "noncollinear",
+            "unit": "",
+            "source": "01_relax/outputs/result.json#/method"
+          },
+          "stage_1.soc": {
+            "label": "relax: soc",
+            "value": true,
+            "unit": "",
+            "source": "01_relax/outputs/result.json#/method"
+          },
+          "stage_1.functional": {
+            "label": "relax: functional",
+            "value": "PBE",
+            "unit": "",
+            "source": "01_relax/outputs/result.json#/method"
+          },
+          "stage_1.saxis": {
+            "label": "relax: saxis",
+            "value": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "unit": "",
+            "source": "01_relax/outputs/result.json#/method"
+          },
+          "stage_1.electronic_converged": {
+            "label": "relax: electronic convergence in used settings",
+            "value": true,
+            "unit": "",
+            "source": "01_relax/outputs/result.json"
+          },
+          "stage_1.ionic_converged": {
+            "label": "Relaxation force criterion passed",
+            "value": true,
+            "unit": "",
+            "source": "01_relax/outputs/result.json"
+          },
+          "stage_1.energy": {
+            "label": "relax: Total energy",
+            "value": -8.29154598,
+            "unit": "eV",
+            "source": "01_relax/outputs/result.json#/final_energy_ev"
+          },
+          "stage_1.energy_per_atom": {
+            "label": "relax: Energy per atom",
+            "value": -4.14577299,
+            "unit": "eV/atom",
+            "source": "01_relax/outputs/result.json#/final_energy_ev_per_atom"
+          },
+          "stage_1.force": {
+            "label": "relax: Maximum atomic force",
+            "value": 1.8014438653480158e-06,
+            "unit": "eV/Å",
+            "source": "01_relax/outputs/result.json#/final_max_force_ev_angstrom"
+          },
+          "stage_1.structure_formula": {
+            "label": "relax: Final composition",
+            "value": "Si",
+            "unit": "",
+            "source": "01_relax/outputs/final_structure.cif"
+          },
+          "stage_1.structure_atoms": {
+            "label": "relax: Final atom count",
+            "value": 2,
+            "unit": "atoms",
+            "source": "01_relax/outputs/final_structure.cif"
+          },
+          "stage_1.structure_volume": {
+            "label": "relax: Final cell volume",
+            "value": 40.04786948934128,
+            "unit": "Å³",
+            "source": "01_relax/outputs/final_structure.cif"
+          },
+          "stage_1.total_moment": {
+            "label": "relax: cell magnetic moment",
+            "value": [
+              -1e-07,
+              -0.0,
+              0.0
+            ],
+            "unit": "mu_B",
+            "source": "01_relax/outputs/result.json#/magnetization"
+          },
+          "stage_1.site_moments": {
+            "label": "relax: projected site moments in POSCAR order",
+            "value": [
+              [
+                0.0,
+                -0.0,
+                -0.0
+              ],
+              [
+                0.0,
+                0.0,
+                -0.0
+              ]
+            ],
+            "unit": "mu_B",
+            "source": "01_relax/outputs/result.json#/magnetization"
+          },
+          "stage_1.final_structure.cif": {
+            "label": "relax: final_structure.cif availability",
+            "value": "verified",
+            "unit": "",
+            "source": "01_relax/outputs/final_structure.cif"
+          },
+          "stage_1.relax_energy.png": {
+            "label": "relax: relax_energy.png availability",
+            "value": "present_unverified",
+            "unit": "",
+            "source": "01_relax/outputs/relax_energy.png"
+          },
+          "stage_2.task": {
+            "label": "Calculation",
+            "value": "scf",
+            "unit": "",
+            "source": "plan.json"
+          },
+          "stage_2.accepted": {
+            "label": "scf: accepted result",
+            "value": true,
+            "unit": "",
+            "source": "02_scf/outputs/result.json"
+          },
+          "stage_2.status": {
+            "label": "scf: current status",
+            "value": "succeeded",
+            "unit": "",
+            "source": "run.json"
+          },
+          "stage_2.spin": {
+            "label": "scf: spin",
+            "value": "noncollinear",
+            "unit": "",
+            "source": "02_scf/outputs/result.json#/method"
+          },
+          "stage_2.soc": {
+            "label": "scf: soc",
+            "value": true,
+            "unit": "",
+            "source": "02_scf/outputs/result.json#/method"
+          },
+          "stage_2.functional": {
+            "label": "scf: functional",
+            "value": "PBE",
+            "unit": "",
+            "source": "02_scf/outputs/result.json#/method"
+          },
+          "stage_2.saxis": {
+            "label": "scf: saxis",
+            "value": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "unit": "",
+            "source": "02_scf/outputs/result.json#/method"
+          },
+          "stage_2.electronic_converged": {
+            "label": "scf: electronic convergence in used settings",
+            "value": true,
+            "unit": "",
+            "source": "02_scf/outputs/result.json"
+          },
+          "stage_2.energy": {
+            "label": "scf: Total energy",
+            "value": -8.29154598,
+            "unit": "eV",
+            "source": "02_scf/outputs/result.json#/final_energy_ev"
+          },
+          "stage_2.energy_per_atom": {
+            "label": "scf: Energy per atom",
+            "value": -4.14577299,
+            "unit": "eV/atom",
+            "source": "02_scf/outputs/result.json#/final_energy_ev_per_atom"
+          },
+          "stage_2.force": {
+            "label": "scf: Maximum atomic force",
+            "value": 1.8242258632088298e-06,
+            "unit": "eV/Å",
+            "source": "02_scf/outputs/result.json#/final_max_force_ev_angstrom"
+          },
+          "stage_2.fermi_energy": {
+            "label": "scf: Fermi energy reference",
+            "value": 6.37694996,
+            "unit": "eV",
+            "source": "02_scf/outputs/result.json#/fermi_energy_ev"
+          },
+          "stage_2.structure_formula": {
+            "label": "scf: Final composition",
+            "value": "Si",
+            "unit": "",
+            "source": "02_scf/outputs/final_structure.cif"
+          },
+          "stage_2.structure_atoms": {
+            "label": "scf: Final atom count",
+            "value": 2,
+            "unit": "atoms",
+            "source": "02_scf/outputs/final_structure.cif"
+          },
+          "stage_2.structure_volume": {
+            "label": "scf: Final cell volume",
+            "value": 40.04786948934128,
+            "unit": "Å³",
+            "source": "02_scf/outputs/final_structure.cif"
+          },
+          "stage_2.total_moment": {
+            "label": "scf: cell magnetic moment",
+            "value": [
+              -1e-07,
+              -0.0,
+              0.0
+            ],
+            "unit": "mu_B",
+            "source": "02_scf/outputs/result.json#/magnetization"
+          },
+          "stage_2.site_moments": {
+            "label": "scf: projected site moments in POSCAR order",
+            "value": [
+              [
+                0.0,
+                -0.0,
+                -0.0
+              ],
+              [
+                0.0,
+                0.0,
+                -0.0
+              ]
+            ],
+            "unit": "mu_B",
+            "source": "02_scf/outputs/result.json#/magnetization"
+          },
+          "stage_2.final_structure.cif": {
+            "label": "scf: final_structure.cif availability",
+            "value": "verified",
+            "unit": "",
+            "source": "02_scf/outputs/final_structure.cif"
+          },
+          "stage_3.task": {
+            "label": "Calculation",
+            "value": "bands",
+            "unit": "",
+            "source": "plan.json"
+          },
+          "stage_3.accepted": {
+            "label": "bands: accepted result",
+            "value": true,
+            "unit": "",
+            "source": "03_bands/outputs/result.json"
+          },
+          "stage_3.status": {
+            "label": "bands: current status",
+            "value": "succeeded",
+            "unit": "",
+            "source": "run.json"
+          },
+          "stage_3.spin": {
+            "label": "bands: spin",
+            "value": "noncollinear",
+            "unit": "",
+            "source": "03_bands/outputs/result.json#/method"
+          },
+          "stage_3.soc": {
+            "label": "bands: soc",
+            "value": true,
+            "unit": "",
+            "source": "03_bands/outputs/result.json#/method"
+          },
+          "stage_3.functional": {
+            "label": "bands: functional",
+            "value": "PBE",
+            "unit": "",
+            "source": "03_bands/outputs/result.json#/method"
+          },
+          "stage_3.saxis": {
+            "label": "bands: saxis",
+            "value": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "unit": "",
+            "source": "03_bands/outputs/result.json#/method"
+          },
+          "stage_3.electronic_converged": {
+            "label": "bands: electronic convergence in used settings",
+            "value": true,
+            "unit": "",
+            "source": "03_bands/outputs/result.json"
+          },
+          "stage_3.fermi_energy": {
+            "label": "bands: Fermi energy reference",
+            "value": 6.37694996,
+            "unit": "eV",
+            "source": "03_bands/outputs/result.json#/energy_reference_ev"
+          },
+          "stage_3.structure_formula": {
+            "label": "bands: Final composition",
+            "value": "Si",
+            "unit": "",
+            "source": "03_bands/outputs/final_structure.cif"
+          },
+          "stage_3.structure_atoms": {
+            "label": "bands: Final atom count",
+            "value": 2,
+            "unit": "atoms",
+            "source": "03_bands/outputs/final_structure.cif"
+          },
+          "stage_3.structure_volume": {
+            "label": "bands: Final cell volume",
+            "value": 40.04786948934128,
+            "unit": "Å³",
+            "source": "03_bands/outputs/final_structure.cif"
+          },
+          "stage_3.total_moment": {
+            "label": "bands: cell magnetic moment",
+            "value": [
+              0.0,
+              -0.0,
+              -0.0
+            ],
+            "unit": "mu_B",
+            "source": "03_bands/outputs/result.json#/magnetization"
+          },
+          "stage_3.site_moments": {
+            "label": "bands: projected site moments in POSCAR order",
+            "value": [
+              [
+                -0.0,
+                -0.0,
+                -0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "unit": "mu_B",
+            "source": "03_bands/outputs/result.json#/magnetization"
+          },
+          "stage_3.final_structure.cif": {
+            "label": "bands: final_structure.cif availability",
+            "value": "verified",
+            "unit": "",
+            "source": "03_bands/outputs/final_structure.cif"
+          },
+          "stage_3.bands.png": {
+            "label": "bands: bands.png availability",
+            "value": "present_unverified",
+            "unit": "",
+            "source": "03_bands/outputs/bands.png"
+          },
+          "stage_3.bands.csv": {
+            "label": "bands: bands.csv availability",
+            "value": "present_unverified",
+            "unit": "",
+            "source": "03_bands/outputs/bands.csv"
+          },
+          "run.status": {
+            "label": "Current result status",
+            "value": "succeeded",
+            "unit": "",
+            "source": "run.json"
+          },
+          "run.accepted_stages": {
+            "label": "Stages with accepted results",
+            "value": 3,
+            "unit": "stages",
+            "source": "run.json"
+          }
+        },
+        "artifacts": [
+          {
+            "id": "stage_1.final_structure.cif",
+            "label": "relax: final_structure.cif",
+            "path": "01_relax/outputs/final_structure.cif",
+            "sha256": "b5472fc47267efb8daf52e94ad4bb60ab7d07483874ff8f4a4a516884d319a45",
+            "status": "verified"
+          },
+          {
+            "id": "stage_1.relax_energy.png",
+            "label": "relax: relax_energy.png",
+            "path": "01_relax/outputs/relax_energy.png",
+            "sha256": "2f187b41ff2798c0faf3e220e7515fe9751025594c9ab4447940695190e71f1b",
+            "status": "present_unverified"
+          },
+          {
+            "id": "stage_2.final_structure.cif",
+            "label": "scf: final_structure.cif",
+            "path": "02_scf/outputs/final_structure.cif",
+            "sha256": "b5472fc47267efb8daf52e94ad4bb60ab7d07483874ff8f4a4a516884d319a45",
+            "status": "verified"
+          },
+          {
+            "id": "stage_3.final_structure.cif",
+            "label": "bands: final_structure.cif",
+            "path": "03_bands/outputs/final_structure.cif",
+            "sha256": "b5472fc47267efb8daf52e94ad4bb60ab7d07483874ff8f4a4a516884d319a45",
+            "status": "verified"
+          },
+          {
+            "id": "stage_3.bands.png",
+            "label": "bands: bands.png",
+            "path": "03_bands/outputs/bands.png",
+            "sha256": "611405e56e8070dafa52a9f94d7a3a7638cab14ef05057a48d3f5a9e9d6a8d5b",
+            "status": "present_unverified"
+          },
+          {
+            "id": "stage_3.bands.csv",
+            "label": "bands: bands.csv",
+            "path": "03_bands/outputs/bands.csv",
+            "sha256": "bf79c1901d69092a9d744fdcee90c7a5a05ccdc79d17ec5cef83509eae7abb40",
+            "status": "present_unverified"
+          }
+        ],
+        "limits": [
+          "A band gap has not been quantified from these results.",
+          "These calculations do not establish a global magnetic ground state.",
+          "Passing the result checks does not establish convergence with respect to cutoff, k-point mesh or other numerical settings."
+        ],
+        "context_sha256": "59b0cf5a6347dc3e451ff56cfa8976079f6fea7430234c1314b0461f15edc116"
+      },
+      "response": {
+        "answer": "Yes—the relaxation, SCF and SOC band calculations have accepted results, and the relaxation passed its force criterion. Verified final structures are available for all stages; the relaxation energy plot, band plot and band CSV are listed as present but unverified.",
+        "evidence": [
+          "stage_1.accepted",
+          "stage_1.ionic_converged",
+          "stage_2.accepted",
+          "stage_3.accepted",
+          "stage_3.soc",
+          "stage_1.final_structure.cif",
+          "stage_2.final_structure.cif",
+          "stage_3.final_structure.cif",
+          "stage_1.relax_energy.png",
+          "stage_3.bands.png",
+          "stage_3.bands.csv"
+        ],
+        "limits": [
+          "The plots and band CSV have not been verified."
+        ],
+        "next_steps": [],
+        "context_sha256": "59b0cf5a6347dc3e451ff56cfa8976079f6fea7430234c1314b0461f15edc116",
+        "provenance": {
+          "provider": "codex",
+          "model": "gpt-6-astra"
+        }
+      },
+      "saved_files_unchanged": true,
+      "jobs_submitted": 0
+    },
+    {
+      "case": "fe-seeds",
+      "checked_at": "2026-10-07T16:09:48.460897+00:00",
+      "question": "Which magnetic seed has the lowest energy? Does this prove the ground state?",
+      "context": {
+        "goal": "",
+        "dialogue": [],
+        "status": "succeeded",
+        "outcome": "3 of 3 stages have accepted results.",
+        "final_plan": {
+          "tasks": [
+            "scf"
+          ],
+          "parameters": {
+            "ediff": 1e-05,
+            "nelm": 160,
+            "sigma": 0.1,
+            "encut": 400,
+            "mesh": [
+              4,
+              4,
+              4
+            ]
+          }
+        },
+        "facts": {
+          "stage_1.task": {
+            "label": "Calculation",
+            "value": "scf",
+            "unit": "",
+            "source": "plan.json"
+          },
+          "stage_1.accepted": {
+            "label": "NM: accepted result",
+            "value": true,
+            "unit": "",
+            "source": "01_scf_nm/outputs/result.json"
+          },
+          "stage_1.status": {
+            "label": "NM: current status",
+            "value": "succeeded",
+            "unit": "",
+            "source": "run.json"
+          },
+          "stage_1.spin": {
+            "label": "NM: spin",
+            "value": "none",
+            "unit": "",
+            "source": "01_scf_nm/outputs/result.json#/method"
+          },
+          "stage_1.soc": {
+            "label": "NM: soc",
+            "value": false,
+            "unit": "",
+            "source": "01_scf_nm/outputs/result.json#/method"
+          },
+          "stage_1.functional": {
+            "label": "NM: functional",
+            "value": "PBE",
+            "unit": "",
+            "source": "01_scf_nm/outputs/result.json#/method"
+          },
+          "stage_1.saxis": {
+            "label": "NM: saxis",
+            "value": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "unit": "",
+            "source": "01_scf_nm/outputs/result.json#/method"
+          },
+          "stage_1.electronic_converged": {
+            "label": "NM: electronic convergence in used settings",
+            "value": true,
+            "unit": "",
+            "source": "01_scf_nm/outputs/result.json"
+          },
+          "stage_1.energy": {
+            "label": "NM: Total energy",
+            "value": -15.31903581,
+            "unit": "eV",
+            "source": "01_scf_nm/outputs/result.json#/final_energy_ev"
+          },
+          "stage_1.energy_per_atom": {
+            "label": "NM: Energy per atom",
+            "value": -7.659517905,
+            "unit": "eV/atom",
+            "source": "01_scf_nm/outputs/result.json#/final_energy_ev_per_atom"
+          },
+          "stage_1.force": {
+            "label": "NM: Maximum atomic force",
+            "value": 0.0,
+            "unit": "eV/Å",
+            "source": "01_scf_nm/outputs/result.json#/final_max_force_ev_angstrom"
+          },
+          "stage_1.fermi_energy": {
+            "label": "NM: Fermi energy reference",
+            "value": 5.51502459,
+            "unit": "eV",
+            "source": "01_scf_nm/outputs/result.json#/fermi_energy_ev"
+          },
+          "stage_1.structure_formula": {
+            "label": "NM: Final composition",
+            "value": "Fe",
+            "unit": "",
+            "source": "01_scf_nm/outputs/final_structure.cif"
+          },
+          "stage_1.structure_atoms": {
+            "label": "NM: Final atom count",
+            "value": 2,
+            "unit": "atoms",
+            "source": "01_scf_nm/outputs/final_structure.cif"
+          },
+          "stage_1.structure_volume": {
+            "label": "NM: Final cell volume",
+            "value": 23.63990303642039,
+            "unit": "Å³",
+            "source": "01_scf_nm/outputs/final_structure.cif"
+          },
+          "stage_1.final_structure.cif": {
+            "label": "NM: final_structure.cif availability",
+            "value": "verified",
+            "unit": "",
+            "source": "01_scf_nm/outputs/final_structure.cif"
+          },
+          "stage_2.task": {
+            "label": "Calculation",
+            "value": "scf",
+            "unit": "",
+            "source": "plan.json"
+          },
+          "stage_2.accepted": {
+            "label": "FM: accepted result",
+            "value": true,
+            "unit": "",
+            "source": "02_scf_fm/outputs/result.json"
+          },
+          "stage_2.status": {
+            "label": "FM: current status",
+            "value": "succeeded",
+            "unit": "",
+            "source": "run.json"
+          },
+          "stage_2.spin": {
+            "label": "FM: spin",
+            "value": "collinear",
+            "unit": "",
+            "source": "02_scf_fm/outputs/result.json#/method"
+          },
+          "stage_2.soc": {
+            "label": "FM: soc",
+            "value": false,
+            "unit": "",
+            "source": "02_scf_fm/outputs/result.json#/method"
+          },
+          "stage_2.functional": {
+            "label": "FM: functional",
+            "value": "PBE",
+            "unit": "",
+            "source": "02_scf_fm/outputs/result.json#/method"
+          },
+          "stage_2.saxis": {
+            "label": "FM: saxis",
+            "value": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "unit": "",
+            "source": "02_scf_fm/outputs/result.json#/method"
+          },
+          "stage_2.electronic_converged": {
+            "label": "FM: electronic convergence in used settings",
+            "value": true,
+            "unit": "",
+            "source": "02_scf_fm/outputs/result.json"
+          },
+          "stage_2.energy": {
+            "label": "FM: Total energy",
+            "value": -16.44730506,
+            "unit": "eV",
+            "source": "02_scf_fm/outputs/result.json#/final_energy_ev"
+          },
+          "stage_2.energy_per_atom": {
+            "label": "FM: Energy per atom",
+            "value": -8.22365253,
+            "unit": "eV/atom",
+            "source": "02_scf_fm/outputs/result.json#/final_energy_ev_per_atom"
+          },
+          "stage_2.force": {
+            "label": "FM: Maximum atomic force",
+            "value": 3.6949289573684634e-06,
+            "unit": "eV/Å",
+            "source": "02_scf_fm/outputs/result.json#/final_max_force_ev_angstrom"
+          },
+          "stage_2.fermi_energy": {
+            "label": "FM: Fermi energy reference",
+            "value": 5.5125948,
+            "unit": "eV",
+            "source": "02_scf_fm/outputs/result.json#/fermi_energy_ev"
+          },
+          "stage_2.structure_formula": {
+            "label": "FM: Final composition",
+            "value": "Fe",
+            "unit": "",
+            "source": "02_scf_fm/outputs/final_structure.cif"
+          },
+          "stage_2.structure_atoms": {
+            "label": "FM: Final atom count",
+            "value": 2,
+            "unit": "atoms",
+            "source": "02_scf_fm/outputs/final_structure.cif"
+          },
+          "stage_2.structure_volume": {
+            "label": "FM: Final cell volume",
+            "value": 23.63990303642039,
+            "unit": "Å³",
+            "source": "02_scf_fm/outputs/final_structure.cif"
+          },
+          "stage_2.total_moment": {
+            "label": "FM: cell magnetic moment",
+            "value": 4.0412158,
+            "unit": "mu_B",
+            "source": "02_scf_fm/outputs/result.json#/magnetization"
+          },
+          "stage_2.site_moments": {
+            "label": "FM: projected site moments in POSCAR order",
+            "value": [
+              2.027,
+              2.027
+            ],
+            "unit": "mu_B",
+            "source": "02_scf_fm/outputs/result.json#/magnetization"
+          },
+          "stage_2.final_structure.cif": {
+            "label": "FM: final_structure.cif availability",
+            "value": "verified",
+            "unit": "",
+            "source": "02_scf_fm/outputs/final_structure.cif"
+          },
+          "stage_3.task": {
+            "label": "Calculation",
+            "value": "scf",
+            "unit": "",
+            "source": "plan.json"
+          },
+          "stage_3.accepted": {
+            "label": "AFM: accepted result",
+            "value": true,
+            "unit": "",
+            "source": "03_scf_afm/outputs/result.json"
+          },
+          "stage_3.status": {
+            "label": "AFM: current status",
+            "value": "succeeded",
+            "unit": "",
+            "source": "run.json"
+          },
+          "stage_3.spin": {
+            "label": "AFM: spin",
+            "value": "collinear",
+            "unit": "",
+            "source": "03_scf_afm/outputs/result.json#/method"
+          },
+          "stage_3.soc": {
+            "label": "AFM: soc",
+            "value": false,
+            "unit": "",
+            "source": "03_scf_afm/outputs/result.json#/method"
+          },
+          "stage_3.functional": {
+            "label": "AFM: functional",
+            "value": "PBE",
+            "unit": "",
+            "source": "03_scf_afm/outputs/result.json#/method"
+          },
+          "stage_3.saxis": {
+            "label": "AFM: saxis",
+            "value": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "unit": "",
+            "source": "03_scf_afm/outputs/result.json#/method"
+          },
+          "stage_3.electronic_converged": {
+            "label": "AFM: electronic convergence in used settings",
+            "value": true,
+            "unit": "",
+            "source": "03_scf_afm/outputs/result.json"
+          },
+          "stage_3.energy": {
+            "label": "AFM: Total energy",
+            "value": -16.0324255,
+            "unit": "eV",
+            "source": "03_scf_afm/outputs/result.json#/final_energy_ev"
+          },
+          "stage_3.energy_per_atom": {
+            "label": "AFM: Energy per atom",
+            "value": -8.01621275,
+            "unit": "eV/atom",
+            "source": "03_scf_afm/outputs/result.json#/final_energy_ev_per_atom"
+          },
+          "stage_3.force": {
+            "label": "AFM: Maximum atomic force",
+            "value": 3.1937125731662203e-06,
+            "unit": "eV/Å",
+            "source": "03_scf_afm/outputs/result.json#/final_max_force_ev_angstrom"
+          },
+          "stage_3.fermi_energy": {
+            "label": "AFM: Fermi energy reference",
+            "value": 5.69029796,
+            "unit": "eV",
+            "source": "03_scf_afm/outputs/result.json#/fermi_energy_ev"
+          },
+          "stage_3.structure_formula": {
+            "label": "AFM: Final composition",
+            "value": "Fe",
+            "unit": "",
+            "source": "03_scf_afm/outputs/final_structure.cif"
+          },
+          "stage_3.structure_atoms": {
+            "label": "AFM: Final atom count",
+            "value": 2,
+            "unit": "atoms",
+            "source": "03_scf_afm/outputs/final_structure.cif"
+          },
+          "stage_3.structure_volume": {
+            "label": "AFM: Final cell volume",
+            "value": 23.63990303642039,
+            "unit": "Å³",
+            "source": "03_scf_afm/outputs/final_structure.cif"
+          },
+          "stage_3.total_moment": {
+            "label": "AFM: cell magnetic moment",
+            "value": 0.0006201,
+            "unit": "mu_B",
+            "source": "03_scf_afm/outputs/result.json#/magnetization"
+          },
+          "stage_3.site_moments": {
+            "label": "AFM: projected site moments in POSCAR order",
+            "value": [
+              1.796,
+              -1.796
+            ],
+            "unit": "mu_B",
+            "source": "03_scf_afm/outputs/result.json#/magnetization"
+          },
+          "stage_3.final_structure.cif": {
+            "label": "AFM: final_structure.cif availability",
+            "value": "verified",
+            "unit": "",
+            "source": "03_scf_afm/outputs/final_structure.cif"
+          },
+          "comparison.lowest_tested_seed": {
+            "label": "Lowest-energy tested magnetic seed",
+            "value": "FM",
+            "unit": "",
+            "source": "run.json#/comparison"
+          },
+          "comparison.NM.relative_energy": {
+            "label": "NM: energy above lowest tested seed",
+            "value": 564.1346250000004,
+            "unit": "meV/atom",
+            "source": "run.json#/comparison"
+          },
+          "comparison.FM.relative_energy": {
+            "label": "FM: energy above lowest tested seed",
+            "value": 0.0,
+            "unit": "meV/atom",
+            "source": "run.json#/comparison"
+          },
+          "comparison.AFM.relative_energy": {
+            "label": "AFM: energy above lowest tested seed",
+            "value": 207.4397800000014,
+            "unit": "meV/atom",
+            "source": "run.json#/comparison"
+          },
+          "run.status": {
+            "label": "Current result status",
+            "value": "succeeded",
+            "unit": "",
+            "source": "run.json"
+          },
+          "run.accepted_stages": {
+            "label": "Stages with accepted results",
+            "value": 3,
+            "unit": "stages",
+            "source": "run.json"
+          }
+        },
+        "artifacts": [
+          {
+            "id": "stage_1.final_structure.cif",
+            "label": "NM: final_structure.cif",
+            "path": "01_scf_nm/outputs/final_structure.cif",
+            "sha256": "628b5d70f7103a823ccea4a0e00e9c6d071d1657d8a0ba49ae230937feae71c8",
+            "status": "verified"
+          },
+          {
+            "id": "stage_2.final_structure.cif",
+            "label": "FM: final_structure.cif",
+            "path": "02_scf_fm/outputs/final_structure.cif",
+            "sha256": "628b5d70f7103a823ccea4a0e00e9c6d071d1657d8a0ba49ae230937feae71c8",
+            "status": "verified"
+          },
+          {
+            "id": "stage_3.final_structure.cif",
+            "label": "AFM: final_structure.cif",
+            "path": "03_scf_afm/outputs/final_structure.cif",
+            "sha256": "628b5d70f7103a823ccea4a0e00e9c6d071d1657d8a0ba49ae230937feae71c8",
+            "status": "verified"
+          }
+        ],
+        "limits": [
+          "A band gap has not been quantified from these results.",
+          "These calculations do not establish a global magnetic ground state.",
+          "Passing the result checks does not establish convergence with respect to cutoff, k-point mesh or other numerical settings.",
+          "The original user goal is unavailable or is not linked to this frozen plan."
+        ],
+        "context_sha256": "3b247ad98799f85d07161d52f29aa717c5702ff3cc54aecf559bb9408c6a906d"
+      },
+      "response": {
+        "answer": "FM is the lowest-energy tested magnetic seed; AFM and NM are higher by 207.44 and 564.13 meV/atom, respectively. This does not prove a global magnetic ground state.",
+        "evidence": [
+          "stage_1.accepted",
+          "stage_2.accepted",
+          "stage_3.accepted",
+          "comparison.lowest_tested_seed",
+          "comparison.AFM.relative_energy",
+          "comparison.NM.relative_energy"
+        ],
+        "limits": [
+          "The comparison establishes only the lowest-energy seed among those tested."
+        ],
+        "next_steps": [],
+        "context_sha256": "3b247ad98799f85d07161d52f29aa717c5702ff3cc54aecf559bb9408c6a906d",
+        "provenance": {
+          "provider": "codex",
+          "model": "gpt-6-astra"
+        }
+      },
+      "saved_files_unchanged": true,
+      "jobs_submitted": 0
+    },
+    {
+      "case": "nio-u",
+      "checked_at": "2026-10-07T16:09:51.690431+00:00",
+      "question": "Explain the DFT+U result and its magnetic moments.",
+      "context": {
+        "goal": "",
+        "dialogue": [],
+        "status": "succeeded",
+        "outcome": "1 of 1 stages have accepted results.",
+        "final_plan": {
+          "tasks": [
+            "scf"
+          ],
+          "parameters": {
+            "ediff": 1e-05,
+            "spin": "collinear",
+            "nelm": 160,
+            "hubbard_u": {
+              "Ni": {
+                "l": 2,
+                "u": 5.0,
+                "j": 0.0
+              }
+            },
+            "magmom": [
+              2,
+              0,
+              -2,
+              0
+            ],
+            "sigma": 0.1,
+            "encut": 400,
+            "mesh": [
+              4,
+              4,
+              4
+            ]
+          }
+        },
+        "facts": {
+          "stage_1.task": {
+            "label": "Calculation",
+            "value": "scf",
+            "unit": "",
+            "source": "plan.json"
+          },
+          "stage_1.accepted": {
+            "label": "scf: accepted result",
+            "value": true,
+            "unit": "",
+            "source": "01_scf/outputs/result.json"
+          },
+          "stage_1.status": {
+            "label": "scf: current status",
+            "value": "succeeded",
+            "unit": "",
+            "source": "run.json"
+          },
+          "stage_1.spin": {
+            "label": "scf: spin",
+            "value": "collinear",
+            "unit": "",
+            "source": "01_scf/outputs/result.json#/method"
+          },
+          "stage_1.soc": {
+            "label": "scf: soc",
+            "value": false,
+            "unit": "",
+            "source": "01_scf/outputs/result.json#/method"
+          },
+          "stage_1.hubbard_Ni_l": {
+            "label": "scf: Ni Hubbard l",
+            "value": 2,
+            "unit": "",
+            "source": "01_scf/outputs/result.json#/method"
+          },
+          "stage_1.hubbard_Ni_u": {
+            "label": "scf: Ni Hubbard u",
+            "value": 5.0,
+            "unit": "eV",
+            "source": "01_scf/outputs/result.json#/method"
+          },
+          "stage_1.hubbard_Ni_j": {
+            "label": "scf: Ni Hubbard j",
+            "value": 0.0,
+            "unit": "eV",
+            "source": "01_scf/outputs/result.json#/method"
+          },
+          "stage_1.functional": {
+            "label": "scf: functional",
+            "value": "PBE",
+            "unit": "",
+            "source": "01_scf/outputs/result.json#/method"
+          },
+          "stage_1.saxis": {
+            "label": "scf: saxis",
+            "value": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "unit": "",
+            "source": "01_scf/outputs/result.json#/method"
+          },
+          "stage_1.electronic_converged": {
+            "label": "scf: electronic convergence in used settings",
+            "value": true,
+            "unit": "",
+            "source": "01_scf/outputs/result.json"
+          },
+          "stage_1.energy": {
+            "label": "scf: Total energy",
+            "value": -20.88305961,
+            "unit": "eV",
+            "source": "01_scf/outputs/result.json#/final_energy_ev"
+          },
+          "stage_1.energy_per_atom": {
+            "label": "scf: Energy per atom",
+            "value": -5.2207649025,
+            "unit": "eV/atom",
+            "source": "01_scf/outputs/result.json#/final_energy_ev_per_atom"
+          },
+          "stage_1.force": {
+            "label": "scf: Maximum atomic force",
+            "value": 6.3637253240535135e-06,
+            "unit": "eV/Å",
+            "source": "01_scf/outputs/result.json#/final_max_force_ev_angstrom"
+          },
+          "stage_1.fermi_energy": {
+            "label": "scf: Fermi energy reference",
+            "value": 6.9958399,
+            "unit": "eV",
+            "source": "01_scf/outputs/result.json#/fermi_energy_ev"
+          },
+          "stage_1.structure_formula": {
+            "label": "scf: Final composition",
+            "value": "NiO",
+            "unit": "",
+            "source": "01_scf/outputs/final_structure.cif"
+          },
+          "stage_1.structure_atoms": {
+            "label": "scf: Final atom count",
+            "value": 4,
+            "unit": "atoms",
+            "source": "01_scf/outputs/final_structure.cif"
+          },
+          "stage_1.structure_volume": {
+            "label": "scf: Final cell volume",
+            "value": 36.255856590451536,
+            "unit": "Å³",
+            "source": "01_scf/outputs/final_structure.cif"
+          },
+          "stage_1.total_moment": {
+            "label": "scf: cell magnetic moment",
+            "value": -0.0,
+            "unit": "mu_B",
+            "source": "01_scf/outputs/result.json#/magnetization"
+          },
+          "stage_1.site_moments": {
+            "label": "scf: projected site moments in POSCAR order",
+            "value": [
+              1.69,
+              -1.69,
+              0.0,
+              0.0
+            ],
+            "unit": "mu_B",
+            "source": "01_scf/outputs/result.json#/magnetization"
+          },
+          "stage_1.final_structure.cif": {
+            "label": "scf: final_structure.cif availability",
+            "value": "verified",
+            "unit": "",
+            "source": "01_scf/outputs/final_structure.cif"
+          },
+          "run.status": {
+            "label": "Current result status",
+            "value": "succeeded",
+            "unit": "",
+            "source": "run.json"
+          },
+          "run.accepted_stages": {
+            "label": "Stages with accepted results",
+            "value": 1,
+            "unit": "stages",
+            "source": "run.json"
+          }
+        },
+        "artifacts": [
+          {
+            "id": "stage_1.final_structure.cif",
+            "label": "scf: final_structure.cif",
+            "path": "01_scf/outputs/final_structure.cif",
+            "sha256": "8c915f162752617b67f7eb6d6efaf69b7b1f8fc0a7e508c65dc85a3d55fc273e",
+            "status": "verified"
+          }
+        ],
+        "limits": [
+          "A band gap has not been quantified from these results.",
+          "These calculations do not establish a global magnetic ground state.",
+          "Passing the result checks does not establish convergence with respect to cutoff, k-point mesh or other numerical settings.",
+          "The original user goal is unavailable or is not linked to this frozen plan."
+        ],
+        "context_sha256": "81e5a1550b90c839b6be9d2b5f3dbcf7cd2e0b9943f01e2b908209713e3e936b"
+      },
+      "response": {
+        "answer": "The accepted NiO PBE+U calculation used collinear spin with Ni U = 5 eV and J = 0 eV, converging electronically to a total energy of −20.88306 eV. Projected site moments of +1.69, −1.69, 0 and 0 μB and a zero net cell moment indicate compensated antiferromagnetic order.",
+        "evidence": [
+          "stage_1.accepted",
+          "stage_1.structure_formula",
+          "stage_1.functional",
+          "stage_1.spin",
+          "stage_1.hubbard_Ni_u",
+          "stage_1.hubbard_Ni_j",
+          "stage_1.electronic_converged",
+          "stage_1.energy",
+          "stage_1.site_moments",
+          "stage_1.total_moment"
+        ],
+        "limits": [
+          "This result does not establish the global magnetic ground state.",
+          "Electronic convergence in the used settings does not establish convergence with respect to numerical settings."
+        ],
+        "next_steps": [],
+        "context_sha256": "81e5a1550b90c839b6be9d2b5f3dbcf7cd2e0b9943f01e2b908209713e3e936b",
+        "provenance": {
+          "provider": "codex",
+          "model": "gpt-6-astra"
+        }
+      },
+      "saved_files_unchanged": true,
+      "jobs_submitted": 0
+    },
+    {
+      "case": "si-hse",
+      "checked_at": "2026-10-07T16:09:57.880318+00:00",
+      "question": "Did every stage succeed? Can I use these hybrid bands?",
+      "context": {
+        "goal": "",
+        "dialogue": [],
+        "status": "needs_attention",
+        "outcome": "2 of 3 stages have accepted results.",
+        "final_plan": {
+          "tasks": [
+            "scf",
+            "bands",
+            "dos"
+          ],
+          "parameters": {
+            "ediff": 1e-05,
+            "nelm": 160,
+            "functional": "HSE06",
+            "sigma": 0.1,
+            "encut": 400,
+            "line_density": 1,
+            "mesh": [
+              2,
+              2,
+              2
+            ],
+            "nedos": 301
+          }
+        },
+        "facts": {
+          "stage_1.task": {
+            "label": "Calculation",
+            "value": "scf",
+            "unit": "",
+            "source": "plan.json"
+          },
+          "stage_1.accepted": {
+            "label": "scf: accepted result",
+            "value": true,
+            "unit": "",
+            "source": "01_scf/outputs/result.json"
+          },
+          "stage_1.status": {
+            "label": "scf: current status",
+            "value": "succeeded",
+            "unit": "",
+            "source": "run.json"
+          },
+          "stage_1.spin": {
+            "label": "scf: spin",
+            "value": "none",
+            "unit": "",
+            "source": "01_scf/outputs/result.json#/method"
+          },
+          "stage_1.soc": {
+            "label": "scf: soc",
+            "value": false,
+            "unit": "",
+            "source": "01_scf/outputs/result.json#/method"
+          },
+          "stage_1.functional": {
+            "label": "scf: functional",
+            "value": "HSE06",
+            "unit": "",
+            "source": "01_scf/outputs/result.json#/method"
+          },
+          "stage_1.saxis": {
+            "label": "scf: saxis",
+            "value": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "unit": "",
+            "source": "01_scf/outputs/result.json#/method"
+          },
+          "stage_1.electronic_converged": {
+            "label": "scf: electronic convergence in used settings",
+            "value": true,
+            "unit": "",
+            "source": "01_scf/outputs/result.json"
+          },
+          "stage_1.energy": {
+            "label": "scf: Total energy",
+            "value": -13.29166302,
+            "unit": "eV",
+            "source": "01_scf/outputs/result.json#/final_energy_ev"
+          },
+          "stage_1.energy_per_atom": {
+            "label": "scf: Energy per atom",
+            "value": -6.64583151,
+            "unit": "eV/atom",
+            "source": "01_scf/outputs/result.json#/final_energy_ev_per_atom"
+          },
+          "stage_1.force": {
+            "label": "scf: Maximum atomic force",
+            "value": 0.0,
+            "unit": "eV/Å",
+            "source": "01_scf/outputs/result.json#/final_max_force_ev_angstrom"
+          },
+          "stage_1.fermi_energy": {
+            "label": "scf: Fermi energy reference",
+            "value": 5.17526621,
+            "unit": "eV",
+            "source": "01_scf/outputs/result.json#/fermi_energy_ev"
+          },
+          "stage_1.structure_formula": {
+            "label": "scf: Final composition",
+            "value": "Si",
+            "unit": "",
+            "source": "01_scf/outputs/final_structure.cif"
+          },
+          "stage_1.structure_atoms": {
+            "label": "scf: Final atom count",
+            "value": 2,
+            "unit": "atoms",
+            "source": "01_scf/outputs/final_structure.cif"
+          },
+          "stage_1.structure_volume": {
+            "label": "scf: Final cell volume",
+            "value": 40.04786948934128,
+            "unit": "Å³",
+            "source": "01_scf/outputs/final_structure.cif"
+          },
+          "stage_1.final_structure.cif": {
+            "label": "scf: final_structure.cif availability",
+            "value": "verified",
+            "unit": "",
+            "source": "01_scf/outputs/final_structure.cif"
+          },
+          "stage_2.task": {
+            "label": "Calculation",
+            "value": "bands",
+            "unit": "",
+            "source": "plan.json"
+          },
+          "stage_2.accepted": {
+            "label": "bands: accepted result",
+            "value": false,
+            "unit": "",
+            "source": "02_bands/outputs/result.json"
+          },
+          "stage_2.status": {
+            "label": "bands: current status",
+            "value": "needs_attention",
+            "unit": "",
+            "source": "run.json"
+          },
+          "stage_2.availability": {
+            "label": "bands: availability",
+            "value": "The current output checks rejected inconsistent hybrid-band orbitals at equivalent k-points.",
+            "unit": "",
+            "source": "02_bands/outputs/result.json"
+          },
+          "stage_2.final_structure.cif": {
+            "label": "bands: final_structure.cif availability",
+            "value": "unavailable",
+            "unit": "",
+            "source": "02_bands/outputs/final_structure.cif"
+          },
+          "stage_2.bands.png": {
+            "label": "bands: bands.png availability",
+            "value": "present_unverified",
+            "unit": "",
+            "source": "02_bands/outputs/bands.png"
+          },
+          "stage_2.bands.csv": {
+            "label": "bands: bands.csv availability",
+            "value": "present_unverified",
+            "unit": "",
+            "source": "02_bands/outputs/bands.csv"
+          },
+          "stage_3.task": {
+            "label": "Calculation",
+            "value": "dos",
+            "unit": "",
+            "source": "plan.json"
+          },
+          "stage_3.accepted": {
+            "label": "dos: accepted result",
+            "value": true,
+            "unit": "",
+            "source": "03_dos/outputs/result.json"
+          },
+          "stage_3.status": {
+            "label": "dos: current status",
+            "value": "succeeded",
+            "unit": "",
+            "source": "run.json"
+          },
+          "stage_3.spin": {
+            "label": "dos: spin",
+            "value": "none",
+            "unit": "",
+            "source": "03_dos/outputs/result.json#/method"
+          },
+          "stage_3.soc": {
+            "label": "dos: soc",
+            "value": false,
+            "unit": "",
+            "source": "03_dos/outputs/result.json#/method"
+          },
+          "stage_3.functional": {
+            "label": "dos: functional",
+            "value": "HSE06",
+            "unit": "",
+            "source": "03_dos/outputs/result.json#/method"
+          },
+          "stage_3.saxis": {
+            "label": "dos: saxis",
+            "value": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "unit": "",
+            "source": "03_dos/outputs/result.json#/method"
+          },
+          "stage_3.electronic_converged": {
+            "label": "dos: electronic convergence in used settings",
+            "value": true,
+            "unit": "",
+            "source": "03_dos/outputs/result.json"
+          },
+          "stage_3.fermi_energy": {
+            "label": "dos: Fermi energy reference",
+            "value": 5.17526621,
+            "unit": "eV",
+            "source": "03_dos/outputs/result.json#/fermi_energy_ev"
+          },
+          "stage_3.structure_formula": {
+            "label": "dos: Final composition",
+            "value": "Si",
+            "unit": "",
+            "source": "03_dos/outputs/final_structure.cif"
+          },
+          "stage_3.structure_atoms": {
+            "label": "dos: Final atom count",
+            "value": 2,
+            "unit": "atoms",
+            "source": "03_dos/outputs/final_structure.cif"
+          },
+          "stage_3.structure_volume": {
+            "label": "dos: Final cell volume",
+            "value": 40.04786948934128,
+            "unit": "Å³",
+            "source": "03_dos/outputs/final_structure.cif"
+          },
+          "stage_3.final_structure.cif": {
+            "label": "dos: final_structure.cif availability",
+            "value": "verified",
+            "unit": "",
+            "source": "03_dos/outputs/final_structure.cif"
+          },
+          "stage_3.dos.png": {
+            "label": "dos: dos.png availability",
+            "value": "present_unverified",
+            "unit": "",
+            "source": "03_dos/outputs/dos.png"
+          },
+          "stage_3.dos.csv": {
+            "label": "dos: dos.csv availability",
+            "value": "present_unverified",
+            "unit": "",
+            "source": "03_dos/outputs/dos.csv"
+          },
+          "run.status": {
+            "label": "Current result status",
+            "value": "needs_attention",
+            "unit": "",
+            "source": "run.json"
+          },
+          "run.accepted_stages": {
+            "label": "Stages with accepted results",
+            "value": 2,
+            "unit": "stages",
+            "source": "run.json"
+          }
+        },
+        "artifacts": [
+          {
+            "id": "stage_1.final_structure.cif",
+            "label": "scf: final_structure.cif",
+            "path": "01_scf/outputs/final_structure.cif",
+            "sha256": "b5472fc47267efb8daf52e94ad4bb60ab7d07483874ff8f4a4a516884d319a45",
+            "status": "verified"
+          },
+          {
+            "id": "stage_2.final_structure.cif",
+            "label": "bands: final_structure.cif",
+            "path": "02_bands/outputs/final_structure.cif",
+            "sha256": "b5472fc47267efb8daf52e94ad4bb60ab7d07483874ff8f4a4a516884d319a45",
+            "status": "unavailable"
+          },
+          {
+            "id": "stage_2.bands.png",
+            "label": "bands: bands.png",
+            "path": "02_bands/outputs/bands.png",
+            "sha256": "8a139e2833bf228a8ae16694181bdb2866ea594e47fa8ad5db36e5fb7984ea45",
+            "status": "present_unverified"
+          },
+          {
+            "id": "stage_2.bands.csv",
+            "label": "bands: bands.csv",
+            "path": "02_bands/outputs/bands.csv",
+            "sha256": "328a2f36f79a05ec16b97beddc802fc4f81255c977f992373dd2e2672dbb2a9a",
+            "status": "present_unverified"
+          },
+          {
+            "id": "stage_3.final_structure.cif",
+            "label": "dos: final_structure.cif",
+            "path": "03_dos/outputs/final_structure.cif",
+            "sha256": "b5472fc47267efb8daf52e94ad4bb60ab7d07483874ff8f4a4a516884d319a45",
+            "status": "verified"
+          },
+          {
+            "id": "stage_3.dos.png",
+            "label": "dos: dos.png",
+            "path": "03_dos/outputs/dos.png",
+            "sha256": "d201662f3fe1ee77f7eb1ace0d4fd8f6b7a4d29c5bb087393bb53ce31efba914",
+            "status": "present_unverified"
+          },
+          {
+            "id": "stage_3.dos.csv",
+            "label": "dos: dos.csv",
+            "path": "03_dos/outputs/dos.csv",
+            "sha256": "dd0239a755ebe96a4b7fd3fbcfd8c2f8f5f1af4e90d07ad8e03cede600487c31",
+            "status": "present_unverified"
+          }
+        ],
+        "limits": [
+          "A band gap has not been quantified from these results.",
+          "These calculations do not establish a global magnetic ground state.",
+          "Passing the result checks does not establish convergence with respect to cutoff, k-point mesh or other numerical settings.",
+          "The original user goal is unavailable or is not linked to this frozen plan.",
+          "bands: The current output checks rejected inconsistent hybrid-band orbitals at equivalent k-points."
+        ],
+        "context_sha256": "a9ce36db357a5a2124357dbc624c267fb65186cb0f9d4d7759220eca4901e8d9"
+      },
+      "response": {
+        "answer": "No: SCF and DOS have accepted results, but the hybrid-band stage was rejected because its orbitals were inconsistent at equivalent k-points. These bands cannot be used as validated scientific results.",
+        "evidence": [
+          "stage_1.accepted",
+          "stage_3.accepted",
+          "stage_2.accepted",
+          "stage_2.availability"
+        ],
+        "limits": [
+          "The band gap is unavailable; none has been quantified.",
+          "bands: The current output checks rejected inconsistent hybrid-band orbitals at equivalent k-points."
+        ],
+        "next_steps": [],
+        "context_sha256": "a9ce36db357a5a2124357dbc624c267fb65186cb0f9d4d7759220eca4901e8d9",
+        "provenance": {
+          "provider": "codex",
+          "model": "gpt-6-astra"
+        }
+      },
+      "saved_files_unchanged": true,
+      "jobs_submitted": 0
+    }
+  ]
+}

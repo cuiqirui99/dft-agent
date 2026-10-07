@@ -1,0 +1,35 @@
+{
+  "checked_at": "2026-10-07T16:11:25.249259+00:00",
+  "passed": true,
+  "version": "0.2.1",
+  "imported_outside_checkout": true,
+  "wheel_sha256": "bddb57426d88b8345cb697dfc19d2782c0e661947ed8b1e3fe2e6da23b6423cf",
+  "jobs_submitted": 0,
+  "saved_files_unchanged": true,
+  "question": "Which file should I use for the relaxed structure?",
+  "history": [
+    {
+      "role": "user",
+      "content": "Did the relaxation and SOC calculations finish? What results can I download?"
+    },
+    {
+      "role": "assistant",
+      "content": "Yes\u2014the relaxation, SCF and SOC band calculations have accepted results, and the relaxation passed its force criterion. Verified final structures are available for all stages; the relaxation energy plot, band plot and band CSV are listed as present but unverified."
+    }
+  ],
+  "response": {
+    "answer": "Use the relaxation stage\u2019s final_structure.cif for the relaxed structure; this file is verified, and the relaxation passed its force criterion.",
+    "evidence": [
+      "stage_1.final_structure.cif",
+      "stage_1.accepted",
+      "stage_1.ionic_converged"
+    ],
+    "limits": [],
+    "next_steps": [],
+    "context_sha256": "59b0cf5a6347dc3e451ff56cfa8976079f6fea7430234c1314b0461f15edc116",
+    "provenance": {
+      "provider": "codex",
+      "model": "gpt-6-astra"
+    }
+  }
+}

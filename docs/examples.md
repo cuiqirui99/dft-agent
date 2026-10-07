@@ -77,12 +77,15 @@ dft-agent watch runs/mgo-dos
 
 ```bash
 dft-agent status runs/si-relax
+dft-agent explain runs/si-relax --provider codex
 dft-agent resume runs/si-relax
 dft-agent bundle runs/si-relax
 ```
 
 `status` reads saved progress. `resume` reconnects to the same run; inspect
 `needs_attention` errors first. Substitute the Al or MgO directory as needed.
+`explain` reads saved results without submitting a job. Use `--question` to ask
+about a specific result.
 
 | Run | Results |
 |---|---|

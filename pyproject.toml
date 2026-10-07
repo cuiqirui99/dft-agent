@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dft-agent"
-version = "0.2.0"
+version = "0.2.1"
 description = "Run VASP on Slurm."
 readme = "README.md"
 license = "MIT"
