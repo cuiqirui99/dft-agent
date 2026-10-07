@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "vasp-slurm-agent"
-version = "0.1.0"
-description = "A local single-user workbench for reviewed VASP calculations on Slurm"
+version = "0.1.1"
+description = "Prepare, run and follow VASP calculations on your Slurm cluster"
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE", "NOTICE.md"]

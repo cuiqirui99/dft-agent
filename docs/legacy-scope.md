@@ -1,22 +1,21 @@
 # Relationship to the earlier platform
 
-This release packages the basic VASP/Slurm workflow as a standalone application.
-It reuses the earlier project's deterministic workflow approach but does not
-import its multimodal platform, private datasets or historical experiment state.
+VASP Slurm Agent is a standalone application for the basic VASP/Slurm workflow.
+It follows the earlier project's approach to job tracking and result checks.
+It does not depend on that platform, its private datasets or old experiment state.
 
 The 2026-10-07 audit of the earlier workspace recorded **911 passed, 93 failed
-and 2 errors** out of 1,006 tests. These results have not been relabelled as a
-passing suite. The [classification receipt](../validation/legacy-scope.json)
-identifies the source report by SHA-256:
+and 2 errors** out of 1,006 tests. The
+[audit record](../validation/legacy-scope.json) preserves those results and the
+source report's SHA-256 hash:
 
 | Unresolved category | Count | Treatment in this release |
 | --- | ---: | --- |
-| Missing historical evidence or dataset files | 89 | Preserve the old tests and records; do not reconstruct datasets to ship the basic tool |
-| Frozen dependency hash contracts in advanced DFT campaigns | 5 | Keep the defect/surface and k-point research campaigns outside the basic recipes |
+| Missing historical evidence or dataset files | 89 | Keep the old tests and records in the earlier workspace; these datasets are not needed by this package |
+| Dependency hash checks in advanced DFT campaigns | 5 | Defect/surface and k-point research campaigns are outside the basic workflows |
 | Pinned XPS parser interpreter contract | 1 | XPS is outside the release scope |
 
-All affected legacy test files remain present. The new package's passing test
-count describes only this package. Its VASP calculations have new input/output
-receipts and real cluster acceptance; they do not inherit a scientific pass
-from an older report. The SSH transfer, job identity, result checking and
-installation behavior are verified against the new package directly.
+The affected test files remain in the earlier workspace. Test counts for this
+package cover its own tests, with separate checks of SSH transfers, job tracking,
+results and installation. Its v0.1.0 cluster calculations have their own input
+and output records, described in the [validation report](validation.md).

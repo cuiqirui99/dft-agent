@@ -364,7 +364,7 @@ class SSHTransport:
             self._require_success(copied, "Download")
             actual = _local_metadata(temporary)
             if actual != expected:
-                raise TransportError("Download size or SHA-256 mismatch; existing result was preserved.")
+                raise TransportError("Download verification failed (size or SHA-256 mismatch). Your existing result was kept.")
             os.replace(temporary, destination)
             return actual
         except (OSError, TransportError) as exc:
@@ -514,7 +514,7 @@ class SSHTransport:
                 archive_path = temporary_path / "outputs.tar.gz"
                 self._require_success(self._scp(self._remote_operand(remote_archive), str(archive_path)), "Batch download")
                 if _local_metadata(archive_path) != archive_metadata:
-                    raise TransportError("Batch download archive SHA-256 or size mismatch; existing files preserved")
+                    raise TransportError("Download verification failed (archive size or SHA-256 mismatch). Your existing files were kept.")
                 manifest = _extract_checked_archive(archive_path, temporary_path, expected)
                 for name in names:
                     os.replace(temporary_path / name, destination / name)

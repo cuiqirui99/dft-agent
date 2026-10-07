@@ -1,16 +1,16 @@
 # VASP Slurm Agent
 
-A local, single-user workbench for preparing, submitting and following VASP calculations on an existing Slurm cluster. It provides four tasks: structure relaxation, self-consistent calculations, band structure and density of states. No LLM account is required.
+A local app for running VASP calculations on a Slurm cluster. Prepare inputs, review them before submission, follow the job and download the results. Start with structure optimization, or use the SCF, band structure and density of states workflows. No LLM account is needed.
 
-**Version: `0.1.0`.** The basic scope is nonmagnetic PBE for ordered periodic structures, with practical starting parameters. The [validation report](docs/validation.md) records 32 accepted workflows, independent checks, failure recovery and a real calculation using the release wheel; it also reports numerical sensitivity and retained failed attempts. This is a standalone project and does not depend on the older `AI_AGNET` workspace. Code and documentation are available under the [MIT License](LICENSE); external solver terms are described in [NOTICE.md](NOTICE.md).
+**Version: `0.1.1`.** This update makes the interface and documentation fully English. It is intended for individual researchers who already have VASP and Slurm access. The nonmagnetic PBE workflows are unchanged; see the [v0.1.0 validation report](docs/validation.md) for the original cluster tests, recovery checks and numerical limits.
 
 ## Install and open
 
-Requires macOS or Linux, Python 3.11 or later, an SSH client, a Slurm account, and access to a licensed VASP installation and appropriate POTCAR files on the remote system. Native Windows is not supported.
+You need macOS or Linux, Python 3.11 or later, an SSH client, a Slurm account, and access to a licensed VASP installation and suitable POTCAR files on your cluster. Native Windows is not supported.
 
 The remote login and compute environments need Python 3.8 or later, Bash and `sha256sum`; Slurm must provide `sbatch`, `squeue`, `sacct` and `scancel`. Set any required module-loading commands in the cluster configuration.
 
-Clone the repository, enter its directory and create a local environment. Authenticate with GitHub first if your repository access requires it.
+Clone the repository and install it in a virtual environment:
 
 ```bash
 git clone https://github.com/cuiqirui99/vasp-slurm-agent.git
@@ -21,15 +21,15 @@ python -m pip install .
 vasp-agent ui
 ```
 
-The UI binds to `127.0.0.1`. Keep it local: it is designed for one trusted user and is not an authenticated multi-user web service. See the [Chinese quickstart](docs/quickstart.zh-CN.md) for the complete workflow.
+The app opens on `127.0.0.1` and is designed for one user on their own machine. Keep it local; it has no multi-user login. Follow the [quickstart](docs/quickstart.md) for setup and your first calculation.
 
 For command-line use, follow the [Si relaxation, Al SCF and MgO DOS examples](docs/examples.md).
 
-1. Configure the SSH host/user, remote run directory, POTCAR directory, VASP command and Slurm resources.
-2. Upload a CIF or POSCAR and inspect the composition, lattice and atomic positions.
-3. Select `relax`, `scf`, `bands` or `dos`; set numerical parameters and generate the local inputs.
-4. Review the stages, settings and account, then explicitly submit. Preparation alone does not submit a job.
-5. Follow persisted stage/job status. Restart monitoring after a local interruption, cancel a run, or download its result bundle.
+1. Open **Cluster setup** and enter your SSH, VASP and Slurm settings.
+2. Open **New calculation**, upload a CIF or POSCAR and inspect the structure.
+3. Choose a **Calculation** and click **Prepare inputs**. This only writes local files.
+4. Check **Review settings**, tick the confirmation box and click **Submit calculation**.
+5. Follow the job in **Runs**, then download the structure or result bundle.
 
 The repository and both distribution formats include small CIF examples. To extract silicon from an installed wheel without the source checkout:
 
@@ -41,33 +41,33 @@ Path("Si.cif").write_bytes(files("vasp_slurm_agent").joinpath("examples", "Si.ci
 PY
 ```
 
-Upload that file to try local input preparation. The example structures are starting inputs, not converged reference results. Accepted relaxation and SCF results show the final energy, maximum atomic force and final structure, with a separate CIF download as well as the full result ZIP. Bands and DOS show spectra, data and the available preceding SCF Fermi reference.
+Upload this file to try preparing a calculation. The examples are starting structures. Completed relaxation and SCF stages show the final energy, maximum atomic force and final structure. Bands and DOS show plots, data and the preceding SCF Fermi energy when available.
 
-Closing the browser does not deliberately cancel remote jobs. The background monitor requires the local machine to remain available; after a restart, reopen the run and resume monitoring. Three consecutive remote-operation failures pause monitoring as `needs_attention`. Inspect the error, then use **重新连接 / 回收** to reconnect to the same job or collect its outputs again. Reconnection does not change scientific parameters.
+Closing the browser leaves remote jobs running. Monitoring needs the local computer to stay on; after a restart, select the run and click **Resume monitoring**. Three consecutive connection or collection failures pause the run as `needs_attention`. Check the error, then click **Reconnect** to find the same job or collect its outputs again. This keeps the original calculation settings.
 
 ## Configuration and credentials
 
-The UI defaults to `~/.config/vasp-slurm-agent/cluster.json` and saves runs under `~/vasp-slurm-agent-runs`; both paths are editable. `VASP_AGENT_CONFIG` changes the UI's initial configuration path. Each prepared run retains its own configuration snapshot.
+The sidebar's **Configuration file** defaults to `~/.config/vasp-slurm-agent/cluster.json`, and **Run folder** defaults to `~/vasp-slurm-agent-runs`. You can change both paths. `VASP_AGENT_CONFIG` sets the initial configuration path. Each prepared run saves a copy of its settings.
 
-Use SSH keys or an SSH agent where possible. For password-only sites, enter the password in the UI sidebar; it stays in session memory and is passed to an explicitly started operation or worker. Clear it with the sidebar button when no longer needed. CLI users can use `vasp-agent watch <run_dir> --password` or `vasp-agent doctor --password` for a private prompt. The transport also accepts `DFT_AGENT_SSH_PASSWORD`; never put a password or private key in the configuration or a shared result bundle. Establish and verify the host's SSH identity before using the agent. Sites requiring interactive MFA may require a separately established session; general MFA integration is outside this version's scope.
+Use SSH keys or an SSH agent where possible, and verify the cluster's host key before connecting. For password login, use **SSH password (optional)** in the sidebar and **Clear password** when finished. CLI commands such as `vasp-agent watch <run_dir> --password` prompt privately; `DFT_AGENT_SSH_PASSWORD` is also supported. Keep passwords out of configuration files and shared results. See the [quickstart](docs/quickstart.md#2-connect-to-your-cluster) for password handling and MFA limitations.
 
-The configuration page includes an explicit SSH/Slurm/VASP environment check. It connects only when clicked and does not submit a job.
+**Cluster setup** includes an environment check. It connects only when requested and does not submit a job.
 
-New configurations start with 8 MPI tasks, suitable for trying the small examples. Adjust this to your structure and cluster allocation rules. The initial carbon test failed during diagonalization with 64 tasks and completed with unchanged physics inputs at 8 tasks; the [resource adjustment record](validation/resource-adjustments.v1.json) preserves that attempt.
+New configurations start with 8 MPI tasks for the small examples. Adjust this to your structure and cluster allocation rules. The v0.1.0 [resource adjustment record](validation/resource-adjustments.v1.json) documents a carbon calculation that failed with 64 tasks and completed with 8.
 
-The VASP executable and POTCAR data remain on your cluster. Configure `potcar_symbols` for the intended potential choices. The software does not provide a VASP license, distribute VASP binaries, or grant permission to redistribute potential files. Review [NOTICE.md](NOTICE.md) before sharing this project or its artifacts.
+VASP and POTCAR data stay on your cluster. Set `potcar_symbols` to select the potentials you intend to use. This project is available under the [MIT License](LICENSE); it does not distribute VASP or POTCAR files. Their separate terms are covered in [NOTICE.md](NOTICE.md).
 
 ## CLI
 
-The same local workflow is available through `vasp-agent init`, `doctor`, `prepare`, `watch`, `resume`, `status`, `cancel`, and `bundle`. Run `vasp-agent <command> --help` for the supported arguments. `prepare` generates inputs locally; `watch` can submit a prepared run and follow its stages, so run it only after reviewing the prepared inputs. `resume` reconnects a paused run and continues monitoring; `status` is read-only.
+The CLI provides `vasp-agent init`, `doctor`, `prepare`, `watch`, `resume`, `status`, `cancel` and `bundle`. Use `vasp-agent <command> --help` for arguments. `prepare` writes local inputs; `watch` submits a prepared calculation and follows its stages. Review the inputs before running `watch`. Use `status` to read saved progress or `resume` to reconnect and continue monitoring.
 
 ## Scientific scope
 
-`relax` and `scf` each run one stage. `bands` and `dos` run an SCF stage followed by the requested stage on the supplied structure; they do not implicitly relax it. All four recipes set `ISPIN=1`. Review ENCUT, k mesh, smearing and force tolerance for your material; property calculations intended for research need their own convergence checks.
+The four workflows use nonmagnetic PBE (`ISPIN=1`) for ordered periodic structures. `relax` and `scf` each run one stage. `bands` and `dos` run SCF first, then calculate the requested spectrum on the same structure. To optimize the structure first, run `relax` separately and use its result.
 
-Magnetism, DFT+U, hybrid functionals, spin–orbit coupling, defects, phonons, NEB and molecular dynamics are outside these recipes. Failed or unconverged runs stop for inspection instead of silently changing scientific parameters.
+Default settings are a starting point. Check the cutoff, k mesh, smearing and force tolerance for the material and property you want to study. Magnetism, DFT+U, hybrid functionals, spin–orbit coupling, defects, phonons, NEB and molecular dynamics are outside these workflows. Failed or unconverged calculations stop for inspection; the app does not change calculation settings automatically.
 
-## Development and acceptance
+## Development and validation
 
 ```bash
 python -m pip install ".[dev]"
@@ -75,8 +75,8 @@ python -m pytest -q
 python -m build
 ```
 
-CI runs offline core and Streamlit AppTest checks on Python 3.11–3.13 on Linux, then installs a built wheel outside the source checkout and prepares an included example without contacting a cluster. The [first hosted run for commit `4f320d7`](https://github.com/cuiqirui99/vasp-slurm-agent/actions/runs/37621743051) passed all three versions. Development dependencies require Streamlit 1.65 or later for AppTest's file-upload support.
+CI runs offline core and Streamlit AppTest checks on Python 3.11–3.13 on Linux, then installs a wheel outside the source checkout and prepares an included example. It does not contact a cluster. Development dependencies require Streamlit 1.65 or later for AppTest's file-upload support.
 
-Live acceptance follows the [frozen protocol](validation/protocol.v1.json). The [campaign record](validation/results/campaign.json) and [execution records](validation/results/) retain completed and incomplete outcomes. [Independent numerical checks](validation/reference/README.md) are recorded separately from software tests. The [legacy scope note](docs/legacy-scope.md) explains how this package relates to the earlier platform.
+The v0.1.0 cluster tests followed a [fixed protocol](validation/protocol.v1.json). The [campaign record](validation/results/campaign.json) and [execution records](validation/results/) include completed runs and failed attempts. [Independent numerical checks](validation/reference/README.md) are recorded separately from software tests. This package runs on its own; the [legacy scope note](docs/legacy-scope.md) explains its relationship to the earlier `AI_AGNET` platform.
 
-Software citation details are provided in [CITATION.cff](CITATION.cff). Report the installed version and the settings and evidence associated with your calculation when citing a result.
+Use [CITATION.cff](CITATION.cff) to cite the software, and record the version and calculation settings used for your results.

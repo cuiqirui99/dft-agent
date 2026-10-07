@@ -77,7 +77,7 @@ def prepare_run(structure_path, run_dir, config, task="relax", parameters=None):
     config.save(root / "config.json")
     state = {"schema_version": 1, "run_id": run_id, "task": task, "formula": stages[0]["metadata"].get("formula", ""), "status": "planned", "parameters": parameters, "current_stage": 0, "stages": stages, "created_at": utc_now(), "history": [], "last_error": None, "cancel_requested": False, "remote_root": config.remote_root.rstrip("/") + "/" + run_id}
     state["config_sha256"] = hashlib.sha256((root / "config.json").read_bytes()).hexdigest()
-    return _save(root, state, "Prepared locally; awaiting user submission")
+    return _save(root, state, "Inputs prepared. Ready to submit.")
 
 
 def _command(transport, command, timeout=60):
@@ -174,7 +174,7 @@ def _submit(root, state, config, transport):
     state["last_error"] = None
     state["remote_failures"] = 0
     stage["submitted_at"] = utc_now()
-    return _save(root, state, f"Slurm job {stage['job_id']} acknowledged")
+    return _save(root, state, f"Slurm accepted job {stage['job_id']}")
 
 
 def _poll(transport, stage):
@@ -209,20 +209,20 @@ def _failure_diagnostic(output, scheduler):
     if scheduler == "OUT_OF_MEMORY" or re.search(r"out[ _-]of[ _-]memory|oom[ _-]kill", text, re.IGNORECASE):
         return {
             "failure_code": "OUT_OF_MEMORY",
-            "message": "The scheduler or log reports an out-of-memory termination.",
-            "recovery_hint": "Review the memory request and available node memory before preparing a separate retry; this run was not resubmitted.",
+            "message": "The job ran out of memory.",
+            "recovery_hint": "Check the memory available on your cluster before starting a new run with suitable resources. This run has not been resubmitted.",
         }
     if scheduler == "TIMEOUT" or re.search(r"due to time limit|time limit (?:exceeded|reached)|walltime.*(?:exceeded|limit)", text, re.IGNORECASE):
         return {
             "failure_code": "TIME_LIMIT",
-            "message": "The scheduler or log reports that the job reached its time limit.",
-            "recovery_hint": "Review elapsed time and request a sufficient walltime in a separately prepared run; any retained structure may be partial.",
+            "message": "The job reached its time limit.",
+            "recovery_hint": "Allow more time when you prepare a new run. Check any saved structure before reusing it; the calculation may be incomplete.",
         }
     if re.search(r"error\s+EDDDAV\b|\b(?:EDDDAV|ZHEGV)\b[^\n]{0,160}\b(?:failed|failure|error)\b", text, re.IGNORECASE):
         return {
             "failure_code": "VASP_EDDDAV_ZHEGV",
-            "message": "VASP reported an EDDDAV/ZHEGV diagonalization failure.",
-            "recovery_hint": "For a small system, consider fewer MPI tasks in a separate reviewed run, or check the input structure and settings. This log does not establish the cause; no parameters were changed automatically.",
+            "message": "VASP stopped during diagonalization (EDDDAV/ZHEGV).",
+            "recovery_hint": "The log does not establish the cause. Check the structure and settings; for a small system, consider fewer MPI tasks in a new run. Your current settings have not been changed.",
         }
     return None
 
@@ -275,7 +275,7 @@ def _collect(root, state, transport, stage):
             result.update(diagnostic)
         else:
             result["failure_code"] = "INPUT_IDENTITY_MISMATCH" if not result["input_identity_verified"] else "RESULT_REJECTED"
-            result["recovery_hint"] = "Review the preserved input checksums, parser reason and logs. Prepare a separate reviewed run if calculation settings need to change."
+            result["recovery_hint"] = "Check the error message, input checksums and saved logs. If you need to change the calculation settings, prepare a new run."
         result["reason"] = " ".join(reasons)
     _write(output / "result.json", result)
     stage["result"] = result
@@ -314,7 +314,7 @@ def advance(run_dir, transport=None):
                     state["cancel_failures"] = state.get("cancel_failures", 0) + 1
                     if state["cancel_failures"] >= MAX_REMOTE_FAILURES:
                         state["status"] = "needs_attention"
-                        return _save(root, state, "Cancellation not acknowledged; original job identity preserved")
+                        return _save(root, state, "Slurm has not confirmed cancellation. The original job details have been saved.")
                 else:
                     state["cancel_failures"] = 0
             if scheduler == "CANCELLED":
@@ -340,11 +340,11 @@ def advance(run_dir, transport=None):
             # stage so the next tick can reconnect/reconcile the same request.
             if state["remote_failures"] >= MAX_REMOTE_FAILURES or "outcome uncertain" in str(exc) or "did not acknowledge" in str(exc):
                 state["status"] = "needs_attention"
-            return _save(root, state, "Remote operation unavailable; identity preserved")
+            return _save(root, state, "Remote operation failed. Run details have been saved.")
         except (ValueError, OSError, KeyError) as exc:
             state["status"] = "needs_attention"
             state["last_error"] = str(exc)
-            return _save(root, state, "Stopped for inspection")
+            return _save(root, state, "Paused. Review the error before continuing.")
         finally:
             if owned and hasattr(transport, "close"):
                 transport.close()
@@ -386,10 +386,10 @@ def resume(run_dir, transport=None):
             state["last_error"] = None
             state["remote_failures"] = 0
             state["cancel_failures"] = 0
-            return _save(root, state, "Resumed existing run; calculation inputs unchanged")
+            return _save(root, state, "Resumed this run with its original inputs.")
         except (TransportError, ValueError, OSError, KeyError) as exc:
             state["last_error"] = str(exc)
-            return _save(root, state, "Reconciliation unavailable; no new job submitted")
+            return _save(root, state, "Could not reconnect to this run. No new job was submitted.")
         finally:
             if owned and transport is not None:
                 transport.close()

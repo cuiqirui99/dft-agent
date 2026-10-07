@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1 — 2026-10-07
+
+- The interface is now entirely in English, with shorter labels and clearer instructions throughout.
+- Rewrote the quickstart and examples in plain English, and made CLI help and error messages more useful.
+- Calculation settings, job handling and numerical checks are unchanged. The original v0.1.0 cluster results remain available in the [validation report](docs/validation.md).
+
 ## 0.1.0 — 2026-10-07
 
 - Standalone local VASP/Slurm workflows for nonmagnetic PBE relaxation, SCF, bands and DOS.

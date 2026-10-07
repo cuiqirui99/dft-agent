@@ -149,7 +149,7 @@ def prepare_inputs(
         "source_sha256": _sha256(source), "potcar_labels": labels,
         "potcar_elements": poscar.site_symbols,
         "requires_chgcar": task in {"bands", "dos"},
-        "scope": "Nonmagnetic PBE; defaults require material-specific convergence checks.",
+        "scope": "Nonmagnetic PBE. Check convergence for your material.",
     }
     if task == "bands":
         import seekpath
@@ -324,7 +324,7 @@ def analyze_outputs(output_dir: str | Path, task: str, expected_structure_path: 
         "valid_structure": False, "final_energy_ev": None,
         "final_max_force_ev_angstrom": None, "vasp_version": None,
         "fermi_energy_ev": None,
-        "reason": "Analysis not completed.", "artifacts": [],
+        "reason": "Results have not been checked yet.", "artifacts": [],
         "scientific_accuracy_validated": False,
     }
     try:
@@ -334,7 +334,7 @@ def analyze_outputs(output_dir: str | Path, task: str, expected_structure_path: 
         _validate_structure(expected)
         xml = output / "vasprun.xml"
         if not xml.is_file() or not xml.stat().st_size:
-            raise ValueError("Complete vasprun.xml is missing; scheduler completion is insufficient.")
+            raise ValueError("vasprun.xml is missing or empty. The job may have ended before VASP finished.")
         run = Vasprun(xml, parse_potcar_file=False, parse_eigen=task == "bands", parse_dos=task in {"scf", "dos"}, exception_on_bad_xml=True)
         result["vasprun_sha256"] = _sha256(xml)
         result["vasp_version"] = str(run.vasp_version)
@@ -389,7 +389,7 @@ def analyze_outputs(output_dir: str | Path, task: str, expected_structure_path: 
         run.final_structure.to(filename=str(output / "final_structure.cif"))
         result["artifacts"] = ["final_structure.cif", *artifacts]
         result["success"] = True
-        result["reason"] = "Complete VASP output passed task-specific numerical checks; scientific accuracy is not independently validated."
+        result["reason"] = "The calculation finished and its output passed the checks for this task."
     except Exception as exc:
         result["reason"] = f"{type(exc).__name__}: {exc}"
     _write_json(output / "result.json", result)

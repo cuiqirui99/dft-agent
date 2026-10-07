@@ -33,7 +33,7 @@ def workbench(tmp_path, monkeypatch):
     worker = Mock(return_value=43210)
     monkeypatch.setattr(workflow, "start_worker", worker)
     app = AppTest.from_file(str(files("vasp_slurm_agent").joinpath("app.py")), default_timeout=20).run()
-    widget(app.text_input, "任务保存目录").set_value(str(tmp_path / "runs")).run()
+    widget(app.text_input, "Run folder").set_value(str(tmp_path / "runs")).run()
     assert not app.exception
     return app, worker, tmp_path / "runs"
 
@@ -45,7 +45,7 @@ def silicon_bytes():
 @pytest.mark.parametrize("file_format", ["cif", "poscar"])
 def test_structure_import_and_review_gate(workbench, file_format):
     app, worker, runs_root = workbench
-    assert widget(app.button, "生成输入并预览").disabled
+    assert widget(app.button, "Prepare inputs").disabled
     if file_format == "cif":
         filename, payload = "Si.cif", silicon_bytes()
     else:
@@ -53,25 +53,25 @@ def test_structure_import_and_review_gate(workbench, file_format):
         filename, payload = "POSCAR", structure.to(fmt="poscar").encode()
     app.file_uploader[0].upload(filename, payload).run()
     assert not app.exception
-    assert widget(app.metric, "化学式").value == "Si"
-    assert not widget(app.button, "生成输入并预览").disabled
+    assert widget(app.metric, "Formula").value == "Si"
+    assert not widget(app.button, "Prepare inputs").disabled
     assert not runs_root.exists()
     worker.assert_not_called()
 
-    widget(app.button, "生成输入并预览").click().run()
+    widget(app.button, "Prepare inputs").click().run()
     assert not app.exception
     run_dir = Path(app.session_state["active_run"])
     state = workflow.read_state(run_dir)
     assert state["status"] == "planned"
     assert state["stages"][0]["job_id"] is None
     assert (run_dir / "01_relax" / "inputs" / "POSCAR").is_file()
-    assert widget(app.button, "确认并提交").disabled
+    assert widget(app.button, "Submit calculation").disabled
     worker.assert_not_called()
 
-    widget(app.checkbox, "已检查结构、计算参数、集群账户和每阶段资源设置").check().run()
-    assert not widget(app.button, "确认并提交").disabled
+    widget(app.checkbox, "I've reviewed the structure, settings and cluster resources.").check().run()
+    assert not widget(app.button, "Submit calculation").disabled
     worker.assert_not_called()
-    widget(app.button, "确认并提交").click().run()
+    widget(app.button, "Submit calculation").click().run()
     assert not app.exception
     worker.assert_called_once_with(run_dir)
     assert any("43210" in message.value for message in app.success)
@@ -81,8 +81,8 @@ def test_invalid_structure_cannot_be_prepared(workbench):
     app, worker, runs_root = workbench
     app.file_uploader[0].upload("POSCAR", b"This is not a crystal structure").run()
     assert not app.exception
-    assert any("结构无法解析" in message.value for message in app.error)
-    assert widget(app.button, "生成输入并预览").disabled
+    assert any("Could not read the structure" in message.value for message in app.error)
+    assert widget(app.button, "Prepare inputs").disabled
     assert not runs_root.exists()
     worker.assert_not_called()
 
@@ -91,7 +91,7 @@ def test_invalid_structure_cannot_be_prepared(workbench):
 def test_completed_result_is_visible_without_resubmission(workbench, accepted):
     app, worker, _ = workbench
     app.file_uploader[0].upload("Si.cif", silicon_bytes()).run()
-    widget(app.button, "生成输入并预览").click().run()
+    widget(app.button, "Prepare inputs").click().run()
     run_dir = Path(app.session_state["active_run"])
     state = workflow.read_state(run_dir)
     state["status"] = "succeeded" if accepted else "needs_attention"
@@ -107,18 +107,18 @@ def test_completed_result_is_visible_without_resubmission(workbench, accepted):
     (output / "final_structure.cif").write_bytes(silicon_bytes())
     app.run()
     assert not app.exception
-    assert not any(button.label == "确认并提交" for button in app.button)
+    assert not any(button.label == "Submit calculation" for button in app.button)
     if accepted:
-        assert widget(app.metric, "最终总能量 / eV").value == "-10.123456"
-        assert widget(app.download_button, "下载最终结构 / CIF").proto.url
-        assert any("Si" in item.value and "个原子" in item.value for item in app.markdown)
+        assert widget(app.metric, "Final total energy (eV)").value == "-10.123456"
+        assert widget(app.download_button, "Download structure (.cif)").proto.url
+        assert any("Si" in item.value and "atoms" in item.value for item in app.markdown)
     else:
         assert any("Electronic convergence" in item.value for item in app.warning)
-        assert not any(button.label == "下载最终结构 / CIF" for button in app.download_button)
-    widget(app.button, "打包当前结果").click().run()
+        assert not any(button.label == "Download structure (.cif)" for button in app.download_button)
+    widget(app.button, "Prepare download").click().run()
     assert not app.exception
     assert (run_dir / "results.zip").is_file()
-    assert widget(app.download_button, "下载 ZIP").proto.url
+    assert widget(app.download_button, "Download results (.zip)").proto.url
     worker.assert_not_called()
 
 
@@ -135,7 +135,7 @@ def test_installed_examples_are_readable_crystal_inputs():
 def test_paused_job_can_reconnect_from_the_result_panel(workbench):
     app, worker, _ = workbench
     app.file_uploader[0].upload("Si.cif", silicon_bytes()).run()
-    widget(app.button, "生成输入并预览").click().run()
+    widget(app.button, "Prepare inputs").click().run()
     run_dir = Path(app.session_state["active_run"])
     state = workflow.read_state(run_dir)
     state.update(status="needs_attention", last_error="Connection unavailable", remote_failures=3)
@@ -143,7 +143,7 @@ def test_paused_job_can_reconnect_from_the_result_panel(workbench):
     (run_dir / "run.json").write_text(json.dumps(state))
     app.run()
     worker.assert_not_called()
-    widget(app.button, "重新连接 / 回收").click().run()
+    widget(app.button, "Reconnect").click().run()
     assert not app.exception
     worker.assert_called_once_with(run_dir)
     restored = workflow.read_state(run_dir)
@@ -156,8 +156,8 @@ def test_paused_job_can_reconnect_from_the_result_panel(workbench):
 def test_spectral_results_use_scf_reference_not_ground_state_metrics(workbench, task, scf_fermi):
     app, worker, _ = workbench
     app.file_uploader[0].upload("Si.cif", silicon_bytes()).run()
-    widget(app.selectbox, "任务").select(task)
-    widget(app.button, "生成输入并预览").click().run()
+    widget(app.selectbox, "Calculation").select(task)
+    widget(app.button, "Prepare inputs").click().run()
     run_dir = Path(app.session_state["active_run"])
     state = workflow.read_state(run_dir)
     assert state["task"] == task
@@ -175,11 +175,11 @@ def test_spectral_results_use_scf_reference_not_ground_state_metrics(workbench, 
     original = state_path.read_bytes()
     app.run()
     assert not app.exception
-    assert [item.value for item in app.metric if item.label == "最终总能量 / eV"] == ["-10.000000"]
-    assert [item.value for item in app.metric if item.label == "最大原子力 / eV Å⁻¹"] == ["0.002000"]
-    references = [item.value for item in app.metric if item.label == "前序 SCF 费米能 / eV"]
+    assert [item.value for item in app.metric if item.label == "Final total energy (eV)"] == ["-10.000000"]
+    assert [item.value for item in app.metric if item.label == "Maximum atomic force (eV/Å)"] == ["0.002000"]
+    references = [item.value for item in app.metric if item.label == "SCF Fermi energy (eV)"]
     assert references == (["5.250000"] if scf_fermi is not None else [])
-    assert any("固定电荷谱计算" in item.value for item in app.caption)
+    assert any("Fixed-charge spectrum" in item.value for item in app.caption)
     assert state_path.read_bytes() == original
     worker.assert_not_called()
 
@@ -188,7 +188,7 @@ def test_spectral_results_use_scf_reference_not_ground_state_metrics(workbench, 
 def test_paused_job_can_request_cancel_only_before_confirmed_scheduler_end(workbench, monkeypatch, scheduler_state):
     app, worker, _ = workbench
     app.file_uploader[0].upload("Si.cif", silicon_bytes()).run()
-    widget(app.button, "生成输入并预览").click().run()
+    widget(app.button, "Prepare inputs").click().run()
     run_dir = Path(app.session_state["active_run"])
     state = workflow.read_state(run_dir)
     state.update(status="needs_attention", last_error="Connection unavailable", remote_failures=3)
@@ -201,11 +201,11 @@ def test_paused_job_can_request_cancel_only_before_confirmed_scheduler_end(workb
     app.run()
     assert not app.exception
     if scheduler_state in {None, "RUNNING"}:
-        widget(app.button, "取消此任务").click().run()
+        widget(app.button, "Cancel calculation").click().run()
         assert not app.exception
         cancellation.assert_called_once_with(run_dir)
     else:
-        assert not any(button.label == "取消此任务" for button in app.button)
+        assert not any(button.label == "Cancel calculation" for button in app.button)
         cancellation.assert_not_called()
     assert state_path.read_bytes() == original
     worker.assert_not_called()
