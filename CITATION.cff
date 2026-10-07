@@ -1,6 +1,12 @@
 cff-version: 1.2.0
-message: "Development preview. When reporting use, include the version and your archived configuration and calculation evidence. No DOI or public release is currently asserted."
+message: "Please cite this software when using it in research, and record the version, calculation settings and associated evidence."
 title: "VASP Slurm Agent"
 type: software
-version: 0.1.0a1
+authors:
+  - family-names: "cuiqirui99"
+    website: "https://github.com/cuiqirui99"
+version: "0.1.0a1"
+license: MIT
+repository-code: "https://github.com/cuiqirui99/vasp-slurm-agent"
+url: "https://github.com/cuiqirui99/vasp-slurm-agent"
 abstract: "A local single-user workbench for reviewed VASP calculations on Slurm."

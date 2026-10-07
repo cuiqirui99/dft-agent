@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "audited_at": "2026-10-07T12:48:04.702489+00:00",
+  "scope": "Local scientific evidence audit; no remote operation or new solver execution.",
+  "frozen_tolerances": {
+    "energy_ev_per_atom": 0.001,
+    "max_force_vector_ev_per_angstrom": 0.01,
+    "changed": false
+  },
+  "actual_output_checks": {
+    "independent_ASE_OUTCAR_XML_audits": 12,
+    "relaxation_stages": 5,
+    "scf_stages": 7,
+    "passed": 12,
+    "cases": [
+      "si-relax-v1/relax",
+      "si-bands-v1/scf",
+      "si-dos-v1/scf",
+      "al-relax-v1/relax",
+      "mgo-relax-v1/relax",
+      "si-scf-v1/scf",
+      "c-relax-r2/relax",
+      "c-scf-v1/scf",
+      "c-bands-v1/scf",
+      "c-dos-v1/scf",
+      "ge-relax-v1/relax",
+      "ge-scf-v1/scf"
+    ],
+    "maximum_ASE_energy_disagreement_ev": 0.0,
+    "maximum_ASE_force_disagreement_ev_per_angstrom": 0.0,
+    "all_application_energy_force_values_agree": true,
+    "Si_source_binding_passed": true,
+    "wrong_C_source_for_Si_rejected": true,
+    "Si_and_C_band_Fermi_reference_matches_preceding_SCF_XML": true,
+    "Si_and_C_bands_DOS_OUTCAR_records_supplied_charge_density": true,
+    "original_C_failure_retained": {
+      "case": "c-relax-v1",
+      "job_id": "7451349",
+      "status": "needs_attention"
+    },
+    "C_resource_retry": {
+      "case": "c-relax-r2",
+      "job_id": "7451356",
+      "status": "succeeded",
+      "INCAR_KPOINTS_POSCAR_hashes_identical_to_failed_attempt": true
+    }
+  },
+  "reproduced_acceptance_gaps_fixed": [
+    "Application-generated SCF pairs previously passed as independent manual references; comparator now requires the authored receipt, frozen source/protocol hashes, authored/executed input hashes, and distinct job identities.",
+    "Unchanged 400 eV and 4x4x4 SCF pairs previously counted as sensitivity measurements; now the declared variant must match 520 eV and/or 6x6x6 and differ from baseline."
+  ],
+  "remaining_boundaries": [
+    "CHGCAR is copied from the immediately preceding SCF and actual OUTCAR confirms charge-density reading; no retained source/destination CHGCAR content hash chain is claimed.",
+    "Independent handwritten reference jobs and displaced-coordinate relaxations have not been executed by this audit.",
+    "Five audited ideal-structure relaxations have zero final forces; dedicated displaced cases remain necessary to demonstrate internal coordinate optimization.",
+    "Sensitivity is a bounded measurement, not comprehensive physical convergence or experimental validation."
+  ],
+  "verification": {
+    "reference_contract_tests_passed": 16,
+    "private_runner_dry_plan_jobs": 8,
+    "solver_jobs_submitted_by_this_audit": 0
+  },
+  "comparator_sha256": "3afdfa530aeb4ab4ee08baf69cff164221e005924bc18f305c0b6870448dfa52",
+  "scientific_accuracy_validated": false
+}

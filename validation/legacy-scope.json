@@ -1,0 +1,17 @@
+{
+  "audit_date": "2026-10-07",
+  "source_junit_sha256": "767a1d036e247722891012bfaf023219f1f1b8c1cc5b70e17e6fd18e30bfa65c",
+  "legacy_suite": {
+    "tests": 1006,
+    "passed": 911,
+    "failures": 93,
+    "errors": 2
+  },
+  "unresolved_by_category": {
+    "historical_evidence_unavailable": 89,
+    "historical_dependency_hash_contract": 5,
+    "legacy_xps_interpreter_contract": 1
+  },
+  "legacy_test_files_preserved": true,
+  "scope": "The historical multimodal/advanced research campaigns remain unresolved. This standalone basic VASP package has separate tests and fresh solver evidence; it does not claim the legacy suite now passes."
+}

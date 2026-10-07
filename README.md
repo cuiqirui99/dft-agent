@@ -2,15 +2,19 @@
 
 A local, single-user workbench for preparing, submitting and following VASP calculations on an existing Slurm cluster. It provides four tasks: structure relaxation, self-consistent calculations, band structure and density of states. No LLM account is required.
 
-**Status: `0.1.0a1`, development preview.** One Si relaxation has completed on BSCC with VASP 6.2.1, including convergence and output-integrity checks; see the [execution record](validation/results/Si-relax.json). SCF, bands and DOS have implemented paths and offline checks; their live acceptance is being completed. The initial scope is nonmagnetic PBE for ordered periodic structures, with practical starting parameters. This is a standalone project and does not depend on the older `AI_AGNET` workspace. Distribution terms are recorded in [NOTICE.md](NOTICE.md).
+**Status: `0.1.0a1`, development preview.** The initial scope is nonmagnetic PBE for ordered periodic structures, with practical starting parameters. The [live acceptance record](validation/results/campaign.json) tracks completed workflows, solver versions, convergence checks and artifact hashes; its completion fields describe the current evidence. This is a standalone project and does not depend on the older `AI_AGNET` workspace. Code and documentation are available under the [MIT License](LICENSE); external solver terms are described in [NOTICE.md](NOTICE.md).
 
 ## Install and open
 
 Requires macOS or Linux, Python 3.11 or later, an SSH client, a Slurm account, and access to a licensed VASP installation and appropriate POTCAR files on the remote system. Native Windows is not supported.
 
-Run these commands from the repository directory:
+The remote login and compute environments need Python 3.8 or later, Bash and `sha256sum`; Slurm must provide `sbatch`, `squeue`, `sacct` and `scancel`. Set any required module-loading commands in the cluster configuration.
+
+Clone the repository, enter its directory and create a local environment. Authenticate with GitHub first if your repository access requires it.
 
 ```bash
+git clone https://github.com/cuiqirui99/vasp-slurm-agent.git
+cd vasp-slurm-agent
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install .
@@ -71,4 +75,6 @@ python -m build
 
 CI runs offline core and Streamlit AppTest checks on Python 3.11–3.13 on Linux, then installs a built wheel outside the source checkout and prepares an included example without contacting a cluster. The [first hosted run for commit `4f320d7`](https://github.com/cuiqirui99/vasp-slurm-agent/actions/runs/37621743051) passed all three versions. Development dependencies require Streamlit 1.65 or later for AppTest's file-upload support.
 
-Live acceptance follows the [frozen protocol](validation/protocol.v1.json). Completed records belong in `validation/results/`; remaining release checks include the other task paths and real restart, cancellation and failure behavior. Numerical reference comparisons are recorded separately from software tests.
+Live acceptance follows the [frozen protocol](validation/protocol.v1.json). The [campaign record](validation/results/campaign.json) and [execution records](validation/results/) retain completed and incomplete outcomes. [Independent numerical checks](validation/reference/README.md) are recorded separately from software tests. The [legacy scope note](docs/legacy-scope.md) explains how this package relates to the earlier platform.
+
+Software citation details are provided in [CITATION.cff](CITATION.cff). Report the installed version and the settings and evidence associated with your calculation when citing a result.

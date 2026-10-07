@@ -8,7 +8,7 @@
     "baseline_mpi_ranks": 64
   },
   "complete": false,
-  "passed_workflows": 8,
+  "passed_workflows": 19,
   "planned_workflows": 32,
   "results": [
     {
@@ -1152,7 +1152,7 @@
     {
       "material": "C",
       "task": "bands",
-      "status": "collecting",
+      "status": "succeeded",
       "stages": [
         {
           "name": "scf",
@@ -1261,7 +1261,7 @@
         },
         {
           "name": "bands",
-          "status": "collecting",
+          "status": "succeeded",
           "job_id": "7451361",
           "source_sha256": "9ceb50de087e34acf2e83efa6829d88ae38e09713262f01056771f8d19feecb9",
           "input_sha256": {
@@ -1285,78 +1285,1836 @@
             "nelm": 120,
             "line_density": 20,
             "nedos": 2001
-          }
+          },
+          "result": {
+            "success": true,
+            "converged_electronic": true,
+            "converged_ionic": true,
+            "valid_structure": true,
+            "final_energy_ev": -13.05540083,
+            "final_max_force_ev_angstrom": 1.8410847302261828,
+            "vasp_version": "6.2.1",
+            "fermi_energy_ev": null,
+            "energy_reference_ev": 10.00287779,
+            "energy_reference_source": "preceding_scf",
+            "vasprun_sha256": "52daae57e8cf94c0f6aca6a9fa1e852d6776e8d58570c57c9616992f7d6ac38c",
+            "input_identity_verified": true,
+            "scheduler_state": "COMPLETED",
+            "scientific_accuracy_validated": false
+          },
+          "artifact_manifest": {
+            "INCAR": {
+              "sha256": "d5c587c8737ac72a3e4bbe7c8f29cfa076fbd52051c4d71d50128606150ef956",
+              "size": 263
+            },
+            "KPOINTS": {
+              "sha256": "be2106c664140ef4c0ca7bb49dee46ed07c447100d8f5b3df85eb826e84f6215",
+              "size": 9287
+            },
+            "POSCAR": {
+              "sha256": "5e05af919e54a2f87f1c4bfe655f3d6bdd349a41433295121291eaf24e3d6ed6",
+              "size": 352
+            },
+            "OUTCAR": {
+              "sha256": "b66a55d4f0159093f7fecb2ff1835c1e0ed54976ad31c5afa76d4d45797c3956",
+              "size": 127633
+            },
+            "OSZICAR": {
+              "sha256": "b788fae3ce83300418a5d4c53ce77e56038f39f09144177c58208d2d74b0901c",
+              "size": 633
+            },
+            "vasprun.xml": {
+              "sha256": "52daae57e8cf94c0f6aca6a9fa1e852d6776e8d58570c57c9616992f7d6ac38c",
+              "size": 101215
+            },
+            "CONTCAR": {
+              "sha256": "04d39572a7e38cb269c82bc232b14cbf945ddc97be71a9c0f673b09dad7e3e01",
+              "size": 512
+            },
+            "EIGENVAL": {
+              "sha256": "b5a2adaaa5bfb81611aa44df721a71be053b73b2dd32757d485c613b4583dc2c",
+              "size": 49570
+            },
+            "DOSCAR": {
+              "sha256": "1c1f8adb4c489e20dc6f035339999c174af1b06caa2f2269aff1ac1f95a017ed",
+              "size": 11073
+            },
+            "slurm.out": {
+              "sha256": "1724181d5b6df55a807a540326b9535a7d37b9cc13b1122e71baf22eae71f639",
+              "size": 2895
+            },
+            "slurm.err": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "size": 0
+            },
+            "execution.json": {
+              "sha256": "618e9aac6d9ad317f226a57946d1b77c6db293474044151dded76c2f3b7db7d1",
+              "size": 152
+            },
+            "input_hashes.sha256": {
+              "sha256": "57dfd262d701c3836b800d4c51dafaf4f629a20bb706a704984b951f6bbcb4a7",
+              "size": 219
+            },
+            "potcar_hash.sha256": {
+              "sha256": "6a9bcc54b508d03209da017dfef6b4ccd2eba16587ca12b6c3d7540e1380f430",
+              "size": 73
+            },
+            "potcar_titles.txt": {
+              "sha256": "db11fab2ef8e58feb7061efea82cfe6545ca3d786b6e2662ef672d804e144099",
+              "size": 32
+            }
+          },
+          "potcar_sha256": "e324f39f282d3fd6b99a7bff390f4b2441edd3dd3eac607d1f1c01376f3d0dc0"
         }
       ],
       "run_id": "vsa-66ac46aebfc04edb",
-      "updated_at": "2026-10-07T12:40:24.001188+00:00",
+      "updated_at": "2026-10-07T12:40:30.424922+00:00",
       "mpi_ranks": 8
     },
     {
       "material": "C",
       "task": "dos",
-      "status": "not_started",
-      "stages": []
+      "status": "succeeded",
+      "stages": [
+        {
+          "name": "scf",
+          "status": "succeeded",
+          "job_id": "7451364",
+          "source_sha256": "9ceb50de087e34acf2e83efa6829d88ae38e09713262f01056771f8d19feecb9",
+          "input_sha256": {
+            "POSCAR": "5e05af919e54a2f87f1c4bfe655f3d6bdd349a41433295121291eaf24e3d6ed6",
+            "INCAR": "370af5e6032ec06cf21d3e12b7b1e7c9e527a0687f654d0e780e4d09940a9e74",
+            "KPOINTS": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734"
+          },
+          "parameters": {
+            "encut": 400.0,
+            "ediff": 1e-05,
+            "ediffg": -0.03,
+            "nsw": 80,
+            "mesh": [
+              4,
+              4,
+              4
+            ],
+            "ismear": 0,
+            "sigma": 0.05,
+            "cell_relax": true,
+            "nelm": 120,
+            "line_density": 20,
+            "nedos": 2001
+          },
+          "result": {
+            "success": true,
+            "converged_electronic": true,
+            "converged_ionic": true,
+            "valid_structure": true,
+            "final_energy_ev": -18.06145375,
+            "final_max_force_ev_angstrom": 0.0,
+            "vasp_version": "6.2.1",
+            "fermi_energy_ev": 10.00287779,
+            "vasprun_sha256": "38dd1135fd87dcf6ec023ba6b384c82e1fd8864a82439e6bb3ecbeb519671b71",
+            "input_identity_verified": true,
+            "scheduler_state": "COMPLETED",
+            "scientific_accuracy_validated": false
+          },
+          "artifact_manifest": {
+            "INCAR": {
+              "sha256": "370af5e6032ec06cf21d3e12b7b1e7c9e527a0687f654d0e780e4d09940a9e74",
+              "size": 250
+            },
+            "KPOINTS": {
+              "sha256": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734",
+              "size": 38
+            },
+            "POSCAR": {
+              "sha256": "5e05af919e54a2f87f1c4bfe655f3d6bdd349a41433295121291eaf24e3d6ed6",
+              "size": 352
+            },
+            "OUTCAR": {
+              "sha256": "0fb2305d05c1d50d0cbd1da3c3411b0dcbe4fd903ef874f34f08041368673c72",
+              "size": 51792
+            },
+            "OSZICAR": {
+              "sha256": "28ab5874810ef8c4b8625e3bf1efabd7a4d81bd39b5c2c42b807e02dd156de19",
+              "size": 1111
+            },
+            "vasprun.xml": {
+              "sha256": "38dd1135fd87dcf6ec023ba6b384c82e1fd8864a82439e6bb3ecbeb519671b71",
+              "size": 42242
+            },
+            "CONTCAR": {
+              "sha256": "04d39572a7e38cb269c82bc232b14cbf945ddc97be71a9c0f673b09dad7e3e01",
+              "size": 512
+            },
+            "EIGENVAL": {
+              "sha256": "75a3afd77a336d7b2b67b579659ec1ab12e94839e13336e130d0e4bc88905ac3",
+              "size": 2809
+            },
+            "DOSCAR": {
+              "sha256": "db7223a62d88098b8f25b1d559f8bde60a1706f1cf962e7b641ec5e7a0c00bf8",
+              "size": 11073
+            },
+            "slurm.out": {
+              "sha256": "7757f41c4a2325972bfdbca4e35b8a21ee9146388367f8ccdba35e4f25b3f3d8",
+              "size": 3256
+            },
+            "slurm.err": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "size": 0
+            },
+            "execution.json": {
+              "sha256": "eb03df5c49fbf709abda691530d4e48dc94de43ab39b758f4aa40a8f704d5da8",
+              "size": 152
+            },
+            "input_hashes.sha256": {
+              "sha256": "cf09c5c0c84f7796e05c0277cc06f1ff7bf2bc2f72f9909712d93a5b57da9438",
+              "size": 219
+            },
+            "potcar_hash.sha256": {
+              "sha256": "6a9bcc54b508d03209da017dfef6b4ccd2eba16587ca12b6c3d7540e1380f430",
+              "size": 73
+            },
+            "potcar_titles.txt": {
+              "sha256": "db11fab2ef8e58feb7061efea82cfe6545ca3d786b6e2662ef672d804e144099",
+              "size": 32
+            }
+          },
+          "potcar_sha256": "e324f39f282d3fd6b99a7bff390f4b2441edd3dd3eac607d1f1c01376f3d0dc0"
+        },
+        {
+          "name": "dos",
+          "status": "succeeded",
+          "job_id": "7451375",
+          "source_sha256": "9ceb50de087e34acf2e83efa6829d88ae38e09713262f01056771f8d19feecb9",
+          "input_sha256": {
+            "POSCAR": "5e05af919e54a2f87f1c4bfe655f3d6bdd349a41433295121291eaf24e3d6ed6",
+            "INCAR": "a15923156571e415170b6fce1683f96328c0bcbea5cbb8fcaa922e97a054c565",
+            "KPOINTS": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734"
+          },
+          "parameters": {
+            "encut": 400.0,
+            "ediff": 1e-05,
+            "ediffg": -0.03,
+            "nsw": 80,
+            "mesh": [
+              4,
+              4,
+              4
+            ],
+            "ismear": 0,
+            "sigma": 0.05,
+            "cell_relax": true,
+            "nelm": 120,
+            "line_density": 20,
+            "nedos": 2001
+          },
+          "result": {
+            "success": true,
+            "converged_electronic": true,
+            "converged_ionic": true,
+            "valid_structure": true,
+            "final_energy_ev": -18.06145373,
+            "final_max_force_ev_angstrom": 0.0,
+            "vasp_version": "6.2.1",
+            "fermi_energy_ev": 10.00646615,
+            "vasprun_sha256": "d1b311adfeb9557bbdbb4b29486d77df1b70f9f2519e564960838c98660a3dc3",
+            "input_identity_verified": true,
+            "scheduler_state": "COMPLETED",
+            "scientific_accuracy_validated": false
+          },
+          "artifact_manifest": {
+            "INCAR": {
+              "sha256": "a15923156571e415170b6fce1683f96328c0bcbea5cbb8fcaa922e97a054c565",
+              "size": 277
+            },
+            "KPOINTS": {
+              "sha256": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734",
+              "size": 38
+            },
+            "POSCAR": {
+              "sha256": "5e05af919e54a2f87f1c4bfe655f3d6bdd349a41433295121291eaf24e3d6ed6",
+              "size": 352
+            },
+            "OUTCAR": {
+              "sha256": "523379c57f086141669ed82d341a7cbbc567bdce02b50ce3f5a674af826ccb52",
+              "size": 42462
+            },
+            "OSZICAR": {
+              "sha256": "80a0d000ddd11657637b1f2f40c68792213da1a26dbbc5154de342bf737d1598",
+              "size": 633
+            },
+            "vasprun.xml": {
+              "sha256": "d1b311adfeb9557bbdbb4b29486d77df1b70f9f2519e564960838c98660a3dc3",
+              "size": 651206
+            },
+            "CONTCAR": {
+              "sha256": "04d39572a7e38cb269c82bc232b14cbf945ddc97be71a9c0f673b09dad7e3e01",
+              "size": 512
+            },
+            "EIGENVAL": {
+              "sha256": "77bece51225a442f43e282ecfb20b2fb315794b2890240519c859af829d40615",
+              "size": 2809
+            },
+            "DOSCAR": {
+              "sha256": "5328a76ee13341968257658615f664a286045087e8087ad262a62cbc08118a25",
+              "size": 552653
+            },
+            "slurm.out": {
+              "sha256": "144a8d51de02385a4b30dc7a387eb9ad736d2e00d2a043f68dee438ff4af8f7f",
+              "size": 2895
+            },
+            "slurm.err": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "size": 0
+            },
+            "execution.json": {
+              "sha256": "a9f2807a84e5eced3beb24f3995679ac6203ee7deed8360d1d63b154d00323c8",
+              "size": 152
+            },
+            "input_hashes.sha256": {
+              "sha256": "53e9a103949724dba3c17315141a48b3d6c618f9a713efaffe39b3af2b539f0d",
+              "size": 219
+            },
+            "potcar_hash.sha256": {
+              "sha256": "6a9bcc54b508d03209da017dfef6b4ccd2eba16587ca12b6c3d7540e1380f430",
+              "size": 73
+            },
+            "potcar_titles.txt": {
+              "sha256": "db11fab2ef8e58feb7061efea82cfe6545ca3d786b6e2662ef672d804e144099",
+              "size": 32
+            }
+          },
+          "potcar_sha256": "e324f39f282d3fd6b99a7bff390f4b2441edd3dd3eac607d1f1c01376f3d0dc0"
+        }
+      ],
+      "run_id": "vsa-3ada1e5e34e54879",
+      "updated_at": "2026-10-07T12:41:58.704864+00:00",
+      "mpi_ranks": 8
     },
     {
       "material": "Ge",
       "task": "relax",
-      "status": "not_started",
-      "stages": []
+      "status": "succeeded",
+      "stages": [
+        {
+          "name": "relax",
+          "status": "succeeded",
+          "job_id": "7451377",
+          "source_sha256": "86fd7bab75d374877f103546ac89a2b8cbf8093ad12201ac2aa7dbf9dd662200",
+          "input_sha256": {
+            "POSCAR": "cc707f286d3277de3ecaeb2f1373ec1ae3f5060823a46a39dcef38700e70a867",
+            "INCAR": "408981a45bb8bb85e2ae38f1ed70fc8f997f71ac591c0ef91cdbbc953d734d89",
+            "KPOINTS": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734"
+          },
+          "parameters": {
+            "encut": 400.0,
+            "ediff": 1e-05,
+            "ediffg": -0.03,
+            "nsw": 80,
+            "mesh": [
+              4,
+              4,
+              4
+            ],
+            "ismear": 0,
+            "sigma": 0.05,
+            "cell_relax": true,
+            "nelm": 120,
+            "line_density": 20,
+            "nedos": 2001
+          },
+          "result": {
+            "success": true,
+            "converged_electronic": true,
+            "converged_ionic": true,
+            "valid_structure": true,
+            "final_energy_ev": -8.74714657,
+            "final_max_force_ev_angstrom": 0.0,
+            "vasp_version": "6.2.1",
+            "fermi_energy_ev": null,
+            "vasprun_sha256": "b2766505374cf5c937131f714eb4ac2bb923eb1382b0b09e870d407447434cef",
+            "input_identity_verified": true,
+            "scheduler_state": "COMPLETED",
+            "scientific_accuracy_validated": false
+          },
+          "artifact_manifest": {
+            "INCAR": {
+              "sha256": "408981a45bb8bb85e2ae38f1ed70fc8f997f71ac591c0ef91cdbbc953d734d89",
+              "size": 269
+            },
+            "KPOINTS": {
+              "sha256": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734",
+              "size": 38
+            },
+            "POSCAR": {
+              "sha256": "cc707f286d3277de3ecaeb2f1373ec1ae3f5060823a46a39dcef38700e70a867",
+              "size": 356
+            },
+            "OUTCAR": {
+              "sha256": "f05b97191afa1c516d2674432c50a4bc2dcc229768b280afa002dcc737d1ca4a",
+              "size": 136985
+            },
+            "OSZICAR": {
+              "sha256": "7b93f3663a4dc48eeb09d7f9d8f3369896690c3c21ae6ccd51aea8e1fffc750f",
+              "size": 2228
+            },
+            "vasprun.xml": {
+              "sha256": "b2766505374cf5c937131f714eb4ac2bb923eb1382b0b09e870d407447434cef",
+              "size": 65250
+            },
+            "CONTCAR": {
+              "sha256": "3c67e49c1bb14eff0c1bf2b69e81ca8127193b33767aa1d63cbfbec5daaadde6",
+              "size": 512
+            },
+            "EIGENVAL": {
+              "sha256": "45f11eb42fd71f16decfd91772f63c9d6dd8338522eabea8d3962b21d3130d9b",
+              "size": 17593
+            },
+            "DOSCAR": {
+              "sha256": "2fd045ffc643206fc8a9c8485989f783d79150b027a4d629b4c69199068e7e54",
+              "size": 11073
+            },
+            "slurm.out": {
+              "sha256": "95ea62339bf1d44d07d28967e56820c1d22ab66ed647765e328ba2b232b37359",
+              "size": 5070
+            },
+            "slurm.err": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "size": 0
+            },
+            "execution.json": {
+              "sha256": "3f725608c1b3606d44a1ba4c9296e5e12b75263b98ce75386e16a420a1a6f282",
+              "size": 153
+            },
+            "input_hashes.sha256": {
+              "sha256": "1a7b75ac09860ebf36943e47a7fe076bb040c139b81fc543e3188e20d13be544",
+              "size": 219
+            },
+            "potcar_hash.sha256": {
+              "sha256": "8b55ae810c6229f2b0b2f83eb716ba58ae607f29da121373c2fd3f93dab71162",
+              "size": 73
+            },
+            "potcar_titles.txt": {
+              "sha256": "854656cffb2987ae1237984bb0892ae9f3f557e92b66e220e30dcefb2f979bf3",
+              "size": 33
+            }
+          },
+          "potcar_sha256": "fd83126ce2b2557ab7a0e13c4d7d5f3b845d60c5c18d02b35b4e8f864f359dc0"
+        }
+      ],
+      "run_id": "vsa-987077595bb7463a",
+      "updated_at": "2026-10-07T12:42:54.273106+00:00",
+      "mpi_ranks": 64
     },
     {
       "material": "Ge",
       "task": "scf",
-      "status": "not_started",
-      "stages": []
+      "status": "succeeded",
+      "stages": [
+        {
+          "name": "scf",
+          "status": "succeeded",
+          "job_id": "7451385",
+          "source_sha256": "86fd7bab75d374877f103546ac89a2b8cbf8093ad12201ac2aa7dbf9dd662200",
+          "input_sha256": {
+            "POSCAR": "cc707f286d3277de3ecaeb2f1373ec1ae3f5060823a46a39dcef38700e70a867",
+            "INCAR": "e3b973a1f279b1b235222ee496d63ef7c2f7455ad14c90665f354fe4b7c4c773",
+            "KPOINTS": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734"
+          },
+          "parameters": {
+            "encut": 400.0,
+            "ediff": 1e-05,
+            "ediffg": -0.03,
+            "nsw": 80,
+            "mesh": [
+              4,
+              4,
+              4
+            ],
+            "ismear": 0,
+            "sigma": 0.05,
+            "cell_relax": true,
+            "nelm": 120,
+            "line_density": 20,
+            "nedos": 2001
+          },
+          "result": {
+            "success": true,
+            "converged_electronic": true,
+            "converged_ionic": true,
+            "valid_structure": true,
+            "final_energy_ev": -8.68710106,
+            "final_max_force_ev_angstrom": 0.0,
+            "vasp_version": "6.2.1",
+            "fermi_energy_ev": 3.86164197,
+            "vasprun_sha256": "024356478240b8a197646f1e70646d69eed880ab289ba728cdfd371176887016",
+            "input_identity_verified": true,
+            "scheduler_state": "COMPLETED",
+            "scientific_accuracy_validated": false
+          },
+          "artifact_manifest": {
+            "INCAR": {
+              "sha256": "e3b973a1f279b1b235222ee496d63ef7c2f7455ad14c90665f354fe4b7c4c773",
+              "size": 251
+            },
+            "KPOINTS": {
+              "sha256": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734",
+              "size": 38
+            },
+            "POSCAR": {
+              "sha256": "cc707f286d3277de3ecaeb2f1373ec1ae3f5060823a46a39dcef38700e70a867",
+              "size": 356
+            },
+            "OUTCAR": {
+              "sha256": "ca32ae3a7441a418bf8980843515e9537a592458b251c36c8c406c0cbef0d5c0",
+              "size": 68990
+            },
+            "OSZICAR": {
+              "sha256": "059d092d9e94139021446017e0a401ede99ba6a3fe1d3e28867ee2ffd9211930",
+              "size": 1111
+            },
+            "vasprun.xml": {
+              "sha256": "024356478240b8a197646f1e70646d69eed880ab289ba728cdfd371176887016",
+              "size": 58372
+            },
+            "CONTCAR": {
+              "sha256": "881a3f9eead4ec72219d1940e68dabab985968bc62b7cf3bc056427e6388d6c3",
+              "size": 512
+            },
+            "EIGENVAL": {
+              "sha256": "1eb4e92b1ae7aa1a2daeca15ca4065253f570792947c1253db85b8708c863bdc",
+              "size": 17593
+            },
+            "DOSCAR": {
+              "sha256": "16070aa2da11988c703164a8cd5e6d82fc1ac1d25539c452d718cdc6da29992c",
+              "size": 11073
+            },
+            "slurm.out": {
+              "sha256": "c12ee3a36606fab37682af93a8a811e421fd24aa52df94393892c2d8f2726bf9",
+              "size": 3256
+            },
+            "slurm.err": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "size": 0
+            },
+            "execution.json": {
+              "sha256": "dee69790131fd9375ec560a8962685b835f71f8b4ba1dfe66bfac836a7dc1af1",
+              "size": 153
+            },
+            "input_hashes.sha256": {
+              "sha256": "9eae8cd4613d9c5aebdc2b59b2395b2ccc5b816f45b5981eeb02c5cee585a9f1",
+              "size": 219
+            },
+            "potcar_hash.sha256": {
+              "sha256": "8b55ae810c6229f2b0b2f83eb716ba58ae607f29da121373c2fd3f93dab71162",
+              "size": 73
+            },
+            "potcar_titles.txt": {
+              "sha256": "854656cffb2987ae1237984bb0892ae9f3f557e92b66e220e30dcefb2f979bf3",
+              "size": 33
+            }
+          },
+          "potcar_sha256": "fd83126ce2b2557ab7a0e13c4d7d5f3b845d60c5c18d02b35b4e8f864f359dc0"
+        }
+      ],
+      "run_id": "vsa-bd802994fd7d4ef4",
+      "updated_at": "2026-10-07T12:44:05.914860+00:00",
+      "mpi_ranks": 64
     },
     {
       "material": "Ge",
       "task": "bands",
-      "status": "not_started",
-      "stages": []
+      "status": "succeeded",
+      "stages": [
+        {
+          "name": "scf",
+          "status": "succeeded",
+          "job_id": "7451386",
+          "source_sha256": "86fd7bab75d374877f103546ac89a2b8cbf8093ad12201ac2aa7dbf9dd662200",
+          "input_sha256": {
+            "POSCAR": "cc707f286d3277de3ecaeb2f1373ec1ae3f5060823a46a39dcef38700e70a867",
+            "INCAR": "e3b973a1f279b1b235222ee496d63ef7c2f7455ad14c90665f354fe4b7c4c773",
+            "KPOINTS": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734"
+          },
+          "parameters": {
+            "encut": 400.0,
+            "ediff": 1e-05,
+            "ediffg": -0.03,
+            "nsw": 80,
+            "mesh": [
+              4,
+              4,
+              4
+            ],
+            "ismear": 0,
+            "sigma": 0.05,
+            "cell_relax": true,
+            "nelm": 120,
+            "line_density": 20,
+            "nedos": 2001
+          },
+          "result": {
+            "success": true,
+            "converged_electronic": true,
+            "converged_ionic": true,
+            "valid_structure": true,
+            "final_energy_ev": -8.68710106,
+            "final_max_force_ev_angstrom": 0.0,
+            "vasp_version": "6.2.1",
+            "fermi_energy_ev": 3.86164197,
+            "vasprun_sha256": "d52ea3b79d280d89e15a579fa6ae0b0f58749ed2593890fd9ec8178fdf593484",
+            "input_identity_verified": true,
+            "scheduler_state": "COMPLETED",
+            "scientific_accuracy_validated": false
+          },
+          "artifact_manifest": {
+            "INCAR": {
+              "sha256": "e3b973a1f279b1b235222ee496d63ef7c2f7455ad14c90665f354fe4b7c4c773",
+              "size": 251
+            },
+            "KPOINTS": {
+              "sha256": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734",
+              "size": 38
+            },
+            "POSCAR": {
+              "sha256": "cc707f286d3277de3ecaeb2f1373ec1ae3f5060823a46a39dcef38700e70a867",
+              "size": 356
+            },
+            "OUTCAR": {
+              "sha256": "11566801a9e1ff487d35401985852a20263dfc9de6fdd063e9edddcae274b1e3",
+              "size": 68990
+            },
+            "OSZICAR": {
+              "sha256": "059d092d9e94139021446017e0a401ede99ba6a3fe1d3e28867ee2ffd9211930",
+              "size": 1111
+            },
+            "vasprun.xml": {
+              "sha256": "d52ea3b79d280d89e15a579fa6ae0b0f58749ed2593890fd9ec8178fdf593484",
+              "size": 58372
+            },
+            "CONTCAR": {
+              "sha256": "881a3f9eead4ec72219d1940e68dabab985968bc62b7cf3bc056427e6388d6c3",
+              "size": 512
+            },
+            "EIGENVAL": {
+              "sha256": "1eb4e92b1ae7aa1a2daeca15ca4065253f570792947c1253db85b8708c863bdc",
+              "size": 17593
+            },
+            "DOSCAR": {
+              "sha256": "16070aa2da11988c703164a8cd5e6d82fc1ac1d25539c452d718cdc6da29992c",
+              "size": 11073
+            },
+            "slurm.out": {
+              "sha256": "c12ee3a36606fab37682af93a8a811e421fd24aa52df94393892c2d8f2726bf9",
+              "size": 3256
+            },
+            "slurm.err": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "size": 0
+            },
+            "execution.json": {
+              "sha256": "283b524e56ac16a6eaddd719387b9abb8eb2caf7524d89306c6e405a8c9eb71e",
+              "size": 153
+            },
+            "input_hashes.sha256": {
+              "sha256": "9eae8cd4613d9c5aebdc2b59b2395b2ccc5b816f45b5981eeb02c5cee585a9f1",
+              "size": 219
+            },
+            "potcar_hash.sha256": {
+              "sha256": "8b55ae810c6229f2b0b2f83eb716ba58ae607f29da121373c2fd3f93dab71162",
+              "size": 73
+            },
+            "potcar_titles.txt": {
+              "sha256": "854656cffb2987ae1237984bb0892ae9f3f557e92b66e220e30dcefb2f979bf3",
+              "size": 33
+            }
+          },
+          "potcar_sha256": "fd83126ce2b2557ab7a0e13c4d7d5f3b845d60c5c18d02b35b4e8f864f359dc0"
+        },
+        {
+          "name": "bands",
+          "status": "succeeded",
+          "job_id": "7451387",
+          "source_sha256": "86fd7bab75d374877f103546ac89a2b8cbf8093ad12201ac2aa7dbf9dd662200",
+          "input_sha256": {
+            "POSCAR": "cc707f286d3277de3ecaeb2f1373ec1ae3f5060823a46a39dcef38700e70a867",
+            "INCAR": "58ec79c1acf33241e034872f6d4dd033e9966f34f6581bc3dac819fb4c167847",
+            "KPOINTS": "dd74d9bf43122adf5ea77808bf3cde13e2d87a3011cfe20f16eadf27b3f5cb0a"
+          },
+          "parameters": {
+            "encut": 400.0,
+            "ediff": 1e-05,
+            "ediffg": -0.03,
+            "nsw": 80,
+            "mesh": [
+              4,
+              4,
+              4
+            ],
+            "ismear": 0,
+            "sigma": 0.05,
+            "cell_relax": true,
+            "nelm": 120,
+            "line_density": 20,
+            "nedos": 2001
+          },
+          "result": {
+            "success": true,
+            "converged_electronic": true,
+            "converged_ionic": true,
+            "valid_structure": true,
+            "final_energy_ev": -5.49827861,
+            "final_max_force_ev_angstrom": 0.3639696230167339,
+            "vasp_version": "6.2.1",
+            "fermi_energy_ev": null,
+            "energy_reference_ev": 3.86164197,
+            "energy_reference_source": "preceding_scf",
+            "vasprun_sha256": "8430f57937eee4a28ff3da0b4ba31506d4925a52a5980e20d4888aea505d0999",
+            "input_identity_verified": true,
+            "scheduler_state": "COMPLETED",
+            "scientific_accuracy_validated": false
+          },
+          "artifact_manifest": {
+            "INCAR": {
+              "sha256": "58ec79c1acf33241e034872f6d4dd033e9966f34f6581bc3dac819fb4c167847",
+              "size": 264
+            },
+            "KPOINTS": {
+              "sha256": "dd74d9bf43122adf5ea77808bf3cde13e2d87a3011cfe20f16eadf27b3f5cb0a",
+              "size": 4848
+            },
+            "POSCAR": {
+              "sha256": "cc707f286d3277de3ecaeb2f1373ec1ae3f5060823a46a39dcef38700e70a867",
+              "size": 356
+            },
+            "OUTCAR": {
+              "sha256": "a80771cef4a642e4aa206546b353e96c36d78647786e942f46d931c6ad9a06cb",
+              "size": 271001
+            },
+            "OSZICAR": {
+              "sha256": "2e8f70bea987b181a8161bf206df856d6fcad0201a473985c26005298dab4898",
+              "size": 633
+            },
+            "vasprun.xml": {
+              "sha256": "8430f57937eee4a28ff3da0b4ba31506d4925a52a5980e20d4888aea505d0999",
+              "size": 264003
+            },
+            "CONTCAR": {
+              "sha256": "881a3f9eead4ec72219d1940e68dabab985968bc62b7cf3bc056427e6388d6c3",
+              "size": 512
+            },
+            "EIGENVAL": {
+              "sha256": "b5fb88f1d12f3e9f67692bfc9cf9cf48433c344393fd643f8e3d469ba56babe1",
+              "size": 202468
+            },
+            "DOSCAR": {
+              "sha256": "6d6f8d88277f4d915e9424a35b7daa8d004b5b4b2dd1e2ea37eef2f7589109a1",
+              "size": 11073
+            },
+            "slurm.out": {
+              "sha256": "4fd182a094fb79dcbcb9a9f5e9874d2650af3afaa22a0b0a0a8b1d4175254f02",
+              "size": 2895
+            },
+            "slurm.err": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "size": 0
+            },
+            "execution.json": {
+              "sha256": "e50aa48a25b6739f3be52ed814e1cc91377d9bf18d9cee3e487e08f4d30a0da6",
+              "size": 153
+            },
+            "input_hashes.sha256": {
+              "sha256": "5d2366aa9eaa95e854774687663fb0d64d09ed226f67f2be7652d710b55ca73f",
+              "size": 219
+            },
+            "potcar_hash.sha256": {
+              "sha256": "8b55ae810c6229f2b0b2f83eb716ba58ae607f29da121373c2fd3f93dab71162",
+              "size": 73
+            },
+            "potcar_titles.txt": {
+              "sha256": "854656cffb2987ae1237984bb0892ae9f3f557e92b66e220e30dcefb2f979bf3",
+              "size": 33
+            }
+          },
+          "potcar_sha256": "fd83126ce2b2557ab7a0e13c4d7d5f3b845d60c5c18d02b35b4e8f864f359dc0"
+        }
+      ],
+      "run_id": "vsa-725f89d3a98d447f",
+      "updated_at": "2026-10-07T12:46:22.437782+00:00",
+      "mpi_ranks": 64
     },
     {
       "material": "Ge",
       "task": "dos",
-      "status": "not_started",
-      "stages": []
+      "status": "succeeded",
+      "stages": [
+        {
+          "name": "scf",
+          "status": "succeeded",
+          "job_id": "7451390",
+          "source_sha256": "86fd7bab75d374877f103546ac89a2b8cbf8093ad12201ac2aa7dbf9dd662200",
+          "input_sha256": {
+            "POSCAR": "cc707f286d3277de3ecaeb2f1373ec1ae3f5060823a46a39dcef38700e70a867",
+            "INCAR": "e3b973a1f279b1b235222ee496d63ef7c2f7455ad14c90665f354fe4b7c4c773",
+            "KPOINTS": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734"
+          },
+          "parameters": {
+            "encut": 400.0,
+            "ediff": 1e-05,
+            "ediffg": -0.03,
+            "nsw": 80,
+            "mesh": [
+              4,
+              4,
+              4
+            ],
+            "ismear": 0,
+            "sigma": 0.05,
+            "cell_relax": true,
+            "nelm": 120,
+            "line_density": 20,
+            "nedos": 2001
+          },
+          "result": {
+            "success": true,
+            "converged_electronic": true,
+            "converged_ionic": true,
+            "valid_structure": true,
+            "final_energy_ev": -8.68710106,
+            "final_max_force_ev_angstrom": 0.0,
+            "vasp_version": "6.2.1",
+            "fermi_energy_ev": 3.86164197,
+            "vasprun_sha256": "a66a74aeac3b16c406d39b56a32d50a755216fad7b8cbde64f7efeebef084303",
+            "input_identity_verified": true,
+            "scheduler_state": "COMPLETED",
+            "scientific_accuracy_validated": false
+          },
+          "artifact_manifest": {
+            "INCAR": {
+              "sha256": "e3b973a1f279b1b235222ee496d63ef7c2f7455ad14c90665f354fe4b7c4c773",
+              "size": 251
+            },
+            "KPOINTS": {
+              "sha256": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734",
+              "size": 38
+            },
+            "POSCAR": {
+              "sha256": "cc707f286d3277de3ecaeb2f1373ec1ae3f5060823a46a39dcef38700e70a867",
+              "size": 356
+            },
+            "OUTCAR": {
+              "sha256": "aa58fbe430d7f77b64064834864b7d185e32b9596df6252bd784f41031763339",
+              "size": 68990
+            },
+            "OSZICAR": {
+              "sha256": "059d092d9e94139021446017e0a401ede99ba6a3fe1d3e28867ee2ffd9211930",
+              "size": 1111
+            },
+            "vasprun.xml": {
+              "sha256": "a66a74aeac3b16c406d39b56a32d50a755216fad7b8cbde64f7efeebef084303",
+              "size": 58372
+            },
+            "CONTCAR": {
+              "sha256": "881a3f9eead4ec72219d1940e68dabab985968bc62b7cf3bc056427e6388d6c3",
+              "size": 512
+            },
+            "EIGENVAL": {
+              "sha256": "1eb4e92b1ae7aa1a2daeca15ca4065253f570792947c1253db85b8708c863bdc",
+              "size": 17593
+            },
+            "DOSCAR": {
+              "sha256": "16070aa2da11988c703164a8cd5e6d82fc1ac1d25539c452d718cdc6da29992c",
+              "size": 11073
+            },
+            "slurm.out": {
+              "sha256": "c12ee3a36606fab37682af93a8a811e421fd24aa52df94393892c2d8f2726bf9",
+              "size": 3256
+            },
+            "slurm.err": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "size": 0
+            },
+            "execution.json": {
+              "sha256": "e1ce43f95a7e1acb419e6e17200aa5af7880b5fa9fd1d17081501258f29b4162",
+              "size": 153
+            },
+            "input_hashes.sha256": {
+              "sha256": "9eae8cd4613d9c5aebdc2b59b2395b2ccc5b816f45b5981eeb02c5cee585a9f1",
+              "size": 219
+            },
+            "potcar_hash.sha256": {
+              "sha256": "8b55ae810c6229f2b0b2f83eb716ba58ae607f29da121373c2fd3f93dab71162",
+              "size": 73
+            },
+            "potcar_titles.txt": {
+              "sha256": "854656cffb2987ae1237984bb0892ae9f3f557e92b66e220e30dcefb2f979bf3",
+              "size": 33
+            }
+          },
+          "potcar_sha256": "fd83126ce2b2557ab7a0e13c4d7d5f3b845d60c5c18d02b35b4e8f864f359dc0"
+        },
+        {
+          "name": "dos",
+          "status": "succeeded",
+          "job_id": "7451391",
+          "source_sha256": "86fd7bab75d374877f103546ac89a2b8cbf8093ad12201ac2aa7dbf9dd662200",
+          "input_sha256": {
+            "POSCAR": "cc707f286d3277de3ecaeb2f1373ec1ae3f5060823a46a39dcef38700e70a867",
+            "INCAR": "02102d096cc6def5ef4726173c2b0bd46a5f65eb632b7bd697fcdc4414744b4b",
+            "KPOINTS": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734"
+          },
+          "parameters": {
+            "encut": 400.0,
+            "ediff": 1e-05,
+            "ediffg": -0.03,
+            "nsw": 80,
+            "mesh": [
+              4,
+              4,
+              4
+            ],
+            "ismear": 0,
+            "sigma": 0.05,
+            "cell_relax": true,
+            "nelm": 120,
+            "line_density": 20,
+            "nedos": 2001
+          },
+          "result": {
+            "success": true,
+            "converged_electronic": true,
+            "converged_ionic": true,
+            "valid_structure": true,
+            "final_energy_ev": -8.68301053,
+            "final_max_force_ev_angstrom": 0.0,
+            "vasp_version": "6.2.1",
+            "fermi_energy_ev": 3.86407355,
+            "vasprun_sha256": "e3bbbdf890da90a51266e52e2bf0713c37ac353d2d040e204cb653e35e71646a",
+            "input_identity_verified": true,
+            "scheduler_state": "COMPLETED",
+            "scientific_accuracy_validated": false
+          },
+          "artifact_manifest": {
+            "INCAR": {
+              "sha256": "02102d096cc6def5ef4726173c2b0bd46a5f65eb632b7bd697fcdc4414744b4b",
+              "size": 278
+            },
+            "KPOINTS": {
+              "sha256": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734",
+              "size": 38
+            },
+            "POSCAR": {
+              "sha256": "cc707f286d3277de3ecaeb2f1373ec1ae3f5060823a46a39dcef38700e70a867",
+              "size": 356
+            },
+            "OUTCAR": {
+              "sha256": "b4d3c29e8bb91c2df801fc5d6f18d7d6169fc34a11d5f88462315c61320516f4",
+              "size": 59660
+            },
+            "OSZICAR": {
+              "sha256": "4d3799c4714ca23511770c8f5d6c9142d7a2a0e6a09d77ebeae585b93edbef54",
+              "size": 633
+            },
+            "vasprun.xml": {
+              "sha256": "e3bbbdf890da90a51266e52e2bf0713c37ac353d2d040e204cb653e35e71646a",
+              "size": 783808
+            },
+            "CONTCAR": {
+              "sha256": "881a3f9eead4ec72219d1940e68dabab985968bc62b7cf3bc056427e6388d6c3",
+              "size": 512
+            },
+            "EIGENVAL": {
+              "sha256": "f9e526dfb4ec731a655afe4826229febc0cbccf972808137428a5deb97d934e3",
+              "size": 17593
+            },
+            "DOSCAR": {
+              "sha256": "82d03724fa9101775d763e6101ad08a54d9a3241490da2320a1e79dc6a02ceb2",
+              "size": 552653
+            },
+            "slurm.out": {
+              "sha256": "3de4a1eb4e5685ba2865c1a5b7d821e8c918a8a06566aa5b3d70fef29c04c5c7",
+              "size": 2895
+            },
+            "slurm.err": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "size": 0
+            },
+            "execution.json": {
+              "sha256": "4347dfc4397c3bc3b4ab20174e2c47132f6295d3048900336288088937828896",
+              "size": 153
+            },
+            "input_hashes.sha256": {
+              "sha256": "3708f2ab6c3312de9e27547516d85164f0bd4e624e2c4252eeaaf4f260bbbb66",
+              "size": 219
+            },
+            "potcar_hash.sha256": {
+              "sha256": "8b55ae810c6229f2b0b2f83eb716ba58ae607f29da121373c2fd3f93dab71162",
+              "size": 73
+            },
+            "potcar_titles.txt": {
+              "sha256": "854656cffb2987ae1237984bb0892ae9f3f557e92b66e220e30dcefb2f979bf3",
+              "size": 33
+            }
+          },
+          "potcar_sha256": "fd83126ce2b2557ab7a0e13c4d7d5f3b845d60c5c18d02b35b4e8f864f359dc0"
+        }
+      ],
+      "run_id": "vsa-da8c3f6f80c54603",
+      "updated_at": "2026-10-07T12:47:56.929298+00:00",
+      "mpi_ranks": 64
     },
     {
       "material": "Al",
       "task": "scf",
-      "status": "not_started",
-      "stages": []
+      "status": "succeeded",
+      "stages": [
+        {
+          "name": "scf",
+          "status": "succeeded",
+          "job_id": "7451393",
+          "source_sha256": "679820ff7b927b4480db44c96e37167d5e7ebbba63a7d2f4234f67ce7b85a878",
+          "input_sha256": {
+            "POSCAR": "1029ca6b5966e2dee7faa2d35200cabf389683416d4815b00002b4d60e77fd8d",
+            "INCAR": "33d774607c8ea712d243c7ae2f4dc32bf8c69aaa0af49259dbb9716c35dec80a",
+            "KPOINTS": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734"
+          },
+          "parameters": {
+            "encut": 400.0,
+            "ediff": 1e-05,
+            "ediffg": -0.03,
+            "nsw": 80,
+            "mesh": [
+              4,
+              4,
+              4
+            ],
+            "ismear": 0,
+            "sigma": 0.05,
+            "cell_relax": true,
+            "nelm": 120,
+            "line_density": 20,
+            "nedos": 2001
+          },
+          "result": {
+            "success": true,
+            "converged_electronic": true,
+            "converged_ionic": true,
+            "valid_structure": true,
+            "final_energy_ev": -3.44835992,
+            "final_max_force_ev_angstrom": 0.0,
+            "vasp_version": "6.2.1",
+            "fermi_energy_ev": 7.21393455,
+            "vasprun_sha256": "b852ada509ecf59f5d59048287ebefd3860ccc0a5c34f0323e39b4fe6de39ef2",
+            "input_identity_verified": true,
+            "scheduler_state": "COMPLETED",
+            "scientific_accuracy_validated": false
+          },
+          "artifact_manifest": {
+            "INCAR": {
+              "sha256": "33d774607c8ea712d243c7ae2f4dc32bf8c69aaa0af49259dbb9716c35dec80a",
+              "size": 251
+            },
+            "KPOINTS": {
+              "sha256": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734",
+              "size": 38
+            },
+            "POSCAR": {
+              "sha256": "1029ca6b5966e2dee7faa2d35200cabf389683416d4815b00002b4d60e77fd8d",
+              "size": 287
+            },
+            "OUTCAR": {
+              "sha256": "452a8eb670ebe2022c8522b2d35e27d536de5a79551cc4eeefe015c3cd3f4c88",
+              "size": 61045
+            },
+            "OSZICAR": {
+              "sha256": "37444030c7134b945d18d22296a13a02b3736a213dec1b9c3641ea5b49eff453",
+              "size": 832
+            },
+            "vasprun.xml": {
+              "sha256": "b852ada509ecf59f5d59048287ebefd3860ccc0a5c34f0323e39b4fe6de39ef2",
+              "size": 57132
+            },
+            "CONTCAR": {
+              "sha256": "92dd46418e1d387349e5881f72b6d46c3877f3b28013ec760840648a8c67fa32",
+              "size": 402
+            },
+            "EIGENVAL": {
+              "sha256": "0943feedb72742800614d26ae95303f9d51f6fa09fe2f50a8d90b211c6957a3e",
+              "size": 17593
+            },
+            "DOSCAR": {
+              "sha256": "6c8e0391c6ba24a02b98e80c465ef63898027b7eccc58b265a0d191e9983fb72",
+              "size": 11073
+            },
+            "slurm.out": {
+              "sha256": "b6eaae1c49dbfd3de8f9e2489b677324a45ff62dc76d69aa557888246792a571",
+              "size": 2977
+            },
+            "slurm.err": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "size": 0
+            },
+            "execution.json": {
+              "sha256": "9936d37692b4763f9065dee52fc15f7b131ba46be23b3cec9583c1835cc999f9",
+              "size": 153
+            },
+            "input_hashes.sha256": {
+              "sha256": "fdcf670f2ba690630d98abb893d7004254ec1e9a5f1f3d16a2b7f68404127415",
+              "size": 219
+            },
+            "potcar_hash.sha256": {
+              "sha256": "4a8d4cc31ebc73a7e66d4f3d638f0e02f7f0dd967330387a9ebe0017908d3741",
+              "size": 73
+            },
+            "potcar_titles.txt": {
+              "sha256": "9f23f994b96fcadef0962f25775bc450eff8c78571e265187fa637c5c7be016c",
+              "size": 33
+            }
+          },
+          "potcar_sha256": "1b07010218b572e3404ce1eea8fed39e24b52859ebef1517bffa2ef69b8d1315"
+        }
+      ],
+      "run_id": "vsa-b85c19b9d6f94a9d",
+      "updated_at": "2026-10-07T12:48:36.038452+00:00",
+      "mpi_ranks": 64
     },
     {
       "material": "Al",
       "task": "bands",
-      "status": "not_started",
-      "stages": []
+      "status": "succeeded",
+      "stages": [
+        {
+          "name": "scf",
+          "status": "succeeded",
+          "job_id": "7451394",
+          "source_sha256": "679820ff7b927b4480db44c96e37167d5e7ebbba63a7d2f4234f67ce7b85a878",
+          "input_sha256": {
+            "POSCAR": "1029ca6b5966e2dee7faa2d35200cabf389683416d4815b00002b4d60e77fd8d",
+            "INCAR": "33d774607c8ea712d243c7ae2f4dc32bf8c69aaa0af49259dbb9716c35dec80a",
+            "KPOINTS": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734"
+          },
+          "parameters": {
+            "encut": 400.0,
+            "ediff": 1e-05,
+            "ediffg": -0.03,
+            "nsw": 80,
+            "mesh": [
+              4,
+              4,
+              4
+            ],
+            "ismear": 0,
+            "sigma": 0.05,
+            "cell_relax": true,
+            "nelm": 120,
+            "line_density": 20,
+            "nedos": 2001
+          },
+          "result": {
+            "success": true,
+            "converged_electronic": true,
+            "converged_ionic": true,
+            "valid_structure": true,
+            "final_energy_ev": -3.44835992,
+            "final_max_force_ev_angstrom": 0.0,
+            "vasp_version": "6.2.1",
+            "fermi_energy_ev": 7.21393455,
+            "vasprun_sha256": "8d89732a0a890b36c9a93c6c6f1ac74419171be8e97ad6c358c5739f729f710e",
+            "input_identity_verified": true,
+            "scheduler_state": "COMPLETED",
+            "scientific_accuracy_validated": false
+          },
+          "artifact_manifest": {
+            "INCAR": {
+              "sha256": "33d774607c8ea712d243c7ae2f4dc32bf8c69aaa0af49259dbb9716c35dec80a",
+              "size": 251
+            },
+            "KPOINTS": {
+              "sha256": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734",
+              "size": 38
+            },
+            "POSCAR": {
+              "sha256": "1029ca6b5966e2dee7faa2d35200cabf389683416d4815b00002b4d60e77fd8d",
+              "size": 287
+            },
+            "OUTCAR": {
+              "sha256": "5cb2b08ba467a633a1ff404fae3ec0e93a9f498ec875a30e741dba708b3fcfab",
+              "size": 61045
+            },
+            "OSZICAR": {
+              "sha256": "37444030c7134b945d18d22296a13a02b3736a213dec1b9c3641ea5b49eff453",
+              "size": 832
+            },
+            "vasprun.xml": {
+              "sha256": "8d89732a0a890b36c9a93c6c6f1ac74419171be8e97ad6c358c5739f729f710e",
+              "size": 57132
+            },
+            "CONTCAR": {
+              "sha256": "92dd46418e1d387349e5881f72b6d46c3877f3b28013ec760840648a8c67fa32",
+              "size": 402
+            },
+            "EIGENVAL": {
+              "sha256": "0943feedb72742800614d26ae95303f9d51f6fa09fe2f50a8d90b211c6957a3e",
+              "size": 17593
+            },
+            "DOSCAR": {
+              "sha256": "6c8e0391c6ba24a02b98e80c465ef63898027b7eccc58b265a0d191e9983fb72",
+              "size": 11073
+            },
+            "slurm.out": {
+              "sha256": "b6eaae1c49dbfd3de8f9e2489b677324a45ff62dc76d69aa557888246792a571",
+              "size": 2977
+            },
+            "slurm.err": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "size": 0
+            },
+            "execution.json": {
+              "sha256": "37976ef7060249b1e0cf8276e252c7ed34c66c48b4cd1290096ba42ef0e6187a",
+              "size": 153
+            },
+            "input_hashes.sha256": {
+              "sha256": "fdcf670f2ba690630d98abb893d7004254ec1e9a5f1f3d16a2b7f68404127415",
+              "size": 219
+            },
+            "potcar_hash.sha256": {
+              "sha256": "4a8d4cc31ebc73a7e66d4f3d638f0e02f7f0dd967330387a9ebe0017908d3741",
+              "size": 73
+            },
+            "potcar_titles.txt": {
+              "sha256": "9f23f994b96fcadef0962f25775bc450eff8c78571e265187fa637c5c7be016c",
+              "size": 33
+            }
+          },
+          "potcar_sha256": "1b07010218b572e3404ce1eea8fed39e24b52859ebef1517bffa2ef69b8d1315"
+        },
+        {
+          "name": "bands",
+          "status": "succeeded",
+          "job_id": "7451398",
+          "source_sha256": "679820ff7b927b4480db44c96e37167d5e7ebbba63a7d2f4234f67ce7b85a878",
+          "input_sha256": {
+            "POSCAR": "1029ca6b5966e2dee7faa2d35200cabf389683416d4815b00002b4d60e77fd8d",
+            "INCAR": "a03d855a2fd1d1c1c692d736b3de62eb484826dd337d578e686f662ddaf388ec",
+            "KPOINTS": "b4a84c51b94f6c839474c874bc6c590dc96f6a349d34b39ee89886552daf7fc5"
+          },
+          "parameters": {
+            "encut": 400.0,
+            "ediff": 1e-05,
+            "ediffg": -0.03,
+            "nsw": 80,
+            "mesh": [
+              4,
+              4,
+              4
+            ],
+            "ismear": 0,
+            "sigma": 0.05,
+            "cell_relax": true,
+            "nelm": 120,
+            "line_density": 20,
+            "nedos": 2001
+          },
+          "result": {
+            "success": true,
+            "converged_electronic": true,
+            "converged_ionic": true,
+            "valid_structure": true,
+            "final_energy_ev": -5.05871239,
+            "final_max_force_ev_angstrom": 0.0,
+            "vasp_version": "6.2.1",
+            "fermi_energy_ev": null,
+            "energy_reference_ev": 7.21393455,
+            "energy_reference_source": "preceding_scf",
+            "vasprun_sha256": "5055341d994cd5472dd395f9e72beb72b3a2291fb383d5323e7b991f984e2ffc",
+            "input_identity_verified": true,
+            "scheduler_state": "COMPLETED",
+            "scientific_accuracy_validated": false
+          },
+          "artifact_manifest": {
+            "INCAR": {
+              "sha256": "a03d855a2fd1d1c1c692d736b3de62eb484826dd337d578e686f662ddaf388ec",
+              "size": 264
+            },
+            "KPOINTS": {
+              "sha256": "b4a84c51b94f6c839474c874bc6c590dc96f6a349d34b39ee89886552daf7fc5",
+              "size": 6786
+            },
+            "POSCAR": {
+              "sha256": "1029ca6b5966e2dee7faa2d35200cabf389683416d4815b00002b4d60e77fd8d",
+              "size": 287
+            },
+            "OUTCAR": {
+              "sha256": "a1ed050b3fe861e6bf3e2d9543c6636258d7fd2d3c6d02e630a015b4a89a2797",
+              "size": 364481
+            },
+            "OSZICAR": {
+              "sha256": "5727c36eed93c4410b20cc748834d87c1487ad00505b95fde1c9d827574e9b4b",
+              "size": 633
+            },
+            "vasprun.xml": {
+              "sha256": "5055341d994cd5472dd395f9e72beb72b3a2291fb383d5323e7b991f984e2ffc",
+              "size": 356393
+            },
+            "CONTCAR": {
+              "sha256": "92dd46418e1d387349e5881f72b6d46c3877f3b28013ec760840648a8c67fa32",
+              "size": 402
+            },
+            "EIGENVAL": {
+              "sha256": "32164bdd761b7f243e6ecf06744fdcf73b1fa3ab365170e562e5385719f257ae",
+              "size": 285118
+            },
+            "DOSCAR": {
+              "sha256": "3e4090147ee5d39ae6abd3006c6a867f7d1763168e92651ecf61a055becf6239",
+              "size": 11073
+            },
+            "slurm.out": {
+              "sha256": "bc5669337db85d9d206435e3085b6ed9c785231f300fc3a6bc8e1d3e7c5c3a43",
+              "size": 2895
+            },
+            "slurm.err": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "size": 0
+            },
+            "execution.json": {
+              "sha256": "a94970fb0b6f91ab24060d2b781c4315c90f12caa5ebc758b86173e8508b2594",
+              "size": 153
+            },
+            "input_hashes.sha256": {
+              "sha256": "fa64bf2f00bcb8334730f8a0ec64f225ebce9c052e32bdeb0bfd78016effb895",
+              "size": 219
+            },
+            "potcar_hash.sha256": {
+              "sha256": "4a8d4cc31ebc73a7e66d4f3d638f0e02f7f0dd967330387a9ebe0017908d3741",
+              "size": 73
+            },
+            "potcar_titles.txt": {
+              "sha256": "9f23f994b96fcadef0962f25775bc450eff8c78571e265187fa637c5c7be016c",
+              "size": 33
+            }
+          },
+          "potcar_sha256": "1b07010218b572e3404ce1eea8fed39e24b52859ebef1517bffa2ef69b8d1315"
+        }
+      ],
+      "run_id": "vsa-f21c1cbba36f40f3",
+      "updated_at": "2026-10-07T12:52:26.473916+00:00",
+      "mpi_ranks": 64
     },
     {
       "material": "Al",
       "task": "dos",
-      "status": "not_started",
-      "stages": []
+      "status": "succeeded",
+      "stages": [
+        {
+          "name": "scf",
+          "status": "succeeded",
+          "job_id": "7451404",
+          "source_sha256": "679820ff7b927b4480db44c96e37167d5e7ebbba63a7d2f4234f67ce7b85a878",
+          "input_sha256": {
+            "POSCAR": "1029ca6b5966e2dee7faa2d35200cabf389683416d4815b00002b4d60e77fd8d",
+            "INCAR": "33d774607c8ea712d243c7ae2f4dc32bf8c69aaa0af49259dbb9716c35dec80a",
+            "KPOINTS": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734"
+          },
+          "parameters": {
+            "encut": 400.0,
+            "ediff": 1e-05,
+            "ediffg": -0.03,
+            "nsw": 80,
+            "mesh": [
+              4,
+              4,
+              4
+            ],
+            "ismear": 0,
+            "sigma": 0.05,
+            "cell_relax": true,
+            "nelm": 120,
+            "line_density": 20,
+            "nedos": 2001
+          },
+          "result": {
+            "success": true,
+            "converged_electronic": true,
+            "converged_ionic": true,
+            "valid_structure": true,
+            "final_energy_ev": -3.44835992,
+            "final_max_force_ev_angstrom": 0.0,
+            "vasp_version": "6.2.1",
+            "fermi_energy_ev": 7.21393455,
+            "vasprun_sha256": "ffe0bcb3f1ca85711bea3ff527fa8868ac5f4e0385b3e6653a5c49fa8e3c88e8",
+            "input_identity_verified": true,
+            "scheduler_state": "COMPLETED",
+            "scientific_accuracy_validated": false
+          },
+          "artifact_manifest": {
+            "INCAR": {
+              "sha256": "33d774607c8ea712d243c7ae2f4dc32bf8c69aaa0af49259dbb9716c35dec80a",
+              "size": 251
+            },
+            "KPOINTS": {
+              "sha256": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734",
+              "size": 38
+            },
+            "POSCAR": {
+              "sha256": "1029ca6b5966e2dee7faa2d35200cabf389683416d4815b00002b4d60e77fd8d",
+              "size": 287
+            },
+            "OUTCAR": {
+              "sha256": "5c526f57fd543ac434e2d8f5c48291cee13361e50110277ced539b6e85ba565c",
+              "size": 61045
+            },
+            "OSZICAR": {
+              "sha256": "37444030c7134b945d18d22296a13a02b3736a213dec1b9c3641ea5b49eff453",
+              "size": 832
+            },
+            "vasprun.xml": {
+              "sha256": "ffe0bcb3f1ca85711bea3ff527fa8868ac5f4e0385b3e6653a5c49fa8e3c88e8",
+              "size": 57132
+            },
+            "CONTCAR": {
+              "sha256": "92dd46418e1d387349e5881f72b6d46c3877f3b28013ec760840648a8c67fa32",
+              "size": 402
+            },
+            "EIGENVAL": {
+              "sha256": "0943feedb72742800614d26ae95303f9d51f6fa09fe2f50a8d90b211c6957a3e",
+              "size": 17593
+            },
+            "DOSCAR": {
+              "sha256": "6c8e0391c6ba24a02b98e80c465ef63898027b7eccc58b265a0d191e9983fb72",
+              "size": 11073
+            },
+            "slurm.out": {
+              "sha256": "b6eaae1c49dbfd3de8f9e2489b677324a45ff62dc76d69aa557888246792a571",
+              "size": 2977
+            },
+            "slurm.err": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "size": 0
+            },
+            "execution.json": {
+              "sha256": "f8681cd8b5dd08da4fc404e6a73a40f0ed6f91bffb4cdc5616b980cfd8191550",
+              "size": 153
+            },
+            "input_hashes.sha256": {
+              "sha256": "fdcf670f2ba690630d98abb893d7004254ec1e9a5f1f3d16a2b7f68404127415",
+              "size": 219
+            },
+            "potcar_hash.sha256": {
+              "sha256": "4a8d4cc31ebc73a7e66d4f3d638f0e02f7f0dd967330387a9ebe0017908d3741",
+              "size": 73
+            },
+            "potcar_titles.txt": {
+              "sha256": "9f23f994b96fcadef0962f25775bc450eff8c78571e265187fa637c5c7be016c",
+              "size": 33
+            }
+          },
+          "potcar_sha256": "1b07010218b572e3404ce1eea8fed39e24b52859ebef1517bffa2ef69b8d1315"
+        },
+        {
+          "name": "dos",
+          "status": "succeeded",
+          "job_id": "7451406",
+          "source_sha256": "679820ff7b927b4480db44c96e37167d5e7ebbba63a7d2f4234f67ce7b85a878",
+          "input_sha256": {
+            "POSCAR": "1029ca6b5966e2dee7faa2d35200cabf389683416d4815b00002b4d60e77fd8d",
+            "INCAR": "a6c8b5eda62630f652925a778cf8af7b3916c6c43c00dac6ff6bf4ef252081e6",
+            "KPOINTS": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734"
+          },
+          "parameters": {
+            "encut": 400.0,
+            "ediff": 1e-05,
+            "ediffg": -0.03,
+            "nsw": 80,
+            "mesh": [
+              4,
+              4,
+              4
+            ],
+            "ismear": 0,
+            "sigma": 0.05,
+            "cell_relax": true,
+            "nelm": 120,
+            "line_density": 20,
+            "nedos": 2001
+          },
+          "result": {
+            "success": true,
+            "converged_electronic": true,
+            "converged_ionic": true,
+            "valid_structure": true,
+            "final_energy_ev": -3.44835767,
+            "final_max_force_ev_angstrom": 0.0,
+            "vasp_version": "6.2.1",
+            "fermi_energy_ev": 7.21380824,
+            "vasprun_sha256": "dd2fe1d0268360786edbfab706047d83b513a452cbd1a530a881a66fd3835ad5",
+            "input_identity_verified": true,
+            "scheduler_state": "COMPLETED",
+            "scientific_accuracy_validated": false
+          },
+          "artifact_manifest": {
+            "INCAR": {
+              "sha256": "a6c8b5eda62630f652925a778cf8af7b3916c6c43c00dac6ff6bf4ef252081e6",
+              "size": 278
+            },
+            "KPOINTS": {
+              "sha256": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734",
+              "size": 38
+            },
+            "POSCAR": {
+              "sha256": "1029ca6b5966e2dee7faa2d35200cabf389683416d4815b00002b4d60e77fd8d",
+              "size": 287
+            },
+            "OUTCAR": {
+              "sha256": "8a9d4e0625f2efa02197a100390b2a356534dad3d95b82f127fd61ed704c4ddf",
+              "size": 57018
+            },
+            "OSZICAR": {
+              "sha256": "a1f78f975c86c799b0a512d1e446a4a8c374e3c88f7e9c4e64dd88c7b3912d27",
+              "size": 633
+            },
+            "vasprun.xml": {
+              "sha256": "dd2fe1d0268360786edbfab706047d83b513a452cbd1a530a881a66fd3835ad5",
+              "size": 483628
+            },
+            "CONTCAR": {
+              "sha256": "92dd46418e1d387349e5881f72b6d46c3877f3b28013ec760840648a8c67fa32",
+              "size": 402
+            },
+            "EIGENVAL": {
+              "sha256": "6c424ecb46ef894ad2b87a92637e006ed9cd684c70b24d38c766210c16e64d09",
+              "size": 17593
+            },
+            "DOSCAR": {
+              "sha256": "63dbd8f6c1eeee6a5c1fdb01fbefdaad9919075caaa97a76444a2b1cf34cc0b3",
+              "size": 312463
+            },
+            "slurm.out": {
+              "sha256": "08e9d418a1954f233693dd0731eeb40360d42b6455186666531b55fbd0a52fe4",
+              "size": 2895
+            },
+            "slurm.err": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "size": 0
+            },
+            "execution.json": {
+              "sha256": "237247a02e35703bdd8fc123831bf52d315f71e05c90f291855ec07d30f099a0",
+              "size": 153
+            },
+            "input_hashes.sha256": {
+              "sha256": "f43e3050c9a4bbe47a9a59d3e0f16c3e533ef3b6840f4df2589086572811e1e6",
+              "size": 219
+            },
+            "potcar_hash.sha256": {
+              "sha256": "4a8d4cc31ebc73a7e66d4f3d638f0e02f7f0dd967330387a9ebe0017908d3741",
+              "size": 73
+            },
+            "potcar_titles.txt": {
+              "sha256": "9f23f994b96fcadef0962f25775bc450eff8c78571e265187fa637c5c7be016c",
+              "size": 33
+            }
+          },
+          "potcar_sha256": "1b07010218b572e3404ce1eea8fed39e24b52859ebef1517bffa2ef69b8d1315"
+        }
+      ],
+      "run_id": "vsa-be00ca5da8e14aec",
+      "updated_at": "2026-10-07T12:53:41.574166+00:00",
+      "mpi_ranks": 64
     },
     {
       "material": "Cu",
       "task": "relax",
-      "status": "not_started",
-      "stages": []
+      "status": "succeeded",
+      "stages": [
+        {
+          "name": "relax",
+          "status": "succeeded",
+          "job_id": "7451407",
+          "source_sha256": "b3bbd86f140c8c813cf24dd39a60bf7c3f8630ef2d0aa1581341ab3983117c59",
+          "input_sha256": {
+            "POSCAR": "a04f0b7c5a4ecb53ece58abfae3dad71cda2725bf7594cd07667ad490123d42b",
+            "INCAR": "9eec6b046d54f967f1e7ed251db718ff42c995c27da1f66f27956f5e17a32c56",
+            "KPOINTS": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734"
+          },
+          "parameters": {
+            "encut": 400.0,
+            "ediff": 1e-05,
+            "ediffg": -0.03,
+            "nsw": 80,
+            "mesh": [
+              4,
+              4,
+              4
+            ],
+            "ismear": 0,
+            "sigma": 0.05,
+            "cell_relax": true,
+            "nelm": 120,
+            "line_density": 20,
+            "nedos": 2001
+          },
+          "result": {
+            "success": true,
+            "converged_electronic": true,
+            "converged_ionic": true,
+            "valid_structure": true,
+            "final_energy_ev": -3.56372039,
+            "final_max_force_ev_angstrom": 0.0,
+            "vasp_version": "6.2.1",
+            "fermi_energy_ev": null,
+            "vasprun_sha256": "d9dafe5365492eaa5c9976e646e572c328100278191cf71a5e1d815115867521",
+            "input_identity_verified": true,
+            "scheduler_state": "COMPLETED",
+            "scientific_accuracy_validated": false
+          },
+          "artifact_manifest": {
+            "INCAR": {
+              "sha256": "9eec6b046d54f967f1e7ed251db718ff42c995c27da1f66f27956f5e17a32c56",
+              "size": 269
+            },
+            "KPOINTS": {
+              "sha256": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734",
+              "size": 38
+            },
+            "POSCAR": {
+              "sha256": "a04f0b7c5a4ecb53ece58abfae3dad71cda2725bf7594cd07667ad490123d42b",
+              "size": 287
+            },
+            "OUTCAR": {
+              "sha256": "681362b9eb524e9c21681851803466146e026c056de64d94248904e449dd9483",
+              "size": 141673
+            },
+            "OSZICAR": {
+              "sha256": "9f00063a170c97d073e56bffba8317693a62bb4325c3398e30c90e7cc4c52015",
+              "size": 2321
+            },
+            "vasprun.xml": {
+              "sha256": "d9dafe5365492eaa5c9976e646e572c328100278191cf71a5e1d815115867521",
+              "size": 64876
+            },
+            "CONTCAR": {
+              "sha256": "e16494d30593fb0a027707de7e4d8ecb031b6db2b38cf78af6bfeef6f4f57d1e",
+              "size": 402
+            },
+            "EIGENVAL": {
+              "sha256": "9d951eeb37120dc2395ec910003f269df7acdc51980f519466d9b31059086237",
+              "size": 17593
+            },
+            "DOSCAR": {
+              "sha256": "8769d3fe8896aa04020d8d87b5d87ace191adf32bedf8e792b1d34539c472fc9",
+              "size": 11073
+            },
+            "slurm.out": {
+              "sha256": "fe2555ec498dc84474c2b9d7a4be95b160f62445aabb35d2e4fb6c7a23effcd8",
+              "size": 5163
+            },
+            "slurm.err": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "size": 0
+            },
+            "execution.json": {
+              "sha256": "959223a9514944aa13eafe4e0a8b045299f871d47dc1fec1ab1e1c41e58a796d",
+              "size": 153
+            },
+            "input_hashes.sha256": {
+              "sha256": "6e827b8ac22e912cce44aabd4732eec5ec630fcf0cb807ceb0331dd47a5f538a",
+              "size": 219
+            },
+            "potcar_hash.sha256": {
+              "sha256": "2f53732c717815a2f07a89f3ac548a208673b2a0a27cd93d7fdd4ea85de6f49a",
+              "size": 73
+            },
+            "potcar_titles.txt": {
+              "sha256": "5bfd86a375be3e178e6a9ccbd1cf14c9fab6992e79ae26be5ce3b223fd588da2",
+              "size": 33
+            }
+          },
+          "potcar_sha256": "b64dae53834dc113c0e23e6a6d919c9f23446fffbe5b6a1a7c48410998f6f67d"
+        }
+      ],
+      "run_id": "vsa-c62b83edbf96436a",
+      "updated_at": "2026-10-07T12:54:28.603802+00:00",
+      "mpi_ranks": 64
     },
     {
       "material": "Cu",
       "task": "scf",
-      "status": "not_started",
-      "stages": []
+      "status": "succeeded",
+      "stages": [
+        {
+          "name": "scf",
+          "status": "succeeded",
+          "job_id": "7451409",
+          "source_sha256": "b3bbd86f140c8c813cf24dd39a60bf7c3f8630ef2d0aa1581341ab3983117c59",
+          "input_sha256": {
+            "POSCAR": "a04f0b7c5a4ecb53ece58abfae3dad71cda2725bf7594cd07667ad490123d42b",
+            "INCAR": "c57321fcb8deff1499cdf213d1b623b4b8ff777ab0f60a7f664269ec2e1fb4b3",
+            "KPOINTS": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734"
+          },
+          "parameters": {
+            "encut": 400.0,
+            "ediff": 1e-05,
+            "ediffg": -0.03,
+            "nsw": 80,
+            "mesh": [
+              4,
+              4,
+              4
+            ],
+            "ismear": 0,
+            "sigma": 0.05,
+            "cell_relax": true,
+            "nelm": 120,
+            "line_density": 20,
+            "nedos": 2001
+          },
+          "result": {
+            "success": true,
+            "converged_electronic": true,
+            "converged_ionic": true,
+            "valid_structure": true,
+            "final_energy_ev": -3.56124523,
+            "final_max_force_ev_angstrom": 0.0,
+            "vasp_version": "6.2.1",
+            "fermi_energy_ev": 8.44705427,
+            "vasprun_sha256": "37082d1e81c755940a75bd956b8044941cc87b35aa49a3f558bbb5c02ff9ed3a",
+            "input_identity_verified": true,
+            "scheduler_state": "COMPLETED",
+            "scientific_accuracy_validated": false
+          },
+          "artifact_manifest": {
+            "INCAR": {
+              "sha256": "c57321fcb8deff1499cdf213d1b623b4b8ff777ab0f60a7f664269ec2e1fb4b3",
+              "size": 251
+            },
+            "KPOINTS": {
+              "sha256": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734",
+              "size": 38
+            },
+            "POSCAR": {
+              "sha256": "a04f0b7c5a4ecb53ece58abfae3dad71cda2725bf7594cd07667ad490123d42b",
+              "size": 287
+            },
+            "OUTCAR": {
+              "sha256": "48b49e8097ab3fa64156cceeab8a6e62f10fe1a3fa90943380ca6fdd84dda693",
+              "size": 67886
+            },
+            "OSZICAR": {
+              "sha256": "6ce6611d81d260cd88963af5278a250f250c6b6cf7bc6b70214786bde1470eb2",
+              "size": 1018
+            },
+            "vasprun.xml": {
+              "sha256": "37082d1e81c755940a75bd956b8044941cc87b35aa49a3f558bbb5c02ff9ed3a",
+              "size": 57692
+            },
+            "CONTCAR": {
+              "sha256": "242d0a320fc550512b377851082fca091aa919beb0cc19b6f9205a1d24678a09",
+              "size": 402
+            },
+            "EIGENVAL": {
+              "sha256": "e16efcd763ca16322b0f48e7fb8e474ace459f3eb7b80b23c5c13f30ca549401",
+              "size": 17593
+            },
+            "DOSCAR": {
+              "sha256": "f38b65da08dd471be104603fca0f281cd945e97b13a18186bde047703ed9bb6d",
+              "size": 11073
+            },
+            "slurm.out": {
+              "sha256": "7c446732b2d0514dcad55d3296191bf8067e5cdd9808ccd1df5e3be6d36372c2",
+              "size": 3163
+            },
+            "slurm.err": {
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "size": 0
+            },
+            "execution.json": {
+              "sha256": "aa5f01f0e2a6ada81a5ad87ef61c2b20f684098e2794c3692746740a481659ac",
+              "size": 153
+            },
+            "input_hashes.sha256": {
+              "sha256": "b39f0bfa0e446d7222f626027694c7f574d7bf9ea151944ea9619eca0bbb340e",
+              "size": 219
+            },
+            "potcar_hash.sha256": {
+              "sha256": "2f53732c717815a2f07a89f3ac548a208673b2a0a27cd93d7fdd4ea85de6f49a",
+              "size": 73
+            },
+            "potcar_titles.txt": {
+              "sha256": "5bfd86a375be3e178e6a9ccbd1cf14c9fab6992e79ae26be5ce3b223fd588da2",
+              "size": 33
+            }
+          },
+          "potcar_sha256": "b64dae53834dc113c0e23e6a6d919c9f23446fffbe5b6a1a7c48410998f6f67d"
+        }
+      ],
+      "run_id": "vsa-375fabc23f74411e",
+      "updated_at": "2026-10-07T12:55:53.152191+00:00",
+      "mpi_ranks": 64
     },
     {
       "material": "Cu",
       "task": "bands",
-      "status": "not_started",
-      "stages": []
+      "status": "submitting",
+      "stages": [
+        {
+          "name": "scf",
+          "status": "submitting",
+          "job_id": null,
+          "source_sha256": "b3bbd86f140c8c813cf24dd39a60bf7c3f8630ef2d0aa1581341ab3983117c59",
+          "input_sha256": {
+            "POSCAR": "a04f0b7c5a4ecb53ece58abfae3dad71cda2725bf7594cd07667ad490123d42b",
+            "INCAR": "c57321fcb8deff1499cdf213d1b623b4b8ff777ab0f60a7f664269ec2e1fb4b3",
+            "KPOINTS": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734"
+          },
+          "parameters": {
+            "encut": 400.0,
+            "ediff": 1e-05,
+            "ediffg": -0.03,
+            "nsw": 80,
+            "mesh": [
+              4,
+              4,
+              4
+            ],
+            "ismear": 0,
+            "sigma": 0.05,
+            "cell_relax": true,
+            "nelm": 120,
+            "line_density": 20,
+            "nedos": 2001
+          }
+        },
+        {
+          "name": "bands",
+          "status": "planned",
+          "job_id": null,
+          "source_sha256": "b3bbd86f140c8c813cf24dd39a60bf7c3f8630ef2d0aa1581341ab3983117c59",
+          "input_sha256": {
+            "POSCAR": "a04f0b7c5a4ecb53ece58abfae3dad71cda2725bf7594cd07667ad490123d42b",
+            "INCAR": "65f3607193727ed279578bb72678300823392f50285857e3a0b62ab0ec10786e",
+            "KPOINTS": "f60a8974ab4f8a736fe77ab304a879381e825a662861918e88c2d8e96e9ac01a"
+          },
+          "parameters": {
+            "encut": 400.0,
+            "ediff": 1e-05,
+            "ediffg": -0.03,
+            "nsw": 80,
+            "mesh": [
+              4,
+              4,
+              4
+            ],
+            "ismear": 0,
+            "sigma": 0.05,
+            "cell_relax": true,
+            "nelm": 120,
+            "line_density": 20,
+            "nedos": 2001
+          }
+        }
+      ],
+      "run_id": "vsa-27a30ea3a8524432",
+      "updated_at": "2026-10-07T12:55:58.194774+00:00",
+      "mpi_ranks": 64
     },
     {
       "material": "Cu",

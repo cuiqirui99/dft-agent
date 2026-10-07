@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=68", "wheel"]
+requires = ["setuptools>=77.0.3", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -7,6 +7,9 @@ name = "vasp-slurm-agent"
 version = "0.1.0a1"
 description = "A local single-user workbench for reviewed VASP calculations on Slurm"
 readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE", "NOTICE.md"]
+authors = [{name = "cuiqirui99"}]
 requires-python = ">=3.11"
 dependencies = [
     "pymatgen>=2024.11.13,<2027",
@@ -29,6 +32,12 @@ classifiers = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8,<10", "build>=1.2,<2", "streamlit>=1.65,<2"]
+
+[project.urls]
+Homepage = "https://github.com/cuiqirui99/vasp-slurm-agent"
+Repository = "https://github.com/cuiqirui99/vasp-slurm-agent"
+Documentation = "https://github.com/cuiqirui99/vasp-slurm-agent/blob/main/README.md"
+Issues = "https://github.com/cuiqirui99/vasp-slurm-agent/issues"
 
 [project.scripts]
 vasp-agent = "vasp_slurm_agent.cli:main"

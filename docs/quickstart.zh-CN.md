@@ -1,12 +1,14 @@
 # 本地使用说明
 
-当前为 `0.1.0a1` 开发预览，面向已有 VASP 和 Slurm 使用权限的单个研究人员，支持非磁性 PBE 的有序周期结构。无需 LLM，也不连接旧版 AI_AGNET 的数据库。Si 结构优化已有一份[真实运行记录](../validation/results/Si-relax.json)；SCF、能带和 DOS 已有实现及离线检查，真实验收仍在进行。
+当前为 `0.1.0a1` 开发预览，面向已有 VASP 和 Slurm 使用权限的单个研究人员，支持非磁性 PBE 的有序周期结构。无需 LLM，也不连接旧版 AI_AGNET 的数据库。[真实验收记录](../validation/results/campaign.json)持续记录各任务状态、求解器版本、收敛检查和文件哈希，完成情况以记录中的状态字段为准。
 
 ## 1. 安装
 
-在项目目录内执行：
+先获取源码并进入项目目录；如仓库访问需要认证，请先完成 GitHub 登录：
 
 ```bash
+git clone https://github.com/cuiqirui99/vasp-slurm-agent.git
+cd vasp-slurm-agent
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install .
@@ -14,6 +16,8 @@ vasp-agent ui
 ```
 
 需要 macOS 或 Linux、Python 3.11 或以上和本机 SSH 客户端；当前不支持原生 Windows。界面只监听 `127.0.0.1`。不要将其直接转发成公网服务；它没有面向多用户的登录和租户隔离功能。
+
+远端登录与计算环境需要 Python 3.8 或以上、Bash 和 `sha256sum`，Slurm 需提供 `sbatch`、`squeue`、`sacct`、`scancel`。需要加载模块时，将对应命令填入集群配置。
 
 源码的 `examples/` 提供小型 CIF 输入，安装后的 wheel 也包含这些示例。没有源码目录时，可提取 Si 结构再上传：
 
@@ -94,4 +98,4 @@ vasp-agent watch --help
 
 磁性、DFT+U、SOC、杂化泛函、声子、NEB、缺陷等需求不在这四条方法范围内。本工具不会根据失败自行调整科学参数。数值精度和具体材料适用性需要按研究目标另行检查。
 
-开发验收依据[冻结方案](../validation/protocol.v1.json)，已完成的真实运行记录保存在 `validation/results/`。分发条款见 [NOTICE.md](../NOTICE.md)。
+开发验收依据[冻结方案](../validation/protocol.v1.json)，真实运行记录保存在 [`validation/results/`](../validation/results/)。代码与文档采用 [MIT 许可证](../LICENSE)，外部求解器条款见 [NOTICE.md](../NOTICE.md)，引用信息见 [CITATION.cff](../CITATION.cff)。

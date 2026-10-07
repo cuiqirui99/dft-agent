@@ -27,6 +27,8 @@ the reference inputs through the application before submission.
 ```sh
 python validation/reference/compare_reference.py compare \
   --agent /private/agent-scf/outputs --reference /private/reference-Si/outputs \
+  --expected-source /private/agent-scf/inputs/POSCAR \
+  --reference-receipt /private/reference-Si/inputs/reference_input.json \
   --output /private/reference-Si/comparison.json
 ```
 
@@ -35,11 +37,16 @@ electronic convergence, every retained artifact receipt, identical input
 structure/model/mesh/POTCAR identity, then applies the existing protocol's
 **1 meV/atom energy** and **0.01 eV/angstrom maximum force-vector difference**.
 An agreement pass establishes software/model consistency, not physical accuracy.
+The hand-authored receipt must match the frozen source/protocol hashes and both
+authored and executed input hashes; the solver job IDs must differ. A pair of
+application-generated runs cannot substitute for the manual reference.
 
 Use `--variant higher-cutoff`, `denser-mesh`, or `combined` to prepare the frozen
 520 eV and/or 6x6x6 sensitivity cases, and `compare --mode sensitivity` to record
 their differences. Sensitivity reports are measurements without a convergence
 pass claim or an experimental comparison. Preserve the original baseline.
+The comparator checks the declared variant's exact target settings; unchanged
+baseline settings cannot count as a sensitivity measurement.
 
 ## Nontrivial ionic relaxation
 
@@ -54,6 +61,7 @@ ionic motion rather than only a symmetric cell-volume optimization.
 ```sh
 python validation/reference/compare_reference.py audit \
   --run /private/displaced-relax/outputs --require-internal-relaxation \
+  --expected-source /private/displaced-relax/displaced_source/POSCAR \
   --output /private/displaced-relax/independent-audit.json
 ```
 

@@ -88,7 +88,15 @@ def xml_structure_matches(node: ET.Element | None, atoms) -> bool:
     return bool(np.allclose(basis, atoms.cell.array, atol=1e-6, rtol=0) and np.allclose(delta, 0, atol=1e-6, rtol=0))
 
 
-def audit(directory: Path, require_internal_relaxation: bool = False) -> dict:
+def same_geometry(first, second) -> bool:
+    if first.get_chemical_symbols() != second.get_chemical_symbols():
+        return False
+    delta = first.get_scaled_positions(wrap=False) - second.get_scaled_positions(wrap=False)
+    delta -= np.rint(delta)
+    return bool(np.allclose(first.cell.array, second.cell.array, atol=1e-9, rtol=0) and np.allclose(delta, 0, atol=1e-9, rtol=0))
+
+
+def audit(directory: Path, require_internal_relaxation: bool = False, expected_source: Path | None = None) -> dict:
     directory = Path(directory)
     root = ET.parse(directory / "vasprun.xml").getroot()
     if root.tag != "modeling":
@@ -122,6 +130,7 @@ def audit(directory: Path, require_internal_relaxation: bool = False) -> dict:
     ionic_converged = "reached required accuracy - stopping structural energy minimisation" in outcar if task_relax else None
     finished = "General timing and accounting informations for this job" in outcar
     initial = read(directory / "POSCAR", format="vasp")
+    expected_source_matches = same_geometry(initial, read(expected_source, format="vasp")) if expected_source is not None else None
     final = read(directory / "CONTCAR", format="vasp")
     same_elements = initial.get_chemical_symbols() == final.get_chemical_symbols() == outcar_images[-1].get_chemical_symbols()
     initial_geometry_matches = xml_structure_matches(root.find("./structure[@name='initialpos']"), initial)
@@ -133,6 +142,8 @@ def audit(directory: Path, require_internal_relaxation: bool = False) -> dict:
     exit_code = execution.get("exit_code")
     receipts = artifact_receipts(directory)
     passed = finished and electronic_converged and same_elements and initial_geometry_matches and final_geometry_matches and exit_code == 0 and receipts["verified"] and parser_energy_difference <= 1e-6 and parser_force_difference <= 1e-6
+    if expected_source is not None:
+        passed = passed and expected_source_matches
     if task_relax:
         passed = passed and ionic_converged and trajectory[-1]["max_force_ev_angstrom"] <= abs(float(incar["EDIFFG"]))
     report = {
@@ -142,6 +153,8 @@ def audit(directory: Path, require_internal_relaxation: bool = False) -> dict:
         "electronic_converged": electronic_converged, "electronic_steps_per_ionic_step": scsteps,
         "ionic_converged": ionic_converged, "input_final_site_identity": same_elements,
         "xml_initial_matches_poscar": initial_geometry_matches, "xml_final_matches_contcar": final_geometry_matches,
+        "expected_source_matches": expected_source_matches,
+        "expected_source_sha256": sha256(expected_source) if expected_source is not None else None,
         "max_parser_energy_difference_ev": parser_energy_difference,
         "max_parser_force_difference_ev_angstrom": parser_force_difference,
         "initial_volume_angstrom3": float(initial.get_volume()),
@@ -180,13 +193,35 @@ def audit(directory: Path, require_internal_relaxation: bool = False) -> dict:
 MODEL_KEYS = ("GGA", "ISPIN", "ENCUT", "EDIFF", "NELM", "PREC", "ALGO", "LREAL", "LASPH", "ISMEAR", "SIGMA", "IBRION", "NSW", "ISIF", "ICHARG", "ISTART")
 
 
-def compare(agent: Path, reference: Path, protocol_path: Path, mode: str) -> dict:
+def reference_identity(reference: Path, receipt_path: Path, expected_source: Path, protocol_path: Path, mode: str) -> dict:
+    """Bind the manual recipe to its frozen source and the files actually run."""
+    receipt = json.loads(receipt_path.read_text())
+    checks = {
+        "independently_authored_recipe": receipt.get("method") == "independently_authored_plain_text_recipe_ase_structure_reader" and receipt.get("task") == "scf",
+        "source_hash_matches": receipt.get("source_poscar_sha256") == sha256(expected_source),
+        "protocol_hash_matches": receipt.get("protocol_sha256") == sha256(protocol_path),
+    }
+    for name in ("INCAR", "KPOINTS", "POSCAR"):
+        expected = receipt.get("inputs", {}).get(name, {})
+        for label, path in (("authored", receipt_path.parent / name), ("executed", reference / name)):
+            checks[f"{name}_{label}_hash_matches"] = path.is_file() and path.stat().st_size == expected.get("size") and sha256(path) == expected.get("sha256")
+    variant = receipt.get("variant")
+    checks["declared_variant_matches_mode"] = variant == "baseline" if mode == "same-model" else variant in {"higher-cutoff", "denser-mesh", "combined"}
+    return {"verified": all(checks.values()), "checks": checks, "variant": variant, "receipt_sha256": sha256(receipt_path), "declared_encut_ev": receipt.get("encut_ev"), "declared_kpoint_grid": receipt.get("kpoint_grid")}
+
+
+def compare(agent: Path, reference: Path, protocol_path: Path, mode: str, *, expected_source: Path | None = None, reference_receipt: Path | None = None) -> dict:
     if agent.resolve() == reference.resolve():
         raise ValueError("A run cannot serve as its own independently executed reference.")
+    if expected_source is None or reference_receipt is None:
+        raise ValueError("A frozen expected_source POSCAR and independently authored reference_input receipt are required.")
+    if mode not in {"same-model", "sensitivity"}:
+        raise ValueError("Unknown reference comparison mode.")
     protocol = json.loads(protocol_path.read_text())
-    a, b = audit(agent), audit(reference)
+    identity = reference_identity(reference, reference_receipt, expected_source, protocol_path, mode)
+    a, b = audit(agent, expected_source=expected_source), audit(reference, expected_source=expected_source)
     a_input, b_input = read(agent / "POSCAR", format="vasp"), read(reference / "POSCAR", format="vasp")
-    same_structure = (a_input.get_chemical_symbols() == b_input.get_chemical_symbols() and np.allclose(a_input.cell.array, b_input.cell.array, atol=1e-9, rtol=0) and np.allclose(a_input.get_scaled_positions(), b_input.get_scaled_positions(), atol=1e-9, rtol=0))
+    same_structure = same_geometry(a_input, b_input)
     a_incar, b_incar = read_incar(agent / "INCAR"), read_incar(reference / "INCAR")
     model_differences = {key: [a_incar.get(key), b_incar.get(key)] for key in MODEL_KEYS if a_incar.get(key) != b_incar.get(key)}
     mesh_a, mesh_b = read_mesh(agent / "KPOINTS"), read_mesh(reference / "KPOINTS")
@@ -198,7 +233,16 @@ def compare(agent: Path, reference: Path, protocol_path: Path, mode: str) -> dic
     energy_difference = abs(a_atoms.get_potential_energy() - b_atoms.get_potential_energy()) / len(a_atoms)
     force_difference = float(np.max(np.linalg.norm(a_atoms.get_forces() - b_atoms.get_forces(), axis=1)))
     tolerance = protocol["reference_protocol"]
-    common = a["passed"] and b["passed"] and same_structure and same_potcar and scf_identity
+    jobs = [str(json.loads((path / "execution.json").read_text()).get("job_id") or "") for path in (agent, reference)]
+    distinct_jobs = all(jobs) and jobs[0] != jobs[1]
+    settings = protocol["parameters"]
+    baseline_mesh = {"grid": settings["kpoint_grid"], "shift": [0.0, 0.0, 0.0]}
+    baseline_settings_match = a_incar.get("ENCUT") == settings["encut"] and mesh_a == baseline_mesh
+    variant = identity["variant"]
+    target_encut = 520.0 if variant in {"higher-cutoff", "combined"} else settings["encut"]
+    target_grid = [6, 6, 6] if variant in {"denser-mesh", "combined"} else settings["kpoint_grid"]
+    target_settings_match = (b_incar.get("ENCUT") == target_encut and mesh_b == {"grid": target_grid, "shift": [0.0, 0.0, 0.0]} and identity["declared_encut_ev"] == target_encut and identity["declared_kpoint_grid"] == target_grid)
+    common = a["passed"] and b["passed"] and same_structure and same_potcar and scf_identity and identity["verified"] and distinct_jobs and baseline_settings_match and target_settings_match
     if mode == "same-model":
         passed = common and not model_differences and mesh_a == mesh_b and energy_difference <= tolerance["energy_tolerance_ev_per_atom"] and force_difference <= tolerance["force_tolerance_ev_per_angstrom"]
         status = "passed" if passed else "failed"
@@ -206,12 +250,16 @@ def compare(agent: Path, reference: Path, protocol_path: Path, mode: str) -> dic
         # Sensitivity is a measured difference, not a convergence certificate.
         passed = None
         allowed_changes = set(model_differences) <= {"ENCUT"}
-        status = "measured" if common and allowed_changes else "invalid_comparison"
+        settings_changed = a_incar.get("ENCUT") != b_incar.get("ENCUT") or mesh_a != mesh_b
+        status = "measured" if common and allowed_changes and settings_changed else "invalid_comparison"
     return {
         "schema_version": 1, "mode": mode, "status": status, "passed": passed,
         "protocol_sha256": sha256(protocol_path), "independent_runs_passed": [a["passed"], b["passed"]],
         "same_input_structure": same_structure, "same_potcar_sha256": same_potcar,
         "both_runs_are_scf": scf_identity,
+        "reference_input_identity": identity, "distinct_solver_jobs": bool(distinct_jobs),
+        "baseline_settings_match_protocol": baseline_settings_match,
+        "reference_settings_match_declared_variant": target_settings_match,
         "model_differences": model_differences, "kpoint_grids": [mesh_a, mesh_b],
         "energy_difference_ev_per_atom": energy_difference, "max_force_vector_difference_ev_angstrom": force_difference,
         "energy_tolerance_ev_per_atom": tolerance["energy_tolerance_ev_per_atom"] if mode == "same-model" else None,
@@ -227,16 +275,19 @@ def main() -> None:
     one = commands.add_parser("audit")
     one.add_argument("--run", type=Path, required=True)
     one.add_argument("--require-internal-relaxation", action="store_true")
+    one.add_argument("--expected-source", type=Path)
     two = commands.add_parser("compare")
     two.add_argument("--agent", type=Path, required=True)
     two.add_argument("--reference", type=Path, required=True)
+    two.add_argument("--expected-source", type=Path, required=True)
+    two.add_argument("--reference-receipt", type=Path, required=True)
     two.add_argument("--mode", choices=["same-model", "sensitivity"], default="same-model")
     two.add_argument("--protocol", type=Path, default=Path(__file__).resolve().parents[1] / "protocol.v1.json")
     for command in (one, two):
         command.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     try:
-        report = audit(args.run, args.require_internal_relaxation) if args.command == "audit" else compare(args.agent, args.reference, args.protocol, args.mode)
+        report = audit(args.run, args.require_internal_relaxation, args.expected_source) if args.command == "audit" else compare(args.agent, args.reference, args.protocol, args.mode, expected_source=args.expected_source, reference_receipt=args.reference_receipt)
     except Exception as exc:
         report = {"schema_version": 1, "passed": False, "status": "error", "reason": f"{type(exc).__name__}: {exc}", "scientific_accuracy_validated": False}
     args.output.parent.mkdir(parents=True, exist_ok=True)
