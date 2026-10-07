@@ -1,6 +1,6 @@
-# VASP Slurm Agent
+# DFT Agent
 
-Version `0.1.2`.
+Version `0.1.3`.
 
 Run VASP on a Slurm cluster from a local app. Optimize structures, run SCF, calculate bands or DOS, and download the results. No LLM account is needed.
 
@@ -9,12 +9,12 @@ Requires macOS or Linux, Python 3.11+, SSH, and access to licensed VASP and POTC
 ## Install and open
 
 ```bash
-git clone https://github.com/cuiqirui99/vasp-slurm-agent.git
-cd vasp-slurm-agent
+git clone https://github.com/cuiqirui99/dft-agent.git
+cd dft-agent
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install .
-vasp-agent ui
+dft-agent ui
 ```
 
 ## Use

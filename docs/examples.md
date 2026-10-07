@@ -1,7 +1,7 @@
 # CLI examples
 
 Follow the [quickstart](quickstart.md), then work in the repository directory.
-Create `cluster.json` with `vasp-agent init --config cluster.json` and review
+Create `cluster.json` with `dft-agent init --config cluster.json` and review
 its VASP, POTCAR and Slurm settings. The PBE defaults are starting points.
 
 ## Prepare locally
@@ -11,7 +11,7 @@ Use a new directory for each run. `prepare` submits nothing.
 **Si: relax atoms and cell**
 
 ```bash
-vasp-agent prepare examples/Si.cif runs/si-relax --config cluster.json \
+dft-agent prepare examples/Si.cif runs/si-relax --config cluster.json \
   --task relax --parameters '{"cell_relax": true}'
 ```
 
@@ -20,13 +20,13 @@ Omit `--parameters` to keep the cell fixed.
 **Al: SCF**
 
 ```bash
-vasp-agent prepare examples/Al.cif runs/al-scf --config cluster.json --task scf
+dft-agent prepare examples/Al.cif runs/al-scf --config cluster.json --task scf
 ```
 
 **MgO: SCF, then DOS**
 
 ```bash
-vasp-agent prepare examples/MgO.cif runs/mgo-dos --config cluster.json --task dos
+dft-agent prepare examples/MgO.cif runs/mgo-dos --config cluster.json --task dos
 ```
 
 SCF and DOS use the supplied structure without relaxing it.
@@ -37,9 +37,9 @@ Review `config.json` and each stage's `inputs/INCAR`, `KPOINTS` and `POSCAR`.
 To change settings, prepare a new run. Choose the matching command:
 
 ```bash
-vasp-agent watch runs/si-relax
-vasp-agent watch runs/al-scf
-vasp-agent watch runs/mgo-dos
+dft-agent watch runs/si-relax
+dft-agent watch runs/al-scf
+dft-agent watch runs/mgo-dos
 ```
 
 **`watch` submits the calculation.** Add `--password` for a private prompt.
@@ -47,9 +47,9 @@ vasp-agent watch runs/mgo-dos
 ## Status, recovery and download
 
 ```bash
-vasp-agent status runs/si-relax
-vasp-agent resume runs/si-relax
-vasp-agent bundle runs/si-relax
+dft-agent status runs/si-relax
+dft-agent resume runs/si-relax
+dft-agent bundle runs/si-relax
 ```
 
 `status` reads saved progress. `resume` reconnects to the same run; inspect

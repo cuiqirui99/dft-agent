@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.3 — 2026-10-07
+
+- Renamed to DFT Agent.
+
 ## 0.1.2 — 2026-10-07
 
 - Shorter text.

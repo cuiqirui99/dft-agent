@@ -28,12 +28,13 @@ jobs:
       - name: Verify wheel outside source checkout
         shell: bash
         run: |
-          python -m venv /tmp/vasp-agent-wheel
-          /tmp/vasp-agent-wheel/bin/python -m pip install dist/*.whl
+          python -m venv /tmp/dft-agent-wheel
+          /tmp/dft-agent-wheel/bin/python -m pip install dist/*.whl
           cd /tmp
-          /tmp/vasp-agent-wheel/bin/vasp-agent --help
-          /tmp/vasp-agent-wheel/bin/python -c "import vasp_slurm_agent.app"
-          /tmp/vasp-agent-wheel/bin/python - <<'PY'
+          /tmp/dft-agent-wheel/bin/dft-agent --help
+          /tmp/dft-agent-wheel/bin/vasp-agent --help
+          /tmp/dft-agent-wheel/bin/python -c "import vasp_slurm_agent.app"
+          /tmp/dft-agent-wheel/bin/python - <<'PY'
           from importlib.resources import files
           import json
           from pathlib import Path
@@ -49,7 +50,7 @@ jobs:
                   remote_root="/scratch/example", vasp_command="srun vasp_std",
                   potcar_root="/licensed/pbe", partition="cpu")
               config.save(root / "cluster.json")
-              subprocess.run(["/tmp/vasp-agent-wheel/bin/vasp-agent", "prepare", str(source),
+              subprocess.run(["/tmp/dft-agent-wheel/bin/dft-agent", "prepare", str(source),
                   str(root / "run"), "--config", str(root / "cluster.json")], check=True)
               state = json.loads((root / "run" / "run.json").read_text())
               assert state["status"] == "planned" and state["stages"][0]["job_id"] is None

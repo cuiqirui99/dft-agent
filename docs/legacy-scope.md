@@ -1,6 +1,6 @@
 # Relationship to the earlier platform
 
-VASP Slurm Agent is a standalone application for the basic VASP/Slurm workflow.
+DFT Agent is a standalone application for the basic VASP/Slurm workflow.
 It follows the earlier project's approach to job tracking and result checks.
 It does not depend on that platform, its private datasets or old experiment state.
 

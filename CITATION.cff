@@ -1,12 +1,12 @@
 cff-version: 1.2.0
 message: "Please cite this software and report your version and settings."
-title: "VASP Slurm Agent"
+title: "DFT Agent"
 type: software
 authors:
   - family-names: "cuiqirui99"
     website: "https://github.com/cuiqirui99"
-version: "0.1.2"
+version: "0.1.3"
 license: MIT
-repository-code: "https://github.com/cuiqirui99/vasp-slurm-agent"
-url: "https://github.com/cuiqirui99/vasp-slurm-agent"
+repository-code: "https://github.com/cuiqirui99/dft-agent"
+url: "https://github.com/cuiqirui99/dft-agent"
 abstract: "Run VASP on Slurm."

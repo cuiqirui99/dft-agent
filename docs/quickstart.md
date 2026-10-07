@@ -5,12 +5,12 @@
 Use macOS or Linux with Python 3.11+ and SSH:
 
 ```bash
-git clone https://github.com/cuiqirui99/vasp-slurm-agent.git
-cd vasp-slurm-agent
+git clone https://github.com/cuiqirui99/dft-agent.git
+cd dft-agent
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install .
-vasp-agent ui
+dft-agent ui
 ```
 
 Keep the app local on `127.0.0.1`. The cluster needs licensed VASP and POTCAR
@@ -80,9 +80,9 @@ excluded; CHGCAR and WAVECAR stay remote. Check account names and paths before s
 ## CLI
 
 ```bash
-vasp-agent --help
-vasp-agent prepare --help
-vasp-agent watch --help
+dft-agent --help
+dft-agent prepare --help
+dft-agent watch --help
 ```
 
 See the [CLI examples](examples.md). `prepare` is local; `watch` submits.

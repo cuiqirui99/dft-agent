@@ -1,4 +1,4 @@
-"""Local VASP/Slurm workbench."""
+"""DFT Agent app."""
 
 from __future__ import annotations
 
@@ -372,9 +372,9 @@ def _run_panel(run_dir: Path) -> None:
 
 
 def main() -> None:
-    st.set_page_config(page_title="VASP Slurm Agent", page_icon="⚛", layout="wide")
-    st.title("VASP Slurm Agent")
-    st.caption("Version 0.1.2")
+    st.set_page_config(page_title="DFT Agent", page_icon="⚛", layout="wide")
+    st.title("DFT Agent")
+    st.caption("Version 0.1.3")
     with st.sidebar:
         st.header("Local settings")
         config_path = Path(st.text_input("Configuration file", value=os.environ.get(

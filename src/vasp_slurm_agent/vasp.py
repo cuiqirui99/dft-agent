@@ -121,7 +121,7 @@ def prepare_inputs(
         raise ValueError("POTCAR labels must be simple symbols such as Si or Na_pv.")
 
     incar_data: dict[str, Any] = {
-        "SYSTEM": f"vasp-slurm-agent {structure.composition.reduced_formula} {task}",
+        "SYSTEM": f"dft-agent {structure.composition.reduced_formula} {task}",
         "GGA": "PE", "ISPIN": 1, "ENCUT": settings["encut"],
         "EDIFF": settings["ediff"], "NELM": settings["nelm"],
         "PREC": "Accurate", "ALGO": "Normal", "LREAL": False, "LASPH": True,
