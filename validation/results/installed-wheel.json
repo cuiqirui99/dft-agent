@@ -1,0 +1,193 @@
+{
+  "schema_version": 1,
+  "started_at": "2026-10-07T13:30:24.920176+00:00",
+  "finished_at": "2026-10-07T13:32:33.645293+00:00",
+  "status": "succeeded",
+  "passed": true,
+  "wheel_sha256": "dca668ad66b5cb9efd104a51e07dc89fd33b8bd4077ebfb679a1bc0599c048be",
+  "resources": {
+    "tasks": 8,
+    "walltime": "00:15:00"
+  },
+  "parameters": {
+    "encut": 400.0,
+    "ediff": 1e-05,
+    "ediffg": -0.03,
+    "nsw": 80,
+    "kpoint_grid": [
+      4,
+      4,
+      4
+    ],
+    "ismear": 0,
+    "sigma": 0.05,
+    "cell_relax": false
+  },
+  "displacement_cartesian_angstrom": [
+    0.04,
+    0.02,
+    -0.03
+  ],
+  "job_ids": [
+    "7451484"
+  ],
+  "scientific_accuracy_validated": false,
+  "wheel_example_sha256": "ec3459fca57e82b0776a417039b1f7ba34f677186f0990cc0555fa5499302a24",
+  "displaced_input_sha256": "5d7a79a12af33e7c01ac1fa06821221e24ef4b3ec32feda6249d8b7a13930bd3",
+  "run_id": "vsa-cf9394ebaff14a00",
+  "input_sha256": {
+    "POSCAR": "52976f5f7dc4fe1458ae59bde7299af0173d4491835810633bb9c639ee2f5e3c",
+    "INCAR": "86af6a404ccba437b2266d90b5c9acad0037c45d47b69e11c831c60f39cbfdb4",
+    "KPOINTS": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734"
+  },
+  "checks": {
+    "fixed_cell_verified": true,
+    "composition_verified": true,
+    "finite_coordinates": true,
+    "ionic_steps": 8,
+    "initial_max_force_ev_angstrom": 0.7975564307222566,
+    "final_max_force_ev_angstrom": 0.009462215126670922
+  },
+  "result": {
+    "schema_version": 1,
+    "task": "relax",
+    "success": true,
+    "converged_electronic": true,
+    "converged_ionic": true,
+    "valid_structure": true,
+    "final_energy_ev": -10.65673402,
+    "final_max_force_ev_angstrom": 0.009462215126670922,
+    "vasp_version": "6.2.1",
+    "fermi_energy_ev": null,
+    "reason": "Complete VASP output passed task-specific numerical checks; scientific accuracy is not independently validated.",
+    "artifacts": [
+      "final_structure.cif",
+      "relax_energy.csv",
+      "relax_energy.png"
+    ],
+    "scientific_accuracy_validated": false,
+    "vasprun_sha256": "300932fbec79fbb3a9f422ae77fc832b7bfaadc32f6675a32401ddb5ee9dc99c",
+    "input_identity_verified": true,
+    "scheduler_state": "COMPLETED"
+  },
+  "artifact_manifest": {
+    "INCAR": {
+      "sha256": "86af6a404ccba437b2266d90b5c9acad0037c45d47b69e11c831c60f39cbfdb4",
+      "size": 269
+    },
+    "KPOINTS": {
+      "sha256": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734",
+      "size": 38
+    },
+    "POSCAR": {
+      "sha256": "52976f5f7dc4fe1458ae59bde7299af0173d4491835810633bb9c639ee2f5e3c",
+      "size": 356
+    },
+    "OUTCAR": {
+      "sha256": "175ff8e008b5f6b52a8ccb1b665abd4ce8e8d6fdf0ccd47f574a181920263e4e",
+      "size": 237587
+    },
+    "OSZICAR": {
+      "sha256": "75da484414549a0b70d35c1a8eab872baed2bd85bc48d890d8037ad6eaed9a43",
+      "size": 3765
+    },
+    "vasprun.xml": {
+      "sha256": "300932fbec79fbb3a9f422ae77fc832b7bfaadc32f6675a32401ddb5ee9dc99c",
+      "size": 74326
+    },
+    "CONTCAR": {
+      "sha256": "272b0738f2f35684c10e1785b7b5107122949a5872c1cad7388b11445cc09ac5",
+      "size": 512
+    },
+    "EIGENVAL": {
+      "sha256": "bdd8a61ae311d2d22b3a5f95995a7066df651a6fad500471e5a1c01bd25a4484",
+      "size": 11965
+    },
+    "DOSCAR": {
+      "sha256": "7ba573a1987023a052c1c3eff3f58734aea1b8c9d3a3fba54c22ebbd0b62ff74",
+      "size": 11073
+    },
+    "slurm.out": {
+      "sha256": "1b312a1cd38475bb07bcfd9db56d5b7dcca9662ecec33747480725445cc6b5d7",
+      "size": 7513
+    },
+    "slurm.err": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    "execution.json": {
+      "sha256": "88e3416f6264c312ac241171d6ddf82f2d97c2f7b55f8a5989bfdad94622a578",
+      "size": 152
+    },
+    "input_hashes.sha256": {
+      "sha256": "ebe6630bbb6d1882d50d45145359b9cc1ed5bed2692e4dfaecf308b8b50ca0a2",
+      "size": 219
+    },
+    "potcar_hash.sha256": {
+      "sha256": "29d407c69d148c9fe21db93fc38e963f1a3c04feb8f267ae50d41b04f34fda7f",
+      "size": 73
+    },
+    "potcar_titles.txt": {
+      "sha256": "a6718781e417cd9dcc6fc18c0d78d3a00a48722f7710e797793fdd46d29885ab",
+      "size": 33
+    }
+  },
+  "dispatch_receipts": {
+    "receipt": {
+      "job_id": "7451484",
+      "job_name": "vsa-cf9394ebaff14a00-relax",
+      "reconciled": false
+    },
+    "manifest": {
+      "job.json": {
+        "sha256": "afafc72d50bdc8f2ae0b80563230336efba661e0cadfe324fcd9a0c20a99c7f8",
+        "size": 84
+      },
+      "submit_intent.json": {
+        "sha256": "8d75224570a1424bd988926806e9b4d0e75a2dbfe2f2a2a397f971a7525cbc48",
+        "size": 114
+      }
+    }
+  },
+  "result_bundle_sha256": "3394bebbcc56cddea6f94198d533ba522d0049d1fce82e857cccd57c6aec1737",
+  "kind": "installed_wheel_real_vasp_relaxation",
+  "wheel_filename": "vasp_slurm_agent-0.1.0-py3-none-any.whl",
+  "source_base_commit": "2f7026832b69f7b6a49e44615832328405a2d7ea",
+  "installation": {
+    "version": "0.1.0",
+    "python": "3.13.3 (v3.13.3:6280bb54784, Apr  8 2025, 10:47:54) [Clang 15.0.0 (clang-1500.3.9.4)]",
+    "pip_check": "No broken requirements found.",
+    "requirements_sha256": "ce8ff91eb3f40e0af320c1f36984715fad2554e231a056a4ff342709a4546fcb",
+    "modules": {
+      "vasp_slurm_agent/config.py": "fdda0c4726601a65ebf18d57c814e38f5752ed46407d0f2e8219717899b3dfc3",
+      "vasp_slurm_agent/transport.py": "5e49efe4b27d0736d58b4efa880fd2dc42a07aa29383fc847f1d907617aa88bc",
+      "vasp_slurm_agent/dispatch.py": "45f39226ec281d218366fe1910a28deab243e7b91552ca429f9475490296cffa",
+      "vasp_slurm_agent/__init__.py": "c11b147849bf772d38fde8cae130897b273e681ca48b6aeae5c13f5aaa075208",
+      "vasp_slurm_agent/cli.py": "ccd2d62ffaea5836876b56024ca4de6bf86e705529a866c7c018a88edaa3ac06",
+      "vasp_slurm_agent/app.py": "377190766925bb8ff9cac97a54982071bed9bb4fbcdad62cfa13703dbca865ef",
+      "vasp_slurm_agent/workflow.py": "3e1022202c5db02ac0269b2b05054efc5335cd8c38b5b4570b3cd7b1a8304c41",
+      "vasp_slurm_agent/vasp.py": "d02fdc95918c663eaef44357682eaf6b43e604ab31a8350ac3d46c1d250f2b42",
+      "vasp_slurm_agent/examples/SiC.cif": "6cb8265d0fa3c6976a94e7d6fa56451296615ebef5f9a7691421bd7eac629794",
+      "vasp_slurm_agent/examples/Si.cif": "ec3459fca57e82b0776a417039b1f7ba34f677186f0990cc0555fa5499302a24",
+      "vasp_slurm_agent/examples/MgO.cif": "b759ec1f55b421ab8b5bf7cd14cd7f25fdbad17fad68a6624f37dd7ac786e146",
+      "vasp_slurm_agent/examples/Al.cif": "679820ff7b927b4480db44c96e37167d5e7ebbba63a7d2f4234f67ce7b85a878",
+      "vasp_slurm_agent/examples/C.cif": "9ceb50de087e34acf2e83efa6829d88ae38e09713262f01056771f8d19feecb9",
+      "vasp_slurm_agent/examples/NaCl.cif": "99487836cbb683a371263b18c72a4640419f8db2b0c68ffe0ad671b95c968439",
+      "vasp_slurm_agent/examples/Cu.cif": "b3bbd86f140c8c813cf24dd39a60bf7c3f8630ef2d0aa1581341ab3983117c59",
+      "vasp_slurm_agent/examples/Ge.cif": "86fd7bab75d374877f103546ac89a2b8cbf8093ad12201ac2aa7dbf9dd662200"
+    },
+    "isolated_environment": true,
+    "source_checkout_imports": false,
+    "installed_modules_equal_wheel_and_release_source": true,
+    "entrypoints_exercised": [
+      "init",
+      "doctor",
+      "prepare",
+      "watch",
+      "status",
+      "bundle"
+    ]
+  },
+  "source_receipt_sha256": "e8b08c3405dea8155cd4718bb201647ed4215ad72b06c298dfe2407501aef557",
+  "scope": "The exact released wheel ran a displaced Si fixed-cell relaxation on one configured Slurm/VASP cluster from an isolated installation. This does not establish compatibility with every cluster or high-precision material properties."
+}

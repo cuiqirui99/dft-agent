@@ -1,0 +1,150 @@
+{
+  "schema_version": 1,
+  "status": "succeeded",
+  "source_hashes": {
+    "protocol": "ad972b48115eaf296a16b4962f5ef908d81a8257387d77d8c39e0698c85382cf",
+    "internal_relaxation_protocol": "e9c92f1aa7481e1fd0a2562d0a13dc73a9dfdebcc4d5da422b480324ac0be0e6",
+    "reference_preparer": "63a1b626e01e322353ffa08f86334021c9e69d4c935ef2837bc9ef765320dc01",
+    "reference_comparator": "3afdfa530aeb4ab4ee08baf69cff164221e005924bc18f305c0b6870448dfa52",
+    "private_runner": "e4530067351d0c80def1b90f36833d3e3ee0bf2d5196fb4efca372e6342d9c2f",
+    "application_workflow": "3e1022202c5db02ac0269b2b05054efc5335cd8c38b5b4570b3cd7b1a8304c41",
+    "application_parser": "d02fdc95918c663eaef44357682eaf6b43e604ab31a8350ac3d46c1d250f2b42"
+  },
+  "updated_at": "2026-10-07T13:26:52.733255+00:00",
+  "input_scope": {
+    "baseline_materials": [
+      "Si",
+      "C",
+      "Ge",
+      "Al",
+      "Cu",
+      "MgO",
+      "NaCl",
+      "SiC"
+    ],
+    "baseline_initial_structures": 8,
+    "additional_displaced_initial_structures": 2,
+    "displaced_materials": [
+      "Si",
+      "MgO"
+    ],
+    "manual_baseline_scf_reference_jobs": 3,
+    "combined_sensitivity_scf_jobs": 3,
+    "additional_displaced_relax_jobs": 2,
+    "note": "Eight idealized baseline structures plus two displaced structures; six reference/sensitivity jobs reuse Si, Al and MgO and do not add independent materials."
+  },
+  "scientific_accuracy_validated": false,
+  "scope": "Same-model implementation agreement and bounded numerical sensitivity; no comprehensive convergence or experimental-accuracy claim.",
+  "cases": [
+    {
+      "case": "reference-si-baseline-v1",
+      "material": "Si",
+      "kind": "manual_scf",
+      "variant": "baseline",
+      "operational_status": "succeeded",
+      "independent_status": "passed",
+      "energy_difference_ev_per_atom": 0.0,
+      "max_force_vector_difference_ev_angstrom": 0.0,
+      "internal_relaxation_gates": null,
+      "independent_report_sha256": "973bcea060d8662993de8399aeba94e135a36a4cabdc4281ae0d152e8e325e1a"
+    },
+    {
+      "case": "reference-al-baseline-v1",
+      "material": "Al",
+      "kind": "manual_scf",
+      "variant": "baseline",
+      "operational_status": "succeeded",
+      "independent_status": "passed",
+      "energy_difference_ev_per_atom": 0.0,
+      "max_force_vector_difference_ev_angstrom": 0.0,
+      "internal_relaxation_gates": null,
+      "independent_report_sha256": "ecbf23d3cedd4be452e8c6d1f64181a990d329ad095626b5e7ed7be40fb97a09"
+    },
+    {
+      "case": "reference-mgo-baseline-v1",
+      "material": "MgO",
+      "kind": "manual_scf",
+      "variant": "baseline",
+      "operational_status": "succeeded",
+      "independent_status": "passed",
+      "energy_difference_ev_per_atom": 0.0,
+      "max_force_vector_difference_ev_angstrom": 0.0,
+      "internal_relaxation_gates": null,
+      "independent_report_sha256": "c29fe17d98e838be6b85dc92c44e77e640abf954ce7605a78a3a436bd9135c89"
+    },
+    {
+      "case": "reference-si-combined-v1",
+      "material": "Si",
+      "kind": "manual_scf",
+      "variant": "combined",
+      "operational_status": "succeeded",
+      "independent_status": "measured",
+      "energy_difference_ev_per_atom": 0.08213278499999976,
+      "max_force_vector_difference_ev_angstrom": 0.0,
+      "internal_relaxation_gates": null,
+      "independent_report_sha256": "8cd6821721a66f957dd3cb19352d56133f62c602049a7c5e81dff0db8befaa26"
+    },
+    {
+      "case": "reference-al-combined-v1",
+      "material": "Al",
+      "kind": "manual_scf",
+      "variant": "combined",
+      "operational_status": "succeeded",
+      "independent_status": "measured",
+      "energy_difference_ev_per_atom": 0.36189846999999986,
+      "max_force_vector_difference_ev_angstrom": 0.0,
+      "internal_relaxation_gates": null,
+      "independent_report_sha256": "9237c6d71debf6578c5091859b89f70f69a2413ef8c007ae8e5fc747b55b0a19"
+    },
+    {
+      "case": "reference-mgo-combined-v1",
+      "material": "MgO",
+      "kind": "manual_scf",
+      "variant": "combined",
+      "operational_status": "succeeded",
+      "independent_status": "measured",
+      "energy_difference_ev_per_atom": 0.003059040000000124,
+      "max_force_vector_difference_ev_angstrom": 0.0,
+      "internal_relaxation_gates": null,
+      "independent_report_sha256": "c47cfcec756c37662bc41b1e44c7d10f918d1ca214d84d6223fbf81e2263262a"
+    },
+    {
+      "case": "displaced-si-relax-v1",
+      "material": "Si",
+      "kind": "displaced_relax",
+      "variant": "baseline",
+      "operational_status": "succeeded",
+      "independent_status": "passed",
+      "energy_difference_ev_per_atom": null,
+      "max_force_vector_difference_ev_angstrom": null,
+      "internal_relaxation_gates": {
+        "fixed_cell_relaxation": true,
+        "initial_force_exceeds_frozen_threshold": true,
+        "at_least_two_ionic_steps": true,
+        "actual_internal_coordinate_motion": true,
+        "energy_decreased": true,
+        "final_force_within_frozen_threshold": true
+      },
+      "independent_report_sha256": "5024ddaf094830c9be6f66a737ea7fe044d56305121a5f2f5a242fcb1dfc25fb"
+    },
+    {
+      "case": "displaced-mgo-relax-v1",
+      "material": "MgO",
+      "kind": "displaced_relax",
+      "variant": "baseline",
+      "operational_status": "succeeded",
+      "independent_status": "passed",
+      "energy_difference_ev_per_atom": null,
+      "max_force_vector_difference_ev_angstrom": null,
+      "internal_relaxation_gates": {
+        "fixed_cell_relaxation": true,
+        "initial_force_exceeds_frozen_threshold": true,
+        "at_least_two_ionic_steps": true,
+        "actual_internal_coordinate_motion": true,
+        "energy_decreased": true,
+        "final_force_within_frozen_threshold": true
+      },
+      "independent_report_sha256": "5e266d9657f11dceae979fce30509538460909bcb3353799d985e28ed1a4a075"
+    }
+  ]
+}

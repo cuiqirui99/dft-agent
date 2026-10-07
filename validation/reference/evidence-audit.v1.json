@@ -1,64 +1,174 @@
 {
   "schema_version": 1,
-  "audited_at": "2026-10-07T12:48:04.702489+00:00",
-  "scope": "Local scientific evidence audit; no remote operation or new solver execution.",
+  "audited_at": "2026-10-07T13:22:13.602472+00:00",
+  "scope": "Final local audit of all 32 primary workflows and their 48 real solver stages; no new computation or reference-campaign modification.",
   "frozen_tolerances": {
     "energy_ev_per_atom": 0.001,
     "max_force_vector_ev_per_angstrom": 0.01,
     "changed": false
   },
   "actual_output_checks": {
-    "independent_ASE_OUTCAR_XML_audits": 12,
-    "relaxation_stages": 5,
-    "scf_stages": 7,
-    "passed": 12,
-    "cases": [
-      "si-relax-v1/relax",
-      "si-bands-v1/scf",
-      "si-dos-v1/scf",
-      "al-relax-v1/relax",
-      "mgo-relax-v1/relax",
-      "si-scf-v1/scf",
-      "c-relax-r2/relax",
-      "c-scf-v1/scf",
-      "c-bands-v1/scf",
-      "c-dos-v1/scf",
-      "ge-relax-v1/relax",
-      "ge-scf-v1/scf"
-    ],
-    "maximum_ASE_energy_disagreement_ev": 0.0,
-    "maximum_ASE_force_disagreement_ev_per_angstrom": 0.0,
-    "all_application_energy_force_values_agree": true,
-    "Si_source_binding_passed": true,
-    "wrong_C_source_for_Si_rejected": true,
-    "Si_and_C_band_Fermi_reference_matches_preceding_SCF_XML": true,
-    "Si_and_C_bands_DOS_OUTCAR_records_supplied_charge_density": true,
-    "original_C_failure_retained": {
-      "case": "c-relax-v1",
-      "job_id": "7451349",
-      "status": "needs_attention"
+    "primary_campaign_status": "succeeded",
+    "exactly_eight_materials_by_four_workflows": true,
+    "workflow_count": 32,
+    "successful_stage_count": 48,
+    "stage_counts": {
+      "relax": 8,
+      "scf": 24,
+      "bands": 8,
+      "dos": 8
     },
-    "C_resource_retry": {
-      "case": "c-relax-r2",
-      "job_id": "7451356",
-      "status": "succeeded",
-      "INCAR_KPOINTS_POSCAR_hashes_identical_to_failed_attempt": true
-    }
+    "independent_ASE_OUTCAR_XML_audits": 48,
+    "independent_audits_passed": 48,
+    "all_scheduler_states_completed": true,
+    "all_solver_exit_codes_zero": true,
+    "all_electronic_converged": true,
+    "relaxations_ionic_converged": 8,
+    "all_initial_XML_structures_match_frozen_POSCAR": true,
+    "all_input_file_hashes_match_frozen_metadata_remote_receipt_and_recovered_bytes": true,
+    "verified_artifact_hash_size_receipts": 720,
+    "maximum_ASE_energy_disagreement_ev": 0.0,
+    "maximum_ASE_force_disagreement_ev_per_angstrom": 6.130252850463933e-07,
+    "all_application_energy_force_values_agree": true,
+    "all_eight_band_Fermi_references_match_preceding_SCF_XML": true,
+    "all_eight_band_kpoint_paths_match_frozen_metadata": true,
+    "vasp_versions": [
+      "6.2.1"
+    ],
+    "by_material": {
+      "Si": {
+        "workflow_count": 4,
+        "stage_count": 6,
+        "potcar_sha256": "2a6df1c19701e5d97aaa59e5470b14653ddbd76935b76dacdd8792eb2eba252c",
+        "all_stage_checks_passed": true
+      },
+      "C": {
+        "workflow_count": 4,
+        "stage_count": 6,
+        "potcar_sha256": "e324f39f282d3fd6b99a7bff390f4b2441edd3dd3eac607d1f1c01376f3d0dc0",
+        "all_stage_checks_passed": true
+      },
+      "Ge": {
+        "workflow_count": 4,
+        "stage_count": 6,
+        "potcar_sha256": "fd83126ce2b2557ab7a0e13c4d7d5f3b845d60c5c18d02b35b4e8f864f359dc0",
+        "all_stage_checks_passed": true
+      },
+      "Al": {
+        "workflow_count": 4,
+        "stage_count": 6,
+        "potcar_sha256": "1b07010218b572e3404ce1eea8fed39e24b52859ebef1517bffa2ef69b8d1315",
+        "all_stage_checks_passed": true
+      },
+      "Cu": {
+        "workflow_count": 4,
+        "stage_count": 6,
+        "potcar_sha256": "b64dae53834dc113c0e23e6a6d919c9f23446fffbe5b6a1a7c48410998f6f67d",
+        "all_stage_checks_passed": true
+      },
+      "MgO": {
+        "workflow_count": 4,
+        "stage_count": 6,
+        "potcar_sha256": "ef3ed234c8945ea84ce1dcaf7969285eb65c01b559ef65ba6fbac9fd5ae5f616",
+        "all_stage_checks_passed": true
+      },
+      "NaCl": {
+        "workflow_count": 4,
+        "stage_count": 6,
+        "potcar_sha256": "281b9161a52e518add2a21e389fec5149f300009176cb8c72e6857a2f4e97e4f",
+        "all_stage_checks_passed": true
+      },
+      "SiC": {
+        "workflow_count": 4,
+        "stage_count": 6,
+        "potcar_sha256": "259a903243a5290495e18c6d3ff1bad7256d7f48a82bef8b357d1e2d62b4de0b",
+        "all_stage_checks_passed": true
+      }
+    },
+    "original_failures_retained": [
+      {
+        "material": "C",
+        "job_id": "7451349",
+        "status": "needs_attention",
+        "verified_retained_files": 15
+      },
+      {
+        "material": "Cu",
+        "job_id": "7451413",
+        "status": "needs_attention",
+        "verified_retained_files": 15
+      }
+    ],
+    "successful_stage_job_ids": [
+      "7451325",
+      "7451333",
+      "7451334",
+      "7451337",
+      "7451341",
+      "7451342",
+      "7451344",
+      "7451348",
+      "7451356",
+      "7451357",
+      "7451359",
+      "7451361",
+      "7451364",
+      "7451375",
+      "7451377",
+      "7451385",
+      "7451386",
+      "7451387",
+      "7451390",
+      "7451391",
+      "7451393",
+      "7451394",
+      "7451398",
+      "7451404",
+      "7451406",
+      "7451407",
+      "7451409",
+      "7451420",
+      "7451423",
+      "7451424",
+      "7451425",
+      "7451427",
+      "7451428",
+      "7451429",
+      "7451432",
+      "7451433",
+      "7451434",
+      "7451435",
+      "7451437",
+      "7451438",
+      "7451439",
+      "7451441",
+      "7451442",
+      "7451445",
+      "7451448",
+      "7451449",
+      "7451451",
+      "7451453"
+    ],
+    "public_export_manifests_job_ids_and_potcar_hashes_match_real_files": true,
+    "protocol_sha256": "ad972b48115eaf296a16b4962f5ef908d81a8257387d77d8c39e0698c85382cf",
+    "public_campaign_sha256": "8a4d0db822635d3fbb26ad3a271c91b2380d0b38ab73e2d999a3ff769c582924"
   },
   "reproduced_acceptance_gaps_fixed": [
     "Application-generated SCF pairs previously passed as independent manual references; comparator now requires the authored receipt, frozen source/protocol hashes, authored/executed input hashes, and distinct job identities.",
     "Unchanged 400 eV and 4x4x4 SCF pairs previously counted as sensitivity measurements; now the declared variant must match 520 eV and/or 6x6x6 and differ from baseline."
   ],
   "remaining_boundaries": [
-    "CHGCAR is copied from the immediately preceding SCF and actual OUTCAR confirms charge-density reading; no retained source/destination CHGCAR content hash chain is claimed.",
-    "Independent handwritten reference jobs and displaced-coordinate relaxations have not been executed by this audit.",
-    "Five audited ideal-structure relaxations have zero final forces; dedicated displaced cases remain necessary to demonstrate internal coordinate optimization.",
+    "CHGCAR is copied from the immediately preceding SCF; no retained source/destination CHGCAR content hash chain is claimed.",
+    "Independent manual references and displaced-coordinate relaxations are judged separately by the reference campaign; 32 primary workflow successes do not establish their completion.",
+    "The eight ideal baseline structures do not by themselves demonstrate nontrivial internal-coordinate optimization; dedicated displaced cases provide that test.",
+    "The recorded C and Cu resource retries changed MPI layout and automatic NBANDS together; successful retries do not isolate the ZHEGV failure cause.",
     "Sensitivity is a bounded measurement, not comprehensive physical convergence or experimental validation."
   ],
   "verification": {
     "reference_contract_tests_passed": 16,
     "private_runner_dry_plan_jobs": 8,
-    "solver_jobs_submitted_by_this_audit": 0
+    "solver_jobs_submitted_by_this_audit": 0,
+    "primary_real_solver_stage_audits_passed": 48
   },
   "comparator_sha256": "3afdfa530aeb4ab4ee08baf69cff164221e005924bc18f305c0b6870448dfa52",
   "scientific_accuracy_validated": false

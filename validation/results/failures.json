@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "kind": "live_scheduler_and_file_failure_injection",
+  "scientific_validation": false,
+  "started_at": "2026-10-07T13:27:49.632131+00:00",
+  "finished_at": "2026-10-07T13:30:13.205589+00:00",
+  "passed": true,
+  "maximum_concurrent_jobs": 1,
+  "automatic_resubmission": false,
+  "cases": [
+    {
+      "case": "slurm_timeout",
+      "command": "sleep 90",
+      "walltime": "00:01:00",
+      "requested_tasks": 1,
+      "passed": true,
+      "scheduler_state": "TIMEOUT",
+      "workflow_status": "needs_attention",
+      "success": false,
+      "failure_code": "TIME_LIMIT",
+      "parser_identified_missing_xml": true,
+      "clear_recovery_hint": true,
+      "input_identity_verified": true,
+      "frozen_inputs_unchanged": true,
+      "matching_job_count": 1,
+      "terminal_observation_calls": 2,
+      "scheduler_allocated_cpus": 64,
+      "scheduler_elapsed": "00:01:00",
+      "scheduler_time_limit": "00:01:00",
+      "scheduler_exit_code": "0:0",
+      "input_sha256": {
+        "POSCAR": "2942e884c6a7feb5a81a19d1c86a53a8d24b7399939435eff0c6b302e121b303",
+        "INCAR": "fa252b086bfd0061c82616786cc18363f893bfebf4fe6b6552ccd136b5adbf22",
+        "KPOINTS": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734"
+      },
+      "result_sha256": "d99825e7fc2cc957fef9907a704f101e8a89bfd5923ffe4580478d2faf417fbb",
+      "no_final_structure_exported": true,
+      "vasprun_xml_absent": true,
+      "execution_exit_code": null
+    },
+    {
+      "case": "completed_without_output",
+      "command": "true",
+      "walltime": "00:01:00",
+      "requested_tasks": 1,
+      "passed": true,
+      "scheduler_state": "COMPLETED",
+      "workflow_status": "needs_attention",
+      "success": false,
+      "failure_code": "RESULT_REJECTED",
+      "parser_identified_missing_xml": true,
+      "clear_recovery_hint": true,
+      "input_identity_verified": true,
+      "frozen_inputs_unchanged": true,
+      "matching_job_count": 1,
+      "terminal_observation_calls": 2,
+      "scheduler_allocated_cpus": 64,
+      "scheduler_elapsed": "00:00:00",
+      "scheduler_time_limit": "00:01:00",
+      "scheduler_exit_code": "0:0",
+      "input_sha256": {
+        "POSCAR": "2942e884c6a7feb5a81a19d1c86a53a8d24b7399939435eff0c6b302e121b303",
+        "INCAR": "fa252b086bfd0061c82616786cc18363f893bfebf4fe6b6552ccd136b5adbf22",
+        "KPOINTS": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734"
+      },
+      "result_sha256": "861ba7cb71863f13d3892786ad3dd8d7c8cfab4b27c080057d1caa31983b1f87",
+      "no_final_structure_exported": true,
+      "vasprun_xml_absent": true,
+      "execution_exit_code": 0
+    }
+  ]
+}

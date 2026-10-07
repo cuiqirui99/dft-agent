@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.0 — Unreleased
+## 0.1.0 — 2026-10-07
 
 - Standalone local VASP/Slurm workflows for nonmagnetic PBE relaxation, SCF, bands and DOS.
 - Local input preparation and explicit submission, persisted job identity, bounded connection retries and SHA-256-verified transfers.
@@ -10,4 +10,4 @@
 - CLI examples, bundled CIF inputs, offline and UI tests, and CI checks for wheel installation outside the source checkout.
 - MIT license and software citation metadata.
 
-Live workflow outcomes and artifact receipts are tracked in the [campaign record](validation/results/campaign.json); [independent numerical checks](validation/reference/README.md) are recorded separately.
+The [validation report](docs/validation.md) links the completed 32-workflow campaign, independent numerical checks, live failure recovery and real installed-wheel calculation. It documents numerical sensitivity and retained failed attempts.

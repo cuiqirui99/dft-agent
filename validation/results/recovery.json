@@ -1,0 +1,105 @@
+{
+  "started_at": "2026-10-07T13:26:53.752802+00:00",
+  "finished_at": "2026-10-07T13:27:47.686895+00:00",
+  "kind": "live_scheduler_fault_acceptance",
+  "scientific_validation": false,
+  "resources": {
+    "tasks": 1,
+    "command": "sleep 300",
+    "walltime": "00:08:00"
+  },
+  "checks": [
+    {
+      "at": "2026-10-07T13:27:06.555420+00:00",
+      "check": "connection_closed_and_accepted_reply_lost",
+      "status": "submitting",
+      "stage_status": "submitting",
+      "job_id": null,
+      "last_error": "Injected disconnect after accepted submission; client reply discarded",
+      "cancel_requested": false
+    },
+    {
+      "at": "2026-10-07T13:27:06.556516+00:00",
+      "check": "finite_transport_retries_paused_before_identity_recovery",
+      "status": "needs_attention",
+      "stage_status": "submitting",
+      "job_id": null,
+      "last_error": "Injected unavailable SSH connection",
+      "cancel_requested": false
+    },
+    {
+      "at": "2026-10-07T13:27:18.908308+00:00",
+      "check": "fresh_process_recovered_same_job_from_remote_receipt",
+      "status": "queued",
+      "stage_status": "queued",
+      "job_id": "7451476",
+      "last_error": null,
+      "cancel_requested": false
+    },
+    {
+      "at": "2026-10-07T13:27:18.910230+00:00",
+      "check": "finite_polling_failures_preserved_existing_identity",
+      "status": "needs_attention",
+      "stage_status": "queued",
+      "job_id": "7451476",
+      "last_error": "Injected unavailable SSH connection",
+      "cancel_requested": false
+    },
+    {
+      "at": "2026-10-07T13:27:18.911200+00:00",
+      "check": "cancellation_request_persisted_while_connection_unavailable",
+      "status": "queued",
+      "stage_status": "queued",
+      "job_id": "7451476",
+      "last_error": "Injected unavailable SSH connection",
+      "cancel_requested": true
+    },
+    {
+      "at": "2026-10-07T13:27:19.840335+00:00",
+      "check": "second_process_restart_kept_same_job",
+      "status": "queued",
+      "stage_status": "queued",
+      "job_id": "7451476",
+      "last_error": "Injected unavailable SSH connection",
+      "cancel_requested": true
+    },
+    {
+      "at": "2026-10-07T13:27:32.105435+00:00",
+      "check": "cancellation_requested",
+      "status": "running",
+      "stage_status": "running",
+      "job_id": "7451476",
+      "last_error": null,
+      "cancel_requested": true
+    },
+    {
+      "at": "2026-10-07T13:27:39.257297+00:00",
+      "check": "scheduler_confirmed_cancellation_of_original_job",
+      "status": "cancelled",
+      "stage_status": "cancelled",
+      "job_id": "7451476",
+      "last_error": null,
+      "cancel_requested": true
+    }
+  ],
+  "passed": true,
+  "accepted_job_id": "7451476",
+  "job_name": "vsa-da7eddc29ca74997-relax",
+  "matching_job_ids": [
+    "7451476"
+  ],
+  "final_matching_job_ids": [
+    "7451476"
+  ],
+  "scheduler_observations": [
+    "7451476|vsa-da7eddc29ca74997-relax\n",
+    "7451476|vsa-da7eddc29ca74997-relax\n"
+  ],
+  "final_scheduler_observations": [
+    "",
+    "7451476|vsa-da7eddc29ca74997-relax\n"
+  ],
+  "schema_version": 1,
+  "method": "A real Slurm sleep job was submitted; the accepted reply was discarded and the SSH connection closed. Offline errors were injected in the transport; fresh processes recovered the original remote receipt, retained the same job ID, and confirmed cancellation through the real scheduler.",
+  "source_receipt_sha256": "fa517df3719997d653dec800d297cc8f9ccae9063d5e5d99e44af574137ef203"
+}

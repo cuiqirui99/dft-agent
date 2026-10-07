@@ -2,7 +2,7 @@
 
 A local, single-user workbench for preparing, submitting and following VASP calculations on an existing Slurm cluster. It provides four tasks: structure relaxation, self-consistent calculations, band structure and density of states. No LLM account is required.
 
-**Version: `0.1.0`.** The basic scope is nonmagnetic PBE for ordered periodic structures, with practical starting parameters. The [live acceptance record](validation/results/campaign.json) tracks completed workflows, solver versions, convergence checks and artifact hashes; its completion fields describe the current evidence. This is a standalone project and does not depend on the older `AI_AGNET` workspace. Code and documentation are available under the [MIT License](LICENSE); external solver terms are described in [NOTICE.md](NOTICE.md).
+**Version: `0.1.0`.** The basic scope is nonmagnetic PBE for ordered periodic structures, with practical starting parameters. The [validation report](docs/validation.md) records 32 accepted workflows, independent checks, failure recovery and a real calculation using the release wheel; it also reports numerical sensitivity and retained failed attempts. This is a standalone project and does not depend on the older `AI_AGNET` workspace. Code and documentation are available under the [MIT License](LICENSE); external solver terms are described in [NOTICE.md](NOTICE.md).
 
 ## Install and open
 
@@ -41,7 +41,7 @@ Path("Si.cif").write_bytes(files("vasp_slurm_agent").joinpath("examples", "Si.ci
 PY
 ```
 
-Upload that file to try local input preparation. The example structures are starting inputs, not converged reference results. Accepted results show the final energy, maximum atomic force and final structure, with a separate CIF download as well as the full result ZIP.
+Upload that file to try local input preparation. The example structures are starting inputs, not converged reference results. Accepted relaxation and SCF results show the final energy, maximum atomic force and final structure, with a separate CIF download as well as the full result ZIP. Bands and DOS show spectra, data and the available preceding SCF Fermi reference.
 
 Closing the browser does not deliberately cancel remote jobs. The background monitor requires the local machine to remain available; after a restart, reopen the run and resume monitoring. Three consecutive remote-operation failures pause monitoring as `needs_attention`. Inspect the error, then use **重新连接 / 回收** to reconnect to the same job or collect its outputs again. Reconnection does not change scientific parameters.
 
