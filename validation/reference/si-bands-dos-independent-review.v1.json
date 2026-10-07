@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "status": "passed_output_consistency_and_plot_review",
+  "scientific_accuracy_validated": false,
+  "bands": {
+    "kpoints": 98,
+    "bands_per_spin": 64,
+    "csv_rows": 6272,
+    "scf_fermi_reference_ev": 6.30198059,
+    "reference_matches_scf_result": true,
+    "max_csv_vs_ASE_XML_eigenvalue_difference_ev": 1.7763568394002505e-15,
+    "max_csv_vs_EIGENVAL_difference_ev": 5.000000000165983e-05,
+    "max_actual_vs_frozen_kpoint_fractional_difference": 4.782608753473028e-09,
+    "path_gap_ev": 0.5587030000000004,
+    "path_vbm_minus_scf_fermi_ev": -0.4334935900000003,
+    "path_cbm_minus_scf_fermi_ev": 0.12520941000000008,
+    "gap_scope": "Only this frozen sampled path; not global gap or convergence validation.",
+    "csv_full_energy_range_ev": [
+      -12.39848059,
+      70.05131941
+    ],
+    "artifact_receipts": {
+      "verified": true,
+      "file_count": 15,
+      "failed_files": []
+    }
+  },
+  "dos": {
+    "csv_rows": 2001,
+    "doscar_rows": 2001,
+    "fermi_energy_ev": 6.10117976,
+    "max_csv_vs_DOSCAR_energy_difference_ev": 0.0005000000000023874,
+    "max_csv_vs_DOSCAR_density_difference_states_per_ev": 0.0045999999999999375,
+    "comparison_precision_note": "DOSCAR energies are printed to 0.001 eV; EIGENVAL to 0.000001 eV, XML eigenvalues to 0.0001 eV. Differences here reflect serialization precision, not physical accuracy.",
+    "csv_full_energy_range_ev": [
+      -16.27287976,
+      73.38092024000001
+    ],
+    "artifact_receipts": {
+      "verified": true,
+      "file_count": 15,
+      "failed_files": []
+    },
+    "max_csv_vs_stdlib_XML_density_difference_states_per_ev": 0.0,
+    "max_csv_vs_stdlib_XML_energy_difference_ev": 1.7763568394002505e-15,
+    "all_DOSCAR_density_differences_within_print_rounding": true,
+    "doscar_density_printing": "Four significant digits; XML DOS has four decimal places."
+  },
+  "plot_settings": {
+    "energy_window_ev": [
+      -15.0,
+      10.0
+    ],
+    "csv_contains_full_data": true,
+    "bands_symmetry_labels": "Gamma rendered as \u0393; vertical symmetry guides",
+    "dos_y_axis": "Rescaled from data inside displayed energy window"
+  },
+  "preservation": {
+    "all_raw_solver_artifact_hashes_unchanged": true,
+    "both_full_csv_hashes_unchanged": true,
+    "remote_calculations_submitted": 0
+  },
+  "source_sha256": {
+    "bands_xml": "1c97d368e7a3552f7a522a9d83a1e389efb7d6dd00499f8c8defdcdf943c3a11",
+    "bands_csv": "f12e7e8214e63f6e4276c3893829a67b008faf9a20f50b96f7377eeea4856e99",
+    "bands_eigenval": "e9b52c9e1f5efbbef24e4f4d4efb2be11f43e170718143d683baffa4393faab5",
+    "dos_xml": "fa83c5c388e87d18f0ee4b49a1ba553ce9345dfe3339477e1d85ff36dafafe06",
+    "dos_csv": "7c36707b11c90d419612c2c6e0477affe89431138e7aa169b16b111654f429d1",
+    "doscar": "9b373976347a5077e74df0e87d699389555ed0448c57a9cc9f196fdaa257bc6a"
+  },
+  "boundaries": [
+    "Bands path energy and forces are non-self-consistent path quantities, not ground-state total energy/relaxation force claims.",
+    "DOS uses the frozen 4x4x4 mesh and remains visibly spiky; smoothness and k-point convergence are not claimed.",
+    "Rendering changes only; no new solver execution or deleted spectral samples."
+  ],
+  "plot_visual_review": "Inspected both regenerated PNGs: near-Fermi region is legible, \u0393 and segment breaks are clear; DOS spikiness is preserved and not smoothed."
+}

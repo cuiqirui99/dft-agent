@@ -1,0 +1,16 @@
+{
+  "run_id": "vsa-813f2bc2a554451c",
+  "stage": "scf",
+  "job_id_before": "7451337",
+  "state_before": "collecting",
+  "action": "SIGINT local monitor only; remote Slurm job untouched",
+  "passed": true,
+  "job_id_after": "7451337",
+  "status_after": "succeeded",
+  "matching_job_ids": [
+    "7451337"
+  ],
+  "scheduler_states": {
+    "7451337": "COMPLETED"
+  }
+}

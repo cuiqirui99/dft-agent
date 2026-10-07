@@ -8,6 +8,8 @@ A local, single-user workbench for preparing, submitting and following VASP calc
 
 Requires macOS or Linux, Python 3.11 or later, an SSH client, a Slurm account, and access to a licensed VASP installation and appropriate POTCAR files on the remote system. Native Windows is not supported.
 
+Run these commands from the repository directory:
+
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
@@ -45,6 +47,8 @@ Use SSH keys or an SSH agent where possible. For password-only sites, enter the 
 
 The configuration page includes an explicit SSH/Slurm/VASP environment check. It connects only when clicked and does not submit a job.
 
+New configurations start with 8 MPI tasks, suitable for trying the small examples. Adjust this to your structure and cluster allocation rules. The initial carbon test failed during diagonalization with 64 tasks and completed with unchanged physics inputs at 8 tasks; the [resource adjustment record](validation/resource-adjustments.v1.json) preserves that attempt.
+
 The VASP executable and POTCAR data remain on your cluster. Configure `potcar_symbols` for the intended potential choices. The software does not provide a VASP license, distribute VASP binaries, or grant permission to redistribute potential files. Review [NOTICE.md](NOTICE.md) before sharing this project or its artifacts.
 
 ## CLI
@@ -65,6 +69,6 @@ python -m pytest -q
 python -m build
 ```
 
-CI is configured for Python 3.11–3.13 on Linux. It runs offline core and Streamlit AppTest checks, then installs a built wheel outside the source checkout and prepares an included example without contacting a cluster. Development dependencies require Streamlit 1.65 or later for AppTest's file-upload support. Hosted CI execution begins when the repository is published.
+CI runs offline core and Streamlit AppTest checks on Python 3.11–3.13 on Linux, then installs a built wheel outside the source checkout and prepares an included example without contacting a cluster. The [first hosted run for commit `4f320d7`](https://github.com/cuiqirui99/vasp-slurm-agent/actions/runs/37621743051) passed all three versions. Development dependencies require Streamlit 1.65 or later for AppTest's file-upload support.
 
 Live acceptance follows the [frozen protocol](validation/protocol.v1.json). Completed records belong in `validation/results/`; remaining release checks include the other task paths and real restart, cancellation and failure behavior. Numerical reference comparisons are recorded separately from software tests.

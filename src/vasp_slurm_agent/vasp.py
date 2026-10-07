@@ -21,6 +21,7 @@ from pymatgen.io.vasp import Incar, Kpoints, Poscar, Vasprun
 
 
 TASKS = frozenset({"relax", "scf", "bands", "dos"})
+PLOT_ENERGY_WINDOW_EV = (-15.0, 10.0)
 DEFAULTS = {
     "encut": 520.0,
     "ediff": 1e-5,
@@ -241,6 +242,11 @@ def _export_plots(run: Vasprun, output: Path, task: str) -> list[str]:
             for spin, values in densities:
                 ax.plot(energies, values, label=f"spin {int(spin)}")
             ax.set(xlabel="Energy − Fermi energy (eV)", ylabel="DOS (states/eV)")
+            ax.set_xlim(*PLOT_ENERGY_WINDOW_EV)
+            visible = (energies >= PLOT_ENERGY_WINDOW_EV[0]) & (energies <= PLOT_ENERGY_WINDOW_EV[1])
+            if visible.any():
+                peak = max(float(np.max(values[visible])) for _, values in densities)
+                ax.set_ylim(0, peak * 1.05 if peak > 0 else 1.0)
             ax.axvline(0, color="gray", linewidth=0.7)
         elif task == "bands":
             if not run.eigenvalues:
@@ -284,8 +290,12 @@ def _export_plots(run: Vasprun, output: Path, task: str) -> list[str]:
                 if label:
                     previous = ticks.get(float(x))
                     ticks[float(x)] = label if not previous or previous == label else f"{previous}|{label}"
-            ax.set_xticks(list(ticks), list(ticks.values()))
+            ax.set_xticks(list(ticks), [label.replace("GAMMA", "Γ") for label in ticks.values()])
+            for position in ticks:
+                ax.axvline(position, color="0.85", linewidth=0.6, zorder=0)
             ax.set(xlabel="Reciprocal path", ylabel="Energy − Fermi energy (eV)")
+            ax.set_ylim(*PLOT_ENERGY_WINDOW_EV)
+            ax.set_xlim(float(distance[0]), float(distance[-1]))
             ax.axhline(0, color="gray", linewidth=0.7)
         else:
             return []
@@ -371,6 +381,8 @@ def analyze_outputs(output_dir: str | Path, task: str, expected_structure_path: 
             if force_limit >= 0 or result["final_max_force_ev_angstrom"] > abs(force_limit):
                 raise ValueError("Final atomic force exceeds the requested negative EDIFFG criterion.")
         artifacts = _export_plots(run, output, task)
+        if task in {"bands", "dos"}:
+            result["plot_settings"] = {"energy_window_ev": list(PLOT_ENERGY_WINDOW_EV), "csv_contains_full_data": True}
         if task == "bands":
             result["energy_reference_ev"] = float(json.loads((output / "metadata.json").read_text())["scf_fermi_energy_ev"])
             result["energy_reference_source"] = "preceding_scf"

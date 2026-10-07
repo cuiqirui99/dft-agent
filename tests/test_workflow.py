@@ -334,3 +334,69 @@ def test_second_worker_exits_without_touching_remote(prepared):
         state = workflow.watch(prepared, interval=0)
     assert state["status"] == "planned"
     assert not (prepared / "worker.json").exists()
+
+
+def test_zhegv_diagnosis_keeps_parser_reason_and_never_resubmits(prepared, monkeypatch):
+    transport = FakeTransport()
+    workflow.advance(prepared, transport)
+    before = workflow.read_state(prepared)
+    upload_count = len(transport.uploads)
+    completed_files(prepared, transport)
+    transport.accounting = "FAILED"
+    transport.exit_code = "1:0"
+    transport.files["slurm.out"] = b"Error EDDDAV: Call to ZHEGV failed. Returncode = 1 2 128\n"
+    parser_reason = "ParseError: no element found: line 392, column 0"
+    monkeypatch.setattr(workflow, "analyze_outputs", lambda *args: {"success": False, "reason": parser_reason})
+    state = workflow.advance(prepared, transport)
+    result = state["stages"][0]["result"]
+    assert result["failure_code"] == "VASP_EDDDAV_ZHEGV"
+    assert result["parser_reason"] == parser_reason
+    assert parser_reason in result["reason"]
+    assert "ZHEGV" in result["reason"] and "Slurm ended in FAILED" in result["reason"]
+    assert "fewer MPI tasks" in result["recovery_hint"]
+    assert "does not establish the cause" in result["recovery_hint"]
+    assert state["status"] == "needs_attention"
+    assert state["parameters"] == before["parameters"]
+    assert state["stages"][0]["metadata"] == before["stages"][0]["metadata"]
+    assert len(transport.uploads) == upload_count
+    assert len(transport.remote_jobs) == 1
+    assert workflow.advance(prepared, transport)["status"] == "needs_attention"
+    assert len(transport.remote_jobs) == 1
+
+
+@pytest.mark.parametrize("scheduler,log,code", [
+    ("OUT_OF_MEMORY", b"", "OUT_OF_MEMORY"),
+    ("FAILED", b"slurmstepd: error: Detected 1 oom-kill event in StepId=123.batch cgroup", "OUT_OF_MEMORY"),
+    ("TIMEOUT", b"", "TIME_LIMIT"),
+    ("FAILED", b"JOB 123 CANCELLED DUE TO TIME LIMIT", "TIME_LIMIT"),
+])
+def test_resource_failure_diagnostics_preserve_parser_reason(prepared, monkeypatch, scheduler, log, code):
+    transport = FakeTransport()
+    workflow.advance(prepared, transport)
+    completed_files(prepared, transport)
+    transport.accounting = scheduler
+    transport.exit_code = "1:0"
+    transport.files["slurm.err"] = log
+    parser_reason = "ValueError: Complete vasprun.xml is missing; scheduler completion is insufficient."
+    monkeypatch.setattr(workflow, "analyze_outputs", lambda *args: {"success": False, "reason": parser_reason})
+    state = workflow.advance(prepared, transport)
+    result = state["stages"][0]["result"]
+    assert result["failure_code"] == code
+    assert result["parser_reason"] == parser_reason
+    assert parser_reason in result["reason"]
+    assert result["recovery_hint"]
+    assert not result["success"]
+
+
+def test_unrecognized_failed_job_does_not_erase_original_parser_error(prepared, monkeypatch):
+    transport = FakeTransport()
+    workflow.advance(prepared, transport)
+    completed_files(prepared, transport)
+    transport.accounting = "FAILED"
+    transport.exit_code = "1:0"
+    parser_reason = "ValueError: Final structure atom count differs from the input."
+    monkeypatch.setattr(workflow, "analyze_outputs", lambda *args: {"success": False, "reason": parser_reason})
+    result = workflow.advance(prepared, transport)["stages"][0]["result"]
+    assert result["parser_reason"] == parser_reason
+    assert parser_reason in result["reason"]
+    assert "Slurm ended in FAILED" in result["reason"]

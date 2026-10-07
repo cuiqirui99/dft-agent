@@ -87,7 +87,8 @@ def _config_editor(path: Path, config: ClusterConfig | None) -> None:
         with right:
             partition = st.text_input("Slurm partition", value=value("partition", ""))
             account = st.text_input("Slurm account（可留空）", value=value("account", ""))
-            tasks = st.number_input("MPI task 数", 1, 4096, int(value("tasks", 64)))
+            tasks = st.number_input("MPI task 数", 1, 4096, int(value("tasks", 8)),
+                                    help="小晶胞可先用 8 个 MPI task；核数更多不一定更快。按集群要求和体系大小调整。")
             walltime = st.text_input("每阶段最长运行时间", value=value("walltime", "00:30:00"))
             timeout = st.number_input("SSH 连接超时 / 秒", 1, 120, int(value("connect_timeout", 15)))
             setup = st.text_area("集群环境命令（每行一条）", value="\n".join(value("setup_commands", [])),
@@ -181,6 +182,8 @@ def _stage_results(run_dir: Path, stage: dict) -> None:
     st.subheader(f"{stage['name']} · 结果")
     if not result.get("success"):
         st.warning(result.get("reason", "结果尚未通过检查。"))
+        if result.get("recovery_hint"):
+            st.info(result["recovery_hint"])
         return
     metrics = st.columns(2)
     energy = result.get("final_energy_ev")

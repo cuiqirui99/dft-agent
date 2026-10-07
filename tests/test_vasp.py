@@ -175,12 +175,14 @@ def test_relax_curve_is_exported_for_accepted_stub(monkeypatch, tmp_path):
 
 def test_dos_export_contract_with_parser_stub(monkeypatch, tmp_path):
     from pymatgen.electronic_structure.core import Spin
-    dos = SimpleNamespace(energies=np.array([-1.0, 0, 1.0]), densities={Spin.up: np.array([0.0, 1.0, 0.0])})
+    dos = SimpleNamespace(energies=np.array([-30.0, -1.0, 0, 1.0, 70.0]), densities={Spin.up: np.array([40.0, 0.0, 1.0, 0.0, 60.0])})
     run = _fake_run(incar={"NSW": 0, "ICHARG": 11}, efermi=0.0, complete_dos=dos)
     _install_parser_stub(monkeypatch, tmp_path, run)
     result = vasp.analyze_outputs(tmp_path, "dos", EXAMPLES / "Si.cif")
     assert result["success"]
-    assert len((tmp_path / "dos.csv").read_text().splitlines()) == 4
+    assert len((tmp_path / "dos.csv").read_text().splitlines()) == 6
+    assert "70.0,60.0" in (tmp_path / "dos.csv").read_text()
+    assert result["plot_settings"] == {"energy_window_ev": [-15.0, 10.0], "csv_contains_full_data": True}
     assert (tmp_path / "dos.png").stat().st_size > 100
 
 
@@ -193,12 +195,14 @@ def test_bands_export_checks_frozen_path_with_parser_stub(monkeypatch, tmp_path)
     values = np.zeros((len(points), 2, 2))
     values[:, 0, 0] = -1.0
     values[:, 0, 1] = 2.0
-    values[:, 1, 0] = 1.0
+    values[:, 1, 0] = 70.0  # Full CSV retains even bands outside the display window.
     run = _fake_run(incar={"NSW": 0, "ICHARG": 11}, efermi=123.0, actual_kpoints=points, eigenvalues={Spin.up: values})
     _install_parser_stub(monkeypatch, tmp_path, run)
     result = vasp.analyze_outputs(tmp_path, "bands", EXAMPLES / "Si.cif")
     assert result["success"]
     assert result["energy_reference_ev"] == 0.0
+    assert result["plot_settings"] == {"energy_window_ev": [-15.0, 10.0], "csv_contains_full_data": True}
+    assert ",70.0," in (tmp_path / "bands.csv").read_text()
     assert len((tmp_path / "bands.csv").read_text().splitlines()) == 1 + 2 * len(points)
     assert (tmp_path / "bands.png").stat().st_size > 100
     changed = np.asarray(points).copy()

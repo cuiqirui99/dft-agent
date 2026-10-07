@@ -15,7 +15,7 @@ class ClusterConfig:
     potcar_root: str
     partition: str
     port: int = 22
-    tasks: int = 64
+    tasks: int = 8
     walltime: str = "00:30:00"
     account: str = ""
     setup_commands: list[str] = field(default_factory=list)

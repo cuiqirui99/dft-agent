@@ -195,6 +195,38 @@ def _poll(transport, stage):
     return "UNKNOWN"  # Scheduler/accounting lag is never treated as job death.
 
 
+def _failure_diagnostic(output, scheduler):
+    """Give a short, evidence-bound hint from scheduler state and log tails."""
+    tails = []
+    for name in ("slurm.out", "slurm.err", "OUTCAR"):
+        path = Path(output) / name
+        if path.is_file():
+            with path.open("rb") as stream:
+                stream.seek(0, os.SEEK_END)
+                stream.seek(max(0, stream.tell() - 65536))
+                tails.append(stream.read().decode("utf-8", errors="replace"))
+    text = "\n".join(tails)
+    if scheduler == "OUT_OF_MEMORY" or re.search(r"out[ _-]of[ _-]memory|oom[ _-]kill", text, re.IGNORECASE):
+        return {
+            "failure_code": "OUT_OF_MEMORY",
+            "message": "The scheduler or log reports an out-of-memory termination.",
+            "recovery_hint": "Review the memory request and available node memory before preparing a separate retry; this run was not resubmitted.",
+        }
+    if scheduler == "TIMEOUT" or re.search(r"due to time limit|time limit (?:exceeded|reached)|walltime.*(?:exceeded|limit)", text, re.IGNORECASE):
+        return {
+            "failure_code": "TIME_LIMIT",
+            "message": "The scheduler or log reports that the job reached its time limit.",
+            "recovery_hint": "Review elapsed time and request a sufficient walltime in a separately prepared run; any retained structure may be partial.",
+        }
+    if re.search(r"error\s+EDDDAV\b|\b(?:EDDDAV|ZHEGV)\b[^\n]{0,160}\b(?:failed|failure|error)\b", text, re.IGNORECASE):
+        return {
+            "failure_code": "VASP_EDDDAV_ZHEGV",
+            "message": "VASP reported an EDDDAV/ZHEGV diagonalization failure.",
+            "recovery_hint": "For a small system, consider fewer MPI tasks in a separate reviewed run, or check the input structure and settings. This log does not establish the cause; no parameters were changed automatically.",
+        }
+    return None
+
+
 def _collect(root, state, transport, stage):
     remote = state["remote_root"] + "/" + stage["folder"]
     output = root / stage["folder"] / "outputs"
@@ -226,10 +258,25 @@ def _collect(root, state, transport, stage):
             checks[name] = recorded.get(name) == digest
     result["input_identity_verified"] = len(checks) == 3 and all(checks.values())
     result["scheduler_state"] = stage.get("scheduler_state")
+    parser_success = bool(result.get("success"))
+    parser_reason = result.get("reason", "")
+    reasons = [] if parser_success else [parser_reason] if parser_reason else []
     if not result["input_identity_verified"]:
-        result.update(success=False, reason="Input checksums are missing or do not match the approved local inputs")
+        result["success"] = False
+        reasons.append("Input checksums are missing or do not match the approved local inputs")
     if stage.get("scheduler_state") != "COMPLETED":
-        result.update(success=False, reason=f"Slurm ended in {stage.get('scheduler_state')}; any structure is partial")
+        result["success"] = False
+        reasons.append(f"Slurm ended in {stage.get('scheduler_state')}; any structure is partial")
+    if not result.get("success"):
+        result["parser_reason"] = parser_reason
+        diagnostic = _failure_diagnostic(output, stage.get("scheduler_state"))
+        if diagnostic:
+            reasons.insert(0, diagnostic.pop("message"))
+            result.update(diagnostic)
+        else:
+            result["failure_code"] = "INPUT_IDENTITY_MISMATCH" if not result["input_identity_verified"] else "RESULT_REJECTED"
+            result["recovery_hint"] = "Review the preserved input checksums, parser reason and logs. Prepare a separate reviewed run if calculation settings need to change."
+        result["reason"] = " ".join(reasons)
     _write(output / "result.json", result)
     stage["result"] = result
     stage["status"] = "succeeded" if result.get("success") else "needs_attention"
