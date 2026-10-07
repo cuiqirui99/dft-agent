@@ -3053,12 +3053,12 @@
     {
       "material": "Cu",
       "task": "bands",
-      "status": "submitting",
+      "status": "collecting",
       "stages": [
         {
           "name": "scf",
-          "status": "submitting",
-          "job_id": null,
+          "status": "collecting",
+          "job_id": "7451420",
           "source_sha256": "b3bbd86f140c8c813cf24dd39a60bf7c3f8630ef2d0aa1581341ab3983117c59",
           "input_sha256": {
             "POSCAR": "a04f0b7c5a4ecb53ece58abfae3dad71cda2725bf7594cd07667ad490123d42b",
@@ -3112,9 +3112,15 @@
           }
         }
       ],
-      "run_id": "vsa-27a30ea3a8524432",
-      "updated_at": "2026-10-07T12:55:58.194774+00:00",
-      "mpi_ranks": 64
+      "run_id": "vsa-5ced7c0c906d4db9",
+      "updated_at": "2026-10-07T13:01:27.061300+00:00",
+      "mpi_ranks": 8,
+      "retry_of": "vsa-27a30ea3a8524432",
+      "resource_adjustment": {
+        "tasks_before": 64,
+        "tasks_after": 8,
+        "reason": "EDDDAV/ZHEGV failure; test small-cell parallelism hypothesis"
+      }
     },
     {
       "material": "Cu",
@@ -3268,6 +3274,84 @@
         }
       },
       "adjustment_record": "../resource-adjustments.v1.json"
+    },
+    {
+      "material": "Cu",
+      "task": "bands",
+      "run_id": "vsa-27a30ea3a8524432",
+      "job_id": "7451413",
+      "status": "needs_attention",
+      "scheduler_state": "FAILED",
+      "mpi_ranks": 64,
+      "failure_code": "VASP_EDDDAV_ZHEGV",
+      "input_sha256": {
+        "POSCAR": "a04f0b7c5a4ecb53ece58abfae3dad71cda2725bf7594cd07667ad490123d42b",
+        "INCAR": "65f3607193727ed279578bb72678300823392f50285857e3a0b62ab0ec10786e",
+        "KPOINTS": "f60a8974ab4f8a736fe77ab304a879381e825a662861918e88c2d8e96e9ac01a"
+      },
+      "artifact_manifest": {
+        "INCAR": {
+          "sha256": "65f3607193727ed279578bb72678300823392f50285857e3a0b62ab0ec10786e",
+          "size": 264
+        },
+        "KPOINTS": {
+          "sha256": "f60a8974ab4f8a736fe77ab304a879381e825a662861918e88c2d8e96e9ac01a",
+          "size": 8773
+        },
+        "POSCAR": {
+          "sha256": "a04f0b7c5a4ecb53ece58abfae3dad71cda2725bf7594cd07667ad490123d42b",
+          "size": 287
+        },
+        "OUTCAR": {
+          "sha256": "40d6a0be8e0dbee73e4efaa4c6cbdbcd538c70060656edccd94d5b79a57e3ebc",
+          "size": 60017
+        },
+        "OSZICAR": {
+          "sha256": "66a14afcb77342e2a1500cfe261e8c3a3ab8aeaad31cc97d11c2c67877fa9398",
+          "size": 172
+        },
+        "vasprun.xml": {
+          "sha256": "cc5100d66e03897c4693f6f6a20cc1110e7df122e1995db05163f4126abec3cc",
+          "size": 31082
+        },
+        "CONTCAR": {
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size": 0
+        },
+        "EIGENVAL": {
+          "sha256": "d73d3b0c68e7755d2c3c618c728638fe7fd980133a2e82a9085b64637726a39e",
+          "size": 193
+        },
+        "DOSCAR": {
+          "sha256": "d81f73f5e3f67a195c7b6e4a7e8534c6d27e0f61eb791bb2db5502fee80bcfbf",
+          "size": 167
+        },
+        "slurm.out": {
+          "sha256": "68083e3cac926e4a70a7cba1955db38f69f32317c2c24a49fc0baec9784cc539",
+          "size": 3633
+        },
+        "slurm.err": {
+          "sha256": "4815db0f6ab53856c2686ced9dc4e4c2376f6eb3449ef4403e80e8c2fc031d73",
+          "size": 185
+        },
+        "execution.json": {
+          "sha256": "2a01e6565fb8dbe3b6884bf07bd77e7bf005b37330d7fce4d94d1f3f107214f2",
+          "size": 153
+        },
+        "input_hashes.sha256": {
+          "sha256": "6b828e7857c8c8bf7d7420a8536f33f53acec944a93e4ef85b0ccc0a4420055a",
+          "size": 219
+        },
+        "potcar_hash.sha256": {
+          "sha256": "2f53732c717815a2f07a89f3ac548a208673b2a0a27cd93d7fdd4ea85de6f49a",
+          "size": 73
+        },
+        "potcar_titles.txt": {
+          "sha256": "5bfd86a375be3e178e6a9ccbd1cf14c9fab6992e79ae26be5ce3b223fd588da2",
+          "size": 33
+        }
+      },
+      "adjustment_record": "../resource-adjustments.v2.json"
     }
   ]
 }

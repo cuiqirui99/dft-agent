@@ -1,0 +1,14 @@
+{
+  "kind": "resource_adjustment_recorded_before_retry",
+  "protocol": "protocol.v1.json",
+  "material": "Cu",
+  "tasks": ["bands", "dos"],
+  "failed_attempt": {"job_id": "7451413", "workflow": "bands", "stage": "02_bands", "mpi_ranks": 64},
+  "failure": "VASP EDDDAV: ZHEGV return code 110 2 128 during electronic iteration 2",
+  "observation": {"automatic_nbands": 64, "minimum_plane_waves_per_kpoint": 181, "maximum_plane_waves_per_kpoint": 228, "preceding_scf_job_id": "7451411", "preceding_scf_state": "COMPLETED"},
+  "hypothesis": "A lower MPI rank count may avoid numerical or parallel-layout sensitivity. The recorded dimensions alone do not establish the cause; the preceding SCF succeeded with the same band count.",
+  "adjustment": {"mpi_ranks": 8, "physics_input_files": "unchanged", "maximum_new_bands_workflow_attempts": 1, "next_unstarted_cu_dos_uses_same_resource_setting": true},
+  "runtime_note": "VASP may change its automatically selected NBANDS with MPI rank count. Record the effective band count; do not claim identical numerical execution.",
+  "acceptance": "Keep the existing protocol tolerances, convergence, identity and complete-output checks. Preserve both stages of the failed workflow and all previously successful runs.",
+  "references": ["https://vasp.at/wiki/index.php/NBANDS", "https://vasp.at/wiki/index.php/NCORE"]
+}

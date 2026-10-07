@@ -23,6 +23,8 @@ vasp-agent ui
 
 The UI binds to `127.0.0.1`. Keep it local: it is designed for one trusted user and is not an authenticated multi-user web service. See the [Chinese quickstart](docs/quickstart.zh-CN.md) for the complete workflow.
 
+For command-line use, follow the [Si relaxation, Al SCF and MgO DOS examples](docs/examples.md).
+
 1. Configure the SSH host/user, remote run directory, POTCAR directory, VASP command and Slurm resources.
 2. Upload a CIF or POSCAR and inspect the composition, lattice and atomic positions.
 3. Select `relax`, `scf`, `bands` or `dos`; set numerical parameters and generate the local inputs.
