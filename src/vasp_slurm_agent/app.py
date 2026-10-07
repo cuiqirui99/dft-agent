@@ -374,7 +374,7 @@ def _run_panel(run_dir: Path) -> None:
 def main() -> None:
     st.set_page_config(page_title="VASP Slurm Agent", page_icon="⚛", layout="wide")
     st.title("VASP Slurm Agent")
-    st.caption("本地单用户 · 0.1.0a1 开发预览 · VASP + Slurm · 无需 LLM")
+    st.caption("本地单用户 · 0.1.0 · VASP + Slurm · 无需 LLM")
     with st.sidebar:
         st.header("本地文件")
         config_path = Path(st.text_input("集群配置文件", value=os.environ.get(

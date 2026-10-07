@@ -2,7 +2,7 @@
 
 A local, single-user workbench for preparing, submitting and following VASP calculations on an existing Slurm cluster. It provides four tasks: structure relaxation, self-consistent calculations, band structure and density of states. No LLM account is required.
 
-**Status: `0.1.0a1`, development preview.** The initial scope is nonmagnetic PBE for ordered periodic structures, with practical starting parameters. The [live acceptance record](validation/results/campaign.json) tracks completed workflows, solver versions, convergence checks and artifact hashes; its completion fields describe the current evidence. This is a standalone project and does not depend on the older `AI_AGNET` workspace. Code and documentation are available under the [MIT License](LICENSE); external solver terms are described in [NOTICE.md](NOTICE.md).
+**Version: `0.1.0`.** The basic scope is nonmagnetic PBE for ordered periodic structures, with practical starting parameters. The [live acceptance record](validation/results/campaign.json) tracks completed workflows, solver versions, convergence checks and artifact hashes; its completion fields describe the current evidence. This is a standalone project and does not depend on the older `AI_AGNET` workspace. Code and documentation are available under the [MIT License](LICENSE); external solver terms are described in [NOTICE.md](NOTICE.md).
 
 ## Install and open
 
@@ -49,7 +49,7 @@ Closing the browser does not deliberately cancel remote jobs. The background mon
 
 The UI defaults to `~/.config/vasp-slurm-agent/cluster.json` and saves runs under `~/vasp-slurm-agent-runs`; both paths are editable. `VASP_AGENT_CONFIG` changes the UI's initial configuration path. Each prepared run retains its own configuration snapshot.
 
-Use SSH keys or an SSH agent where possible. For password-only sites, enter the password in the UI sidebar; it stays in session memory and is passed to an explicitly started operation or worker. Clear it with the sidebar button when no longer needed. CLI users can use `vasp-agent watch <run_dir> --password` or `vasp-agent doctor --password` for a private prompt. The transport also accepts `DFT_AGENT_SSH_PASSWORD`; never put a password or private key in the configuration or a shared result bundle. Establish and verify the host's SSH identity before using the agent. Sites requiring interactive MFA may require a separately established session; this preview does not claim general MFA integration.
+Use SSH keys or an SSH agent where possible. For password-only sites, enter the password in the UI sidebar; it stays in session memory and is passed to an explicitly started operation or worker. Clear it with the sidebar button when no longer needed. CLI users can use `vasp-agent watch <run_dir> --password` or `vasp-agent doctor --password` for a private prompt. The transport also accepts `DFT_AGENT_SSH_PASSWORD`; never put a password or private key in the configuration or a shared result bundle. Establish and verify the host's SSH identity before using the agent. Sites requiring interactive MFA may require a separately established session; general MFA integration is outside this version's scope.
 
 The configuration page includes an explicit SSH/Slurm/VASP environment check. It connects only when clicked and does not submit a job.
 
