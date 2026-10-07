@@ -8,6 +8,7 @@ include validation/resource-adjustments.v2.json
 include validation/resource-adjustment-outcomes.v1.json
 include validation/legacy-scope.json
 recursive-include validation/results *.json
+recursive-include validation/methods-0.2.0 *.vasp *.py
 include validation/reference/README.md
 include validation/reference/*.py
 include validation/reference/*.json

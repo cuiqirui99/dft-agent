@@ -1,5 +1,7 @@
 # v0.1.0 validation
 
+For the current release, see [v0.2.0 validation](validation-0.2.0.md).
+
 The first release focused on getting from an input structure to a completed
 VASP calculation and a structure you can download. Its validation finished on
 2026-10-07 using VASP 6.2.1 and PBE.54 potentials on one Slurm cluster. This page

@@ -1,0 +1,83 @@
+{
+  "checked_at": "2026-10-07T15:25:40.742498+00:00",
+  "provider": "codex",
+  "cases": [
+    {
+      "case": "soc_pipeline",
+      "status": "ready",
+      "tasks": [
+        "relax",
+        "bands"
+      ],
+      "functional": "PBE",
+      "soc": true,
+      "seconds": 16.4
+    },
+    {
+      "case": "hse_spectra",
+      "status": "ready",
+      "tasks": [
+        "bands",
+        "dos"
+      ],
+      "functional": "HSE06",
+      "soc": false,
+      "seconds": 11.7
+    },
+    {
+      "case": "magnetic_compare",
+      "status": "ready",
+      "tasks": [
+        "scf"
+      ],
+      "functional": "PBE",
+      "soc": false,
+      "seconds": 21.3
+    },
+    {
+      "case": "missing_u",
+      "status": "needs_input",
+      "tasks": [],
+      "functional": "PBE",
+      "soc": false,
+      "seconds": 37.3
+    },
+    {
+      "case": "unsupported",
+      "status": "unsupported",
+      "tasks": [],
+      "functional": "PBE",
+      "soc": false,
+      "seconds": 12.8
+    },
+    {
+      "case": "missing_u_followup",
+      "status": "ready",
+      "tasks": [
+        "scf"
+      ],
+      "functional": "PBE",
+      "soc": false,
+      "checks": {
+        "ready": true,
+        "scf_only": true,
+        "no_soc": true,
+        "collinear": true,
+        "moments_in_source_order": true,
+        "explicit_ni_u_j": true,
+        "source_bound": true,
+        "forbidden_relax_recorded": true,
+        "soc_exclusion_recorded": true
+      },
+      "seconds": 16.7
+    }
+  ],
+  "checks": {
+    "hse_no_relax": true,
+    "hse_no_soc": true,
+    "hse_functional_preserved": true,
+    "followup": true
+  },
+  "all_passed": true,
+  "scope": "Real Codex CLI calls. API adapters tested offline, not against live API providers."
+}

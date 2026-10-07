@@ -1,8 +1,8 @@
 # DFT Agent
 
-Version `0.1.3`.
+Version `0.2.0`.
 
-Run VASP on a Slurm cluster from a local app. Optimize structures, run SCF, calculate bands or DOS, and download the results. No LLM account is needed.
+Describe a calculation, review the plan, and run VASP on your Slurm cluster. DFT Agent handles relaxation, SCF, bands and DOS with magnetism, SOC, DFT+U, HSE06 or PBE0.
 
 Requires macOS or Linux, Python 3.11+, SSH, and access to licensed VASP and POTCAR files on your cluster.
 
@@ -13,7 +13,7 @@ git clone https://github.com/cuiqirui99/dft-agent.git
 cd dft-agent
 python3 -m venv .venv
 source .venv/bin/activate
-python -m pip install .
+python -m pip install '.[agent]'
 dft-agent ui
 ```
 
@@ -21,12 +21,17 @@ dft-agent ui
 
 1. Enter your SSH, VASP and Slurm settings in **Cluster setup**.
 2. Open **New calculation** and upload a CIF or POSCAR. Try `examples/Si.cif`.
-3. Choose a calculation and click **Prepare inputs**. This only writes local files.
-4. Review the settings, tick the confirmation box and click **Submit calculation**.
-5. Follow progress in **Runs** and download the structure or results ZIP.
+3. Select a provider in **Model**, enter your **Goal**, and click **Plan**. Or use **Manual** without a model.
+4. Review the plan and click **Prepare inputs**.
+5. Check the inputs, tick the confirmation box and click **Submit calculation**.
+6. Follow progress in **Runs** and download the results.
 
 After an interruption, select the original run and use **Resume monitoring**. For `needs_attention`, read the error before using **Reconnect**.
 
-Supports nonmagnetic PBE for ordered periodic structures. Bands and DOS include SCF but do not optimize the structure first. Default parameters are starting settings; check them for your material. Keep the app local: it has no multi-user login.
+Try: “Relax this structure, then calculate its bands with SOC.” Plans can be revised before submission. Missing settings, such as U and J, trigger a question.
 
-[Quickstart](docs/quickstart.md) · [CLI examples](docs/examples.md) · [v0.1.0 validation](docs/validation.md) · [MIT license](LICENSE) · [Notices](NOTICE.md) · [Citation](CITATION.cff)
+Supports OpenAI, compatible APIs and a logged-in Codex CLI. Model calls receive your goal and structure. Manual mode needs no model account; install with `pip install .`.
+
+Use ordered periodic structures. Check the starting parameters for your material. Magnetic comparisons test NM, FM and one AFM seed; they do not search all magnetic orders. Keep the app local.
+
+[Quickstart](docs/quickstart.md) · [Methods](docs/methods.md) · [CLI examples](docs/examples.md) · [Validation](docs/validation.md) · [MIT license](LICENSE) · [Notices](NOTICE.md) · [Citation](CITATION.cff)

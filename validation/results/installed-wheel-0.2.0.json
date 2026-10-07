@@ -1,0 +1,190 @@
+{
+  "checked_at": "2026-10-07T15:38:38.719021+00:00",
+  "passed": true,
+  "installed_version": "0.2.0",
+  "imported_outside_checkout": true,
+  "wheel_sha256": "ea781671b88abfd6217066f5ad352457e3663b0f25169a7099b24338c6d22d5c",
+  "model": {
+    "provider": "codex",
+    "model": "gpt-6-astra"
+  },
+  "goal": "Run SCF, then bands and DOS for this silicon structure with HSE06. Use no spin polarization, no SOC, no Hubbard U and no relaxation. Use ENCUT 400 eV, EDIFF 1e-5, NELM 160, a 2x2x2 grid, SIGMA 0.1 eV, line_density 1 and NEDOS 301. Use defaults for other settings.",
+  "source_sha256": "ec3459fca57e82b0776a417039b1f7ba34f677186f0990cc0555fa5499302a24",
+  "proposal_sha256": "1caf06c26c12b5366a25bdf75c8048c564b8c656c2f8d98bb47220150d8c5421",
+  "tasks": [
+    "scf",
+    "bands",
+    "dos"
+  ],
+  "parameters": {
+    "spin": "none",
+    "soc": false,
+    "saxis": [
+      0,
+      0,
+      1
+    ],
+    "magmom": null,
+    "functional": "HSE06",
+    "hubbard_u": {},
+    "encut": 400,
+    "ediff": 1e-05,
+    "mesh": [
+      2,
+      2,
+      2
+    ],
+    "ismear": 0,
+    "sigma": 0.1,
+    "nelm": 160,
+    "line_density": 1,
+    "nedos": 301
+  },
+  "stages": [
+    {
+      "task": "scf",
+      "job_id": "7451844",
+      "success": true,
+      "input_sha256": {
+        "POSCAR": "2942e884c6a7feb5a81a19d1c86a53a8d24b7399939435eff0c6b302e121b303",
+        "INCAR": "66489d7b253ac6fc8137b340ab9c8d24f782f8d60042c458365a478ada3ebc31",
+        "KPOINTS": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49"
+      },
+      "vasprun_sha256": "6c884a36ca183124d73eb89a16b9905c2449ab79e60428dc24ad62153e238878",
+      "energy_ev": -13.29166302
+    },
+    {
+      "task": "bands",
+      "job_id": "7451845",
+      "success": true,
+      "input_sha256": {
+        "POSCAR": "2942e884c6a7feb5a81a19d1c86a53a8d24b7399939435eff0c6b302e121b303",
+        "INCAR": "1d9fe55fdc14d28ee8fda78ddd9ef80e3350f4a2f94dcbb99061efe73460b847",
+        "KPOINTS": "8799adfaa191cfabeaf82b27e77dc587c31946eb4459a7e65a99928a7f9364ab"
+      },
+      "vasprun_sha256": "ee9b610c3b90a2d7d193c7d98b83f73b30e6d29c97364ff537324ab141f8e523",
+      "energy_ev": -13.29164954
+    },
+    {
+      "task": "dos",
+      "job_id": "7451846",
+      "success": true,
+      "input_sha256": {
+        "POSCAR": "2942e884c6a7feb5a81a19d1c86a53a8d24b7399939435eff0c6b302e121b303",
+        "INCAR": "d427002341ffdf1f837103608ba7240742091401af30b0e3868992830472f988",
+        "KPOINTS": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49"
+      },
+      "vasprun_sha256": "7fb7b8076782e034fc17c26baf14cdb8d2f071f06c715bbc8450d78c0a184e23",
+      "energy_ev": -13.29166302
+    }
+  ],
+  "hybrid_kpoint_consistency": {
+    "tolerance_ev": 0.05,
+    "scope": "All returned bands, energy-sorted within each spin channel.",
+    "equivalent_pair_count": 7,
+    "compared_eigenvalue_count": 56,
+    "max_energy_deviation_ev": 0.0,
+    "worst_pair": null,
+    "passed": true
+  },
+  "licensed_files_excluded_from_bundle": true,
+  "scientific_accuracy_validated": false,
+  "earlier_soc_wheel_sha256": "07ba6ee44292cbadd47ca4592e15e476ed63dc5484655124864af8d0d58ca04a",
+  "earlier_soc_candidate": {
+    "checked_at": "2026-10-07T15:29:51.452337+00:00",
+    "passed": true,
+    "installed_version": "0.2.0",
+    "imported_outside_checkout": true,
+    "wheel_sha256": "07ba6ee44292cbadd47ca4592e15e476ed63dc5484655124864af8d0d58ca04a",
+    "model": {
+      "provider": "codex",
+      "model": "gpt-6-astra"
+    },
+    "goal": "Relax this silicon structure, then calculate its bands with SOC. Use zero initial moments, spin axis [0,0,1], PBE, ENCUT 400 eV, a 2x2x2 grid, EDIFF 1e-5, a 0.05 eV/angstrom force threshold, NSW 30 and line_density 2. No Hubbard U or hybrid functional. Use defaults for remaining settings.",
+    "source_sha256": "ec3459fca57e82b0776a417039b1f7ba34f677186f0990cc0555fa5499302a24",
+    "proposal_sha256": "be8db6c0f410da67fcb5b3bd7cb26a6bb3e9360a311167bb38bdd30da8b2b649",
+    "tasks": [
+      "relax",
+      "bands"
+    ],
+    "parameters": {
+      "spin": "noncollinear",
+      "soc": true,
+      "saxis": [
+        0,
+        0,
+        1
+      ],
+      "magmom": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ],
+      "functional": "PBE",
+      "hubbard_u": {},
+      "encut": 400,
+      "ediff": 1e-05,
+      "ediffg": -0.05,
+      "nsw": 30,
+      "mesh": [
+        2,
+        2,
+        2
+      ],
+      "ismear": 0,
+      "sigma": 0.05,
+      "cell_relax": false,
+      "nelm": 120,
+      "line_density": 2,
+      "nedos": 2001
+    },
+    "stages": [
+      {
+        "task": "relax",
+        "job_id": "7451833",
+        "success": true,
+        "input_sha256": {
+          "POSCAR": "2942e884c6a7feb5a81a19d1c86a53a8d24b7399939435eff0c6b302e121b303",
+          "INCAR": "7c4c617ede14ba5d73f90cd1848142aab48754abc9b08ab0d1ff0988287b2d3f",
+          "KPOINTS": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49"
+        },
+        "vasprun_sha256": "921254a5b62292e0e105fa60001480a1ded219800cb33101634e016c5acaae65",
+        "energy_ev": -8.29154598
+      },
+      {
+        "task": "scf",
+        "job_id": "7451834",
+        "success": true,
+        "input_sha256": {
+          "POSCAR": "31f32fd743c79576c8b2cb974a236a6b0fd0a774894e23654eab70a1acf7a1c4",
+          "INCAR": "354e07fd05bc746dc4b9bcb860198853a69bb218e277a4e27f91825bc0ac8623",
+          "KPOINTS": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49"
+        },
+        "vasprun_sha256": "6480fd3badd4ba923028f195992918795131f756ccf03f2cef2591bf80688e63",
+        "energy_ev": -8.29154598
+      },
+      {
+        "task": "bands",
+        "job_id": "7451836",
+        "success": true,
+        "input_sha256": {
+          "POSCAR": "31f32fd743c79576c8b2cb974a236a6b0fd0a774894e23654eab70a1acf7a1c4",
+          "INCAR": "15098a58c66ffc52a819ab473e0bf1fc416c84e08cfd585e1afc3e786d4c7a89",
+          "KPOINTS": "fe92b1a7e6c99c048d0229efdcc801b4e34a9583ec4d26d02d4be6b1a257e516"
+        },
+        "vasprun_sha256": "244482867168c14d20ca93baf6a089f0b96fc3f2e08bf389e075fd231a2c487a",
+        "energy_ev": -8.55352544
+      }
+    ],
+    "relaxed_structure_and_orientation_propagated": true,
+    "licensed_files_excluded_from_bundle": true,
+    "scientific_accuracy_validated": false
+  }
+}

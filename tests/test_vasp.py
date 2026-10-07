@@ -196,7 +196,7 @@ def test_bands_export_checks_frozen_path_with_parser_stub(monkeypatch, tmp_path)
     values[:, 0, 0] = -1.0
     values[:, 0, 1] = 2.0
     values[:, 1, 0] = 70.0  # Full CSV retains even bands outside the display window.
-    run = _fake_run(incar={"NSW": 0, "ICHARG": 11}, efermi=123.0, actual_kpoints=points, eigenvalues={Spin.up: values})
+    run = _fake_run(incar=dict(Incar.from_file(tmp_path / "INCAR")), efermi=123.0, actual_kpoints=points, eigenvalues={Spin.up: values})
     _install_parser_stub(monkeypatch, tmp_path, run)
     result = vasp.analyze_outputs(tmp_path, "bands", EXAMPLES / "Si.cif")
     assert result["success"]

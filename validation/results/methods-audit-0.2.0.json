@@ -1,0 +1,905 @@
+{
+  "schema_version": 1,
+  "scope": "Independent stdlib XML and OUTCAR audit of live method cases; no product parser imports.",
+  "reports": [
+    {
+      "case": "fe-soc",
+      "stage": "01_scf",
+      "task": "scf",
+      "job_id": "7451813",
+      "reported_status": "succeeded",
+      "reported_success": true,
+      "xml_complete": true,
+      "vasp_version": "6.2.1",
+      "atoms": 1,
+      "ionic_steps": 1,
+      "electronic_steps_last": 21,
+      "outcar_ediff_reached": true,
+      "energy_ev": -8.22541973,
+      "energy_ev_per_atom": -8.22541973,
+      "site_moments_mu_B": [
+        [
+          -0.0,
+          -0.0,
+          1.995
+        ]
+      ],
+      "total_moment_mu_B": [
+        -0.0001569,
+        -0.0001296,
+        2.0000631
+      ],
+      "moment_basis": "SAXIS spinor",
+      "input_hashes_verified": {
+        "POSCAR": true,
+        "INCAR": true,
+        "KPOINTS": true
+      },
+      "method": {
+        "spin": "noncollinear",
+        "magmom": [
+          [
+            0.0,
+            0.0,
+            3.0
+          ]
+        ],
+        "soc": true,
+        "saxis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "functional": "PBE",
+        "hubbard_u": {}
+      },
+      "poscar_sha256": "b908cea5c93260ced3cd1f521703929bfe06a335cd32daefe2ef396817bce6c7",
+      "potcar_sha256": "519ad496e3627c9885028da91cc038103aabe65859ad2bde1964f223ccb49c0f",
+      "xml_sha256": "111169c4cbaae9f08044c0908090f7ca31712987c7905465054b0cb9d545b404",
+      "outcar_sha256": "948b517ae701b9ed583024b9c31973fd41c2c44c6ee8414a6dd9517124cdf379",
+      "forces_finite": true,
+      "spectral_force_exception": false,
+      "errors": [],
+      "audit_passed": true
+    },
+    {
+      "case": "nio-u",
+      "stage": "01_scf",
+      "task": "scf",
+      "job_id": "7451814",
+      "reported_status": "succeeded",
+      "reported_success": true,
+      "xml_complete": true,
+      "vasp_version": "6.2.1",
+      "atoms": 4,
+      "ionic_steps": 1,
+      "electronic_steps_last": 15,
+      "outcar_ediff_reached": true,
+      "energy_ev": -20.88305961,
+      "energy_ev_per_atom": -5.2207649025,
+      "site_moments_mu_B": [
+        1.69,
+        -1.69,
+        0.0,
+        0.0
+      ],
+      "total_moment_mu_B": -0.0,
+      "moment_basis": "collinear spin axis",
+      "input_hashes_verified": {
+        "POSCAR": true,
+        "INCAR": true,
+        "KPOINTS": true
+      },
+      "method": {
+        "spin": "collinear",
+        "magmom": [
+          2.0,
+          -2.0,
+          0.0,
+          0.0
+        ],
+        "soc": false,
+        "saxis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "functional": "PBE",
+        "hubbard_u": {
+          "Ni": {
+            "l": 2,
+            "u": 5.0,
+            "j": 0.0
+          }
+        }
+      },
+      "poscar_sha256": "0f3e76d070a7c64889ec1a1a81861e026aa7738baee0630846ff01ef6d120657",
+      "potcar_sha256": "60ec710f18c352287c942db876f4bb1e8b5823282f4549f93261c9111f39d6bb",
+      "xml_sha256": "b353ea208df0fb927aefffb631a9ffe18e176b354ba926dbc268febdb495b790",
+      "outcar_sha256": "7cc59dcc274ad8f67d09307ca9347e549dc414e1ca32a975b966bbc01af06bc7",
+      "forces_finite": true,
+      "spectral_force_exception": false,
+      "errors": [],
+      "audit_passed": true
+    },
+    {
+      "case": "si-pbe0",
+      "stage": "01_scf",
+      "task": "scf",
+      "job_id": "7451818",
+      "reported_status": "succeeded",
+      "reported_success": true,
+      "xml_complete": true,
+      "vasp_version": "6.2.1",
+      "atoms": 2,
+      "ionic_steps": 1,
+      "electronic_steps_last": 26,
+      "outcar_ediff_reached": true,
+      "energy_ev": -11.15160039,
+      "energy_ev_per_atom": -5.575800195,
+      "site_moments_mu_B": null,
+      "total_moment_mu_B": null,
+      "moment_basis": "collinear spin axis",
+      "input_hashes_verified": {
+        "POSCAR": true,
+        "INCAR": true,
+        "KPOINTS": true
+      },
+      "method": {
+        "spin": "none",
+        "magmom": null,
+        "soc": false,
+        "saxis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "functional": "PBE0",
+        "hubbard_u": {}
+      },
+      "poscar_sha256": "2942e884c6a7feb5a81a19d1c86a53a8d24b7399939435eff0c6b302e121b303",
+      "potcar_sha256": "2a6df1c19701e5d97aaa59e5470b14653ddbd76935b76dacdd8792eb2eba252c",
+      "xml_sha256": "1fcf5ef74f78ce7a5ced28455a955f80c1539b2f5ba0bde969c28f2b2de0b13e",
+      "outcar_sha256": "b6a227767bf9da75430f651952cfa34c1a60aa676cbbad1821d54416b84b238b",
+      "forces_finite": true,
+      "spectral_force_exception": false,
+      "errors": [],
+      "audit_passed": true
+    },
+    {
+      "case": "wheel-agent-hse",
+      "stage": "01_scf",
+      "task": "scf",
+      "job_id": "7451844",
+      "reported_status": "succeeded",
+      "reported_success": true,
+      "xml_complete": true,
+      "vasp_version": "6.2.1",
+      "atoms": 2,
+      "ionic_steps": 1,
+      "electronic_steps_last": 26,
+      "outcar_ediff_reached": true,
+      "energy_ev": -13.29166302,
+      "energy_ev_per_atom": -6.64583151,
+      "site_moments_mu_B": null,
+      "total_moment_mu_B": null,
+      "moment_basis": "collinear spin axis",
+      "input_hashes_verified": {
+        "POSCAR": true,
+        "INCAR": true,
+        "KPOINTS": true
+      },
+      "method": {
+        "spin": "none",
+        "magmom": null,
+        "soc": false,
+        "saxis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "functional": "HSE06",
+        "hubbard_u": {}
+      },
+      "poscar_sha256": "2942e884c6a7feb5a81a19d1c86a53a8d24b7399939435eff0c6b302e121b303",
+      "potcar_sha256": "2a6df1c19701e5d97aaa59e5470b14653ddbd76935b76dacdd8792eb2eba252c",
+      "xml_sha256": "6c884a36ca183124d73eb89a16b9905c2449ab79e60428dc24ad62153e238878",
+      "outcar_sha256": "9b1e656b36cbbe54c42a96206d35991d5119b6a9522ea8a58c11e1bed8521a63",
+      "forces_finite": true,
+      "spectral_force_exception": false,
+      "errors": [],
+      "audit_passed": true
+    },
+    {
+      "case": "wheel-agent-hse",
+      "stage": "02_bands",
+      "task": "bands",
+      "job_id": "7451845",
+      "reported_status": "succeeded",
+      "reported_success": true,
+      "xml_complete": true,
+      "vasp_version": "6.2.1",
+      "atoms": 2,
+      "ionic_steps": 1,
+      "electronic_steps_last": 31,
+      "outcar_ediff_reached": true,
+      "energy_ev": -13.29164954,
+      "energy_ev_per_atom": -6.64582477,
+      "site_moments_mu_B": null,
+      "total_moment_mu_B": null,
+      "moment_basis": "collinear spin axis",
+      "input_hashes_verified": {
+        "POSCAR": true,
+        "INCAR": true,
+        "KPOINTS": true
+      },
+      "method": {
+        "spin": "none",
+        "magmom": null,
+        "soc": false,
+        "saxis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "functional": "HSE06",
+        "hubbard_u": {}
+      },
+      "poscar_sha256": "2942e884c6a7feb5a81a19d1c86a53a8d24b7399939435eff0c6b302e121b303",
+      "potcar_sha256": "2a6df1c19701e5d97aaa59e5470b14653ddbd76935b76dacdd8792eb2eba252c",
+      "xml_sha256": "ee9b610c3b90a2d7d193c7d98b83f73b30e6d29c97364ff537324ab141f8e523",
+      "outcar_sha256": "4e59d90fe76047558d787e0a2d201326529d92de5dca47121532acf835304913",
+      "forces_finite": false,
+      "spectral_force_exception": true,
+      "errors": [],
+      "spectrum": {
+        "points": 16,
+        "path_points": 8,
+        "mesh_points": 8,
+        "eigenvalues_finite": true,
+        "bands_per_point": [
+          8
+        ],
+        "zero_weight_path_convergence_independently_validated": false,
+        "equivalent_kpoint_check": {
+          "tolerance_ev": 0.05,
+          "equivalent_pair_count": 7,
+          "compared_eigenvalue_count": 56,
+          "max_energy_deviation_ev": 0.0,
+          "passed": true,
+          "scope": "All returned bands per spin, including reciprocal-equivalent mesh/path points."
+        },
+        "csv_rows": 64
+      },
+      "audit_passed": true
+    },
+    {
+      "case": "wheel-agent-hse",
+      "stage": "03_dos",
+      "task": "dos",
+      "job_id": "7451846",
+      "reported_status": "succeeded",
+      "reported_success": true,
+      "xml_complete": true,
+      "vasp_version": "6.2.1",
+      "atoms": 2,
+      "ionic_steps": 1,
+      "electronic_steps_last": 26,
+      "outcar_ediff_reached": true,
+      "energy_ev": -13.29166302,
+      "energy_ev_per_atom": -6.64583151,
+      "site_moments_mu_B": null,
+      "total_moment_mu_B": null,
+      "moment_basis": "collinear spin axis",
+      "input_hashes_verified": {
+        "POSCAR": true,
+        "INCAR": true,
+        "KPOINTS": true
+      },
+      "method": {
+        "spin": "none",
+        "magmom": null,
+        "soc": false,
+        "saxis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "functional": "HSE06",
+        "hubbard_u": {}
+      },
+      "poscar_sha256": "2942e884c6a7feb5a81a19d1c86a53a8d24b7399939435eff0c6b302e121b303",
+      "potcar_sha256": "2a6df1c19701e5d97aaa59e5470b14653ddbd76935b76dacdd8792eb2eba252c",
+      "xml_sha256": "7fb7b8076782e034fc17c26baf14cdb8d2f071f06c715bbc8450d78c0a184e23",
+      "outcar_sha256": "1e37dae15007ba381147c0e6eea8156305a780e3fbb5a2694a0f9524e12a0e7e",
+      "forces_finite": true,
+      "spectral_force_exception": false,
+      "errors": [],
+      "spectrum": {
+        "dos_finite": true,
+        "channels": 1,
+        "points_per_channel": [
+          301
+        ],
+        "csv_rows": 301
+      },
+      "audit_passed": true
+    },
+    {
+      "case": "fe-seeds",
+      "stage": "01_scf_nm",
+      "task": "scf",
+      "job_id": "7451812",
+      "reported_status": "succeeded",
+      "reported_success": true,
+      "xml_complete": true,
+      "vasp_version": "6.2.1",
+      "atoms": 2,
+      "ionic_steps": 1,
+      "electronic_steps_last": 12,
+      "outcar_ediff_reached": true,
+      "energy_ev": -15.31903581,
+      "energy_ev_per_atom": -7.659517905,
+      "site_moments_mu_B": null,
+      "total_moment_mu_B": null,
+      "moment_basis": "collinear spin axis",
+      "input_hashes_verified": {
+        "POSCAR": true,
+        "INCAR": true,
+        "KPOINTS": true
+      },
+      "method": {
+        "spin": "none",
+        "magmom": null,
+        "soc": false,
+        "saxis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "functional": "PBE",
+        "hubbard_u": {}
+      },
+      "poscar_sha256": "d9e504eddb938b32919f8b8b5ceb48c8db1be135b23e522c24e8d6905a34451d",
+      "potcar_sha256": "519ad496e3627c9885028da91cc038103aabe65859ad2bde1964f223ccb49c0f",
+      "xml_sha256": "4757ede261ace8d7278aa313703c3d3676b87e432ff08c3a71aaba4a4bb1bb29",
+      "outcar_sha256": "ab50444fba4c4030d347592d6b5f7d8dbbb0e434b339197d785fed72e192ee2d",
+      "forces_finite": true,
+      "spectral_force_exception": false,
+      "errors": [],
+      "audit_passed": true
+    },
+    {
+      "case": "fe-seeds",
+      "stage": "02_scf_fm",
+      "task": "scf",
+      "job_id": "7451815",
+      "reported_status": "succeeded",
+      "reported_success": true,
+      "xml_complete": true,
+      "vasp_version": "6.2.1",
+      "atoms": 2,
+      "ionic_steps": 1,
+      "electronic_steps_last": 13,
+      "outcar_ediff_reached": true,
+      "energy_ev": -16.44730506,
+      "energy_ev_per_atom": -8.22365253,
+      "site_moments_mu_B": [
+        2.027,
+        2.027
+      ],
+      "total_moment_mu_B": 4.0412158,
+      "moment_basis": "collinear spin axis",
+      "input_hashes_verified": {
+        "POSCAR": true,
+        "INCAR": true,
+        "KPOINTS": true
+      },
+      "method": {
+        "spin": "collinear",
+        "magmom": [
+          3.0,
+          3.0
+        ],
+        "soc": false,
+        "saxis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "functional": "PBE",
+        "hubbard_u": {}
+      },
+      "poscar_sha256": "d9e504eddb938b32919f8b8b5ceb48c8db1be135b23e522c24e8d6905a34451d",
+      "potcar_sha256": "519ad496e3627c9885028da91cc038103aabe65859ad2bde1964f223ccb49c0f",
+      "xml_sha256": "06edbd566a14314b77ec84d3283f584ab6c738c9610e40335751548e188de0a8",
+      "outcar_sha256": "edb1b9877b81c7807f1b1c070727ef0dbbcfde87390e2c7b42a7998f76954ea6",
+      "forces_finite": true,
+      "spectral_force_exception": false,
+      "errors": [],
+      "audit_passed": true
+    },
+    {
+      "case": "fe-seeds",
+      "stage": "03_scf_afm",
+      "task": "scf",
+      "job_id": "7451819",
+      "reported_status": "succeeded",
+      "reported_success": true,
+      "xml_complete": true,
+      "vasp_version": "6.2.1",
+      "atoms": 2,
+      "ionic_steps": 1,
+      "electronic_steps_last": 13,
+      "outcar_ediff_reached": true,
+      "energy_ev": -16.0324255,
+      "energy_ev_per_atom": -8.01621275,
+      "site_moments_mu_B": [
+        1.796,
+        -1.796
+      ],
+      "total_moment_mu_B": 0.0006201,
+      "moment_basis": "collinear spin axis",
+      "input_hashes_verified": {
+        "POSCAR": true,
+        "INCAR": true,
+        "KPOINTS": true
+      },
+      "method": {
+        "spin": "collinear",
+        "magmom": [
+          3.0,
+          -3.0
+        ],
+        "soc": false,
+        "saxis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "functional": "PBE",
+        "hubbard_u": {}
+      },
+      "poscar_sha256": "d9e504eddb938b32919f8b8b5ceb48c8db1be135b23e522c24e8d6905a34451d",
+      "potcar_sha256": "519ad496e3627c9885028da91cc038103aabe65859ad2bde1964f223ccb49c0f",
+      "xml_sha256": "bfe32c7247b02494cf763c32430dba383a5cb7987514bd6631f0f420d5e40f49",
+      "outcar_sha256": "1baed93bdff7aacdd53e77b083626427c37fe244994c350673d83b8a5b3aa696",
+      "forces_finite": true,
+      "spectral_force_exception": false,
+      "errors": [],
+      "audit_passed": true
+    },
+    {
+      "case": "si-chain",
+      "stage": "01_relax",
+      "task": "relax",
+      "job_id": "7451825",
+      "reported_status": "succeeded",
+      "reported_success": true,
+      "xml_complete": true,
+      "vasp_version": "6.2.1",
+      "atoms": 2,
+      "ionic_steps": 1,
+      "electronic_steps_last": 11,
+      "outcar_ediff_reached": true,
+      "energy_ev": -8.29123012,
+      "energy_ev_per_atom": -4.14561506,
+      "site_moments_mu_B": null,
+      "total_moment_mu_B": null,
+      "moment_basis": "collinear spin axis",
+      "input_hashes_verified": {
+        "POSCAR": true,
+        "INCAR": true,
+        "KPOINTS": true
+      },
+      "method": {
+        "spin": "none",
+        "magmom": null,
+        "soc": false,
+        "saxis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "functional": "PBE",
+        "hubbard_u": {}
+      },
+      "poscar_sha256": "2942e884c6a7feb5a81a19d1c86a53a8d24b7399939435eff0c6b302e121b303",
+      "potcar_sha256": "2a6df1c19701e5d97aaa59e5470b14653ddbd76935b76dacdd8792eb2eba252c",
+      "xml_sha256": "0bd2f108f63da7e29df54b5ef0f3b2a8a6b86877fc6ab30197fbc1e64e766040",
+      "outcar_sha256": "6bf16c4fa6d202ce170faaf5ef70a2a997806aed7cb3dd9503c159a1d471f2d6",
+      "forces_finite": true,
+      "spectral_force_exception": false,
+      "errors": [],
+      "audit_passed": true
+    },
+    {
+      "case": "si-chain",
+      "stage": "02_scf",
+      "task": "scf",
+      "job_id": "7451827",
+      "reported_status": "succeeded",
+      "reported_success": true,
+      "xml_complete": true,
+      "vasp_version": "6.2.1",
+      "atoms": 2,
+      "ionic_steps": 1,
+      "electronic_steps_last": 11,
+      "outcar_ediff_reached": true,
+      "energy_ev": -8.29123012,
+      "energy_ev_per_atom": -4.14561506,
+      "site_moments_mu_B": null,
+      "total_moment_mu_B": null,
+      "moment_basis": "collinear spin axis",
+      "input_hashes_verified": {
+        "POSCAR": true,
+        "INCAR": true,
+        "KPOINTS": true
+      },
+      "method": {
+        "spin": "none",
+        "magmom": null,
+        "soc": false,
+        "saxis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "functional": "PBE",
+        "hubbard_u": {}
+      },
+      "poscar_sha256": "31f32fd743c79576c8b2cb974a236a6b0fd0a774894e23654eab70a1acf7a1c4",
+      "potcar_sha256": "2a6df1c19701e5d97aaa59e5470b14653ddbd76935b76dacdd8792eb2eba252c",
+      "xml_sha256": "357d906470ed9e6f59e565988b4e650f196416a373e4caaa610af0ee6e0abab4",
+      "outcar_sha256": "7bf3d5893c15c8951992161a5f1818481287c175e459fe4f453c961b284e23b3",
+      "forces_finite": true,
+      "spectral_force_exception": false,
+      "errors": [],
+      "audit_passed": true
+    },
+    {
+      "case": "si-chain",
+      "stage": "03_bands",
+      "task": "bands",
+      "job_id": "7451828",
+      "reported_status": "succeeded",
+      "reported_success": true,
+      "xml_complete": true,
+      "vasp_version": "6.2.1",
+      "atoms": 2,
+      "ionic_steps": 1,
+      "electronic_steps_last": 6,
+      "outcar_ediff_reached": true,
+      "energy_ev": -8.55321909,
+      "energy_ev_per_atom": -4.276609545,
+      "site_moments_mu_B": null,
+      "total_moment_mu_B": null,
+      "moment_basis": "collinear spin axis",
+      "input_hashes_verified": {
+        "POSCAR": true,
+        "INCAR": true,
+        "KPOINTS": true
+      },
+      "method": {
+        "spin": "none",
+        "magmom": null,
+        "soc": false,
+        "saxis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "functional": "PBE",
+        "hubbard_u": {}
+      },
+      "poscar_sha256": "31f32fd743c79576c8b2cb974a236a6b0fd0a774894e23654eab70a1acf7a1c4",
+      "potcar_sha256": "2a6df1c19701e5d97aaa59e5470b14653ddbd76935b76dacdd8792eb2eba252c",
+      "xml_sha256": "b3d40f60dc805f2040d83fbb5204ad64e27761381636cbbe583bc94866b767ae",
+      "outcar_sha256": "6b537c0a332cc737ff3d3acebc5b71d39e31eb846fb46f7440a074a4ace4c2e5",
+      "forces_finite": true,
+      "spectral_force_exception": false,
+      "errors": [],
+      "spectrum": {
+        "points": 8,
+        "path_points": 8,
+        "mesh_points": 0,
+        "eigenvalues_finite": true,
+        "bands_per_point": [
+          8
+        ],
+        "zero_weight_path_convergence_independently_validated": null,
+        "csv_rows": 64
+      },
+      "audit_passed": true
+    },
+    {
+      "case": "wheel-agent-soc",
+      "stage": "01_relax",
+      "task": "relax",
+      "job_id": "7451833",
+      "reported_status": "succeeded",
+      "reported_success": true,
+      "xml_complete": true,
+      "vasp_version": "6.2.1",
+      "atoms": 2,
+      "ionic_steps": 1,
+      "electronic_steps_last": 12,
+      "outcar_ediff_reached": true,
+      "energy_ev": -8.29154598,
+      "energy_ev_per_atom": -4.14577299,
+      "site_moments_mu_B": [
+        [
+          0.0,
+          -0.0,
+          -0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -0.0
+        ]
+      ],
+      "total_moment_mu_B": [
+        -1e-07,
+        -0.0,
+        0.0
+      ],
+      "moment_basis": "SAXIS spinor",
+      "input_hashes_verified": {
+        "POSCAR": true,
+        "INCAR": true,
+        "KPOINTS": true
+      },
+      "method": {
+        "spin": "noncollinear",
+        "magmom": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "soc": true,
+        "saxis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "functional": "PBE",
+        "hubbard_u": {}
+      },
+      "poscar_sha256": "2942e884c6a7feb5a81a19d1c86a53a8d24b7399939435eff0c6b302e121b303",
+      "potcar_sha256": "2a6df1c19701e5d97aaa59e5470b14653ddbd76935b76dacdd8792eb2eba252c",
+      "xml_sha256": "921254a5b62292e0e105fa60001480a1ded219800cb33101634e016c5acaae65",
+      "outcar_sha256": "5f50c098ee8ff843f2c1b898474e380fcf67a659300eaac8e4fa0cecf1125940",
+      "forces_finite": true,
+      "spectral_force_exception": false,
+      "errors": [],
+      "audit_passed": true
+    },
+    {
+      "case": "wheel-agent-soc",
+      "stage": "02_scf",
+      "task": "scf",
+      "job_id": "7451834",
+      "reported_status": "succeeded",
+      "reported_success": true,
+      "xml_complete": true,
+      "vasp_version": "6.2.1",
+      "atoms": 2,
+      "ionic_steps": 1,
+      "electronic_steps_last": 12,
+      "outcar_ediff_reached": true,
+      "energy_ev": -8.29154598,
+      "energy_ev_per_atom": -4.14577299,
+      "site_moments_mu_B": [
+        [
+          0.0,
+          -0.0,
+          -0.0
+        ],
+        [
+          0.0,
+          0.0,
+          -0.0
+        ]
+      ],
+      "total_moment_mu_B": [
+        -1e-07,
+        -0.0,
+        0.0
+      ],
+      "moment_basis": "SAXIS spinor",
+      "input_hashes_verified": {
+        "POSCAR": true,
+        "INCAR": true,
+        "KPOINTS": true
+      },
+      "method": {
+        "spin": "noncollinear",
+        "magmom": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "soc": true,
+        "saxis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "functional": "PBE",
+        "hubbard_u": {}
+      },
+      "poscar_sha256": "31f32fd743c79576c8b2cb974a236a6b0fd0a774894e23654eab70a1acf7a1c4",
+      "potcar_sha256": "2a6df1c19701e5d97aaa59e5470b14653ddbd76935b76dacdd8792eb2eba252c",
+      "xml_sha256": "6480fd3badd4ba923028f195992918795131f756ccf03f2cef2591bf80688e63",
+      "outcar_sha256": "c65290834bbcf491068af6d79fd2d2c32f0fd557ca51917761c31719511c5bac",
+      "forces_finite": true,
+      "spectral_force_exception": false,
+      "errors": [],
+      "audit_passed": true
+    },
+    {
+      "case": "wheel-agent-soc",
+      "stage": "03_bands",
+      "task": "bands",
+      "job_id": "7451836",
+      "reported_status": "succeeded",
+      "reported_success": true,
+      "xml_complete": true,
+      "vasp_version": "6.2.1",
+      "atoms": 2,
+      "ionic_steps": 1,
+      "electronic_steps_last": 6,
+      "outcar_ediff_reached": true,
+      "energy_ev": -8.55352544,
+      "energy_ev_per_atom": -4.27676272,
+      "site_moments_mu_B": [
+        [
+          -0.0,
+          -0.0,
+          -0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "total_moment_mu_B": [
+        0.0,
+        -0.0,
+        -0.0
+      ],
+      "moment_basis": "SAXIS spinor",
+      "input_hashes_verified": {
+        "POSCAR": true,
+        "INCAR": true,
+        "KPOINTS": true
+      },
+      "method": {
+        "spin": "noncollinear",
+        "magmom": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "soc": true,
+        "saxis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "functional": "PBE",
+        "hubbard_u": {}
+      },
+      "poscar_sha256": "31f32fd743c79576c8b2cb974a236a6b0fd0a774894e23654eab70a1acf7a1c4",
+      "potcar_sha256": "2a6df1c19701e5d97aaa59e5470b14653ddbd76935b76dacdd8792eb2eba252c",
+      "xml_sha256": "244482867168c14d20ca93baf6a089f0b96fc3f2e08bf389e075fd231a2c487a",
+      "outcar_sha256": "d73c4b3e341a7a6a29e8a1a2db29cbf40afcc74476bf1c56963209a3c015aff1",
+      "forces_finite": true,
+      "spectral_force_exception": false,
+      "errors": [],
+      "spectrum": {
+        "points": 8,
+        "path_points": 8,
+        "mesh_points": 0,
+        "eigenvalues_finite": true,
+        "bands_per_point": [
+          16
+        ],
+        "zero_weight_path_convergence_independently_validated": null,
+        "csv_rows": 128
+      },
+      "audit_passed": true
+    }
+  ],
+  "pending": [],
+  "fe_seed_comparison": {
+    "complete": true,
+    "identical_poscar": true,
+    "identical_potcar": true,
+    "identical_solver": true,
+    "order": [
+      {
+        "stage": "02_scf_fm",
+        "energy_ev_per_atom": -8.22365253
+      },
+      {
+        "stage": "03_scf_afm",
+        "energy_ev_per_atom": -8.01621275
+      },
+      {
+        "stage": "01_scf_nm",
+        "energy_ev_per_atom": -7.659517905
+      }
+    ],
+    "scope": "Trial seeds on one fixed cell; not a global magnetic ground-state proof."
+  },
+  "relaxation_propagation": [
+    {
+      "case": "si-chain",
+      "from": "01_relax",
+      "to": "02_scf",
+      "cartesian_basis_preserved": true,
+      "site_positions_preserved": true,
+      "seed_moments_preserved": true
+    },
+    {
+      "case": "si-chain",
+      "from": "01_relax",
+      "to": "03_bands",
+      "cartesian_basis_preserved": true,
+      "site_positions_preserved": true,
+      "seed_moments_preserved": true
+    },
+    {
+      "case": "wheel-agent-soc",
+      "from": "01_relax",
+      "to": "02_scf",
+      "cartesian_basis_preserved": true,
+      "site_positions_preserved": true,
+      "seed_moments_preserved": true
+    },
+    {
+      "case": "wheel-agent-soc",
+      "from": "01_relax",
+      "to": "03_bands",
+      "cartesian_basis_preserved": true,
+      "site_positions_preserved": true,
+      "seed_moments_preserved": true
+    }
+  ],
+  "hse_matched_mesh_crosscheck": {
+    "matched_points": 3,
+    "total_energy_delta_ev": 1.3479999999788106e-05,
+    "max_first6_eigen_delta_ev": 0.0052000000000003155,
+    "max_all_common_eigen_delta_ev": 0.04720000000000013,
+    "scope": "Bounded comparison to the separate SCF mesh. Independent convergence of all zero-weight path points is not established."
+  },
+  "rejected_hybrid_diagnostics": "hybrid-orbital-independent-audit.v1.json preserves the original 26-step and 60-step Damped failures and the successful Normal diagnostic.",
+  "limitations": [
+    "Small acceptance cases; no material-specific physical convergence claim.",
+    "Equivalent-point consistency and SCF convergence do not prove independent convergence at every zero-weight path point."
+  ]
+}

@@ -1,4 +1,4 @@
-"""Nonmagnetic PBE inputs and output checks, adapted from AI_AGNET.
+"""VASP inputs and output checks, adapted from AI_AGNET.
 
 Defaults need material-specific convergence checks. POTCAR stays on the host.
 """
@@ -10,6 +10,7 @@ import hashlib
 import json
 import math
 import re
+from itertools import product
 from pathlib import Path
 from typing import Any
 
@@ -17,9 +18,12 @@ import numpy as np
 from pymatgen.core import Structure
 from pymatgen.io.vasp import Incar, Kpoints, Poscar, Vasprun
 
+from .methods import METHOD_DEFAULTS, HYBRID_BAND_NELMIN, method_fingerprint, method_incar, normalize_method, validate_method_output
+
 
 TASKS = frozenset({"relax", "scf", "bands", "dos"})
 PLOT_ENERGY_WINDOW_EV = (-15.0, 10.0)
+HYBRID_KPOINT_TOLERANCE_EV = 0.05
 DEFAULTS = {
     "encut": 520.0,
     "ediff": 1e-5,
@@ -67,7 +71,7 @@ def _parameters(parameters: dict[str, Any]) -> dict[str, Any]:
         if "mesh" in parameters and parameters["mesh"] != parameters["kpoint_grid"]:
             raise ValueError("mesh and kpoint_grid disagree.")
         parameters["mesh"] = parameters.pop("kpoint_grid")
-    unknown = set(parameters) - set(DEFAULTS)
+    unknown = set(parameters) - set(DEFAULTS) - set(METHOD_DEFAULTS)
     if unknown:
         raise ValueError(f"Unsupported VASP parameters: {', '.join(sorted(unknown))}")
     result = {**DEFAULTS, **parameters}
@@ -104,7 +108,7 @@ def prepare_inputs(
 ) -> dict[str, Any]:
     """Write inputs without changing the cell.
 
-    The workflow must supply a compatible SCF CHGCAR for bands and DOS.
+    PBE spectra require a compatible SCF CHGCAR. Hybrid spectra are self-consistent.
     """
     if task not in TASKS:
         raise ValueError(f"Unknown task {task!r}; expected one of {sorted(TASKS)}")
@@ -112,9 +116,18 @@ def prepare_inputs(
     settings = _parameters(parameters)
     structure = Structure.from_file(source)
     _validate_structure(structure)
+    method = normalize_method(settings, [site.specie.symbol for site in structure])
     # Match species, counts and POTCAR order.
-    structure = structure.get_sorted_structure()
+    site_order = sorted(range(len(structure)), key=lambda index: structure[index])
+    structure = Structure.from_sites([structure[index] for index in site_order])
+    if method["magmom"] is not None:
+        method["magmom"] = [method["magmom"][index] for index in site_order]
     poscar = Poscar(structure)
+    hybrid = method["functional"] != "PBE"
+    fixed_charge = task in {"bands", "dos"} and not hybrid
+    requires_ncl = method["soc"] or method["spin"] == "noncollinear"
+    if hybrid and task == "bands" and settings["nelm"] <= HYBRID_BAND_NELMIN:
+        raise ValueError(f"Hybrid bands require nelm > {HYBRID_BAND_NELMIN}.")
     symbols = potcar_symbols or {}
     labels = [symbols.get(symbol, symbol) for symbol in poscar.site_symbols]
     if any(not isinstance(label, str) or not re.fullmatch(r"[A-Za-z][A-Za-z0-9_]*", label) for label in labels):
@@ -138,6 +151,11 @@ def prepare_inputs(
         incar_data.update(NEDOS=settings["nedos"], LORBIT=11)
     if task == "bands":
         incar_data["ISYM"] = 0
+    incar_data.update(method_incar(method, poscar.site_symbols, task))
+    expected_method = {key: incar_data[key] for key in method_incar(method, poscar.site_symbols, task)}
+    expected_method.update({key: incar_data.get(key, False) for key in ("LSORBIT", "LNONCOLLINEAR", "LDAU", "LHFCALC")})
+    expected_method["GGA"] = incar_data["GGA"]
+    site_species = [site.specie.symbol for site in structure]
 
     metadata: dict[str, Any] = {
         "schema_version": 1, "task": task,
@@ -145,8 +163,13 @@ def prepare_inputs(
         "number_of_atoms": len(structure), "parameters": settings,
         "source_sha256": _sha256(source), "potcar_labels": labels,
         "potcar_elements": poscar.site_symbols,
-        "requires_chgcar": task in {"bands", "dos"},
-        "scope": "Nonmagnetic PBE. Check convergence for your material.",
+        "requires_chgcar": fixed_charge, "requires_ncl": requires_ncl,
+        "spectral_charge_mode": "fixed_charge" if fixed_charge else "self_consistent",
+        "method": method, "method_incar_expected": expected_method,
+        "method_fingerprint": method_fingerprint(method, site_species, labels),
+        "method_comparison_fingerprint": method_fingerprint(method, site_species, labels, comparison=True),
+        "input_site_order": site_order,
+        "scope": "Check convergence and the magnetic state for your material.",
     }
     if task == "bands":
         import seekpath
@@ -155,20 +178,29 @@ def prepare_inputs(
         path = seekpath.get_explicit_k_path_orig_cell(
             (structure.lattice.matrix, structure.frac_coords, [site.specie.Z for site in structure]),
             reference_distance=1.0 / settings["line_density"],
+            with_time_reversal=method["spin"] == "none",
         )
         fractional = np.asarray(path["explicit_kpoints_rel"])
         cartesian = structure.lattice.reciprocal_lattice.get_cartesian_coords(fractional)
         point_labels = path["explicit_kpoints_labels"]
         if not len(fractional) or not np.isfinite(fractional).all():
             raise ValueError("Could not construct a finite high-symmetry path.")
+        mesh_points = [list(point) for point in product(*(np.arange(n) / n for n in settings["mesh"]))] if hybrid else []
+        all_points = mesh_points + fractional.tolist()
         kpoints = Kpoints(
             comment="High-symmetry path in the actual POSCAR reciprocal basis",
-            num_kpts=len(fractional), style=Kpoints.supported_modes.Reciprocal,
-            kpts=fractional.tolist(), kpts_weights=[1.0] * len(fractional),
-            labels=point_labels,
+            num_kpts=len(all_points), style=Kpoints.supported_modes.Reciprocal,
+            kpts=all_points, kpts_weights=[1.0] * len(mesh_points) + [0.0 if hybrid else 1.0] * len(fractional),
+            labels=[""] * len(mesh_points) + point_labels,
         )
+        metadata["band_path_offset"] = len(mesh_points)
+        metadata["band_path_count"] = len(fractional)
+        if hybrid:
+            metadata["hybrid_mesh"] = {"reciprocal_fractional": mesh_points, "weights": [1.0] * len(mesh_points)}
+            metadata["band_convergence_note"] = "Zero-weight path convergence needs a separate check; SCF convergence alone does not prove it."
         metadata["band_path"] = {
             "method": "seekpath_hpkot_orig_cell",
+            "symmetry_basis": "structural; magnetic space group not inferred",
             "labels": point_labels, "reciprocal_fractional": fractional.tolist(),
             "cartesian_inv_angstrom": np.asarray(cartesian).tolist(),
             "segments": path["explicit_segments"],
@@ -204,6 +236,92 @@ def _write_csv(path: Path, header: list[str], rows: Any) -> None:
         writer = csv.writer(stream)
         writer.writerow(header)
         writer.writerows(rows)
+
+
+def _magnetization(output: Path, count: int, metadata: dict[str, Any]) -> dict[str, Any]:
+    """Read final OUTCAR spin moments without treating sphere sums as cell totals."""
+    method = metadata.get("method", {})
+    ncl = bool(metadata.get("requires_ncl", False))
+    result: dict[str, Any] = {
+        "available": False, "unit": "mu_B", "site_order": "POSCAR",
+        "basis": "SAXIS spinor basis" if ncl else "collinear spin axis",
+        "saxis": method.get("saxis", [0.0, 0.0, 1.0]),
+        "site_moments": None, "total_moment": None,
+        "note": "Site moments are PAW sphere projections; their sum is not the full cell moment.",
+    }
+    path = output / "OUTCAR"
+    if not path.is_file():
+        return result
+    # OUTCAR tables are scalar for collinear runs and x/y/z in spinor space for NCL.
+    tables: dict[str, list[float]] = {}
+    axis = None
+    values: list[float] = []
+    number = r"[-+]?\d+(?:\.\d*)?(?:[Ee][-+]?\d+)?"
+    with path.open(errors="replace") as stream:
+        for line in stream:
+            match = re.fullmatch(r"\s*magnetization \(([xyz])\)\s*", line)
+            if match:
+                axis, values = match[1], []
+                if axis == "x":
+                    tables = {}
+                else:
+                    tables.pop(axis, None)
+            elif axis is not None:
+                row = re.fullmatch(r"\s*(\d+)\s+((?:" + number + r"\s+)*" + number + r")\s*", line)
+                if row and int(row[1]) == len(values) + 1:
+                    values.append(float(row[2].split()[-1]))
+                    if len(values) == count:
+                        tables[axis] = values
+                        axis = None
+            if "number of electron" in line and "magnetization" in line:
+                raw = re.findall(number, line.split("magnetization", 1)[1])
+                if len(raw) == (3 if ncl else 1):
+                    moment = [float(value) for value in raw]
+                    if np.isfinite(moment).all():
+                        result["total_moment"] = moment if ncl else moment[0]
+    if ncl and all(key in tables for key in ("x", "y", "z")):
+        result["site_moments"] = np.asarray([tables[key] for key in ("x", "y", "z")]).T.tolist()
+    elif not ncl and "x" in tables:
+        result["site_moments"] = tables["x"]
+    if result["site_moments"] is not None:
+        result["available"] = True
+    return result
+
+
+def _hybrid_kpoint_consistency(run: Vasprun) -> dict[str, Any]:
+    """Check orbital energies independently of the weighted total-energy stop."""
+    points = np.asarray(run.actual_kpoints, dtype=float)
+    if points.ndim != 2 or points.shape[1] != 3 or not np.isfinite(points).all():
+        raise ValueError("Hybrid k-points are unavailable or nonfinite.")
+    if not run.eigenvalues:
+        raise ValueError("Band eigenvalues are unavailable.")
+    pairs = []
+    for first in range(len(points)):
+        difference = points[first + 1:] - points[first]
+        equivalent = np.all(np.abs(difference - np.rint(difference)) <= 1e-6, axis=1)
+        pairs.extend((first, first + 1 + int(index)) for index in np.flatnonzero(equivalent))
+    check: dict[str, Any] = {
+        "tolerance_ev": HYBRID_KPOINT_TOLERANCE_EV,
+        "scope": "All returned bands, energy-sorted within each spin channel.",
+        "equivalent_pair_count": len(pairs), "compared_eigenvalue_count": 0,
+        "max_energy_deviation_ev": 0.0, "worst_pair": None,
+        "passed": bool(pairs),
+    }
+    for spin, eigenvalues in run.eigenvalues.items():
+        values = np.asarray(eigenvalues, dtype=float)
+        if values.ndim != 3 or values.shape[0] != len(points) or values.shape[1] == 0 or values.shape[2] != 2 or not np.isfinite(values).all():
+            raise ValueError("Band eigenvalues do not match the finite k-point path.")
+        energies = np.sort(values[:, :, 0], axis=1)
+        for first, second in pairs:
+            deviations = np.abs(energies[first] - energies[second])
+            check["compared_eigenvalue_count"] += len(deviations)
+            band = int(np.argmax(deviations))
+            maximum = float(deviations[band])
+            if maximum > check["max_energy_deviation_ev"]:
+                check["max_energy_deviation_ev"] = maximum
+                check["worst_pair"] = {"kpoint_indices_zero_based": [first, second], "spin": int(spin), "band": band + 1}
+    check["passed"] = bool(pairs) and check["max_energy_deviation_ev"] <= HYBRID_KPOINT_TOLERANCE_EV
+    return check
 
 
 def _export_plots(run: Vasprun, output: Path, task: str) -> list[str]:
@@ -245,19 +363,30 @@ def _export_plots(run: Vasprun, output: Path, task: str) -> list[str]:
         elif task == "bands":
             if not run.eigenvalues:
                 raise ValueError("Band eigenvalues are unavailable.")
-            kpts = np.asarray(run.actual_kpoints, dtype=float)
-            cartesian = run.final_structure.lattice.reciprocal_lattice.get_cartesian_coords(kpts)
+            all_kpts = np.asarray(run.actual_kpoints, dtype=float)
             metadata_path = output / "metadata.json"
             metadata = json.loads(metadata_path.read_text()) if metadata_path.exists() else {}
-            fermi = metadata.get("scf_fermi_energy_ev")
+            hybrid = metadata.get("method", {}).get("functional", "PBE") != "PBE"
+            offset = int(metadata.get("band_path_offset", 0))
+            kpts = all_kpts[offset:]
+            if hybrid:
+                mesh = np.asarray(metadata.get("hybrid_mesh", {}).get("reciprocal_fractional", []))
+                if offset <= 0 or mesh.shape != all_kpts[:offset].shape or not np.allclose(mesh - all_kpts[:offset] - np.rint(mesh - all_kpts[:offset]), 0, atol=1e-6):
+                    raise ValueError("Hybrid output does not match the frozen regular mesh.")
+                weights = np.asarray(getattr(run, "actual_kpoints_weights", []))
+                if weights.shape != (len(all_kpts),) or not np.isfinite(weights).all() or np.any(weights[:offset] <= 0) or not np.allclose(weights[offset:], 0):
+                    raise ValueError("Hybrid bands require positive mesh weights and zero path weights.")
+                if not np.allclose(weights[:offset] / sum(weights[:offset]), np.ones(offset) / offset, atol=1e-7):
+                    raise ValueError("Hybrid regular-mesh weights differ from the prepared inputs.")
+            fermi = run.efermi if hybrid else metadata.get("scf_fermi_energy_ev")
             if fermi is None or not math.isfinite(float(fermi)):
-                raise ValueError("A finite preceding SCF Fermi energy is required for band analysis.")
+                raise ValueError("A finite hybrid-run Fermi energy is required." if hybrid else "A finite preceding SCF Fermi energy is required for band analysis.")
             fermi = float(fermi)
             path_metadata = metadata.get("band_path", {})
             if not path_metadata:
                 raise ValueError("Frozen band path metadata.json is required for band analysis.")
             labels = path_metadata.get("labels", [])
-            if len(labels) != len(kpts):
+            if len(labels) != len(kpts) or int(metadata.get("band_path_count", len(labels))) != len(kpts):
                 raise ValueError("Band path metadata does not match output k-points.")
             planned = np.asarray(path_metadata.get("reciprocal_fractional", []))
             if planned.shape != kpts.shape or not np.allclose(planned, kpts, atol=1e-6, rtol=0):
@@ -267,18 +396,25 @@ def _export_plots(run: Vasprun, output: Path, task: str) -> list[str]:
             if distance.shape != (len(kpts),) or not np.isfinite(distance).all() or not segments:
                 raise ValueError("Frozen band path is missing its distance or segment definition.")
             rows = []
+            mesh_rows = []
             for spin, eigenvalues in run.eigenvalues.items():
-                values = np.asarray(eigenvalues)
-                if len(values) != len(kpts) or not np.isfinite(values).all():
+                all_values = np.asarray(eigenvalues)
+                if len(all_values) != len(all_kpts) or not np.isfinite(all_values).all():
                     raise ValueError("Band eigenvalues do not match the finite k-point path.")
+                for ik, point in enumerate(all_kpts[:offset]):
+                    for ib in range(all_values.shape[1]):
+                        mesh_rows.append([ik, *point, int(spin), ib + 1, all_values[ik, ib, 0] - fermi, all_values[ik, ib, 1]])
+                values = all_values[offset:]
                 energies = values[:, :, 0] - fermi
                 for start, stop in segments:
-                    ax.plot(distance[start:stop], energies[start:stop], color="tab:blue", linewidth=0.6)
+                    ax.plot(distance[start:stop], energies[start:stop], color="tab:blue" if int(spin) == 1 else "tab:orange", linewidth=0.6)
                 for ik, point in enumerate(kpts):
                     for ib in range(values.shape[1]):
                         rows.append([ik, distance[ik], *point, labels[ik], int(spin), ib + 1, energies[ik, ib], values[ik, ib, 1]])
             name = "bands"
             _write_csv(output / f"{name}.csv", ["kpoint", "distance_inv_angstrom", "kx", "ky", "kz", "label", "spin", "band", "energy_minus_fermi_ev", "occupation"], rows)
+            if mesh_rows:
+                _write_csv(output / "bands_mesh.csv", ["kpoint", "kx", "ky", "kz", "spin", "band", "energy_minus_fermi_ev", "occupation"], mesh_rows)
             ticks: dict[float, str] = {}
             for x, label in zip(distance, labels):
                 if label:
@@ -295,7 +431,7 @@ def _export_plots(run: Vasprun, output: Path, task: str) -> list[str]:
             return []
         fig.tight_layout()
         fig.savefig(output / f"{name}.png", dpi=160)
-        return [f"{name}.csv", f"{name}.png"]
+        return [f"{name}.csv", f"{name}.png"] + (["bands_mesh.csv"] if task == "bands" and mesh_rows else [])
     finally:
         plt.close(fig)
 
@@ -308,7 +444,7 @@ def analyze_outputs(output_dir: str | Path, task: str, expected_structure_path: 
     output = Path(output_dir)
     output.mkdir(parents=True, exist_ok=True)
     # Remove stale results before checking new output.
-    generated = ["final_structure.cif", "relax_energy.csv", "relax_energy.png", "bands.csv", "bands.png", "dos.csv", "dos.png"]
+    generated = ["final_structure.cif", "final_structure.vasp", "relax_energy.csv", "relax_energy.png", "bands.csv", "bands.png", "bands_mesh.csv", "dos.csv", "dos.png", "magnetization.json"]
     for filename in generated:
         (output / filename).unlink(missing_ok=True)
     result: dict[str, Any] = {
@@ -316,19 +452,24 @@ def analyze_outputs(output_dir: str | Path, task: str, expected_structure_path: 
         "converged_electronic": False, "converged_ionic": False,
         "valid_structure": False, "final_energy_ev": None,
         "final_max_force_ev_angstrom": None, "vasp_version": None,
+        "forces_available": False,
         "fermi_energy_ev": None,
+        "final_energy_ev_per_atom": None,
         "reason": "Results have not been checked yet.", "artifacts": [],
         "scientific_accuracy_validated": False,
     }
     try:
         if task not in TASKS:
             raise ValueError(f"Unsupported task: {task}")
+        metadata_path = output / "metadata.json"
+        metadata = json.loads(metadata_path.read_text()) if metadata_path.is_file() else {}
+        hybrid = metadata.get("method", {}).get("functional", "PBE") != "PBE"
         expected = Structure.from_file(expected_structure_path).get_sorted_structure()
         _validate_structure(expected)
         xml = output / "vasprun.xml"
         if not xml.is_file() or not xml.stat().st_size:
             raise ValueError("vasprun.xml is missing or empty. The job may have ended before VASP finished.")
-        run = Vasprun(xml, parse_potcar_file=False, parse_eigen=task == "bands", parse_dos=task in {"scf", "dos"}, exception_on_bad_xml=True)
+        run = Vasprun(xml, parse_potcar_file=False, parse_eigen=task == "bands", parse_dos=task in {"scf", "dos"} or (hybrid and task == "bands"), exception_on_bad_xml=True)
         result["vasprun_sha256"] = _sha256(xml)
         result["vasp_version"] = str(run.vasp_version)
         fermi = getattr(run, "efermi", None)
@@ -338,8 +479,15 @@ def analyze_outputs(output_dir: str | Path, task: str, expected_structure_path: 
             raise ValueError("SCF Fermi energy is unavailable from the complete XML.")
         result["converged_electronic"] = bool(run.converged_electronic)
         result["converged_ionic"] = bool(run.converged_ionic)
-        if task in {"bands", "dos"} and int(run.incar.get("ICHARG", 0)) != 11:
+        validate_method_output(run.incar, metadata)
+        if metadata.get("method"):
+            result.update(method=metadata["method"], method_fingerprint=metadata["method_fingerprint"], method_comparison_fingerprint=metadata["method_comparison_fingerprint"])
+        if task in {"bands", "dos"} and not hybrid and int(run.incar.get("ICHARG", 0)) != 11:
             raise ValueError("Bands/DOS output did not use the required SCF charge density (ICHARG=11).")
+        if hybrid and int(run.incar.get("ICHARG", 0)) >= 10:
+            raise ValueError("Hybrid output used a fixed charge density.")
+        if hybrid and task == "bands" and len(run.ionic_steps[-1].get("electronic_steps", [])) < HYBRID_BAND_NELMIN:
+            raise ValueError("Hybrid bands ended before the minimum electronic iterations.")
         if task == "scf" and int(run.incar.get("ICHARG", 0)) >= 10:
             raise ValueError("SCF output used a fixed charge density instead of self-consistency.")
         if task == "relax" and (int(run.incar.get("NSW", 0)) <= 0 or int(run.incar.get("IBRION", -1)) != 2):
@@ -358,11 +506,19 @@ def analyze_outputs(output_dir: str | Path, task: str, expected_structure_path: 
         if not math.isfinite(energy):
             raise ValueError("Final energy is nonfinite or unavailable.")
         result["final_energy_ev"] = energy
+        result["final_energy_ev_per_atom"] = energy / len(expected)
         forces = np.asarray(run.ionic_steps[-1].get("forces", []), dtype=float)
         if forces.size:
-            if forces.shape != (len(expected), 3) or not np.isfinite(forces).all():
+            if forces.shape != (len(expected), 3):
                 raise ValueError("Final atomic forces are nonfinite or inconsistent with the structure.")
-            result["final_max_force_ev_angstrom"] = float(np.max(np.linalg.norm(forces, axis=1)))
+            if not np.isfinite(forces).all():
+                if hybrid and task == "bands":
+                    result["force_warning"] = "Forces are unavailable for this zero-weight hybrid band calculation; do not use it for force or stress analysis."
+                else:
+                    raise ValueError("Final atomic forces are nonfinite or inconsistent with the structure.")
+            else:
+                result["final_max_force_ev_angstrom"] = float(np.max(np.linalg.norm(forces, axis=1)))
+                result["forces_available"] = True
         elif task == "relax":
             raise ValueError("Final atomic forces are missing for a relaxation.")
         if not result["converged_electronic"]:
@@ -373,14 +529,34 @@ def analyze_outputs(output_dir: str | Path, task: str, expected_structure_path: 
             force_limit = float(run.incar.get("EDIFFG", 0))
             if force_limit >= 0 or result["final_max_force_ev_angstrom"] > abs(force_limit):
                 raise ValueError("Final atomic force exceeds the requested negative EDIFFG criterion.")
+        if hybrid and task == "bands":
+            check = _hybrid_kpoint_consistency(run)
+            result["hybrid_kpoint_consistency"] = check
+            if not check["passed"]:
+                if not check["equivalent_pair_count"]:
+                    raise ValueError("Hybrid bands have no equivalent k-points for the orbital consistency check.")
+                raise ValueError(
+                    f"Hybrid band orbitals disagree at equivalent k-points: {check['max_energy_deviation_ev']:.4f} eV "
+                    f"exceeds {HYBRID_KPOINT_TOLERANCE_EV:.2f} eV. Increase orbital iterations or change the electronic optimizer and rerun."
+                )
         artifacts = _export_plots(run, output, task)
         if task in {"bands", "dos"}:
             result["plot_settings"] = {"energy_window_ev": list(PLOT_ENERGY_WINDOW_EV), "csv_contains_full_data": True}
         if task == "bands":
-            result["energy_reference_ev"] = float(json.loads((output / "metadata.json").read_text())["scf_fermi_energy_ev"])
-            result["energy_reference_source"] = "preceding_scf"
+            result["energy_reference_ev"] = float(run.efermi if hybrid else metadata["scf_fermi_energy_ev"])
+            result["energy_reference_source"] = "hybrid_scf_mesh" if hybrid else "preceding_scf"
+            if hybrid:
+                result["band_path_convergence_independently_validated"] = False
+        result["magnetization"] = _magnetization(output, len(expected), metadata)
+        result["magnetic_ground_state_validated"] = False
+        if result["magnetization"]["available"] or result["magnetization"]["total_moment"] is not None:
+            _write_json(output / "magnetization.json", result["magnetization"])
+            artifacts.append("magnetization.json")
         run.final_structure.to(filename=str(output / "final_structure.cif"))
-        result["artifacts"] = ["final_structure.cif", *artifacts]
+        # CIF stores cell lengths/angles, losing the Cartesian frame needed by SOC.
+        Poscar(run.final_structure).write_file(output / "final_structure.vasp")
+        result["final_structure_poscar_sha256"] = _sha256(output / "final_structure.vasp")
+        result["artifacts"] = ["final_structure.cif", "final_structure.vasp", *artifacts]
         result["success"] = True
         result["reason"] = "The calculation finished and its output passed the checks for this task."
     except Exception as exc:

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from itertools import product
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -24,6 +25,7 @@ from vasp_slurm_agent.workflow import (
     bundle_run,
     cancel,
     prepare_run,
+    prepare_plan,
     read_state,
     resume,
     start_worker,
@@ -85,6 +87,8 @@ def _config_editor(path: Path, config: ClusterConfig | None) -> None:
             remote_root = st.text_input("Remote run folder (absolute path)", value=value("remote_root", ""))
             potcar_root = st.text_input("Remote POTCAR folder", value=value("potcar_root", ""))
             vasp_command = st.text_input("VASP command", value=value("vasp_command", "srun vasp_std"))
+            ncl_command = st.text_input("SOC / noncollinear command", value=value("vasp_ncl_command", ""),
+                                        placeholder="srun vasp_ncl")
         with right:
             partition = st.text_input("Slurm partition", value=value("partition", ""))
             account = st.text_input("Slurm account (optional)", value=value("account", ""))
@@ -108,6 +112,7 @@ def _config_editor(path: Path, config: ClusterConfig | None) -> None:
                 partition=partition.strip(), port=int(port), tasks=int(tasks), walltime=walltime.strip(),
                 account=account.strip(), setup_commands=[line for line in setup.splitlines() if line.strip()],
                 connect_timeout=int(timeout), potcar_symbols=mapping,
+                vasp_ncl_command=ncl_command.strip(),
             )
             candidate.save(path)
         except Exception as exc:
@@ -180,26 +185,39 @@ def _stage_results(run_dir: Path, stage: dict, scf_fermi_energy: float | None = 
     result = stage.get("result")
     if not result:
         return
-    st.subheader(f"{stage['name']} · Results")
+    label = f"{stage['label']} · " if stage.get("label") else ""
+    st.subheader(f"{label}{stage['name']} · Results")
     if not result.get("success"):
         st.warning(result.get("reason", "Result checks failed."))
         if result.get("recovery_hint"):
             st.info(result["recovery_hint"])
         return
     if stage["name"] in {"relax", "scf"}:
-        metrics = st.columns(2)
+        metrics = st.columns(3)
         energy = result.get("final_energy_ev")
         force = result.get("final_max_force_ev_angstrom")
         if energy is not None:
             metrics[0].metric("Final total energy (eV)", f"{energy:.6f}")
         if force is not None:
             metrics[1].metric("Maximum atomic force (eV/Å)", f"{force:.6f}")
+        per_atom = result.get("final_energy_ev_per_atom")
+        if per_atom is not None:
+            metrics[2].metric("Energy per atom (eV)", f"{per_atom:.6f}")
     elif stage["name"] in {"bands", "dos"}:
-        if result.get("energy_reference_source") == "preceding_scf":
-            scf_fermi_energy = result.get("energy_reference_ev", scf_fermi_energy)
-        if scf_fermi_energy is not None:
-            st.metric("SCF Fermi energy (eV)", f"{scf_fermi_energy:.6f}")
-        st.caption("Fixed-charge spectrum. Energy and forces are in the SCF results.")
+        mode = (stage.get("metadata") or {}).get("spectral_charge_mode", "fixed")
+        if mode == "self_consistent":
+            fermi = result.get("energy_reference_ev", result.get("fermi_energy_ev"))
+            if fermi is not None:
+                st.metric("Fermi energy (eV)", f"{fermi:.6f}")
+        else:
+            if result.get("energy_reference_source") == "preceding_scf":
+                scf_fermi_energy = result.get("energy_reference_ev", scf_fermi_energy)
+            if scf_fermi_energy is not None:
+                st.metric("SCF Fermi energy (eV)", f"{scf_fermi_energy:.6f}")
+        st.caption("Self-consistent spectrum." if mode == "self_consistent" else "Fixed-charge spectrum.")
+    if result.get("magnetization"):
+        with st.expander("Magnetic moments"):
+            st.json(result["magnetization"])
     output = run_dir / stage["folder"] / "outputs"
     final_structure = output / "final_structure.cif"
     if final_structure.is_file():
@@ -216,12 +234,95 @@ def _stage_results(run_dir: Path, stage: dict, scf_fermi_energy: float | None = 
             st.error(f"Cannot display structure: {exc}")
 
 
-def _new_run(config: ClusterConfig | None, runs_root: Path) -> None:
+def _model_editor():
+    from vasp_slurm_agent.agent import ModelSettings
+
+    with st.expander("Model"):
+        provider = st.selectbox("Provider", ["responses", "chat_completions", "codex"],
+                               format_func=lambda value: {"responses": "OpenAI", "chat_completions": "Compatible API", "codex": "Codex CLI"}[value])
+        model = st.text_input("Model name", value=os.environ.get("DFT_AGENT_MODEL", ""),
+                              help="Leave blank for the Codex CLI default.")
+        base_url = st.text_input("API URL (optional)", value=os.environ.get("DFT_AGENT_BASE_URL", ""))
+        key = st.text_input("API key (optional)", type="password", key="model_api_key",
+                            help="Kept in memory. Environment keys also work.")
+        st.button("Clear API key", on_click=lambda: st.session_state.update(model_api_key=""))
+    return ModelSettings(provider=provider, model=model.strip(), base_url=base_url.strip() or None, api_key=key or None)
+
+
+def _prepare_from_plan(upload, runs_root, config, plan):
+    if plan.get("source_sha256") != hashlib.sha256(upload.getvalue()).hexdigest():
+        raise ValueError("The structure changed. Create a new plan.")
+    run_id = datetime.now().strftime("%Y%m%d-%H%M%S") + "-" + uuid.uuid4().hex[:8]
+    run_dir = runs_root / run_id
+    suffix = ".cif" if upload.name.lower().endswith(".cif") else ".vasp"
+    with tempfile.TemporaryDirectory(prefix="dft-agent-input-") as directory:
+        source = Path(directory) / f"structure{suffix}"
+        source.write_bytes(upload.getvalue())
+        prepare_plan(source, run_dir, config, tasks=plan["tasks"], parameters=plan["parameters"],
+                     magnetic_states=plan.get("magnetic_states") or None, initial_moment=plan.get("initial_moment", 3.0))
+    (run_dir / "proposal.json").write_text(json.dumps(plan, indent=2, ensure_ascii=False) + "\n")
+    st.session_state["active_run"] = str(run_dir)
+    st.success("Inputs ready. Review below, then submit.")
+
+
+def _agent_plan(upload, structure, config, runs_root, settings):
+    from vasp_slurm_agent.agent import draft_plan
+
+    goal = st.text_area("Goal", placeholder="Relax this structure, then calculate its bands with SOC.", max_chars=4000)
+    stamp = hashlib.sha256((upload.getvalue() if upload else b"") + goal.encode()).hexdigest()
+    saved = st.session_state.get("agent_proposal")
+    if saved and saved["stamp"] != stamp:
+        st.session_state.pop("agent_proposal", None)
+        st.session_state.pop("agent_history", None)
+        saved = None
+    revision = st.text_input("Change the plan", key="plan_revision") if saved else ""
+    if st.button("Plan", type="primary", disabled=structure is None or not goal.strip()):
+        try:
+            history = list(st.session_state.get("agent_history", []))
+            if revision.strip():
+                history.append({"role": "user", "content": revision.strip()})
+            suffix = ".cif" if upload.name.lower().endswith(".cif") else ".vasp"
+            with tempfile.TemporaryDirectory(prefix="dft-agent-plan-") as directory:
+                source = Path(directory) / f"structure{suffix}"
+                source.write_bytes(upload.getvalue())
+                with st.spinner("Planning…"):
+                    plan = draft_plan(goal.strip(), source, settings, history=history[-12:])
+            saved = {"stamp": stamp, "plan": plan, "goal": goal.strip()}
+            st.session_state["agent_proposal"] = saved
+            history.append({"role": "assistant", "content": json.dumps(plan, ensure_ascii=False)})
+            st.session_state["agent_history"] = history[-12:]
+        except Exception as exc:
+            st.session_state.pop("agent_proposal", None)
+            saved = None
+            st.error(str(exc))
+    if not saved:
+        return
+    plan = saved["plan"]
+    st.write(plan["summary"])
+    for question in plan.get("questions", []):
+        st.info(question)
+    if plan.get("status") == "unsupported":
+        st.warning("This plan cannot run yet.")
+    with st.expander("Plan details", expanded=plan.get("status") == "ready"):
+        st.json({key: value for key, value in plan.items() if key != "provenance"})
+    if st.button("Prepare inputs", disabled=plan.get("status") != "ready" or config is None):
+        try:
+            _prepare_from_plan(upload, runs_root, config, {**plan, "goal": saved["goal"]})
+        except Exception as exc:
+            st.error(f"Cannot prepare inputs: {exc}")
+    if config is None:
+        st.info("Save Cluster setup before preparing inputs.")
+
+
+def _new_run(config: ClusterConfig | None, runs_root: Path, model_settings=None) -> None:
     st.subheader("New calculation")
     st.write("Prepare inputs locally. Review before submitting.")
-    st.caption("Nonmagnetic PBE (ISPIN=1). Bands and DOS run SCF first, without relaxation.")
     upload = st.file_uploader("Upload a structure", help="CIF or POSCAR; no extension needed for POSCAR. POTCAR stays on the cluster.")
     structure = _preview(upload) if upload is not None else None
+    mode = st.radio("Mode", ["Agent", "Manual"], horizontal=True)
+    if mode == "Agent":
+        _agent_plan(upload, structure, config, runs_root, model_settings)
+        return
     with st.form("prepare_run"):
         task = st.selectbox("Calculation", ["relax", "scf", "bands", "dos"],
                             format_func=lambda key: {"relax": "Structure relaxation", "scf": "Self-consistent calculation (SCF)",
@@ -239,6 +340,14 @@ def _new_run(config: ClusterConfig | None, runs_root: Path) -> None:
             nsw = st.number_input("Maximum relaxation steps (NSW)", 1, 1000, 100)
             ediffg = st.number_input("Force convergence threshold (eV/Å)", 0.0001, 1.0, 0.03, 0.005, format="%.4f")
             cell_relax = st.checkbox("Relax the cell as well as atomic positions", value=False)
+        with st.expander("Method"):
+            functional = st.selectbox("Functional", ["PBE", "HSE06", "PBE0"])
+            spin = st.selectbox("Spin", ["none", "collinear", "noncollinear"])
+            soc = st.checkbox("SOC")
+            moments = st.text_area("Site moments (JSON)", value="null", help="One value per input site, or three components for noncollinear spins.")
+            axis = st.text_input("Spin axis", "0 0 1")
+            hubbard = st.text_area("Hubbard U (JSON)", value="{}", help='Example: {"Ni": {"l": 2, "u": 5, "j": 0}}')
+            comparisons = st.multiselect("Compare magnetic states", ["NM", "FM", "AFM"], help="SCF seeds on the same cell.")
         prepared = st.form_submit_button("Prepare inputs", type="primary",
                                          disabled=structure is None or config is None)
     if config is None:
@@ -249,14 +358,16 @@ def _new_run(config: ClusterConfig | None, runs_root: Path) -> None:
             if len(grid) != 3 or any(part < 1 for part in grid):
                 raise ValueError("Use three positive integers for the k-point grid.")
             parameters = dict(encut=encut, ediff=ediff, ediffg=-ediffg, nsw=int(nsw),
-                              kpoint_grid=grid, ismear=ismear, sigma=sigma, cell_relax=cell_relax)
+                              kpoint_grid=grid, ismear=ismear, sigma=sigma, cell_relax=cell_relax,
+                              functional=functional, spin=spin, soc=soc, magmom=json.loads(moments),
+                              saxis=[float(v) for v in axis.split()], hubbard_u=json.loads(hubbard))
             run_id = datetime.now().strftime("%Y%m%d-%H%M%S") + "-" + uuid.uuid4().hex[:8]
             run_dir = runs_root / run_id
             suffix = ".cif" if upload.name.lower().endswith(".cif") else ".vasp"
             with tempfile.TemporaryDirectory(prefix="vasp-agent-input-") as directory:
                 source = Path(directory) / f"structure{suffix}"
                 source.write_bytes(upload.getvalue())
-                prepare_run(source, run_dir, config, task=task, parameters=parameters)
+                prepare_plan(source, run_dir, config, tasks=[task], parameters=parameters, magnetic_states=comparisons or None)
             st.session_state["active_run"] = str(run_dir)
             st.success("Inputs ready. Review below, then submit.")
         except Exception as exc:
@@ -277,10 +388,13 @@ def _run_panel(run_dir: Path) -> None:
     st.caption(str(run_dir))
     status_label = "Preparing next stage" if status == "planned" and not awaiting_submission else STATUS_LABELS.get(status, status)
     st.write(f"Status: **{status_label}**")
+    if state.get("comparison"):
+        with st.expander("Magnetic comparison", expanded=True):
+            st.json(state["comparison"])
     if state.get("last_error"):
         st.warning(str(state["last_error"]))
     st.dataframe([
-        {"Stage": stage.get("name", ""), "Status": STATUS_LABELS.get(stage.get("status"), stage.get("status", "")),
+        {"Stage": stage.get("label", stage.get("name", "")), "Status": STATUS_LABELS.get(stage.get("status"), stage.get("status", "")),
          "Slurm job": stage.get("job_id") or "—"}
         for stage in stages
     ], hide_index=True)
@@ -374,7 +488,7 @@ def _run_panel(run_dir: Path) -> None:
 def main() -> None:
     st.set_page_config(page_title="DFT Agent", page_icon="⚛", layout="wide")
     st.title("DFT Agent")
-    st.caption("Version 0.1.3")
+    st.caption("Version 0.2.0")
     with st.sidebar:
         st.header("Local settings")
         config_path = Path(st.text_input("Configuration file", value=os.environ.get(
@@ -384,12 +498,13 @@ def main() -> None:
                       help="SSH keys are preferred. Passwords stay in memory and are never saved.")
         st.button("Clear password", on_click=lambda: st.session_state.update(ssh_password=""))
         st.caption("Requires a Slurm account and VASP license.")
+        model_settings = _model_editor()
     config = _load_config(config_path)
     task_tab, history_tab, config_tab = st.tabs(["New calculation", "Runs", "Cluster setup"])
     with config_tab:
         _config_editor(config_path, config)
     with task_tab:
-        _new_run(config, runs_root)
+        _new_run(config, runs_root, model_settings)
     with history_tab:
         available = sorted(runs_root.glob("*/run.json"), reverse=True) if runs_root.is_dir() else []
         selected = st.selectbox("Select a run", [str(path.parent) for path in available], index=None,

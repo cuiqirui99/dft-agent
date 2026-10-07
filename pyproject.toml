@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dft-agent"
-version = "0.1.3"
+version = "0.2.0"
 description = "Run VASP on Slurm."
 readme = "README.md"
 license = "MIT"
@@ -31,6 +31,7 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
+agent = ["openai>=1.99,<3"]
 dev = ["pytest>=8,<10", "build>=1.2,<2", "streamlit>=1.65,<2"]
 
 [project.urls]

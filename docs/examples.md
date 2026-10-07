@@ -8,6 +8,35 @@ its VASP, POTCAR and Slurm settings. The PBE defaults are starting points.
 
 Use a new directory for each run. `prepare` submits nothing.
 
+**Plan with a model**
+
+```bash
+dft-agent plan examples/Si.cif "Relax, then calculate PBE bands and DOS" \
+  --provider codex --output proposal.json
+dft-agent prepare examples/Si.cif runs/si-plan --config cluster.json \
+  --plan proposal.json
+```
+
+For an API, use `--provider responses --model MODEL` and set `OPENAI_API_KEY`.
+For a compatible service, use `--provider chat_completions --base-url URL`.
+Inspect the proposal before preparing it. A plan is bound to its source file.
+
+**Si: HSE06 bands**
+
+```bash
+dft-agent prepare examples/Si.cif runs/si-hse --config cluster.json \
+  --task bands --parameters '{"functional": "HSE06", "mesh": [2, 2, 2]}'
+```
+
+**Compare magnetic seeds**
+
+```bash
+dft-agent prepare Fe.cif runs/fe --config cluster.json \
+  --task scf --magnetic-states NM FM AFM
+```
+
+Supply your own Fe structure. See [Methods](methods.md) for moments, SOC and U/J.
+
 **Si: relax atoms and cell**
 
 ```bash

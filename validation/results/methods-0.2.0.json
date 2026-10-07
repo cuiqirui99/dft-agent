@@ -1,0 +1,1516 @@
+{
+  "checked_at": "2026-10-07T15:39:28.865464+00:00",
+  "release": "0.2.0",
+  "scope": "Workflow acceptance on one Slurm cluster. Not a property-convergence or magnetic ground-state study.",
+  "workflows_passed": 7,
+  "stages_passed": 15,
+  "offline_tests": {
+    "tests": 254,
+    "failures": 0,
+    "errors": 0,
+    "junit_sha256": "aa96c6d55dbe19c9936d971abf325f0d5a8c945494b92013c721539a61aed5cf"
+  },
+  "source_sha256": {
+    "src/vasp_slurm_agent/__init__.py": "b52b4abe639716b4858a514a11d3ba43a78108c35332a68b2ea7c7ffcfa22b00",
+    "src/vasp_slurm_agent/agent.py": "c5fa955fa19d4c8780ab076e53d5c655802965071db509b6d8eee3037e311ebc",
+    "src/vasp_slurm_agent/app.py": "7bea140b68caa1d4133275b4a473d8f12939727a66f181f44ccfebfa9d6de2ab",
+    "src/vasp_slurm_agent/cli.py": "4359508a3ee2a003f7dec01e9a78f8d9f0a4bd18714f6f33c017f0be29691520",
+    "src/vasp_slurm_agent/config.py": "4e36b95dfeef02e46a345b01e8ad37c3811fef73710bc2e52db35e2de6e9a4d6",
+    "src/vasp_slurm_agent/dispatch.py": "9c9a5a98b26a2fc8846b2ed2ab804a9a44e28383bfb3c2ea455bbadc47830aba",
+    "src/vasp_slurm_agent/magnetic.py": "f44d748f5e50bd7ba27317236cb48f64dd9dc7a902812fd54d1ae499423477b8",
+    "src/vasp_slurm_agent/methods.py": "23ac74bce05c01ae812e34c7964c2ac39e47c16dfd5358f25664630fc7c33401",
+    "src/vasp_slurm_agent/transport.py": "d95bba5706df03d189bd0552671676493b4aa4049ee4ef40b3899c6b51d45d1c",
+    "src/vasp_slurm_agent/vasp.py": "1c4f1e4c16fdc5a844c1a73104de9afa136bed5a9b7eec916e17312bf062825a",
+    "src/vasp_slurm_agent/workflow.py": "4c545de4526a780f565eed85bba756c2023e0d4923e2c34bd73a6ee8f90fb481"
+  },
+  "cases": [
+    {
+      "case": "fe-seeds",
+      "status": "succeeded",
+      "tasks": [
+        "scf"
+      ],
+      "plan_sha256": "180913733db8af6ab09eb0c9c0d3465188199a055032e3d145349c3c06d80c2e",
+      "stages": [
+        {
+          "task": "scf",
+          "label": "NM",
+          "job_id": "7451812",
+          "method": {
+            "spin": "none",
+            "magmom": null,
+            "soc": false,
+            "saxis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "functional": "PBE",
+            "hubbard_u": {}
+          },
+          "parameters": {
+            "encut": 400.0,
+            "ediff": 1e-05,
+            "ediffg": -0.03,
+            "nsw": 100,
+            "mesh": [
+              4,
+              4,
+              4
+            ],
+            "ismear": 0,
+            "sigma": 0.1,
+            "cell_relax": false,
+            "nelm": 160,
+            "line_density": 20,
+            "nedos": 2001,
+            "spin": "none"
+          },
+          "input_sha256": {
+            "POSCAR": "d9e504eddb938b32919f8b8b5ceb48c8db1be135b23e522c24e8d6905a34451d",
+            "INCAR": "825516b89db557c2c753989a85a8d859df752ebf37645a7ff73ceeedd3e57f00",
+            "KPOINTS": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734"
+          },
+          "source_sha256": "d9e504eddb938b32919f8b8b5ceb48c8db1be135b23e522c24e8d6905a34451d",
+          "vasp_version": "6.2.1",
+          "success": true,
+          "input_identity_verified": true,
+          "converged_electronic": true,
+          "final_energy_ev": -15.31903581,
+          "final_energy_ev_per_atom": -7.659517905,
+          "final_max_force_ev_angstrom": 0.0,
+          "force_warning": null,
+          "hybrid_kpoint_consistency": null,
+          "magnetization": {
+            "available": false,
+            "unit": "mu_B",
+            "site_order": "POSCAR",
+            "basis": "collinear spin axis",
+            "saxis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "site_moments": null,
+            "total_moment": null,
+            "note": "Site moments are PAW sphere projections; their sum is not the full cell moment."
+          },
+          "artifacts": {
+            "potcar_hash.sha256": "3b672f3901d06e66fbd94dd8c74d19dcdd5684131cd55e51421ed5f77415e186",
+            "OUTCAR": "ab50444fba4c4030d347592d6b5f7d8dbbb0e434b339197d785fed72e192ee2d",
+            "vasprun.xml": "4757ede261ace8d7278aa313703c3d3676b87e432ff08c3a71aaba4a4bb1bb29",
+            "final_structure.cif": "628b5d70f7103a823ccea4a0e00e9c6d071d1657d8a0ba49ae230937feae71c8"
+          }
+        },
+        {
+          "task": "scf",
+          "label": "FM",
+          "job_id": "7451815",
+          "method": {
+            "spin": "collinear",
+            "magmom": [
+              3.0,
+              3.0
+            ],
+            "soc": false,
+            "saxis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "functional": "PBE",
+            "hubbard_u": {}
+          },
+          "parameters": {
+            "encut": 400.0,
+            "ediff": 1e-05,
+            "ediffg": -0.03,
+            "nsw": 100,
+            "mesh": [
+              4,
+              4,
+              4
+            ],
+            "ismear": 0,
+            "sigma": 0.1,
+            "cell_relax": false,
+            "nelm": 160,
+            "line_density": 20,
+            "nedos": 2001,
+            "spin": "collinear",
+            "magmom": [
+              3.0,
+              3.0
+            ]
+          },
+          "input_sha256": {
+            "POSCAR": "d9e504eddb938b32919f8b8b5ceb48c8db1be135b23e522c24e8d6905a34451d",
+            "INCAR": "527c17f2e1cf44ad38ac5b5c114cd35f2e266dec5b7110cefca61fb49b5e0650",
+            "KPOINTS": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734"
+          },
+          "source_sha256": "d9e504eddb938b32919f8b8b5ceb48c8db1be135b23e522c24e8d6905a34451d",
+          "vasp_version": "6.2.1",
+          "success": true,
+          "input_identity_verified": true,
+          "converged_electronic": true,
+          "final_energy_ev": -16.44730506,
+          "final_energy_ev_per_atom": -8.22365253,
+          "final_max_force_ev_angstrom": 3.6949289573684634e-06,
+          "force_warning": null,
+          "hybrid_kpoint_consistency": null,
+          "magnetization": {
+            "available": true,
+            "unit": "mu_B",
+            "site_order": "POSCAR",
+            "basis": "collinear spin axis",
+            "saxis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "site_moments": [
+              2.027,
+              2.027
+            ],
+            "total_moment": 4.0412158,
+            "note": "Site moments are PAW sphere projections; their sum is not the full cell moment."
+          },
+          "artifacts": {
+            "potcar_hash.sha256": "3b672f3901d06e66fbd94dd8c74d19dcdd5684131cd55e51421ed5f77415e186",
+            "OUTCAR": "edb1b9877b81c7807f1b1c070727ef0dbbcfde87390e2c7b42a7998f76954ea6",
+            "vasprun.xml": "06edbd566a14314b77ec84d3283f584ab6c738c9610e40335751548e188de0a8",
+            "final_structure.cif": "628b5d70f7103a823ccea4a0e00e9c6d071d1657d8a0ba49ae230937feae71c8"
+          }
+        },
+        {
+          "task": "scf",
+          "label": "AFM",
+          "job_id": "7451819",
+          "method": {
+            "spin": "collinear",
+            "magmom": [
+              3.0,
+              -3.0
+            ],
+            "soc": false,
+            "saxis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "functional": "PBE",
+            "hubbard_u": {}
+          },
+          "parameters": {
+            "encut": 400.0,
+            "ediff": 1e-05,
+            "ediffg": -0.03,
+            "nsw": 100,
+            "mesh": [
+              4,
+              4,
+              4
+            ],
+            "ismear": 0,
+            "sigma": 0.1,
+            "cell_relax": false,
+            "nelm": 160,
+            "line_density": 20,
+            "nedos": 2001,
+            "spin": "collinear",
+            "magmom": [
+              3.0,
+              -3.0
+            ]
+          },
+          "input_sha256": {
+            "POSCAR": "d9e504eddb938b32919f8b8b5ceb48c8db1be135b23e522c24e8d6905a34451d",
+            "INCAR": "76a75eecb959cd440c7e0a9a812c60a27d8d7c7179fb9f8957802c8453d6add6",
+            "KPOINTS": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734"
+          },
+          "source_sha256": "d9e504eddb938b32919f8b8b5ceb48c8db1be135b23e522c24e8d6905a34451d",
+          "vasp_version": "6.2.1",
+          "success": true,
+          "input_identity_verified": true,
+          "converged_electronic": true,
+          "final_energy_ev": -16.0324255,
+          "final_energy_ev_per_atom": -8.01621275,
+          "final_max_force_ev_angstrom": 3.1937125731662203e-06,
+          "force_warning": null,
+          "hybrid_kpoint_consistency": null,
+          "magnetization": {
+            "available": true,
+            "unit": "mu_B",
+            "site_order": "POSCAR",
+            "basis": "collinear spin axis",
+            "saxis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "site_moments": [
+              1.796,
+              -1.796
+            ],
+            "total_moment": 0.0006201,
+            "note": "Site moments are PAW sphere projections; their sum is not the full cell moment."
+          },
+          "artifacts": {
+            "potcar_hash.sha256": "3b672f3901d06e66fbd94dd8c74d19dcdd5684131cd55e51421ed5f77415e186",
+            "OUTCAR": "1baed93bdff7aacdd53e77b083626427c37fe244994c350673d83b8a5b3aa696",
+            "vasprun.xml": "bfe32c7247b02494cf763c32430dba383a5cb7987514bd6631f0f420d5e40f49",
+            "final_structure.cif": "628b5d70f7103a823ccea4a0e00e9c6d071d1657d8a0ba49ae230937feae71c8"
+          }
+        }
+      ],
+      "comparison": {
+        "scope": "Trial magnetic seeds, not a global ground-state search.",
+        "status": "complete",
+        "ranking": [
+          {
+            "seed": "FM",
+            "stage": "02_scf_fm",
+            "energy_ev_per_atom": -8.22365253,
+            "magnetization": {
+              "available": true,
+              "unit": "mu_B",
+              "site_order": "POSCAR",
+              "basis": "collinear spin axis",
+              "saxis": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "site_moments": [
+                2.027,
+                2.027
+              ],
+              "total_moment": 4.0412158,
+              "note": "Site moments are PAW sphere projections; their sum is not the full cell moment."
+            },
+            "relative_energy_mev_per_atom": 0.0
+          },
+          {
+            "seed": "AFM",
+            "stage": "03_scf_afm",
+            "energy_ev_per_atom": -8.01621275,
+            "magnetization": {
+              "available": true,
+              "unit": "mu_B",
+              "site_order": "POSCAR",
+              "basis": "collinear spin axis",
+              "saxis": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "site_moments": [
+                1.796,
+                -1.796
+              ],
+              "total_moment": 0.0006201,
+              "note": "Site moments are PAW sphere projections; their sum is not the full cell moment."
+            },
+            "relative_energy_mev_per_atom": 207.4397800000014
+          },
+          {
+            "seed": "NM",
+            "stage": "01_scf_nm",
+            "energy_ev_per_atom": -7.659517905,
+            "magnetization": {
+              "available": false,
+              "unit": "mu_B",
+              "site_order": "POSCAR",
+              "basis": "collinear spin axis",
+              "saxis": [
+                0.0,
+                0.0,
+                1.0
+              ],
+              "site_moments": null,
+              "total_moment": null,
+              "note": "Site moments are PAW sphere projections; their sum is not the full cell moment."
+            },
+            "relative_energy_mev_per_atom": 564.1346250000004
+          }
+        ],
+        "excluded": [],
+        "comparison_available": true,
+        "lowest_energy_seed": "FM"
+      }
+    },
+    {
+      "case": "fe-soc",
+      "status": "succeeded",
+      "tasks": [
+        "scf"
+      ],
+      "plan_sha256": "d56f06a8188ae9fb38d3c16af049798e3856559912dc107c995dfde5afb6301f",
+      "stages": [
+        {
+          "task": "scf",
+          "label": null,
+          "job_id": "7451813",
+          "method": {
+            "spin": "noncollinear",
+            "magmom": [
+              [
+                0.0,
+                0.0,
+                3.0
+              ]
+            ],
+            "soc": true,
+            "saxis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "functional": "PBE",
+            "hubbard_u": {}
+          },
+          "parameters": {
+            "encut": 400.0,
+            "ediff": 1e-05,
+            "ediffg": -0.03,
+            "nsw": 100,
+            "mesh": [
+              4,
+              4,
+              4
+            ],
+            "ismear": 0,
+            "sigma": 0.1,
+            "cell_relax": false,
+            "nelm": 160,
+            "line_density": 20,
+            "nedos": 2001,
+            "spin": "noncollinear",
+            "soc": true,
+            "magmom": [
+              [
+                0,
+                0,
+                3
+              ]
+            ]
+          },
+          "input_sha256": {
+            "POSCAR": "b908cea5c93260ced3cd1f521703929bfe06a335cd32daefe2ef396817bce6c7",
+            "INCAR": "6fb8ee9398e264812357d47ee3c014e76b193aaec26f4d5bcdfae20ce0a94121",
+            "KPOINTS": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734"
+          },
+          "source_sha256": "b908cea5c93260ced3cd1f521703929bfe06a335cd32daefe2ef396817bce6c7",
+          "vasp_version": "6.2.1",
+          "success": true,
+          "input_identity_verified": true,
+          "converged_electronic": true,
+          "final_energy_ev": -8.22541973,
+          "final_energy_ev_per_atom": -8.22541973,
+          "final_max_force_ev_angstrom": 3.5554043370621013e-06,
+          "force_warning": null,
+          "hybrid_kpoint_consistency": null,
+          "magnetization": {
+            "available": true,
+            "unit": "mu_B",
+            "site_order": "POSCAR",
+            "basis": "SAXIS spinor basis",
+            "saxis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "site_moments": [
+              [
+                -0.0,
+                -0.0,
+                1.995
+              ]
+            ],
+            "total_moment": [
+              -0.0001569,
+              -0.0001296,
+              2.0000631
+            ],
+            "note": "Site moments are PAW sphere projections; their sum is not the full cell moment."
+          },
+          "artifacts": {
+            "potcar_hash.sha256": "3b672f3901d06e66fbd94dd8c74d19dcdd5684131cd55e51421ed5f77415e186",
+            "OUTCAR": "948b517ae701b9ed583024b9c31973fd41c2c44c6ee8414a6dd9517124cdf379",
+            "vasprun.xml": "111169c4cbaae9f08044c0908090f7ca31712987c7905465054b0cb9d545b404",
+            "final_structure.cif": "127ae26901cffdca2e176575dcda05eaf4e3a53b4d18499853fb03a8aab51a31"
+          }
+        }
+      ]
+    },
+    {
+      "case": "nio-u",
+      "status": "succeeded",
+      "tasks": [
+        "scf"
+      ],
+      "plan_sha256": "e1b1a9c3178186ccf78ae4876fdd7f6760339743c696e4a5db81500cb17e7486",
+      "stages": [
+        {
+          "task": "scf",
+          "label": null,
+          "job_id": "7451814",
+          "method": {
+            "spin": "collinear",
+            "magmom": [
+              2.0,
+              -2.0,
+              0.0,
+              0.0
+            ],
+            "soc": false,
+            "saxis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "functional": "PBE",
+            "hubbard_u": {
+              "Ni": {
+                "l": 2,
+                "u": 5.0,
+                "j": 0.0
+              }
+            }
+          },
+          "parameters": {
+            "encut": 400.0,
+            "ediff": 1e-05,
+            "ediffg": -0.03,
+            "nsw": 100,
+            "mesh": [
+              4,
+              4,
+              4
+            ],
+            "ismear": 0,
+            "sigma": 0.1,
+            "cell_relax": false,
+            "nelm": 160,
+            "line_density": 20,
+            "nedos": 2001,
+            "spin": "collinear",
+            "magmom": [
+              2,
+              0,
+              -2,
+              0
+            ],
+            "hubbard_u": {
+              "Ni": {
+                "l": 2,
+                "u": 5.0,
+                "j": 0.0
+              }
+            }
+          },
+          "input_sha256": {
+            "POSCAR": "0f3e76d070a7c64889ec1a1a81861e026aa7738baee0630846ff01ef6d120657",
+            "INCAR": "973167fd53e022bd551c70ffccaaab0b3b1af254e778eb1709f85a2094102018",
+            "KPOINTS": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734"
+          },
+          "source_sha256": "a46bdfc3f0e31dd3316c0dd3a1c211b20804b032e0a2858e5c41e93d45783eda",
+          "vasp_version": "6.2.1",
+          "success": true,
+          "input_identity_verified": true,
+          "converged_electronic": true,
+          "final_energy_ev": -20.88305961,
+          "final_energy_ev_per_atom": -5.2207649025,
+          "final_max_force_ev_angstrom": 6.3637253240535135e-06,
+          "force_warning": null,
+          "hybrid_kpoint_consistency": null,
+          "magnetization": {
+            "available": true,
+            "unit": "mu_B",
+            "site_order": "POSCAR",
+            "basis": "collinear spin axis",
+            "saxis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "site_moments": [
+              1.69,
+              -1.69,
+              0.0,
+              0.0
+            ],
+            "total_moment": -0.0,
+            "note": "Site moments are PAW sphere projections; their sum is not the full cell moment."
+          },
+          "artifacts": {
+            "potcar_hash.sha256": "6103ee142bf41915eaa32f2e17357f036296e08ab59dc809506dab76517f22f2",
+            "OUTCAR": "7cc59dcc274ad8f67d09307ca9347e549dc414e1ca32a975b966bbc01af06bc7",
+            "vasprun.xml": "b353ea208df0fb927aefffb631a9ffe18e176b354ba926dbc268febdb495b790",
+            "final_structure.cif": "8c915f162752617b67f7eb6d6efaf69b7b1f8fc0a7e508c65dc85a3d55fc273e"
+          }
+        }
+      ]
+    },
+    {
+      "case": "wheel-agent-hse",
+      "status": "succeeded",
+      "tasks": [
+        "scf",
+        "bands",
+        "dos"
+      ],
+      "plan_sha256": "a18e3a6fa0561d3c4da6be1b689c827eef0ed0669d1340bd61c582db79e39d4d",
+      "stages": [
+        {
+          "task": "scf",
+          "label": null,
+          "job_id": "7451844",
+          "method": {
+            "spin": "none",
+            "magmom": null,
+            "soc": false,
+            "saxis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "functional": "HSE06",
+            "hubbard_u": {}
+          },
+          "parameters": {
+            "encut": 400.0,
+            "ediff": 1e-05,
+            "ediffg": -0.03,
+            "nsw": 100,
+            "mesh": [
+              2,
+              2,
+              2
+            ],
+            "ismear": 0,
+            "sigma": 0.1,
+            "cell_relax": false,
+            "nelm": 160,
+            "line_density": 1,
+            "nedos": 301,
+            "spin": "none",
+            "soc": false,
+            "saxis": [
+              0,
+              0,
+              1
+            ],
+            "magmom": null,
+            "functional": "HSE06",
+            "hubbard_u": {}
+          },
+          "input_sha256": {
+            "POSCAR": "2942e884c6a7feb5a81a19d1c86a53a8d24b7399939435eff0c6b302e121b303",
+            "INCAR": "66489d7b253ac6fc8137b340ab9c8d24f782f8d60042c458365a478ada3ebc31",
+            "KPOINTS": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49"
+          },
+          "source_sha256": "ec3459fca57e82b0776a417039b1f7ba34f677186f0990cc0555fa5499302a24",
+          "vasp_version": "6.2.1",
+          "success": true,
+          "input_identity_verified": true,
+          "converged_electronic": true,
+          "final_energy_ev": -13.29166302,
+          "final_energy_ev_per_atom": -6.64583151,
+          "final_max_force_ev_angstrom": 0.0,
+          "force_warning": null,
+          "hybrid_kpoint_consistency": null,
+          "magnetization": {
+            "available": false,
+            "unit": "mu_B",
+            "site_order": "POSCAR",
+            "basis": "collinear spin axis",
+            "saxis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "site_moments": null,
+            "total_moment": null,
+            "note": "Site moments are PAW sphere projections; their sum is not the full cell moment."
+          },
+          "artifacts": {
+            "potcar_hash.sha256": "29d407c69d148c9fe21db93fc38e963f1a3c04feb8f267ae50d41b04f34fda7f",
+            "OUTCAR": "9b1e656b36cbbe54c42a96206d35991d5119b6a9522ea8a58c11e1bed8521a63",
+            "vasprun.xml": "6c884a36ca183124d73eb89a16b9905c2449ab79e60428dc24ad62153e238878",
+            "final_structure.vasp": "31f32fd743c79576c8b2cb974a236a6b0fd0a774894e23654eab70a1acf7a1c4",
+            "final_structure.cif": "b5472fc47267efb8daf52e94ad4bb60ab7d07483874ff8f4a4a516884d319a45"
+          }
+        },
+        {
+          "task": "bands",
+          "label": null,
+          "job_id": "7451845",
+          "method": {
+            "spin": "none",
+            "magmom": null,
+            "soc": false,
+            "saxis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "functional": "HSE06",
+            "hubbard_u": {}
+          },
+          "parameters": {
+            "encut": 400.0,
+            "ediff": 1e-05,
+            "ediffg": -0.03,
+            "nsw": 100,
+            "mesh": [
+              2,
+              2,
+              2
+            ],
+            "ismear": 0,
+            "sigma": 0.1,
+            "cell_relax": false,
+            "nelm": 160,
+            "line_density": 1,
+            "nedos": 301,
+            "spin": "none",
+            "soc": false,
+            "saxis": [
+              0,
+              0,
+              1
+            ],
+            "magmom": null,
+            "functional": "HSE06",
+            "hubbard_u": {}
+          },
+          "input_sha256": {
+            "POSCAR": "2942e884c6a7feb5a81a19d1c86a53a8d24b7399939435eff0c6b302e121b303",
+            "INCAR": "1d9fe55fdc14d28ee8fda78ddd9ef80e3350f4a2f94dcbb99061efe73460b847",
+            "KPOINTS": "8799adfaa191cfabeaf82b27e77dc587c31946eb4459a7e65a99928a7f9364ab"
+          },
+          "source_sha256": "ec3459fca57e82b0776a417039b1f7ba34f677186f0990cc0555fa5499302a24",
+          "vasp_version": "6.2.1",
+          "success": true,
+          "input_identity_verified": true,
+          "converged_electronic": true,
+          "final_energy_ev": -13.29164954,
+          "final_energy_ev_per_atom": -6.64582477,
+          "final_max_force_ev_angstrom": null,
+          "force_warning": "Forces are unavailable for this zero-weight hybrid band calculation; do not use it for force or stress analysis.",
+          "hybrid_kpoint_consistency": {
+            "tolerance_ev": 0.05,
+            "scope": "All returned bands, energy-sorted within each spin channel.",
+            "equivalent_pair_count": 7,
+            "compared_eigenvalue_count": 56,
+            "max_energy_deviation_ev": 0.0,
+            "worst_pair": null,
+            "passed": true
+          },
+          "magnetization": {
+            "available": false,
+            "unit": "mu_B",
+            "site_order": "POSCAR",
+            "basis": "collinear spin axis",
+            "saxis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "site_moments": null,
+            "total_moment": null,
+            "note": "Site moments are PAW sphere projections; their sum is not the full cell moment."
+          },
+          "artifacts": {
+            "potcar_hash.sha256": "29d407c69d148c9fe21db93fc38e963f1a3c04feb8f267ae50d41b04f34fda7f",
+            "bands.csv": "a9eb3eaedde27f92bc04dc237d4210169cbe69981542cab3eacf7730e8ac5286",
+            "OUTCAR": "4e59d90fe76047558d787e0a2d201326529d92de5dca47121532acf835304913",
+            "vasprun.xml": "ee9b610c3b90a2d7d193c7d98b83f73b30e6d29c97364ff537324ab141f8e523",
+            "final_structure.vasp": "31f32fd743c79576c8b2cb974a236a6b0fd0a774894e23654eab70a1acf7a1c4",
+            "final_structure.cif": "b5472fc47267efb8daf52e94ad4bb60ab7d07483874ff8f4a4a516884d319a45",
+            "bands_mesh.csv": "0003247b67bbcf8bc2448cb0a0aa3bb38a964dd5475cbf1282cca4591fd21342"
+          }
+        },
+        {
+          "task": "dos",
+          "label": null,
+          "job_id": "7451846",
+          "method": {
+            "spin": "none",
+            "magmom": null,
+            "soc": false,
+            "saxis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "functional": "HSE06",
+            "hubbard_u": {}
+          },
+          "parameters": {
+            "encut": 400.0,
+            "ediff": 1e-05,
+            "ediffg": -0.03,
+            "nsw": 100,
+            "mesh": [
+              2,
+              2,
+              2
+            ],
+            "ismear": 0,
+            "sigma": 0.1,
+            "cell_relax": false,
+            "nelm": 160,
+            "line_density": 1,
+            "nedos": 301,
+            "spin": "none",
+            "soc": false,
+            "saxis": [
+              0,
+              0,
+              1
+            ],
+            "magmom": null,
+            "functional": "HSE06",
+            "hubbard_u": {}
+          },
+          "input_sha256": {
+            "POSCAR": "2942e884c6a7feb5a81a19d1c86a53a8d24b7399939435eff0c6b302e121b303",
+            "INCAR": "d427002341ffdf1f837103608ba7240742091401af30b0e3868992830472f988",
+            "KPOINTS": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49"
+          },
+          "source_sha256": "ec3459fca57e82b0776a417039b1f7ba34f677186f0990cc0555fa5499302a24",
+          "vasp_version": "6.2.1",
+          "success": true,
+          "input_identity_verified": true,
+          "converged_electronic": true,
+          "final_energy_ev": -13.29166302,
+          "final_energy_ev_per_atom": -6.64583151,
+          "final_max_force_ev_angstrom": 0.0,
+          "force_warning": null,
+          "hybrid_kpoint_consistency": null,
+          "magnetization": {
+            "available": false,
+            "unit": "mu_B",
+            "site_order": "POSCAR",
+            "basis": "collinear spin axis",
+            "saxis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "site_moments": null,
+            "total_moment": null,
+            "note": "Site moments are PAW sphere projections; their sum is not the full cell moment."
+          },
+          "artifacts": {
+            "potcar_hash.sha256": "29d407c69d148c9fe21db93fc38e963f1a3c04feb8f267ae50d41b04f34fda7f",
+            "OUTCAR": "1e37dae15007ba381147c0e6eea8156305a780e3fbb5a2694a0f9524e12a0e7e",
+            "vasprun.xml": "7fb7b8076782e034fc17c26baf14cdb8d2f071f06c715bbc8450d78c0a184e23",
+            "final_structure.vasp": "31f32fd743c79576c8b2cb974a236a6b0fd0a774894e23654eab70a1acf7a1c4",
+            "dos.csv": "dd0239a755ebe96a4b7fd3fbcfd8c2f8f5f1af4e90d07ad8e03cede600487c31",
+            "final_structure.cif": "b5472fc47267efb8daf52e94ad4bb60ab7d07483874ff8f4a4a516884d319a45"
+          }
+        }
+      ]
+    },
+    {
+      "case": "si-pbe0",
+      "status": "succeeded",
+      "tasks": [
+        "scf"
+      ],
+      "plan_sha256": "d3ffced927700182a536f9e5c7d03d6fe01225c9abd5e20194901055fdcb8431",
+      "stages": [
+        {
+          "task": "scf",
+          "label": null,
+          "job_id": "7451818",
+          "method": {
+            "spin": "none",
+            "magmom": null,
+            "soc": false,
+            "saxis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "functional": "PBE0",
+            "hubbard_u": {}
+          },
+          "parameters": {
+            "encut": 400.0,
+            "ediff": 1e-05,
+            "ediffg": -0.03,
+            "nsw": 100,
+            "mesh": [
+              2,
+              2,
+              2
+            ],
+            "ismear": 0,
+            "sigma": 0.1,
+            "cell_relax": false,
+            "nelm": 160,
+            "line_density": 20,
+            "nedos": 2001,
+            "functional": "PBE0"
+          },
+          "input_sha256": {
+            "POSCAR": "2942e884c6a7feb5a81a19d1c86a53a8d24b7399939435eff0c6b302e121b303",
+            "INCAR": "80a5aadd2c3a080bae43ffd9121decdf85ac3a88033b56810f67a1893107c32a",
+            "KPOINTS": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49"
+          },
+          "source_sha256": "ec3459fca57e82b0776a417039b1f7ba34f677186f0990cc0555fa5499302a24",
+          "vasp_version": "6.2.1",
+          "success": true,
+          "input_identity_verified": true,
+          "converged_electronic": true,
+          "final_energy_ev": -11.15160039,
+          "final_energy_ev_per_atom": -5.575800195,
+          "final_max_force_ev_angstrom": 0.0,
+          "force_warning": null,
+          "hybrid_kpoint_consistency": null,
+          "magnetization": {
+            "available": false,
+            "unit": "mu_B",
+            "site_order": "POSCAR",
+            "basis": "collinear spin axis",
+            "saxis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "site_moments": null,
+            "total_moment": null,
+            "note": "Site moments are PAW sphere projections; their sum is not the full cell moment."
+          },
+          "artifacts": {
+            "potcar_hash.sha256": "29d407c69d148c9fe21db93fc38e963f1a3c04feb8f267ae50d41b04f34fda7f",
+            "OUTCAR": "b6a227767bf9da75430f651952cfa34c1a60aa676cbbad1821d54416b84b238b",
+            "vasprun.xml": "1fcf5ef74f78ce7a5ced28455a955f80c1539b2f5ba0bde969c28f2b2de0b13e",
+            "final_structure.cif": "b5472fc47267efb8daf52e94ad4bb60ab7d07483874ff8f4a4a516884d319a45"
+          }
+        }
+      ]
+    },
+    {
+      "case": "si-chain",
+      "status": "succeeded",
+      "tasks": [
+        "relax",
+        "bands"
+      ],
+      "plan_sha256": "4efa46a8b3b80765547d0636921ddc2dd6c6c0aacce4051117e8a23e2c9d0b89",
+      "stages": [
+        {
+          "task": "relax",
+          "label": null,
+          "job_id": "7451825",
+          "method": {
+            "spin": "none",
+            "magmom": null,
+            "soc": false,
+            "saxis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "functional": "PBE",
+            "hubbard_u": {}
+          },
+          "parameters": {
+            "encut": 400.0,
+            "ediff": 1e-05,
+            "ediffg": -0.05,
+            "nsw": 40,
+            "mesh": [
+              2,
+              2,
+              2
+            ],
+            "ismear": 0,
+            "sigma": 0.1,
+            "cell_relax": false,
+            "nelm": 160,
+            "line_density": 1,
+            "nedos": 2001
+          },
+          "input_sha256": {
+            "POSCAR": "2942e884c6a7feb5a81a19d1c86a53a8d24b7399939435eff0c6b302e121b303",
+            "INCAR": "c7b444898f69a9c8085e4c107dcc3d0dc94a7629606c8c4d13b683798b2b4f2e",
+            "KPOINTS": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49"
+          },
+          "source_sha256": "ec3459fca57e82b0776a417039b1f7ba34f677186f0990cc0555fa5499302a24",
+          "vasp_version": "6.2.1",
+          "success": true,
+          "input_identity_verified": true,
+          "converged_electronic": true,
+          "final_energy_ev": -8.29123012,
+          "final_energy_ev_per_atom": -4.14561506,
+          "final_max_force_ev_angstrom": 0.0,
+          "force_warning": null,
+          "hybrid_kpoint_consistency": null,
+          "magnetization": {
+            "available": false,
+            "unit": "mu_B",
+            "site_order": "POSCAR",
+            "basis": "collinear spin axis",
+            "saxis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "site_moments": null,
+            "total_moment": null,
+            "note": "Site moments are PAW sphere projections; their sum is not the full cell moment."
+          },
+          "artifacts": {
+            "potcar_hash.sha256": "29d407c69d148c9fe21db93fc38e963f1a3c04feb8f267ae50d41b04f34fda7f",
+            "OUTCAR": "6bf16c4fa6d202ce170faaf5ef70a2a997806aed7cb3dd9503c159a1d471f2d6",
+            "vasprun.xml": "0bd2f108f63da7e29df54b5ef0f3b2a8a6b86877fc6ab30197fbc1e64e766040",
+            "final_structure.vasp": "31f32fd743c79576c8b2cb974a236a6b0fd0a774894e23654eab70a1acf7a1c4",
+            "final_structure.cif": "b5472fc47267efb8daf52e94ad4bb60ab7d07483874ff8f4a4a516884d319a45"
+          }
+        },
+        {
+          "task": "scf",
+          "label": null,
+          "job_id": "7451827",
+          "method": {
+            "spin": "none",
+            "magmom": null,
+            "soc": false,
+            "saxis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "functional": "PBE",
+            "hubbard_u": {}
+          },
+          "parameters": {
+            "encut": 400.0,
+            "ediff": 1e-05,
+            "ediffg": -0.05,
+            "nsw": 40,
+            "mesh": [
+              2,
+              2,
+              2
+            ],
+            "ismear": 0,
+            "sigma": 0.1,
+            "cell_relax": false,
+            "nelm": 160,
+            "line_density": 1,
+            "nedos": 2001
+          },
+          "input_sha256": {
+            "POSCAR": "31f32fd743c79576c8b2cb974a236a6b0fd0a774894e23654eab70a1acf7a1c4",
+            "INCAR": "c4afcd866bb67735b6d5c2c352067e36ebd23fc3407ebc8c3b915fd341d148e5",
+            "KPOINTS": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49"
+          },
+          "source_sha256": "31f32fd743c79576c8b2cb974a236a6b0fd0a774894e23654eab70a1acf7a1c4",
+          "vasp_version": "6.2.1",
+          "success": true,
+          "input_identity_verified": true,
+          "converged_electronic": true,
+          "final_energy_ev": -8.29123012,
+          "final_energy_ev_per_atom": -4.14561506,
+          "final_max_force_ev_angstrom": 0.0,
+          "force_warning": null,
+          "hybrid_kpoint_consistency": null,
+          "magnetization": {
+            "available": false,
+            "unit": "mu_B",
+            "site_order": "POSCAR",
+            "basis": "collinear spin axis",
+            "saxis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "site_moments": null,
+            "total_moment": null,
+            "note": "Site moments are PAW sphere projections; their sum is not the full cell moment."
+          },
+          "artifacts": {
+            "potcar_hash.sha256": "29d407c69d148c9fe21db93fc38e963f1a3c04feb8f267ae50d41b04f34fda7f",
+            "OUTCAR": "7bf3d5893c15c8951992161a5f1818481287c175e459fe4f453c961b284e23b3",
+            "vasprun.xml": "357d906470ed9e6f59e565988b4e650f196416a373e4caaa610af0ee6e0abab4",
+            "final_structure.vasp": "31f32fd743c79576c8b2cb974a236a6b0fd0a774894e23654eab70a1acf7a1c4",
+            "final_structure.cif": "b5472fc47267efb8daf52e94ad4bb60ab7d07483874ff8f4a4a516884d319a45"
+          }
+        },
+        {
+          "task": "bands",
+          "label": null,
+          "job_id": "7451828",
+          "method": {
+            "spin": "none",
+            "magmom": null,
+            "soc": false,
+            "saxis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "functional": "PBE",
+            "hubbard_u": {}
+          },
+          "parameters": {
+            "encut": 400.0,
+            "ediff": 1e-05,
+            "ediffg": -0.05,
+            "nsw": 40,
+            "mesh": [
+              2,
+              2,
+              2
+            ],
+            "ismear": 0,
+            "sigma": 0.1,
+            "cell_relax": false,
+            "nelm": 160,
+            "line_density": 1,
+            "nedos": 2001
+          },
+          "input_sha256": {
+            "POSCAR": "31f32fd743c79576c8b2cb974a236a6b0fd0a774894e23654eab70a1acf7a1c4",
+            "INCAR": "01d1ccace6f5d208805fa9411802da5685159c6c44a9d291baf652996de3e6bf",
+            "KPOINTS": "fe92b1a7e6c99c048d0229efdcc801b4e34a9583ec4d26d02d4be6b1a257e516"
+          },
+          "source_sha256": "31f32fd743c79576c8b2cb974a236a6b0fd0a774894e23654eab70a1acf7a1c4",
+          "vasp_version": "6.2.1",
+          "success": true,
+          "input_identity_verified": true,
+          "converged_electronic": true,
+          "final_energy_ev": -8.55321909,
+          "final_energy_ev_per_atom": -4.276609545,
+          "final_max_force_ev_angstrom": 0.08017157695149447,
+          "force_warning": null,
+          "hybrid_kpoint_consistency": null,
+          "magnetization": {
+            "available": false,
+            "unit": "mu_B",
+            "site_order": "POSCAR",
+            "basis": "collinear spin axis",
+            "saxis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "site_moments": null,
+            "total_moment": null,
+            "note": "Site moments are PAW sphere projections; their sum is not the full cell moment."
+          },
+          "artifacts": {
+            "potcar_hash.sha256": "29d407c69d148c9fe21db93fc38e963f1a3c04feb8f267ae50d41b04f34fda7f",
+            "bands.csv": "eb1a93a7bb410d8c2163856cb976034f5aa156c9a04d86d2dfba28232f51ce9b",
+            "OUTCAR": "6b537c0a332cc737ff3d3acebc5b71d39e31eb846fb46f7440a074a4ace4c2e5",
+            "vasprun.xml": "b3d40f60dc805f2040d83fbb5204ad64e27761381636cbbe583bc94866b767ae",
+            "final_structure.vasp": "31f32fd743c79576c8b2cb974a236a6b0fd0a774894e23654eab70a1acf7a1c4",
+            "final_structure.cif": "b5472fc47267efb8daf52e94ad4bb60ab7d07483874ff8f4a4a516884d319a45"
+          }
+        }
+      ]
+    },
+    {
+      "case": "wheel-agent-soc",
+      "status": "succeeded",
+      "tasks": [
+        "relax",
+        "bands"
+      ],
+      "plan_sha256": "676ee4fe6d25ebbe9f618e485ebb40a76f2db0a3fc40908a0dfe6783fdde9e26",
+      "stages": [
+        {
+          "task": "relax",
+          "label": null,
+          "job_id": "7451833",
+          "method": {
+            "spin": "noncollinear",
+            "magmom": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "soc": true,
+            "saxis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "functional": "PBE",
+            "hubbard_u": {}
+          },
+          "parameters": {
+            "encut": 400.0,
+            "ediff": 1e-05,
+            "ediffg": -0.05,
+            "nsw": 30,
+            "mesh": [
+              2,
+              2,
+              2
+            ],
+            "ismear": 0,
+            "sigma": 0.05,
+            "cell_relax": false,
+            "nelm": 120,
+            "line_density": 2,
+            "nedos": 2001,
+            "spin": "noncollinear",
+            "soc": true,
+            "saxis": [
+              0,
+              0,
+              1
+            ],
+            "magmom": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ]
+            ],
+            "functional": "PBE",
+            "hubbard_u": {}
+          },
+          "input_sha256": {
+            "POSCAR": "2942e884c6a7feb5a81a19d1c86a53a8d24b7399939435eff0c6b302e121b303",
+            "INCAR": "7c4c617ede14ba5d73f90cd1848142aab48754abc9b08ab0d1ff0988287b2d3f",
+            "KPOINTS": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49"
+          },
+          "source_sha256": "ec3459fca57e82b0776a417039b1f7ba34f677186f0990cc0555fa5499302a24",
+          "vasp_version": "6.2.1",
+          "success": true,
+          "input_identity_verified": true,
+          "converged_electronic": true,
+          "final_energy_ev": -8.29154598,
+          "final_energy_ev_per_atom": -4.14577299,
+          "final_max_force_ev_angstrom": 1.8014438653480158e-06,
+          "force_warning": null,
+          "hybrid_kpoint_consistency": null,
+          "magnetization": {
+            "available": true,
+            "unit": "mu_B",
+            "site_order": "POSCAR",
+            "basis": "SAXIS spinor basis",
+            "saxis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "site_moments": [
+              [
+                0.0,
+                -0.0,
+                -0.0
+              ],
+              [
+                0.0,
+                0.0,
+                -0.0
+              ]
+            ],
+            "total_moment": [
+              -1e-07,
+              -0.0,
+              0.0
+            ],
+            "note": "Site moments are PAW sphere projections; their sum is not the full cell moment."
+          },
+          "artifacts": {
+            "potcar_hash.sha256": "29d407c69d148c9fe21db93fc38e963f1a3c04feb8f267ae50d41b04f34fda7f",
+            "OUTCAR": "5f50c098ee8ff843f2c1b898474e380fcf67a659300eaac8e4fa0cecf1125940",
+            "vasprun.xml": "921254a5b62292e0e105fa60001480a1ded219800cb33101634e016c5acaae65",
+            "final_structure.vasp": "31f32fd743c79576c8b2cb974a236a6b0fd0a774894e23654eab70a1acf7a1c4",
+            "final_structure.cif": "b5472fc47267efb8daf52e94ad4bb60ab7d07483874ff8f4a4a516884d319a45"
+          }
+        },
+        {
+          "task": "scf",
+          "label": null,
+          "job_id": "7451834",
+          "method": {
+            "spin": "noncollinear",
+            "magmom": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "soc": true,
+            "saxis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "functional": "PBE",
+            "hubbard_u": {}
+          },
+          "parameters": {
+            "encut": 400.0,
+            "ediff": 1e-05,
+            "ediffg": -0.05,
+            "nsw": 30,
+            "mesh": [
+              2,
+              2,
+              2
+            ],
+            "ismear": 0,
+            "sigma": 0.05,
+            "cell_relax": false,
+            "nelm": 120,
+            "line_density": 2,
+            "nedos": 2001,
+            "spin": "noncollinear",
+            "soc": true,
+            "saxis": [
+              0,
+              0,
+              1
+            ],
+            "magmom": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "functional": "PBE",
+            "hubbard_u": {}
+          },
+          "input_sha256": {
+            "POSCAR": "31f32fd743c79576c8b2cb974a236a6b0fd0a774894e23654eab70a1acf7a1c4",
+            "INCAR": "354e07fd05bc746dc4b9bcb860198853a69bb218e277a4e27f91825bc0ac8623",
+            "KPOINTS": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49"
+          },
+          "source_sha256": "31f32fd743c79576c8b2cb974a236a6b0fd0a774894e23654eab70a1acf7a1c4",
+          "vasp_version": "6.2.1",
+          "success": true,
+          "input_identity_verified": true,
+          "converged_electronic": true,
+          "final_energy_ev": -8.29154598,
+          "final_energy_ev_per_atom": -4.14577299,
+          "final_max_force_ev_angstrom": 1.8242258632088298e-06,
+          "force_warning": null,
+          "hybrid_kpoint_consistency": null,
+          "magnetization": {
+            "available": true,
+            "unit": "mu_B",
+            "site_order": "POSCAR",
+            "basis": "SAXIS spinor basis",
+            "saxis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "site_moments": [
+              [
+                0.0,
+                -0.0,
+                -0.0
+              ],
+              [
+                0.0,
+                0.0,
+                -0.0
+              ]
+            ],
+            "total_moment": [
+              -1e-07,
+              -0.0,
+              0.0
+            ],
+            "note": "Site moments are PAW sphere projections; their sum is not the full cell moment."
+          },
+          "artifacts": {
+            "potcar_hash.sha256": "29d407c69d148c9fe21db93fc38e963f1a3c04feb8f267ae50d41b04f34fda7f",
+            "OUTCAR": "c65290834bbcf491068af6d79fd2d2c32f0fd557ca51917761c31719511c5bac",
+            "vasprun.xml": "6480fd3badd4ba923028f195992918795131f756ccf03f2cef2591bf80688e63",
+            "final_structure.vasp": "31f32fd743c79576c8b2cb974a236a6b0fd0a774894e23654eab70a1acf7a1c4",
+            "final_structure.cif": "b5472fc47267efb8daf52e94ad4bb60ab7d07483874ff8f4a4a516884d319a45"
+          }
+        },
+        {
+          "task": "bands",
+          "label": null,
+          "job_id": "7451836",
+          "method": {
+            "spin": "noncollinear",
+            "magmom": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "soc": true,
+            "saxis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "functional": "PBE",
+            "hubbard_u": {}
+          },
+          "parameters": {
+            "encut": 400.0,
+            "ediff": 1e-05,
+            "ediffg": -0.05,
+            "nsw": 30,
+            "mesh": [
+              2,
+              2,
+              2
+            ],
+            "ismear": 0,
+            "sigma": 0.05,
+            "cell_relax": false,
+            "nelm": 120,
+            "line_density": 2,
+            "nedos": 2001,
+            "spin": "noncollinear",
+            "soc": true,
+            "saxis": [
+              0,
+              0,
+              1
+            ],
+            "magmom": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "functional": "PBE",
+            "hubbard_u": {}
+          },
+          "input_sha256": {
+            "POSCAR": "31f32fd743c79576c8b2cb974a236a6b0fd0a774894e23654eab70a1acf7a1c4",
+            "INCAR": "15098a58c66ffc52a819ab473e0bf1fc416c84e08cfd585e1afc3e786d4c7a89",
+            "KPOINTS": "fe92b1a7e6c99c048d0229efdcc801b4e34a9583ec4d26d02d4be6b1a257e516"
+          },
+          "source_sha256": "31f32fd743c79576c8b2cb974a236a6b0fd0a774894e23654eab70a1acf7a1c4",
+          "vasp_version": "6.2.1",
+          "success": true,
+          "input_identity_verified": true,
+          "converged_electronic": true,
+          "final_energy_ev": -8.55352544,
+          "final_energy_ev_per_atom": -4.27676272,
+          "final_max_force_ev_angstrom": 0.08018903400129535,
+          "force_warning": null,
+          "hybrid_kpoint_consistency": null,
+          "magnetization": {
+            "available": true,
+            "unit": "mu_B",
+            "site_order": "POSCAR",
+            "basis": "SAXIS spinor basis",
+            "saxis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "site_moments": [
+              [
+                -0.0,
+                -0.0,
+                -0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "total_moment": [
+              0.0,
+              -0.0,
+              -0.0
+            ],
+            "note": "Site moments are PAW sphere projections; their sum is not the full cell moment."
+          },
+          "artifacts": {
+            "potcar_hash.sha256": "29d407c69d148c9fe21db93fc38e963f1a3c04feb8f267ae50d41b04f34fda7f",
+            "bands.csv": "bf79c1901d69092a9d744fdcee90c7a5a05ccdc79d17ec5cef83509eae7abb40",
+            "OUTCAR": "d73c4b3e341a7a6a29e8a1a2db29cbf40afcc74476bf1c56963209a3c015aff1",
+            "vasprun.xml": "244482867168c14d20ca93baf6a089f0b96fc3f2e08bf389e075fd231a2c487a",
+            "final_structure.vasp": "31f32fd743c79576c8b2cb974a236a6b0fd0a774894e23654eab70a1acf7a1c4",
+            "final_structure.cif": "b5472fc47267efb8daf52e94ad4bb60ab7d07483874ff8f4a4a516884d319a45"
+          }
+        }
+      ]
+    }
+  ],
+  "recovery": {
+    "scope": "Earlier force-parser recollection; a later orbital check rejected this attempt.",
+    "receipt": {
+      "status": "succeeded",
+      "original_job_ids_preserved": true,
+      "stages": [
+        {
+          "task": "scf",
+          "job_id": "7451816",
+          "status": "succeeded",
+          "reason": "The calculation finished and its output passed the checks for this task."
+        },
+        {
+          "task": "bands",
+          "job_id": "7451821",
+          "status": "succeeded",
+          "reason": "The calculation finished and its output passed the checks for this task."
+        },
+        {
+          "task": "dos",
+          "job_id": "7451832",
+          "status": "succeeded",
+          "reason": "The calculation finished and its output passed the checks for this task."
+        }
+      ]
+    }
+  },
+  "initial_hybrid_band_refusal": {
+    "reason": "The first hybrid band attempt had nonfinite forces. After recollection, a separate orbital check found inconsistent equivalent k points. That attempt is excluded from accepted cases. Raising NELMIN alone did not fix it; hybrid bands now use Davidson iteration and an explicit equivalent-point check.",
+    "retained_for_diagnosis": true
+  },
+  "scientific_accuracy_validated": false
+}

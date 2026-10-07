@@ -1,0 +1,550 @@
+{
+  "schema_version": 1,
+  "scope": "Independent stdlib XML/OUTCAR audit of the bounded hybrid orbital diagnostic.",
+  "supersedes": "The HSE band acceptance in method-live-independent-audit.v1.json; total-energy and finite-eigenvalue checks missed inconsistent repeated Gamma states.",
+  "comparison": {
+    "same_structure": true,
+    "same_kpoints": true,
+    "same_potcar": true,
+    "same_model": true
+  },
+  "reports": [
+    {
+      "case": "damped_original",
+      "job_id": "7451821",
+      "recorded_status": "succeeded",
+      "xml_complete": true,
+      "vasp_version": "6.2.1",
+      "input_hashes": {
+        "POSCAR": "2942e884c6a7feb5a81a19d1c86a53a8d24b7399939435eff0c6b302e121b303",
+        "INCAR": "d70fc7e27e4142da480470182705c1d7d513ff66b1707c2296651cb4806b3469",
+        "KPOINTS": "8799adfaa191cfabeaf82b27e77dc587c31946eb4459a7e65a99928a7f9364ab"
+      },
+      "input_identity_verified": true,
+      "frozen_method_verified": true,
+      "potcar_sha256": "2a6df1c19701e5d97aaa59e5470b14653ddbd76935b76dacdd8792eb2eba252c",
+      "xml_sha256": "c315573bb32d64cce1f0797ca24a9893459f779cf3fddb596a4de67d212f96f0",
+      "outcar_sha256": "26aca8943939985c585399b09942a8566b89cd9d518c77849d7b11aad9cf3a8f",
+      "optimizer": {
+        "ALGO": "Damped",
+        "TIME": 0.4,
+        "NELMIN": 10.0,
+        "NELM": 160.0
+      },
+      "model": {
+        "ENCUT": 400.0,
+        "EDIFF": 1e-05,
+        "SIGMA": 0.1,
+        "ISMEAR": 0.0,
+        "LHFCALC": true,
+        "HFSCREEN": 0.2,
+        "AEXX": 0.25,
+        "HFRCUT": -1.0,
+        "ICHARG": 2.0,
+        "ISTART": 0.0,
+        "ISPIN": 1.0,
+        "ISYM": -1.0,
+        "GGA": "Pe"
+      },
+      "electronic_steps": 26,
+      "outcar_ediff_reached": true,
+      "final_energy_ev": -13.29165967,
+      "fermi_energy_ev": 5.19190435,
+      "forces_finite": false,
+      "mesh_points": 8,
+      "path_points": 8,
+      "bands_per_spin": [
+        8
+      ],
+      "eigenvalues_finite": true,
+      "path_matches": true,
+      "weights_valid": true,
+      "duplicate_check": {
+        "tolerance_ev": 0.05,
+        "scope": "All returned bands; sorted energies per spin; reciprocal lattice translations included.",
+        "equivalent_pair_count": 7,
+        "compared_eigenvalue_count": 56,
+        "max_energy_deviation_ev": 1.2721,
+        "pairs": [
+          {
+            "kpoint_indices_zero_based": [
+              0,
+              8
+            ],
+            "max_energy_deviation_ev": 0.0,
+            "max_occupied_union_deviation_ev": 0.0,
+            "violations": []
+          },
+          {
+            "kpoint_indices_zero_based": [
+              0,
+              12
+            ],
+            "max_energy_deviation_ev": 1.2721,
+            "max_occupied_union_deviation_ev": 1.2721,
+            "violations": [
+              {
+                "spin": 1,
+                "band": 4,
+                "energy_ev": [
+                  4.7185,
+                  5.9906
+                ],
+                "occupation": [
+                  1.0,
+                  0.0
+                ],
+                "delta_ev": 1.2721
+              }
+            ]
+          },
+          {
+            "kpoint_indices_zero_based": [
+              3,
+              9
+            ],
+            "max_energy_deviation_ev": 0.08200000000000074,
+            "max_occupied_union_deviation_ev": 0.0,
+            "violations": [
+              {
+                "spin": 1,
+                "band": 7,
+                "energy_ev": [
+                  17.1741,
+                  17.2561
+                ],
+                "occupation": [
+                  0.0,
+                  0.0
+                ],
+                "delta_ev": 0.08200000000000074
+              }
+            ]
+          },
+          {
+            "kpoint_indices_zero_based": [
+              3,
+              15
+            ],
+            "max_energy_deviation_ev": 0.7191999999999972,
+            "max_occupied_union_deviation_ev": 0.0,
+            "violations": [
+              {
+                "spin": 1,
+                "band": 8,
+                "energy_ev": [
+                  18.144,
+                  17.4248
+                ],
+                "occupation": [
+                  0.0,
+                  0.0
+                ],
+                "delta_ev": 0.7191999999999972
+              }
+            ]
+          },
+          {
+            "kpoint_indices_zero_based": [
+              7,
+              13
+            ],
+            "max_energy_deviation_ev": 0.0,
+            "max_occupied_union_deviation_ev": 0.0,
+            "violations": []
+          },
+          {
+            "kpoint_indices_zero_based": [
+              8,
+              12
+            ],
+            "max_energy_deviation_ev": 1.2721,
+            "max_occupied_union_deviation_ev": 1.2721,
+            "violations": [
+              {
+                "spin": 1,
+                "band": 4,
+                "energy_ev": [
+                  4.7185,
+                  5.9906
+                ],
+                "occupation": [
+                  1.0,
+                  0.0
+                ],
+                "delta_ev": 1.2721
+              }
+            ]
+          },
+          {
+            "kpoint_indices_zero_based": [
+              9,
+              15
+            ],
+            "max_energy_deviation_ev": 0.7424999999999997,
+            "max_occupied_union_deviation_ev": 0.0,
+            "violations": [
+              {
+                "spin": 1,
+                "band": 7,
+                "energy_ev": [
+                  17.2561,
+                  17.1805
+                ],
+                "occupation": [
+                  0.0,
+                  0.0
+                ],
+                "delta_ev": 0.07560000000000144
+              },
+              {
+                "spin": 1,
+                "band": 8,
+                "energy_ev": [
+                  18.1673,
+                  17.4248
+                ],
+                "occupation": [
+                  0.0,
+                  0.0
+                ],
+                "delta_ev": 0.7424999999999997
+              }
+            ]
+          }
+        ]
+      },
+      "independently_accepted": false
+    },
+    {
+      "case": "damped_60",
+      "job_id": "7451839",
+      "recorded_status": "succeeded",
+      "xml_complete": true,
+      "vasp_version": "6.2.1",
+      "input_hashes": {
+        "POSCAR": "2942e884c6a7feb5a81a19d1c86a53a8d24b7399939435eff0c6b302e121b303",
+        "INCAR": "aabac3b776e6b2bb413fac398b1eea54aefa6931291f3d6050d6cbdbee290ffc",
+        "KPOINTS": "8799adfaa191cfabeaf82b27e77dc587c31946eb4459a7e65a99928a7f9364ab"
+      },
+      "input_identity_verified": true,
+      "frozen_method_verified": true,
+      "potcar_sha256": "2a6df1c19701e5d97aaa59e5470b14653ddbd76935b76dacdd8792eb2eba252c",
+      "xml_sha256": "214601af2db737a1ce1d219454606291253cf9dad2af88211cfa6a8dbd54281b",
+      "outcar_sha256": "3d20733e8d57348416dd30b661fc17cf69e5ab2e78b54a0882c13e47c15a214a",
+      "optimizer": {
+        "ALGO": "Damped",
+        "TIME": 0.4,
+        "NELMIN": 60.0,
+        "NELM": 160.0
+      },
+      "model": {
+        "ENCUT": 400.0,
+        "EDIFF": 1e-05,
+        "SIGMA": 0.1,
+        "ISMEAR": 0.0,
+        "LHFCALC": true,
+        "HFSCREEN": 0.2,
+        "AEXX": 0.25,
+        "HFRCUT": -1.0,
+        "ICHARG": 2.0,
+        "ISTART": 0.0,
+        "ISPIN": 1.0,
+        "ISYM": -1.0,
+        "GGA": "Pe"
+      },
+      "electronic_steps": 60,
+      "outcar_ediff_reached": true,
+      "final_energy_ev": -13.29167443,
+      "fermi_energy_ev": 5.17528167,
+      "forces_finite": false,
+      "mesh_points": 8,
+      "path_points": 8,
+      "bands_per_spin": [
+        8
+      ],
+      "eigenvalues_finite": true,
+      "path_matches": true,
+      "weights_valid": true,
+      "duplicate_check": {
+        "tolerance_ev": 0.05,
+        "scope": "All returned bands; sorted energies per spin; reciprocal lattice translations included.",
+        "equivalent_pair_count": 7,
+        "compared_eigenvalue_count": 56,
+        "max_energy_deviation_ev": 1.2721,
+        "pairs": [
+          {
+            "kpoint_indices_zero_based": [
+              0,
+              8
+            ],
+            "max_energy_deviation_ev": 0.0,
+            "max_occupied_union_deviation_ev": 0.0,
+            "violations": []
+          },
+          {
+            "kpoint_indices_zero_based": [
+              0,
+              12
+            ],
+            "max_energy_deviation_ev": 1.2721,
+            "max_occupied_union_deviation_ev": 1.2721,
+            "violations": [
+              {
+                "spin": 1,
+                "band": 4,
+                "energy_ev": [
+                  4.7184,
+                  5.9905
+                ],
+                "occupation": [
+                  1.0,
+                  0.0
+                ],
+                "delta_ev": 1.2721
+              }
+            ]
+          },
+          {
+            "kpoint_indices_zero_based": [
+              3,
+              9
+            ],
+            "max_energy_deviation_ev": 0.3885000000000005,
+            "max_occupied_union_deviation_ev": 0.0,
+            "violations": [
+              {
+                "spin": 1,
+                "band": 8,
+                "energy_ev": [
+                  17.7504,
+                  17.3619
+                ],
+                "occupation": [
+                  0.0,
+                  0.0
+                ],
+                "delta_ev": 0.3885000000000005
+              }
+            ]
+          },
+          {
+            "kpoint_indices_zero_based": [
+              3,
+              15
+            ],
+            "max_energy_deviation_ev": 0.44709999999999894,
+            "max_occupied_union_deviation_ev": 0.0,
+            "violations": [
+              {
+                "spin": 1,
+                "band": 8,
+                "energy_ev": [
+                  17.7504,
+                  17.3033
+                ],
+                "occupation": [
+                  0.0,
+                  0.0
+                ],
+                "delta_ev": 0.44709999999999894
+              }
+            ]
+          },
+          {
+            "kpoint_indices_zero_based": [
+              7,
+              13
+            ],
+            "max_energy_deviation_ev": 0.0,
+            "max_occupied_union_deviation_ev": 0.0,
+            "violations": []
+          },
+          {
+            "kpoint_indices_zero_based": [
+              8,
+              12
+            ],
+            "max_energy_deviation_ev": 1.2721,
+            "max_occupied_union_deviation_ev": 1.2721,
+            "violations": [
+              {
+                "spin": 1,
+                "band": 4,
+                "energy_ev": [
+                  4.7184,
+                  5.9905
+                ],
+                "occupation": [
+                  1.0,
+                  0.0
+                ],
+                "delta_ev": 1.2721
+              }
+            ]
+          },
+          {
+            "kpoint_indices_zero_based": [
+              9,
+              15
+            ],
+            "max_energy_deviation_ev": 0.05859999999999843,
+            "max_occupied_union_deviation_ev": 0.0,
+            "violations": [
+              {
+                "spin": 1,
+                "band": 8,
+                "energy_ev": [
+                  17.3619,
+                  17.3033
+                ],
+                "occupation": [
+                  0.0,
+                  0.0
+                ],
+                "delta_ev": 0.05859999999999843
+              }
+            ]
+          }
+        ]
+      },
+      "independently_accepted": false
+    },
+    {
+      "case": "normal",
+      "job_id": "7451840",
+      "recorded_status": "succeeded",
+      "xml_complete": true,
+      "vasp_version": "6.2.1",
+      "input_hashes": {
+        "POSCAR": "2942e884c6a7feb5a81a19d1c86a53a8d24b7399939435eff0c6b302e121b303",
+        "INCAR": "1d9fe55fdc14d28ee8fda78ddd9ef80e3350f4a2f94dcbb99061efe73460b847",
+        "KPOINTS": "8799adfaa191cfabeaf82b27e77dc587c31946eb4459a7e65a99928a7f9364ab"
+      },
+      "input_identity_verified": true,
+      "frozen_method_verified": true,
+      "potcar_sha256": "2a6df1c19701e5d97aaa59e5470b14653ddbd76935b76dacdd8792eb2eba252c",
+      "xml_sha256": "34a539ae1aedb36ce253ae9634443f76313f9624755ed515b9b3914b28595c2f",
+      "outcar_sha256": "aa554dd5f1d60d7da53e808e47850cb7e291430d57fe6e4d41e0f5f3ec60407a",
+      "optimizer": {
+        "ALGO": "Normal",
+        "NELMIN": 10.0,
+        "NELM": 160.0,
+        "IMIX": 1.0,
+        "AMIX": 0.2,
+        "LFOCKACE": true
+      },
+      "model": {
+        "ENCUT": 400.0,
+        "EDIFF": 1e-05,
+        "SIGMA": 0.1,
+        "ISMEAR": 0.0,
+        "LHFCALC": true,
+        "HFSCREEN": 0.2,
+        "AEXX": 0.25,
+        "HFRCUT": -1.0,
+        "ICHARG": 2.0,
+        "ISTART": 0.0,
+        "ISPIN": 1.0,
+        "ISYM": -1.0,
+        "GGA": "Pe"
+      },
+      "electronic_steps": 31,
+      "outcar_ediff_reached": true,
+      "final_energy_ev": -13.29164954,
+      "fermi_energy_ev": 5.24234535,
+      "forces_finite": false,
+      "mesh_points": 8,
+      "path_points": 8,
+      "bands_per_spin": [
+        8
+      ],
+      "eigenvalues_finite": true,
+      "path_matches": true,
+      "weights_valid": true,
+      "duplicate_check": {
+        "tolerance_ev": 0.05,
+        "scope": "All returned bands; sorted energies per spin; reciprocal lattice translations included.",
+        "equivalent_pair_count": 7,
+        "compared_eigenvalue_count": 56,
+        "max_energy_deviation_ev": 0.0,
+        "pairs": [
+          {
+            "kpoint_indices_zero_based": [
+              0,
+              8
+            ],
+            "max_energy_deviation_ev": 0.0,
+            "max_occupied_union_deviation_ev": 0.0,
+            "violations": []
+          },
+          {
+            "kpoint_indices_zero_based": [
+              0,
+              12
+            ],
+            "max_energy_deviation_ev": 0.0,
+            "max_occupied_union_deviation_ev": 0.0,
+            "violations": []
+          },
+          {
+            "kpoint_indices_zero_based": [
+              3,
+              9
+            ],
+            "max_energy_deviation_ev": 0.0,
+            "max_occupied_union_deviation_ev": 0.0,
+            "violations": []
+          },
+          {
+            "kpoint_indices_zero_based": [
+              3,
+              15
+            ],
+            "max_energy_deviation_ev": 0.0,
+            "max_occupied_union_deviation_ev": 0.0,
+            "violations": []
+          },
+          {
+            "kpoint_indices_zero_based": [
+              7,
+              13
+            ],
+            "max_energy_deviation_ev": 0.0,
+            "max_occupied_union_deviation_ev": 0.0,
+            "violations": []
+          },
+          {
+            "kpoint_indices_zero_based": [
+              8,
+              12
+            ],
+            "max_energy_deviation_ev": 0.0,
+            "max_occupied_union_deviation_ev": 0.0,
+            "violations": []
+          },
+          {
+            "kpoint_indices_zero_based": [
+              9,
+              15
+            ],
+            "max_energy_deviation_ev": 0.0,
+            "max_occupied_union_deviation_ev": 0.0,
+            "violations": []
+          }
+        ]
+      },
+      "independently_accepted": true
+    }
+  ],
+  "conclusion": "Damped at 26 and 60 iterations fails the duplicate-k-point check; Normal at 31 iterations passes it. Keep both failed outputs as evidence.",
+  "limitations": [
+    "This is an orbital consistency check, not a material-specific physical convergence study.",
+    "Equivalent points sample the path; passing does not independently establish every zero-weight orbital's convergence.",
+    "Hybrid spectral runs cannot be used for force/stress analysis when forces are nonfinite."
+  ],
+  "sources": [
+    "https://vasp.at/wiki/LHFCALC",
+    "https://vasp.at/wiki/Band-structure_calculation_using_hybrid_functionals"
+  ]
+}

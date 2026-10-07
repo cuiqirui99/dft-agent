@@ -21,6 +21,7 @@ class ClusterConfig:
     setup_commands: list[str] = field(default_factory=list)
     connect_timeout: int = 15
     potcar_symbols: dict[str, str] = field(default_factory=dict)
+    vasp_ncl_command: str = ""
 
     def __post_init__(self):
         for key in ("host", "user"):
@@ -43,6 +44,8 @@ class ClusterConfig:
             raise ValueError("Enter the time limit as HH:MM:SS or D-HH:MM:SS, for example 00:30:00.")
         if not self.vasp_command.strip() or any(c in self.vasp_command for c in "\n\r\x00"):
             raise ValueError("Enter the VASP launch command on a single line.")
+        if not isinstance(self.vasp_ncl_command, str) or any(c in self.vasp_ncl_command for c in "\n\r\x00"):
+            raise ValueError("Enter vasp_ncl_command on a single line.")
         if not isinstance(self.setup_commands, list) or any(not isinstance(c, str) for c in self.setup_commands):
             raise ValueError("Provide setup_commands as a list of shell commands for your cluster environment.")
         for symbol, label in self.potcar_symbols.items():

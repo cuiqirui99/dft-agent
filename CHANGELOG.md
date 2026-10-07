@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.0 — 2026-10-07
+
+- Plan and revise calculations with a language model.
+- Add magnetism, SOC, DFT+U, HSE06 and PBE0.
+- Chain calculations and compare magnetic seeds.
+
 ## 0.1.3 — 2026-10-07
 
 - Renamed to DFT Agent.

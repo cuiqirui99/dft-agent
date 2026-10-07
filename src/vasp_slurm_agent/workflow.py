@@ -1,16 +1,20 @@
 from __future__ import annotations
 
 from contextlib import contextmanager
+from copy import deepcopy
 from datetime import datetime, timezone
 import fcntl
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import re
 import shlex
+import shutil
 import subprocess
 import sys
+import tempfile
 import time
 import uuid
 import zipfile
@@ -60,24 +64,156 @@ def _save(root, state, event=None):
 
 
 def prepare_run(structure_path, run_dir, config, task="relax", parameters=None):
-    if task not in {"relax", "scf", "bands", "dos"}:
-        raise ValueError("Supported tasks: relax, scf, bands, dos")
+    return prepare_plan(structure_path, run_dir, config, [task], parameters)
+
+
+def _digest(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def _launch_command(config, metadata):
+    command = config.vasp_ncl_command if metadata.get("requires_ncl") else config.vasp_command
+    if not command.strip():
+        raise ValueError("Set vasp_ncl_command before preparing SOC or noncollinear calculations.")
+    return command
+
+
+def prepare_plan(structure_path, run_dir, config, tasks, parameters=None, magnetic_states=None, initial_moment=3.0):
+    """Freeze an offline plan; prepare post-relaxation inputs only after acceptance."""
+    if isinstance(magnetic_states, (list, tuple)) and not magnetic_states:
+        magnetic_states = None
+    if not isinstance(tasks, (list, tuple)) or not tasks or any(task not in {"relax", "scf", "bands", "dos"} for task in tasks):
+        raise ValueError("Choose an ordered list of relax, scf, bands or dos tasks.")
+    tasks = list(tasks)
+    if len(set(tasks)) != len(tasks) or ("relax" in tasks and tasks[0] != "relax"):
+        raise ValueError("Use each task once and put relaxation first.")
+    if "scf" in tasks and any(task in {"bands", "dos"} for task in tasks[:tasks.index("scf")]):
+        raise ValueError("Put SCF before bands and DOS.")
+    if magnetic_states is not None and tasks != ["scf"]:
+        raise ValueError("Magnetic comparisons currently support SCF only.")
+    parameters = deepcopy(dict(parameters or {}))
     root = Path(run_dir).expanduser().resolve()
-    root.mkdir(parents=True, exist_ok=True)
-    if (root / "run.json").exists():
+    source = Path(structure_path).expanduser().resolve()
+    if not source.is_file():
+        raise FileNotFoundError(source)
+    if root.exists() and (not root.is_dir() or any(root.iterdir())):
         raise FileExistsError("This run already exists. Resume it or choose a new run directory.")
-    parameters = dict(parameters or {})
-    run_id = "vsa-" + uuid.uuid4().hex[:16]
-    sequence = ["scf", task] if task in {"bands", "dos"} else [task]
-    stages = []
-    for i, name in enumerate(sequence):
-        folder = f"{i+1:02d}_{name}"
-        metadata = prepare_inputs(Path(structure_path), root / folder / "inputs", name, parameters, config.potcar_symbols)
-        stages.append({"name": name, "folder": folder, "job_name": f"{run_id}-{name}", "status": "planned", "job_id": None, "metadata": metadata, "staged": False, "result": None})
-    config.save(root / "config.json")
-    state = {"schema_version": 1, "run_id": run_id, "task": task, "formula": stages[0]["metadata"].get("formula", ""), "status": "planned", "parameters": parameters, "current_stage": 0, "stages": stages, "created_at": utc_now(), "history": [], "last_error": None, "cancel_requested": False, "remote_root": config.remote_root.rstrip("/") + "/" + run_id}
-    state["config_sha256"] = hashlib.sha256((root / "config.json").read_bytes()).hexdigest()
-    return _save(root, state, "Inputs prepared. Ready to submit.")
+    root.parent.mkdir(parents=True, exist_ok=True)
+    temporary = Path(tempfile.mkdtemp(prefix=".dft-plan-", dir=root.parent))
+    try:
+        source_dir = temporary / "source" / "input"
+        source_dir.mkdir(parents=True)
+        source_relative = "source/input/" + source.name
+        shutil.copyfile(source, temporary / source_relative)
+        frozen_sources = {source_relative: _digest(temporary / source_relative)}
+        seed_info = None
+        if magnetic_states is not None:
+            from .magnetic import make_candidates
+            from pymatgen.io.vasp import Poscar
+            common, candidates, seed_info = make_candidates(temporary / source_relative, magnetic_states, parameters, initial_moment)
+            source_relative = "source/comparison/POSCAR"
+            (temporary / source_relative).parent.mkdir()
+            Poscar(common).write_file(temporary / source_relative)
+            frozen_sources[source_relative] = _digest(temporary / source_relative)
+            sequence = [{"name": "scf", "label": candidate["label"], "parameters": candidate["parameters"]} for candidate in candidates]
+        else:
+            sequence = []
+            has_scf = False
+            hybrid = str(parameters.get("functional", "PBE")).upper() in {"HSE06", "PBE0"}
+            for task in tasks:
+                if task in {"bands", "dos"} and not hybrid and not has_scf:
+                    sequence.append({"name": "scf", "parameters": deepcopy(parameters)})
+                    has_scf = True
+                sequence.append({"name": task, "parameters": deepcopy(parameters)})
+                has_scf |= task == "scf"
+        run_id = "vsa-" + uuid.uuid4().hex[:16]
+        stages = []
+        relaxed = scf = None
+        for index, spec in enumerate(sequence):
+            name = spec["name"]
+            suffix = name + ("_" + spec["label"].lower() if "label" in spec else "")
+            charge_from = scf if name in {"bands", "dos"} and str(spec["parameters"].get("functional", "PBE")).upper() == "PBE" else None
+            stage = {**spec, "folder": f"{index+1:02d}_{suffix}", "job_name": f"{run_id}-{suffix}",
+                     "status": "planned", "job_id": None, "metadata": {}, "staged": False,
+                     "materialized": False, "result": None, "structure_from": relaxed,
+                     "charge_from": charge_from, "source_path": source_relative}
+            stages.append(stage)
+            if name == "relax":
+                relaxed, scf = index, None
+            elif name == "scf" and magnetic_states is None:
+                scf = index
+        plan = {"schema_version": 1, "tasks": tasks, "parameters": parameters,
+                "sources": frozen_sources, "magnetic_seeds": seed_info,
+                "stages": [{key: deepcopy(stage[key]) for key in ("name", "folder", "parameters", "structure_from", "charge_from", "source_path")}
+                           for stage in stages]}
+        for spec, stage in zip(plan["stages"], stages):
+            if "label" in stage:
+                spec["label"] = stage["label"]
+        _write(temporary / "plan.json", plan)
+        config.save(temporary / "config.json")
+        state = {"schema_version": 2, "run_id": run_id,
+                 "task": "magnetic" if magnetic_states is not None else tasks[0] if len(tasks) == 1 else "pipeline",
+                 "tasks": tasks, "formula": "", "status": "planned", "parameters": parameters,
+                 "current_stage": 0, "stages": stages, "created_at": utc_now(), "history": [],
+                 "last_error": None, "cancel_requested": False,
+                 "remote_root": config.remote_root.rstrip("/") + "/" + run_id,
+                 "plan_sha256": _digest(temporary / "plan.json"),
+                 "config_sha256": _digest(temporary / "config.json")}
+        if magnetic_states is not None:
+            state["comparison"] = {"scope": seed_info["scope"], "status": "pending", "ranking": [], "excluded": []}
+        for stage in stages:
+            if stage["structure_from"] is None:
+                _materialize_stage(temporary, state, config, stage)
+        state["formula"] = stages[0]["metadata"].get("formula", "")
+        _save(temporary, state, "Plan prepared. Ready to submit.")
+        os.replace(temporary, root)
+        return state
+    finally:
+        if temporary.exists():
+            shutil.rmtree(temporary)
+
+
+def _materialize_stage(root, state, config, stage):
+    if stage.get("materialized", True):
+        return
+    parameters = deepcopy(stage["parameters"])
+    previous_index = stage.get("structure_from")
+    source = root / stage["source_path"]
+    if previous_index is not None:
+        previous = state["stages"][previous_index]
+        if previous["status"] != "succeeded" or not (previous.get("result") or {}).get("success"):
+            raise ValueError("The preceding relaxation must succeed before preparing this stage.")
+        output = root / previous["folder"] / "outputs"
+        digest = previous["result"].get("final_structure_poscar_sha256")
+        if digest:
+            source = output / "final_structure.vasp"
+        elif previous["metadata"].get("requires_ncl"):
+            raise ValueError("SOC/noncollinear propagation requires the accepted final_structure.vasp to preserve its Cartesian basis.")
+        else:
+            source = output / "final_structure.cif"
+            digest = previous["result"].get("final_structure_sha256")
+        if not source.is_file() or _digest(source) != digest:
+            raise ValueError("The accepted relaxed structure is missing or changed.")
+        moments = previous["metadata"].get("method", {}).get("magmom")
+        if moments is not None and parameters.get("spin", "none") != "none":
+            parameters["magmom"] = deepcopy(moments)
+    destination = root / stage["folder"] / "inputs"
+    temporary = Path(tempfile.mkdtemp(prefix=".inputs-", dir=root))
+    try:
+        metadata = prepare_inputs(source, temporary / "inputs", stage["name"], parameters, config.potcar_symbols)
+        _launch_command(config, metadata)
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        if destination.exists():
+            if any(not (destination / name).is_file() or _digest(destination / name) != digest
+                   for name, digest in metadata["input_sha256"].items()):
+                raise ValueError("Prepared inputs changed before stage materialization completed.")
+        else:
+            os.replace(temporary / "inputs", destination)
+        stage["metadata"] = metadata
+        stage["materialized"] = True
+        stage["source_sha256"] = _digest(source)
+    finally:
+        shutil.rmtree(temporary)
 
 
 def _command(transport, command, timeout=60):
@@ -90,9 +226,21 @@ def _command(transport, command, timeout=60):
 def _check_config(root, state):
     if state.get("config_sha256") and hashlib.sha256((root / "config.json").read_bytes()).hexdigest() != state["config_sha256"]:
         raise ValueError("Run cluster configuration changed. Restore the approved snapshot to reconnect safely.")
+    if state.get("plan_sha256"):
+        if _digest(root / "plan.json") != state["plan_sha256"]:
+            raise ValueError("The frozen plan changed. Prepare a new run.")
+        plan = json.loads((root / "plan.json").read_text())
+        if len(plan["stages"]) != len(state["stages"]):
+            raise ValueError("Run stages differ from the frozen plan.")
+        for spec, stage in zip(plan["stages"], state["stages"]):
+            if any(stage.get(key) != value for key, value in spec.items()):
+                raise ValueError("Run stages differ from the frozen plan.")
+        if any(_digest(root / name) != digest for name, digest in plan["sources"].items()):
+            raise ValueError("The frozen source structure changed. Prepare a new run.")
 
 
 def _script(config, stage, previous):
+    command = _launch_command(config, stage["metadata"])
     labels = stage["metadata"]["potcar_labels"]
     paths = []
     for label in labels:
@@ -101,7 +249,11 @@ def _script(config, stage, previous):
         paths.append(shlex.quote(config.potcar_root.rstrip("/") + "/" + label + "/POTCAR"))
     account = f"#SBATCH --account={config.account}\n" if config.account else ""
     dependency = ""
-    if previous:
+    needs_charge = stage["metadata"].get("requires_chgcar", stage["name"] in {"bands", "dos"})
+    needs_charge = needs_charge and stage["metadata"].get("spectral_charge_mode") != "self_consistent"
+    if needs_charge and not previous:
+        raise ValueError("This spectrum requires an accepted SCF charge density.")
+    if needs_charge:
         dependency = f"test -s {shlex.quote(previous + '/CHGCAR')}\ncp {shlex.quote(previous + '/CHGCAR')} CHGCAR\n"
     setup = "\n".join(config.setup_commands)
     return f'''#!/bin/bash
@@ -123,7 +275,7 @@ import json,os,datetime
 json.dump({{"job_id":os.environ.get("SLURM_JOB_ID"),"started_at":datetime.datetime.now(datetime.timezone.utc).isoformat(),"tasks":os.environ.get("SLURM_NTASKS")}},open("execution.json","w"))
 PY
 set +e
-{config.vasp_command}
+{command}
 code=$?
 set -e
 python3 - "$code" <<'PY'
@@ -138,6 +290,20 @@ exit "$code"
 def _submit(root, state, config, transport):
     index = state["current_stage"]
     stage = state["stages"][index]
+    _materialize_stage(root, state, config, stage)
+    _launch_command(config, stage["metadata"])
+    charge_index = stage.get("charge_from", index - 1 if index and stage["name"] in {"bands", "dos"} else None)
+    previous = None
+    if charge_index is not None:
+        charge_stage = state["stages"][charge_index]
+        if charge_stage["name"] != "scf" or charge_stage["status"] != "succeeded" or not (charge_stage.get("result") or {}).get("success"):
+            raise ValueError("The SCF dependency has not succeeded.")
+        for key in ("method_fingerprint",):
+            if key in stage["metadata"] and charge_stage["metadata"].get(key) != stage["metadata"][key]:
+                raise ValueError("The SCF method does not match this spectrum.")
+        if stage["metadata"]["input_sha256"]["POSCAR"] != charge_stage["metadata"]["input_sha256"]["POSCAR"]:
+            raise ValueError("The SCF structure does not match this spectrum.")
+        previous = state["remote_root"] + "/" + charge_stage["folder"]
     remote = state["remote_root"] + "/" + stage["folder"]
     if stage["status"] == "planned":
         stage["status"] = state["status"] = "submitting"
@@ -152,7 +318,6 @@ def _submit(root, state, config, transport):
         checks += ["test -s " + shlex.quote(config.potcar_root.rstrip("/") + "/" + label + "/POTCAR") for label in labels]
         _command(transport, " && ".join(checks))
         _command(transport, "mkdir -p " + shlex.quote(remote))
-        previous = state["remote_root"] + "/" + state["stages"][index-1]["folder"] if index else None
         (inputs / "submit.sh").write_text(_script(config, stage, previous))
         files = [inputs / name for name in ("POSCAR", "INCAR", "KPOINTS", "submit.sh")]
         files.append(Path(__file__).with_name("dispatch.py"))
@@ -227,6 +392,54 @@ def _failure_diagnostic(output, scheduler):
     return None
 
 
+def _update_comparison(state):
+    if "comparison" not in state:
+        return
+    method_keys = {"spin", "magmom", "soc", "saxis", "functional", "hubbard_u"}
+
+    def compatibility(metadata):
+        return {
+            "method": metadata.get("method_comparison_fingerprint"),
+            "structure": metadata.get("input_sha256", {}).get("POSCAR"),
+            "atoms": metadata.get("number_of_atoms"),
+            "formula": metadata.get("formula"),
+            "settings": {key: value for key, value in metadata.get("parameters", {}).items() if key not in method_keys},
+        }
+
+    baseline = compatibility(state["stages"][0]["metadata"])
+    ranked, excluded = [], []
+    for stage in state["stages"]:
+        result = stage.get("result")
+        if result is None:
+            continue
+        reason = None
+        metadata = stage["metadata"]
+        if stage["status"] != "succeeded" or not result.get("success") or not result.get("converged_electronic"):
+            reason = result.get("reason") or "Calculation did not converge."
+        elif not baseline["method"] or compatibility(metadata) != baseline:
+            reason = "Method, structure or numerical settings differ."
+        elif result.get("method_comparison_fingerprint") != metadata.get("method_comparison_fingerprint"):
+            reason = "Output method identity differs from the prepared inputs."
+        energy, count = result.get("final_energy_ev"), metadata.get("number_of_atoms")
+        if reason is None and (isinstance(energy, bool) or not isinstance(energy, (int, float)) or not math.isfinite(energy)
+                               or not isinstance(count, int) or count <= 0):
+            reason = "Finite energy and atom count are required."
+        if reason:
+            excluded.append({"seed": stage["label"], "reason": reason})
+        else:
+            ranked.append({"seed": stage["label"], "stage": stage["folder"], "energy_ev_per_atom": energy / count,
+                           "magnetization": result.get("magnetization")})
+    ranked.sort(key=lambda row: row["energy_ev_per_atom"])
+    for row in ranked:
+        row["relative_energy_mev_per_atom"] = 1000 * (row["energy_ev_per_atom"] - ranked[0]["energy_ev_per_atom"])
+    finished = all(stage.get("result") is not None for stage in state["stages"])
+    state["comparison"].update(
+        status="pending" if not finished else "partial" if excluded else "complete",
+        ranking=ranked, excluded=excluded, comparison_available=len(ranked) >= 2,
+        lowest_energy_seed=ranked[0]["seed"] if len(ranked) >= 2 else None,
+    )
+
+
 def _collect(root, state, transport, stage):
     remote = state["remote_root"] + "/" + stage["folder"]
     output = root / stage["folder"] / "outputs"
@@ -243,8 +456,9 @@ def _collect(root, state, transport, stage):
     metadata_file = root / stage["folder"] / "inputs" / "metadata.json"
     if metadata_file.exists():
         metadata = json.loads(metadata_file.read_text())
-        if stage["name"] == "bands" and state["current_stage"]:
-            previous_result = state["stages"][state["current_stage"] - 1].get("result") or {}
+        charge_index = stage.get("charge_from", state["current_stage"] - 1 if state["current_stage"] else None)
+        if stage["name"] in {"bands", "dos"} and charge_index is not None:
+            previous_result = state["stages"][charge_index].get("result") or {}
             metadata["scf_fermi_energy_ev"] = previous_result.get("fermi_energy_ev")
         _write(output / "metadata.json", metadata)
     expected = root / stage["folder"] / "inputs" / "POSCAR"
@@ -277,14 +491,20 @@ def _collect(root, state, transport, stage):
             result["failure_code"] = "INPUT_IDENTITY_MISMATCH" if not result["input_identity_verified"] else "RESULT_REJECTED"
             result["recovery_hint"] = "Check the error message, input checksums and saved logs. If you need to change the calculation settings, prepare a new run."
         result["reason"] = " ".join(reasons)
+    final_structure = output / "final_structure.cif"
+    if result.get("success") and final_structure.is_file():
+        result["final_structure_sha256"] = _digest(final_structure)
     _write(output / "result.json", result)
     stage["result"] = result
     stage["status"] = "succeeded" if result.get("success") else "needs_attention"
-    if result.get("success") and state["current_stage"] + 1 < len(state["stages"]):
+    _update_comparison(state)
+    if (result.get("success") or "comparison" in state) and state["current_stage"] + 1 < len(state["stages"]):
         state["current_stage"] += 1
         state["status"] = "planned"
     else:
         state["status"] = stage["status"]
+        if "comparison" in state and state["comparison"]["excluded"]:
+            state["status"] = "needs_attention"
     return _save(root, state, f"Collected {stage['name']}: {result.get('reason', stage['status'])}")
 
 
@@ -449,6 +669,13 @@ def bundle_run(run_dir):
     target = root / "results.zip"
     with zipfile.ZipFile(target.with_suffix(".tmp"), "w", zipfile.ZIP_DEFLATED) as archive:
         archive.write(root / "run.json", "run.json")
+        if (root / "proposal.json").is_file():
+            archive.write(root / "proposal.json", "proposal.json")
+        if (root / "plan.json").is_file():
+            archive.write(root / "plan.json", "plan.json")
+            for source in sorted((root / "source").rglob("*")):
+                if source.is_file():
+                    archive.write(source, str(source.relative_to(root)))
         for stage in read_state(root)["stages"]:
             base = root / stage["folder"]
             for folder in (base / "inputs", base / "outputs"):

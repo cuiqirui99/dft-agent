@@ -9,7 +9,7 @@ git clone https://github.com/cuiqirui99/dft-agent.git
 cd dft-agent
 python3 -m venv .venv
 source .venv/bin/activate
-python -m pip install .
+python -m pip install '.[agent]'
 dft-agent ui
 ```
 
@@ -24,6 +24,7 @@ Check SSH access and the host key first. In **Cluster setup**, enter:
 - SSH host, user and port.
 - A writable remote run directory.
 - VASP command, POTCAR directory and element mapping.
+- SOC / noncollinear command, using `vasp_ncl`, if needed.
 - Slurm partition, account, MPI tasks and walltime.
 - Required environment commands, one per line.
 
@@ -51,8 +52,19 @@ Path("Si.cif").write_bytes(files("vasp_slurm_agent").joinpath("examples", "Si.ci
 PY
 ```
 
-Choose `relax`, `scf`, `bands` or `dos`. Bands and DOS run SCF first, using the
-supplied structure; optimize it separately if needed.
+In **Model**, choose OpenAI, a compatible API, or a logged-in Codex CLI.
+For an API, set its model name and key. A compatible API also needs its base
+URL. Environment variables `DFT_AGENT_MODEL`, `DFT_AGENT_API_KEY` (or
+`OPENAI_API_KEY`) and `DFT_AGENT_BASE_URL` also work. Keys stay in memory.
+
+Enter a **Goal**, then click **Plan**. Use **Change the plan** to answer a
+question or revise settings. For example: “Relax this structure, then calculate
+its bands and DOS with PBE.” Later stages use the accepted relaxed structure.
+Planning sends the goal, structure summary and recent dialogue to your provider.
+
+Or choose **Manual** for `relax`, `scf`, `bands` or `dos` without a model.
+The **Method** section sets spin, SOC, U/J and the functional.
+PBE bands and DOS run SCF first. Hybrid spectra are self-consistent.
 
 Check the structure, cutoff, k mesh, smearing and convergence thresholds.
 For relaxation, also set the step limit and whether to relax the cell.
@@ -74,7 +86,7 @@ status. For results, use **Download structure (.cif)** or **Prepare download**
 followed by **Download results (.zip)**. Check the saved status before using
 an incomplete run's files.
 
-The ZIP includes inputs, retained outputs, plots and `run.json`. POTCAR is
+The ZIP includes inputs, retained outputs, plots and saved plans. POTCAR is
 excluded; CHGCAR and WAVECAR stay remote. Check account names and paths before sharing.
 
 ## CLI
@@ -90,7 +102,7 @@ See the [CLI examples](examples.md). `prepare` is local; `watch` submits.
 
 ## Scope
 
-Nonmagnetic PBE for ordered, fully occupied periodic structures. Defaults need
-checking for your material. Magnetism, DFT+U, SOC, hybrids, defects, phonons,
-NEB and molecular dynamics are outside these workflows. Failed or unconverged
-calculations stop without automatic parameter changes.
+Ordered, fully occupied periodic structures, with PBE, magnetism, SOC,
+Dudarev DFT+U, HSE06 and PBE0. See [Methods](methods.md) for settings and limits.
+Defects, phonons, NEB and molecular dynamics are not yet exposed in this package.
+Failed or unconverged calculations stop without automatic parameter changes.
