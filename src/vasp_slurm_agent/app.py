@@ -20,6 +20,7 @@ import streamlit as st
 from vasp_slurm_agent.cli import doctor
 from vasp_slurm_agent.config import ClusterConfig
 from vasp_slurm_agent.workflow import (
+    SLURM_TERMINAL,
     bundle_run,
     cancel,
     prepare_run,
@@ -175,7 +176,7 @@ def _preview(upload) -> Structure | None:
         return None
 
 
-def _stage_results(run_dir: Path, stage: dict) -> None:
+def _stage_results(run_dir: Path, stage: dict, scf_fermi_energy: float | None = None) -> None:
     result = stage.get("result")
     if not result:
         return
@@ -185,13 +186,20 @@ def _stage_results(run_dir: Path, stage: dict) -> None:
         if result.get("recovery_hint"):
             st.info(result["recovery_hint"])
         return
-    metrics = st.columns(2)
-    energy = result.get("final_energy_ev")
-    force = result.get("final_max_force_ev_angstrom")
-    if energy is not None:
-        metrics[0].metric("最终总能量 / eV", f"{energy:.6f}")
-    if force is not None:
-        metrics[1].metric("最大原子力 / eV Å⁻¹", f"{force:.6f}")
+    if stage["name"] in {"relax", "scf"}:
+        metrics = st.columns(2)
+        energy = result.get("final_energy_ev")
+        force = result.get("final_max_force_ev_angstrom")
+        if energy is not None:
+            metrics[0].metric("最终总能量 / eV", f"{energy:.6f}")
+        if force is not None:
+            metrics[1].metric("最大原子力 / eV Å⁻¹", f"{force:.6f}")
+    elif stage["name"] in {"bands", "dos"}:
+        if result.get("energy_reference_source") == "preceding_scf":
+            scf_fermi_energy = result.get("energy_reference_ev", scf_fermi_energy)
+        if scf_fermi_energy is not None:
+            st.metric("前序 SCF 费米能 / eV", f"{scf_fermi_energy:.6f}")
+        st.caption("固定电荷谱计算；基态总能量和原子力请查看前序 SCF，此处仅列其费米能作为参考。")
     output = run_dir / stage["folder"] / "outputs"
     final_structure = output / "final_structure.cif"
     if final_structure.is_file():
@@ -296,8 +304,11 @@ def _run_panel(run_dir: Path) -> None:
                 if source.is_file():
                     st.caption(name)
                     st.code(source.read_text(), language="text")
+    scf_fermi_energy = None
     for stage in stages:
-        _stage_results(run_dir, stage)
+        if stage.get("name") == "scf" and (stage.get("result") or {}).get("success"):
+            scf_fermi_energy = stage["result"].get("fermi_energy_ev")
+        _stage_results(run_dir, stage, scf_fermi_energy)
         folder = stage.get("folder")
         if folder:
             for plot in sorted((run_dir / folder / "outputs").glob("*.png")):
@@ -330,11 +341,17 @@ def _run_panel(run_dir: Path) -> None:
                     st.warning(restored.get("last_error") or "任务仍需检查，请查看运行记录。")
             except Exception as exc:
                 st.error(f"重新连接失败：{exc}")
-    if status not in TERMINAL:
+    current_stage = stages[state.get("current_stage", 0)] if stages else {}
+    has_job = bool(current_stage.get("job_id"))
+    can_cancel = status not in {"succeeded", "cancelled"} and (
+        (has_job and current_stage.get("scheduler_state") not in SLURM_TERMINAL)
+        or (not has_job and status not in TERMINAL)
+    )
+    if can_cancel:
         if actions[1].button("取消此任务", key=f"cancel_{run_dir.name}"):
             try:
                 _with_password(cancel, run_dir)
-                st.rerun(scope="fragment")
+                st.rerun()
             except Exception as exc:
                 st.error(f"取消未确认：{exc}")
     bundle_key = f"bundle_{run_dir}"

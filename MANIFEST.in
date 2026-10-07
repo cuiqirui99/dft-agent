@@ -5,6 +5,7 @@ recursive-include src/vasp_slurm_agent/examples *.cif
 include validation/protocol.v1.json
 include validation/resource-adjustments.v1.json
 include validation/resource-adjustments.v2.json
+include validation/resource-adjustment-outcomes.v1.json
 include validation/legacy-scope.json
 recursive-include validation/results *.json
 include validation/reference/README.md

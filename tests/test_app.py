@@ -149,3 +149,63 @@ def test_paused_job_can_reconnect_from_the_result_panel(workbench):
     restored = workflow.read_state(run_dir)
     assert restored["stages"][0]["job_id"] == "12345"
     assert restored["status"] not in workflow.TERMINAL
+
+
+@pytest.mark.parametrize("task", ["bands", "dos"])
+@pytest.mark.parametrize("scf_fermi", [None, 5.25])
+def test_spectral_results_use_scf_reference_not_ground_state_metrics(workbench, task, scf_fermi):
+    app, worker, _ = workbench
+    app.file_uploader[0].upload("Si.cif", silicon_bytes()).run()
+    widget(app.selectbox, "任务").select(task)
+    widget(app.button, "生成输入并预览").click().run()
+    run_dir = Path(app.session_state["active_run"])
+    state = workflow.read_state(run_dir)
+    assert state["task"] == task
+    state.update(status="succeeded", current_stage=1)
+    state["stages"][0].update(status="succeeded", job_id="12345", result={
+        "success": True, "final_energy_ev": -10.0, "final_max_force_ev_angstrom": 0.002,
+        "fermi_energy_ev": scf_fermi,
+    })
+    state["stages"][1].update(status="succeeded", job_id="12346", result={
+        "success": True, "final_energy_ev": 123.0, "final_max_force_ev_angstrom": 99.0,
+        "fermi_energy_ev": 8.88,
+    })
+    state_path = run_dir / "run.json"
+    state_path.write_text(json.dumps(state))
+    original = state_path.read_bytes()
+    app.run()
+    assert not app.exception
+    assert [item.value for item in app.metric if item.label == "最终总能量 / eV"] == ["-10.000000"]
+    assert [item.value for item in app.metric if item.label == "最大原子力 / eV Å⁻¹"] == ["0.002000"]
+    references = [item.value for item in app.metric if item.label == "前序 SCF 费米能 / eV"]
+    assert references == (["5.250000"] if scf_fermi is not None else [])
+    assert any("固定电荷谱计算" in item.value for item in app.caption)
+    assert state_path.read_bytes() == original
+    worker.assert_not_called()
+
+
+@pytest.mark.parametrize("scheduler_state", [None, "RUNNING", "COMPLETED", "CANCELLED", "FAILED"])
+def test_paused_job_can_request_cancel_only_before_confirmed_scheduler_end(workbench, monkeypatch, scheduler_state):
+    app, worker, _ = workbench
+    app.file_uploader[0].upload("Si.cif", silicon_bytes()).run()
+    widget(app.button, "生成输入并预览").click().run()
+    run_dir = Path(app.session_state["active_run"])
+    state = workflow.read_state(run_dir)
+    state.update(status="needs_attention", last_error="Connection unavailable", remote_failures=3)
+    state["stages"][0].update(status="running", job_id="12345", staged=True, scheduler_state=scheduler_state)
+    state_path = run_dir / "run.json"
+    state_path.write_text(json.dumps(state))
+    original = state_path.read_bytes()
+    cancellation = Mock(return_value=state)
+    monkeypatch.setattr(workflow, "cancel", cancellation)
+    app.run()
+    assert not app.exception
+    if scheduler_state in {None, "RUNNING"}:
+        widget(app.button, "取消此任务").click().run()
+        assert not app.exception
+        cancellation.assert_called_once_with(run_dir)
+    else:
+        assert not any(button.label == "取消此任务" for button in app.button)
+        cancellation.assert_not_called()
+    assert state_path.read_bytes() == original
+    worker.assert_not_called()

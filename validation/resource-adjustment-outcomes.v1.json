@@ -1,0 +1,308 @@
+{
+  "schema_version": 1,
+  "kind": "observed_resource_adjustment_outcomes",
+  "recorded_at": "2026-10-07T13:04:25.862530+00:00",
+  "protocol_sha256": "ad972b48115eaf296a16b4962f5ef908d81a8257387d77d8c39e0698c85382cf",
+  "unchanged_adjustment_protocols": {
+    "resource-adjustments.v1.json": "5db639e5a6202ce5490be7315a2d283ad00cb7c3b508ed0f1fb2243b5277a86c",
+    "resource-adjustments.v2.json": "bf7a237c33376fbda68806c785c8bad22e777d458ba9de548bd2152889e28d0c"
+  },
+  "scientific_accuracy_validated": false,
+  "outcomes": [
+    {
+      "material": "C",
+      "workflow": "relax",
+      "adjustment_protocol": "resource-adjustments.v1.json",
+      "original_attempt": [
+        {
+          "case": "c-relax-v1",
+          "stage": "relax",
+          "job_id": "7451349",
+          "status": "needs_attention",
+          "scheduler_state": "FAILED",
+          "mpi_ranks": 64,
+          "solver_exit_code": 1,
+          "effective_nbands": 64,
+          "kpoint_count": 8,
+          "minimum_plane_waves_per_kpoint": 181,
+          "maximum_plane_waves_per_kpoint": 211,
+          "retained_artifact_count": 15,
+          "retained_artifact_hashes_verified": true,
+          "input_matches_recovered_files": true,
+          "raw_output_sha256": {
+            "OUTCAR": "748878cee075563e08143a2cd49868017d3ea5d3dcd9929586a5d894df9c8f3b",
+            "vasprun.xml": "f32077f8b5016fe55c8ee54e9b5fc3a0e4060c7d447b7fc2496ba9528d770f88",
+            "execution.json": "af1029cdea52f7757065dddc548a94da1069e1f719bfbb30267c64d532f6d52b"
+          },
+          "solver_failure": "EDDDAV ZHEGV return code 1 2 128"
+        }
+      ],
+      "retry_attempt": [
+        {
+          "case": "c-relax-r2",
+          "stage": "relax",
+          "job_id": "7451356",
+          "status": "succeeded",
+          "scheduler_state": "COMPLETED",
+          "mpi_ranks": 8,
+          "solver_exit_code": 0,
+          "effective_nbands": 8,
+          "kpoint_count": 8,
+          "minimum_plane_waves_per_kpoint": 181,
+          "maximum_plane_waves_per_kpoint": 211,
+          "retained_artifact_count": 15,
+          "retained_artifact_hashes_verified": true,
+          "input_matches_recovered_files": true,
+          "raw_output_sha256": {
+            "OUTCAR": "4490687bbf906a4e850bb93db1775c729d601b26ee81c6b13bbc12c2a8f11b92",
+            "vasprun.xml": "e7ee1748d3f7e4d060e891a54be03309199ac144157c946002392e7f0ce44897",
+            "execution.json": "e58dbbcf5d0758a373b3a357a3cfbd74ff4a0cc92f2e0a48bb315bdcebca5406"
+          },
+          "independent_ASE_OUTCAR_XML_audit": {
+            "passed": true,
+            "complete_output_footer": true,
+            "electronic_converged": true,
+            "electronic_steps_per_ionic_step": [
+              11
+            ],
+            "ionic_converged": true,
+            "expected_source_matches": true,
+            "max_parser_energy_difference_ev": 0.0,
+            "max_parser_force_difference_ev_angstrom": 0.0
+          },
+          "final_energy_ev": -18.06145375
+        }
+      ],
+      "input_identity": {
+        "01_relax": {
+          "all_identical": true,
+          "files": {
+            "POSCAR": {
+              "original_sha256": "5e05af919e54a2f87f1c4bfe655f3d6bdd349a41433295121291eaf24e3d6ed6",
+              "retry_sha256": "5e05af919e54a2f87f1c4bfe655f3d6bdd349a41433295121291eaf24e3d6ed6"
+            },
+            "INCAR": {
+              "original_sha256": "2da3d4244e87f2c8554ab715406a0038c81d80742af59f3c12243597fa2c1752",
+              "retry_sha256": "2da3d4244e87f2c8554ab715406a0038c81d80742af59f3c12243597fa2c1752"
+            },
+            "KPOINTS": {
+              "original_sha256": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734",
+              "retry_sha256": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734"
+            }
+          }
+        }
+      },
+      "outcome": "The preserved 64-rank attempt failed; the separate 8-rank attempt passed the unchanged operational and independent numerical checks. Effective NBANDS changed from 64 to 8."
+    },
+    {
+      "material": "Cu",
+      "workflow": "bands",
+      "adjustment_protocol": "resource-adjustments.v2.json",
+      "original_attempt": [
+        {
+          "case": "cu-bands-v1",
+          "stage": "scf",
+          "job_id": "7451411",
+          "status": "succeeded",
+          "scheduler_state": "COMPLETED",
+          "mpi_ranks": 64,
+          "solver_exit_code": 0,
+          "effective_nbands": 64,
+          "kpoint_count": 8,
+          "minimum_plane_waves_per_kpoint": 181,
+          "maximum_plane_waves_per_kpoint": 228,
+          "retained_artifact_count": 15,
+          "retained_artifact_hashes_verified": true,
+          "input_matches_recovered_files": true,
+          "raw_output_sha256": {
+            "OUTCAR": "c6ccdd77796e7d567209924c87548f226c317474d4e9c9f707e5cc3a753197ae",
+            "vasprun.xml": "42ca6fd1f526bbc0d364d5d3254926a668ddeb97394a161690d03e9dcc86c27e",
+            "execution.json": "4489ce01567f63fd7d551f1f8863d2047915c749c84947baa32727bc0a20f60e"
+          },
+          "independent_ASE_OUTCAR_XML_audit": {
+            "passed": true,
+            "complete_output_footer": true,
+            "electronic_converged": true,
+            "electronic_steps_per_ionic_step": [
+              10
+            ],
+            "ionic_converged": null,
+            "expected_source_matches": true,
+            "max_parser_energy_difference_ev": 0.0,
+            "max_parser_force_difference_ev_angstrom": 0.0
+          },
+          "final_energy_ev": -3.56124523
+        },
+        {
+          "case": "cu-bands-v1",
+          "stage": "bands",
+          "job_id": "7451413",
+          "status": "needs_attention",
+          "scheduler_state": "FAILED",
+          "mpi_ranks": 64,
+          "solver_exit_code": 1,
+          "effective_nbands": 64,
+          "kpoint_count": 149,
+          "minimum_plane_waves_per_kpoint": 181,
+          "maximum_plane_waves_per_kpoint": 228,
+          "retained_artifact_count": 15,
+          "retained_artifact_hashes_verified": true,
+          "input_matches_recovered_files": true,
+          "raw_output_sha256": {
+            "OUTCAR": "40d6a0be8e0dbee73e4efaa4c6cbdbcd538c70060656edccd94d5b79a57e3ebc",
+            "vasprun.xml": "cc5100d66e03897c4693f6f6a20cc1110e7df122e1995db05163f4126abec3cc",
+            "execution.json": "2a01e6565fb8dbe3b6884bf07bd77e7bf005b37330d7fce4d94d1f3f107214f2"
+          },
+          "solver_failure": "EDDDAV ZHEGV return code 110 2 128"
+        }
+      ],
+      "retry_attempt": [
+        {
+          "case": "cu-bands-r2",
+          "stage": "scf",
+          "job_id": "7451420",
+          "status": "succeeded",
+          "scheduler_state": "COMPLETED",
+          "mpi_ranks": 8,
+          "solver_exit_code": 0,
+          "effective_nbands": 16,
+          "kpoint_count": 8,
+          "minimum_plane_waves_per_kpoint": 181,
+          "maximum_plane_waves_per_kpoint": 228,
+          "retained_artifact_count": 15,
+          "retained_artifact_hashes_verified": true,
+          "input_matches_recovered_files": true,
+          "raw_output_sha256": {
+            "OUTCAR": "b4bc9a5d643c58eabd460f6058f1357ba3e8ed347af5084b6ff59c0ba1acb94f",
+            "vasprun.xml": "8765b6520ab97702ca35fe0988fca366a452180853f3eaa75e9d643509d74f1c",
+            "execution.json": "6aadca7b053e3e8a6cd4b4057eb60da48f6cf9796fc392337a409015c373642f"
+          },
+          "independent_ASE_OUTCAR_XML_audit": {
+            "passed": true,
+            "complete_output_footer": true,
+            "electronic_converged": true,
+            "electronic_steps_per_ionic_step": [
+              10
+            ],
+            "ionic_converged": null,
+            "expected_source_matches": true,
+            "max_parser_energy_difference_ev": 0.0,
+            "max_parser_force_difference_ev_angstrom": 0.0
+          },
+          "final_energy_ev": -3.56124483
+        },
+        {
+          "case": "cu-bands-r2",
+          "stage": "bands",
+          "job_id": "7451423",
+          "status": "succeeded",
+          "scheduler_state": "COMPLETED",
+          "mpi_ranks": 8,
+          "solver_exit_code": 0,
+          "effective_nbands": 16,
+          "kpoint_count": 149,
+          "minimum_plane_waves_per_kpoint": 181,
+          "maximum_plane_waves_per_kpoint": 228,
+          "retained_artifact_count": 15,
+          "retained_artifact_hashes_verified": true,
+          "input_matches_recovered_files": true,
+          "raw_output_sha256": {
+            "OUTCAR": "f3cfe98a56cf999712c84b82bf93cbebbfb0b7c371a232c4baf951bb3e8a04a2",
+            "vasprun.xml": "93358708bb09590ddafb179984061cee1da2029d2bd36763915030fd8cb5e6f2",
+            "execution.json": "4b4509cc08a13b6bd5e6739584373ff3338f3eb53867d1ca1bb021fbb31dd1c7"
+          },
+          "independent_ASE_OUTCAR_XML_audit": {
+            "passed": true,
+            "complete_output_footer": true,
+            "electronic_converged": true,
+            "electronic_steps_per_ionic_step": [
+              6
+            ],
+            "ionic_converged": null,
+            "expected_source_matches": true,
+            "max_parser_energy_difference_ev": 0.0,
+            "max_parser_force_difference_ev_angstrom": 4.707440918375923e-07
+          },
+          "final_energy_ev": -5.67066072
+        }
+      ],
+      "input_identity": {
+        "01_scf": {
+          "all_identical": true,
+          "files": {
+            "POSCAR": {
+              "original_sha256": "a04f0b7c5a4ecb53ece58abfae3dad71cda2725bf7594cd07667ad490123d42b",
+              "retry_sha256": "a04f0b7c5a4ecb53ece58abfae3dad71cda2725bf7594cd07667ad490123d42b"
+            },
+            "INCAR": {
+              "original_sha256": "c57321fcb8deff1499cdf213d1b623b4b8ff777ab0f60a7f664269ec2e1fb4b3",
+              "retry_sha256": "c57321fcb8deff1499cdf213d1b623b4b8ff777ab0f60a7f664269ec2e1fb4b3"
+            },
+            "KPOINTS": {
+              "original_sha256": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734",
+              "retry_sha256": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734"
+            }
+          }
+        },
+        "02_bands": {
+          "all_identical": true,
+          "files": {
+            "POSCAR": {
+              "original_sha256": "a04f0b7c5a4ecb53ece58abfae3dad71cda2725bf7594cd07667ad490123d42b",
+              "retry_sha256": "a04f0b7c5a4ecb53ece58abfae3dad71cda2725bf7594cd07667ad490123d42b"
+            },
+            "INCAR": {
+              "original_sha256": "65f3607193727ed279578bb72678300823392f50285857e3a0b62ab0ec10786e",
+              "retry_sha256": "65f3607193727ed279578bb72678300823392f50285857e3a0b62ab0ec10786e"
+            },
+            "KPOINTS": {
+              "original_sha256": "f60a8974ab4f8a736fe77ab304a879381e825a662861918e88c2d8e96e9ac01a",
+              "retry_sha256": "f60a8974ab4f8a736fe77ab304a879381e825a662861918e88c2d8e96e9ac01a"
+            }
+          }
+        }
+      },
+      "scf_total_energy_difference_ev": 3.9999999978945766e-07,
+      "retry_bands_independent_consistency": {
+        "method": "Independent ASE XML eigenvalues, plain-text EIGENVAL and CSV comparison; standard-library SCF XML Fermi extraction",
+        "passed": true,
+        "kpoints": 149,
+        "bands_per_spin": 16,
+        "csv_rows": 2384,
+        "scf_fermi_reference_ev": 8.44705417,
+        "reference_matches_preceding_scf_XML_and_result": true,
+        "max_csv_vs_ASE_XML_eigenvalue_difference_ev": 0.0,
+        "max_csv_vs_EIGENVAL_difference_ev": 5.000000000165983e-05,
+        "max_actual_vs_frozen_kpoint_fractional_difference": 4.848484847982948e-09,
+        "csv_spin_band_index_order_matches": true,
+        "full_csv_energy_minus_fermi_range_ev": [
+          -10.21695417,
+          51.10994583
+        ],
+        "serialization_precision_note": "XML eigenvalues have four decimal places and EIGENVAL has six; the comparison limit reflects print rounding, not physical accuracy.",
+        "source_sha256": {
+          "bands.csv": "937188c97aa0008398059b99ac7df46eb941b936ab13b35756555d9920ae51f8",
+          "EIGENVAL": "05423e633e2c2a240b8664ae81586d5e7a6f79b1a50389089a75c4091b77684b",
+          "vasprun.xml": "93358708bb09590ddafb179984061cee1da2029d2bd36763915030fd8cb5e6f2"
+        }
+      },
+      "outcome": "The preserved original SCF succeeded but bands failed at 64 ranks. The separate 8-rank SCF and bands stages succeeded. Both effective band counts changed from 64 to 16."
+    }
+  ],
+  "acceptance": {
+    "frozen_scientific_thresholds_unchanged": true,
+    "original_failures_retained": true,
+    "additional_solver_jobs_submitted_by_this_audit": 0
+  },
+  "causal_limits": [
+    "These are observed successful resource adjustments, not an isolated causal proof: MPI layout and automatically selected NBANDS changed together.",
+    "The Cu preceding SCF succeeded with 64 bands and the same minimum of 181 plane waves. The dimensions alone do not establish the ZHEGV failure cause.",
+    "Identical POSCAR/INCAR/KPOINTS files do not imply identical effective numerical execution or identical numbers of exported bands.",
+    "Successful retries and parser agreement do not establish universal parallel robustness, physical convergence or experimental accuracy.",
+    "Band-path energies and forces are fixed-charge spectral-run quantities; they are not ground-state energy or relaxation-force acceptance claims."
+  ],
+  "documentation": [
+    "https://www.vasp.at/wiki/index.php/NBANDS",
+    "https://www.vasp.at/wiki/index.php/NCORE"
+  ]
+}

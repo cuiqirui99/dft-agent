@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "recorded_live_ssh_roundtrip",
+  "passed": true,
+  "size_bytes": 4194304,
+  "upload_sha256": "2b07811057df887086f06a67edc6ebf911de8b6741156e7a2eb1416a4b8b1b2e",
+  "download_sha256": "2b07811057df887086f06a67edc6ebf911de8b6741156e7a2eb1416a4b8b1b2e",
+  "preserved_local_payloads_reverified_at": "2026-10-07T13:05:28.444922+00:00",
+  "source_receipt_sha256": "409dad865ba986198caf6e53debadabd30d001a1b8c17b689e7f5f178fd4df72",
+  "environment_checks": {
+    "python3": true,
+    "sbatch": true,
+    "squeue": true,
+    "sacct": true,
+    "scancel": true,
+    "potcar_root": true,
+    "remote_parent": true,
+    "vasp": true
+  },
+  "scope": "One 4 MiB byte-for-byte SSH roundtrip; not a throughput benchmark or a claim about every cluster."
+}
