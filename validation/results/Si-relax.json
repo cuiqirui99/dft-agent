@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "material": "Si",
+  "workflow": "relax",
+  "status": "succeeded",
+  "environment": {
+    "scheduler": "Slurm",
+    "solver": "6.2.1",
+    "mpi_ranks": 64
+  },
+  "job_id": "7451325",
+  "source_sha256": "ec3459fca57e82b0776a417039b1f7ba34f677186f0990cc0555fa5499302a24",
+  "parameters": {
+    "encut": 400.0,
+    "ediff": 1e-05,
+    "ediffg": -0.03,
+    "nsw": 80,
+    "mesh": [
+      4,
+      4,
+      4
+    ],
+    "ismear": 0,
+    "sigma": 0.05,
+    "cell_relax": true,
+    "nelm": 120,
+    "line_density": 20,
+    "nedos": 2001
+  },
+  "result": {
+    "schema_version": 1,
+    "task": "relax",
+    "success": true,
+    "converged_electronic": true,
+    "converged_ionic": true,
+    "valid_structure": true,
+    "final_energy_ev": -10.66523726,
+    "final_max_force_ev_angstrom": 0.0,
+    "vasp_version": "6.2.1",
+    "fermi_energy_ev": null,
+    "reason": "Complete VASP output passed task-specific numerical checks; scientific accuracy is not independently validated.",
+    "artifacts": [
+      "final_structure.cif",
+      "relax_energy.csv",
+      "relax_energy.png"
+    ],
+    "scientific_accuracy_validated": false,
+    "vasprun_sha256": "49c277dc41cfba94d9087938425b95b32dac3c3e2b18c70ca3c1b5fd7e7f7fed",
+    "input_identity_verified": true,
+    "scheduler_state": "COMPLETED"
+  },
+  "input_sha256": {
+    "POSCAR": "2942e884c6a7feb5a81a19d1c86a53a8d24b7399939435eff0c6b302e121b303",
+    "INCAR": "041e28f68040232dbd342cfff39bc6cc0df7dd140981a1b5abdc333805bf5678",
+    "KPOINTS": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734"
+  },
+  "artifact_manifest": {
+    "INCAR": {
+      "sha256": "041e28f68040232dbd342cfff39bc6cc0df7dd140981a1b5abdc333805bf5678",
+      "size": 269
+    },
+    "KPOINTS": {
+      "sha256": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734",
+      "size": 38
+    },
+    "POSCAR": {
+      "sha256": "2942e884c6a7feb5a81a19d1c86a53a8d24b7399939435eff0c6b302e121b303",
+      "size": 356
+    },
+    "OUTCAR": {
+      "sha256": "2a121ecea91aafe3d81271cbc2b55a72c29ee7a5ac9daf4c26802903b6a34195",
+      "size": 132903
+    },
+    "OSZICAR": {
+      "sha256": "f74d71a427a0cde64ad2e12202ecab4b9db4a7da134564e9ebbad5cd43dc4b61",
+      "size": 2228
+    },
+    "vasprun.xml": {
+      "sha256": "49c277dc41cfba94d9087938425b95b32dac3c3e2b18c70ca3c1b5fd7e7f7fed",
+      "size": 65250
+    },
+    "CONTCAR": {
+      "sha256": "90ba6cc94bd893f50a4d85a455244983c039a8a5dbc70567ccef65f48b9cfac2",
+      "size": 512
+    },
+    "EIGENVAL": {
+      "sha256": "7994807fe6ef94543412e8da39942988b2b01df0076acc1abf6cb820054b0923",
+      "size": 17593
+    },
+    "DOSCAR": {
+      "sha256": "cb1befd38c2fd02754abfcac9f4eed7048b2ad614521597ba5e14a5697dae3e5",
+      "size": 11073
+    },
+    "slurm.out": {
+      "sha256": "a16ce82ee5d6af3690ae9ea12fd523dc45ae31d2a48e12e970204f769fc66981",
+      "size": 5070
+    },
+    "slurm.err": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    "execution.json": {
+      "sha256": "4182ce7c7f14b69664c1b66d1028ed8b8372db2ea24d0ef01778b9db39c18823",
+      "size": 153
+    },
+    "input_hashes.sha256": {
+      "sha256": "a0cbcd5cb718a86be88388f63c8072e8d00f570aa7e0538d15e6cffc1c18ef83",
+      "size": 219
+    },
+    "potcar_hash.sha256": {
+      "sha256": "29d407c69d148c9fe21db93fc38e963f1a3c04feb8f267ae50d41b04f34fda7f",
+      "size": 73
+    },
+    "potcar_titles.txt": {
+      "sha256": "a6718781e417cd9dcc6fc18c0d78d3a00a48722f7710e797793fdd46d29885ab",
+      "size": 33
+    }
+  },
+  "potcar_sha256": "2a6df1c19701e5d97aaa59e5470b14653ddbd76935b76dacdd8792eb2eba252c",
+  "potcar_titles": [
+    "   TITEL  = PAW_PBE Si 05Jan2001"
+  ],
+  "completed_at": "2026-10-07T12:20:39.932747+00:00",
+  "limitations": [
+    "One ideal nonmagnetic Si cell; does not establish general material accuracy or atomic-coordinate recovery."
+  ]
+}

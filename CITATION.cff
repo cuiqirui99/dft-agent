@@ -1,0 +1,6 @@
+cff-version: 1.2.0
+message: "Development preview. When reporting use, include the version and your archived configuration and calculation evidence. No DOI or public release is currently asserted."
+title: "VASP Slurm Agent"
+type: software
+version: 0.1.0a1
+abstract: "A local single-user workbench for reviewed VASP calculations on Slurm."

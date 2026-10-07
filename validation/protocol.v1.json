@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "status": "frozen_before_first_job",
+  "scope": "Nonmagnetic bulk PBE workflow acceptance; practical starting settings, no universal physical accuracy claim",
+  "structures": [
+    {
+      "name": "Si",
+      "file": "examples/Si.cif",
+      "sha256": "ec3459fca57e82b0776a417039b1f7ba34f677186f0990cc0555fa5499302a24"
+    },
+    {
+      "name": "C",
+      "file": "examples/C.cif",
+      "sha256": "9ceb50de087e34acf2e83efa6829d88ae38e09713262f01056771f8d19feecb9"
+    },
+    {
+      "name": "Ge",
+      "file": "examples/Ge.cif",
+      "sha256": "86fd7bab75d374877f103546ac89a2b8cbf8093ad12201ac2aa7dbf9dd662200"
+    },
+    {
+      "name": "Al",
+      "file": "examples/Al.cif",
+      "sha256": "679820ff7b927b4480db44c96e37167d5e7ebbba63a7d2f4234f67ce7b85a878"
+    },
+    {
+      "name": "Cu",
+      "file": "examples/Cu.cif",
+      "sha256": "b3bbd86f140c8c813cf24dd39a60bf7c3f8630ef2d0aa1581341ab3983117c59"
+    },
+    {
+      "name": "MgO",
+      "file": "examples/MgO.cif",
+      "sha256": "b759ec1f55b421ab8b5bf7cd14cd7f25fdbad17fad68a6624f37dd7ac786e146"
+    },
+    {
+      "name": "NaCl",
+      "file": "examples/NaCl.cif",
+      "sha256": "99487836cbb683a371263b18c72a4640419f8db2b0c68ffe0ad671b95c968439"
+    },
+    {
+      "name": "SiC",
+      "file": "examples/SiC.cif",
+      "sha256": "6cb8265d0fa3c6976a94e7d6fa56451296615ebef5f9a7691421bd7eac629794"
+    }
+  ],
+  "tasks": [
+    "relax",
+    "scf",
+    "bands",
+    "dos"
+  ],
+  "parameters": {
+    "encut": 400.0,
+    "ediff": 1e-05,
+    "ediffg": -0.03,
+    "nsw": 80,
+    "kpoint_grid": [
+      4,
+      4,
+      4
+    ],
+    "cell_relax": true,
+    "ismear": 0,
+    "sigma": 0.05
+  },
+  "initial_execution": {
+    "max_concurrent_jobs": 1,
+    "nodes": 1,
+    "tasks": 64,
+    "walltime_per_stage": "00:15:00"
+  },
+  "checks": [
+    "Complete XML and structure parse",
+    "Input element/site identity and finite coordinates",
+    "Electronic convergence; ionic convergence for relax",
+    "Complete SHA256-verified input/output receipt",
+    "No duplicate submit after lost receipt",
+    "Truthful failure/cancellation/missing-output state",
+    "Band coordinates match actual POSCAR and SCF Fermi reference",
+    "Fresh environment install and example execution"
+  ],
+  "reference_protocol": {
+    "same_model_manual_scf": "Independently authored INCAR/KPOINTS and ASE output parser, same POTCAR identity",
+    "energy_tolerance_ev_per_atom": 0.001,
+    "force_tolerance_ev_per_angstrom": 0.01,
+    "numerical_sensitivity": "Record higher ENCUT=520 eV and denser 6x6x6 mesh comparison; report differences without treating PBE as experimental truth"
+  },
+  "retention": "Retain all failed attempts; do not lower gates after results are visible"
+}

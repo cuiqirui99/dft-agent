@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "method": "ASE_OUTCAR_and_ASE_XML_plus_stdlib_XML_checks",
+  "passed": true,
+  "atom_count": 2,
+  "species": [
+    "Si",
+    "Si"
+  ],
+  "solver_exit_code": 0,
+  "complete_output_footer": true,
+  "electronic_converged": true,
+  "electronic_steps_per_ionic_step": [
+    11,
+    5,
+    4
+  ],
+  "ionic_converged": true,
+  "input_final_site_identity": true,
+  "xml_initial_matches_poscar": true,
+  "xml_final_matches_contcar": true,
+  "max_parser_energy_difference_ev": 0.0,
+  "max_parser_force_difference_ev_angstrom": 0.0,
+  "initial_volume_angstrom3": 40.047869540793755,
+  "final_volume_angstrom3": 41.140010196556204,
+  "max_fractional_coordinate_motion_in_initial_cell_angstrom": 0.0,
+  "trajectory": [
+    {
+      "ionic_step": 1,
+      "energy_ev": -10.65673788,
+      "max_force_ev_angstrom": 0.0,
+      "volume_angstrom3": 40.047869534132005
+    },
+    {
+      "ionic_step": 2,
+      "energy_ev": -10.66111132,
+      "max_force_ev_angstrom": 0.0,
+      "volume_angstrom3": 41.932513668384175
+    },
+    {
+      "ionic_step": 3,
+      "energy_ev": -10.66523726,
+      "max_force_ev_angstrom": 0.0,
+      "volume_angstrom3": 41.140010196703
+    }
+  ],
+  "potcar_sha256": "2a6df1c19701e5d97aaa59e5470b14653ddbd76935b76dacdd8792eb2eba252c",
+  "artifact_receipts": {
+    "verified": true,
+    "file_count": 15,
+    "failed_files": []
+  },
+  "source_sha256": {
+    "INCAR": "041e28f68040232dbd342cfff39bc6cc0df7dd140981a1b5abdc333805bf5678",
+    "KPOINTS": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734",
+    "POSCAR": "2942e884c6a7feb5a81a19d1c86a53a8d24b7399939435eff0c6b302e121b303",
+    "OUTCAR": "2a121ecea91aafe3d81271cbc2b55a72c29ee7a5ac9daf4c26802903b6a34195",
+    "vasprun.xml": "49c277dc41cfba94d9087938425b95b32dac3c3e2b18c70ca3c1b5fd7e7f7fed",
+    "CONTCAR": "90ba6cc94bd893f50a4d85a455244983c039a8a5dbc70567ccef65f48b9cfac2"
+  },
+  "scientific_accuracy_validated": false,
+  "application_comparison": {
+    "reported_success": true,
+    "energy_difference_ev": 0.0,
+    "max_force_difference_ev_angstrom": 0.0,
+    "agrees": true
+  }
+}

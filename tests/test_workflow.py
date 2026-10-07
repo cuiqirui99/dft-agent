@@ -1,0 +1,336 @@
+from __future__ import annotations
+
+import fcntl
+import hashlib
+import json
+from pathlib import Path
+
+import pytest
+
+from vasp_slurm_agent.config import ClusterConfig
+from vasp_slurm_agent.transport import Result
+from vasp_slurm_agent import workflow
+
+
+class FakeTransport:
+    """Model scheduler and file behavior; never connects to a real server."""
+
+    def __init__(self):
+        self.commands = []
+        self.uploads = []
+        self.files = {}
+        self.remote_jobs = {}
+        self.job_id = "80721"
+        self.queue = "PENDING"
+        self.accounting = ""
+        self.exit_code = "0:0"
+        self.lose_submit_reply = False
+        self.cancel_count = 0
+        self.cancel_error = False
+        self.unavailable = False
+
+    def run(self, command, timeout=60):
+        self.commands.append(command)
+        if self.unavailable:
+            return Result(255, "", "Connection unavailable")
+        if any(script in command for script in ("dispatch.py", "reconcile.py")) and command.startswith("python3 "):
+            name = command.split()[-2] if "--reconcile-only" in command else command.split()[-1]
+            if "--reconcile-only" in command and name not in self.remote_jobs:
+                return Result(1, "", "No recorded submission; reconciliation cannot submit")
+            self.remote_jobs.setdefault(name, self.job_id)
+            if self.lose_submit_reply:
+                self.lose_submit_reply = False
+                return Result(255, "", "Connection lost after remote submission")
+            return Result(0, json.dumps({"job_id": self.remote_jobs[name], "job_name": name}))
+        if command.startswith("squeue "):
+            return Result(0, self.queue + "\n" if self.queue else "")
+        if command.startswith("sacct "):
+            return Result(0, f"{self.job_id}|{self.accounting}|{self.exit_code}|\n" if self.accounting else "")
+        if command.startswith("scancel "):
+            self.cancel_count += 1
+            if self.cancel_error:
+                return Result(1, "", "Invalid job id specified")
+            return Result(0)
+        if command.startswith("python3 -c "):
+            return Result(0, json.dumps(list(self.files)))
+        if command.startswith("command -v ") or command.startswith("mkdir -p "):
+            return Result(0)
+        pytest.fail(f"Unexpected remote command: {command}")
+
+    def upload(self, source, destination):
+        self.uploads.append((Path(source).name, destination))
+        data = Path(source).read_bytes()
+        return {"sha256": hashlib.sha256(data).hexdigest(), "size": len(data)}
+
+    def download(self, source, destination):
+        data = self.files[source.rsplit("/", 1)[-1]]
+        Path(destination).write_bytes(data)
+        return {"sha256": hashlib.sha256(data).hexdigest(), "size": len(data)}
+
+
+@pytest.fixture
+def prepared(tmp_path, monkeypatch):
+    config = ClusterConfig(
+        host="cluster.example.invalid", user="researcher", remote_root="/scratch/test",
+        vasp_command="srun vasp_std", potcar_root="/licensed/pbe", partition="cpu",
+    )
+    structure = tmp_path / "source.cif"
+    structure.write_text("test structure for control semantics")
+
+    def prepare(source, output, task, parameters, potcar_symbols):
+        output.mkdir(parents=True)
+        for name in ("POSCAR", "INCAR", "KPOINTS"):
+            (output / name).write_text(f"test input {task}: {name}\n")
+        metadata = {"potcar_labels": ["Si"], "formula": "Si2", "input_sha256": {
+            name: hashlib.sha256((output / name).read_bytes()).hexdigest()
+            for name in ("POSCAR", "INCAR", "KPOINTS")
+        }}
+        (output / "metadata.json").write_text(json.dumps(metadata))
+        return metadata
+
+    def no_network(*args, **kwargs):
+        pytest.fail("Unexpected construction of real SSH transport")
+
+    monkeypatch.setattr(workflow, "prepare_inputs", prepare)
+    monkeypatch.setattr(workflow, "SSHTransport", no_network)
+    monkeypatch.setattr(workflow, "analyze_outputs", lambda *args: {"success": True, "reason": "Fake parser accepted outputs"})
+    root = tmp_path / "run"
+    workflow.prepare_run(structure, root, config)
+    return root
+
+
+def completed_files(root, transport, bad_hash=False):
+    state = workflow.read_state(root)
+    inputs = root / state["stages"][state["current_stage"]]["folder"] / "inputs"
+    transport.files = {name: (inputs / name).read_bytes() for name in ("INCAR", "KPOINTS", "POSCAR")}
+    lines = []
+    for name in ("INCAR", "KPOINTS", "POSCAR"):
+        digest = hashlib.sha256(transport.files[name]).hexdigest()
+        lines.append(f"{'0' * 64 if bad_hash and name == 'INCAR' else digest}  {name}\n")
+    transport.files["input_hashes.sha256"] = "".join(lines).encode()
+    transport.files["CONTCAR"] = b"test output structure"
+    transport.queue = ""
+    transport.accounting = "COMPLETED"
+
+
+def test_prepare_is_offline_and_awaits_explicit_submission(prepared):
+    state = workflow.read_state(prepared)
+    assert state["status"] == "planned"
+    assert state["stages"][0]["job_id"] is None
+    assert not state["stages"][0]["staged"]
+
+
+def test_changed_approved_input_refuses_before_remote_submission(prepared):
+    (prepared / "01_relax" / "inputs" / "INCAR").write_text("ENCUT = 900\n")
+    transport = FakeTransport()
+    state = workflow.advance(prepared, transport)
+    assert state["status"] == "needs_attention"
+    assert "changed" in state["last_error"]
+    assert not transport.commands
+
+
+def test_changed_cluster_snapshot_never_targets_different_host(prepared):
+    config = json.loads((prepared / "config.json").read_text())
+    config["host"] = "another.example.invalid"
+    (prepared / "config.json").write_text(json.dumps(config))
+    transport = FakeTransport()
+    state = workflow.advance(prepared, transport)
+    assert state["status"] == "needs_attention"
+    assert not transport.commands
+
+
+def test_lost_submission_reply_recovers_same_remote_job(prepared):
+    transport = FakeTransport()
+    transport.lose_submit_reply = True
+    first = workflow.advance(prepared, transport)
+    assert first["status"] == "submitting"
+    assert first["stages"][0]["staged"]
+    assert first["stages"][0]["job_id"] is None
+    assert len(transport.remote_jobs) == 1
+    first_upload_count = len(transport.uploads)
+    # Reading state again simulates a restarted client with no in-memory job ID.
+    second = workflow.advance(prepared, transport)
+    assert second["status"] == "queued"
+    assert second["stages"][0]["job_id"] == transport.job_id
+    assert len(transport.remote_jobs) == 1
+    assert len(transport.uploads) == first_upload_count
+    assert second["run_id"] == first["run_id"]
+
+
+def test_accounting_lag_preserves_identity_and_last_known_state(prepared):
+    transport = FakeTransport()
+    before = workflow.advance(prepared, transport)
+    transport.queue = ""
+    transport.accounting = ""
+    after = workflow.advance(prepared, transport)
+    assert after["stages"][0]["job_id"] == before["stages"][0]["job_id"]
+    assert after["status"] == before["status"]
+    assert after["stages"][0]["status"] == before["stages"][0]["status"]
+    assert "no resubmission" in after["last_error"]
+    assert len(transport.remote_jobs) == 1
+
+
+def test_connection_failure_keeps_job_and_can_resume(prepared):
+    transport = FakeTransport()
+    before = workflow.advance(prepared, transport)
+    transport.unavailable = True
+    failed_poll = workflow.advance(prepared, transport)
+    assert failed_poll["status"] == "queued"
+    assert failed_poll["stages"][0]["job_id"] == before["stages"][0]["job_id"]
+    transport.unavailable = False
+    transport.queue = "RUNNING"
+    resumed = workflow.advance(prepared, transport)
+    assert resumed["status"] == "running"
+    assert resumed["last_error"] is None
+    assert len(transport.remote_jobs) == 1
+
+
+def test_repeated_connection_failures_pause_and_resume_original_job(prepared):
+    transport = FakeTransport()
+    workflow.advance(prepared, transport)
+    transport.unavailable = True
+    for _ in range(workflow.MAX_REMOTE_FAILURES):
+        stopped = workflow.advance(prepared, transport)
+    assert stopped["status"] == "needs_attention"
+    transport.unavailable = False
+    restored = workflow.resume(prepared, transport)
+    assert restored["status"] == "queued"
+    assert restored["stages"][0]["job_id"] == transport.job_id
+    assert restored["remote_failures"] == 0
+    assert len(transport.remote_jobs) == 1
+
+
+def test_lost_acknowledgement_can_reconcile_then_cancel(prepared):
+    transport = FakeTransport()
+    transport.lose_submit_reply = True
+    workflow.advance(prepared, transport)
+    assert workflow.cancel(prepared, transport)["status"] == "needs_attention"
+    restored = workflow.resume(prepared, transport)
+    assert restored["stages"][0]["job_id"] == transport.job_id
+    assert restored["cancel_requested"]
+    workflow.advance(prepared, transport)
+    assert transport.cancel_count == 1
+    transport.queue = ""
+    transport.accounting = "CANCELLED"
+    assert workflow.advance(prepared, transport)["status"] == "cancelled"
+    assert len(transport.remote_jobs) == 1
+    assert any("--reconcile-only" in command for command in transport.commands)
+
+
+def test_resume_staged_run_without_receipt_never_blindly_submits(prepared):
+    state = workflow.read_state(prepared)
+    state["status"] = "needs_attention"
+    state["stages"][0].update(status="submitting", staged=True)
+    workflow._save(prepared, state)
+    transport = FakeTransport()
+    after = workflow.resume(prepared, transport)
+    assert after["status"] == "needs_attention"
+    assert not transport.remote_jobs
+
+
+def test_cancel_of_paused_known_job_is_not_silently_ignored(prepared):
+    transport = FakeTransport()
+    workflow.advance(prepared, transport)
+    transport.unavailable = True
+    for _ in range(workflow.MAX_REMOTE_FAILURES):
+        state = workflow.advance(prepared, transport)
+    assert state["status"] == "needs_attention"
+    transport.unavailable = False
+    cancelled = workflow.cancel(prepared, transport)
+    assert cancelled["cancel_requested"]
+    assert transport.cancel_count == 1
+    assert cancelled["stages"][0]["job_id"] == transport.job_id
+
+
+def test_repeated_cancellation_rejection_preserves_job_and_stops_retrying(prepared):
+    transport = FakeTransport()
+    workflow.advance(prepared, transport)
+    transport.cancel_error = True
+    workflow.cancel(prepared, transport)
+    for _ in range(workflow.MAX_REMOTE_FAILURES - 1):
+        state = workflow.advance(prepared, transport)
+    assert state["status"] == "needs_attention"
+    assert state["cancel_requested"]
+    assert state["stages"][0]["job_id"] == transport.job_id
+    before = transport.cancel_count
+    workflow.advance(prepared, transport)
+    assert transport.cancel_count == before
+
+
+@pytest.mark.parametrize("scheduler,exit_code", [("FAILED", "1:0"), ("TIMEOUT", "0:15"), ("COMPLETED", "1:0")])
+def test_slurm_failure_cannot_be_overridden_by_parser_success(prepared, scheduler, exit_code):
+    transport = FakeTransport()
+    workflow.advance(prepared, transport)
+    completed_files(prepared, transport)
+    transport.accounting = scheduler
+    transport.exit_code = exit_code
+    state = workflow.advance(prepared, transport)
+    assert state["status"] == "needs_attention"
+    assert not state["stages"][0]["result"]["success"]
+    assert "Slurm ended" in state["stages"][0]["result"]["reason"]
+
+
+def test_input_checksum_mismatch_cannot_be_success(prepared):
+    transport = FakeTransport()
+    workflow.advance(prepared, transport)
+    completed_files(prepared, transport, bad_hash=True)
+    state = workflow.advance(prepared, transport)
+    assert state["status"] == "needs_attention"
+    assert not state["stages"][0]["result"]["success"]
+    assert not state["stages"][0]["result"]["input_identity_verified"]
+
+
+def test_complete_collection_records_hashes_and_result(prepared):
+    transport = FakeTransport()
+    workflow.advance(prepared, transport)
+    completed_files(prepared, transport)
+    state = workflow.advance(prepared, transport)
+    assert state["status"] == "succeeded"
+    output = prepared / "01_relax" / "outputs"
+    assert json.loads((output / "result.json").read_text())["input_identity_verified"]
+    manifest = json.loads((output / "artifact_manifest.json").read_text())
+    for name, data in transport.files.items():
+        assert manifest[name] == {"sha256": hashlib.sha256(data).hexdigest(), "size": len(data)}
+    assert (output / "metadata.json").exists()
+
+
+def test_cancel_requires_scheduler_confirmation(prepared):
+    transport = FakeTransport()
+    workflow.advance(prepared, transport)
+    transport.queue = "RUNNING"
+    requested = workflow.cancel(prepared, transport)
+    assert requested["cancel_requested"]
+    assert requested["status"] != "cancelled"
+    assert transport.cancel_count == 1
+    transport.queue = ""
+    transport.accounting = "CANCELLED"
+    confirmed = workflow.advance(prepared, transport)
+    assert confirmed["status"] == "cancelled"
+    assert confirmed["stages"][0]["job_id"] == transport.job_id
+
+
+def test_already_gone_job_can_confirm_cancellation_even_if_scancel_fails(prepared):
+    transport = FakeTransport()
+    workflow.advance(prepared, transport)
+    transport.queue = "RUNNING"
+    workflow.cancel(prepared, transport)
+    transport.cancel_error = True
+    transport.queue = ""
+    transport.accounting = "CANCELLED"
+    state = workflow.advance(prepared, transport)
+    assert state["status"] == "cancelled"
+    assert len(transport.remote_jobs) == 1
+
+
+def test_cancelling_unsubmitted_run_never_constructs_transport(prepared):
+    state = workflow.cancel(prepared)
+    assert state["status"] == "cancelled"
+    assert state["stages"][0]["job_id"] is None
+
+
+def test_second_worker_exits_without_touching_remote(prepared):
+    with (prepared / ".worker.lock").open("a") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        state = workflow.watch(prepared, interval=0)
+    assert state["status"] == "planned"
+    assert not (prepared / "worker.json").exists()

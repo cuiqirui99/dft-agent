@@ -1,0 +1,57 @@
+name: Offline checks and package
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - name: Install development dependencies
+        run: python -m pip install ".[dev]"
+      - name: Run offline tests
+        run: python -m pytest -q
+      - name: Build distributions
+        run: python -m build
+      - name: Verify wheel outside source checkout
+        shell: bash
+        run: |
+          python -m venv /tmp/vasp-agent-wheel
+          /tmp/vasp-agent-wheel/bin/python -m pip install dist/*.whl
+          cd /tmp
+          /tmp/vasp-agent-wheel/bin/vasp-agent --help
+          /tmp/vasp-agent-wheel/bin/python -c "import vasp_slurm_agent.app"
+          /tmp/vasp-agent-wheel/bin/python - <<'PY'
+          from importlib.resources import files
+          import json
+          from pathlib import Path
+          import subprocess
+          import tempfile
+          from vasp_slurm_agent.config import ClusterConfig
+
+          with tempfile.TemporaryDirectory() as directory:
+              root = Path(directory)
+              source = root / "Si.cif"
+              source.write_bytes(files("vasp_slurm_agent").joinpath("examples", "Si.cif").read_bytes())
+              config = ClusterConfig(host="cluster.example.invalid", user="researcher",
+                  remote_root="/scratch/example", vasp_command="srun vasp_std",
+                  potcar_root="/licensed/pbe", partition="cpu")
+              config.save(root / "cluster.json")
+              subprocess.run(["/tmp/vasp-agent-wheel/bin/vasp-agent", "prepare", str(source),
+                  str(root / "run"), "--config", str(root / "cluster.json")], check=True)
+              state = json.loads((root / "run" / "run.json").read_text())
+              assert state["status"] == "planned" and state["stages"][0]["job_id"] is None
+              assert (root / "run" / "01_relax" / "inputs" / "POSCAR").is_file()
+          PY

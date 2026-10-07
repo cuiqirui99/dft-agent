@@ -1,0 +1,6 @@
+include NOTICE.md CHANGELOG.md CITATION.cff
+recursive-include docs *.md
+recursive-include examples *.cif
+recursive-include src/vasp_slurm_agent/examples *.cif
+include validation/protocol.v1.json
+recursive-include validation/results *.json

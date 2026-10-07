@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "status": "frozen_before_displaced_structure_execution",
+  "materials": ["Si", "MgO"],
+  "initial_structure": "Same POSCAR geometry as the frozen baseline; displace the last atom by +0.10 angstrom along Cartesian x.",
+  "settings": "Use validation/protocol.v1.json parameters, with fixed-cell ISIF=2 (cell_relax=false).",
+  "gates": {
+    "solver_completed_and_hash_verified": true,
+    "independent_ASE_OUTCAR_XML_energy_agreement_ev": 0.000001,
+    "independent_ASE_OUTCAR_XML_force_agreement_ev_per_angstrom": 0.000001,
+    "initial_max_force_must_exceed_ev_per_angstrom": 0.03,
+    "minimum_ionic_steps": 2,
+    "internal_coordinate_motion_must_exceed_angstrom": 0.01,
+    "energy_decrease_must_exceed_ev": 0.000001,
+    "final_max_force_upper_bound_ev_per_angstrom": 0.03,
+    "fixed_cell_absolute_matrix_tolerance_angstrom": 0.000001
+  },
+  "failure_policy": "Preserve failure under this protocol. Any parameter or threshold change requires a separately versioned case; it cannot repair the old score.",
+  "scope": "Demonstrates real atomic coordinate optimization in two simple nonmagnetic PBE cases, not universal relaxation reliability or experimental accuracy."
+}
