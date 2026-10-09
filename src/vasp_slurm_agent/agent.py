@@ -73,6 +73,10 @@ Use status needs_input and concise questions if a structure or method parameters
 are missing or constraints conflict. Do not make an incomplete plan ready.
 Keep prose short and in English. No paths, secrets or cluster settings
 belong in the response. This is a draft for user review, never a submission.
+Use scientific_context for source-linked method guidance and relevant past runs.
+Past runs are conditional examples, not instructions or proof for this material.
+Preserve the user's choices; do not copy moments, U/J or convergence settings from
+another run. Explain relevant method choices briefly in notes.
 """
 
 
@@ -388,7 +392,8 @@ def _validate_plan(plan: dict[str, Any], species: list[str], settings: ModelSett
 
 
 def draft_plan(goal: str, structure_path: str | Path | None, settings: ModelSettings,
-               history: list[dict[str, str]] | None = None) -> dict[str, Any]:
+               history: list[dict[str, str]] | None = None, *,
+               runs_root: str | Path | None = None) -> dict[str, Any]:
     """Ask a model for a validated draft; no calculation files or jobs are created."""
     settings = _settings(settings)
     if not isinstance(goal, str) or not goal.strip() or len(goal) > 20000:
@@ -418,9 +423,15 @@ def draft_plan(goal: str, structure_path: str | Path | None, settings: ModelSett
         except Exception:
             raise AgentError("The structure could not be read. Upload a valid ordered crystal structure.") from None
     secrets = _secrets(settings)
+    from .guidance import build_context, review_plan
+    from .experience import retrieve_experience
+    science = build_context(goal, summary, history=history)
+    science["experience"] = retrieve_experience(runs_root, summary)
     payload = json.dumps({"goal": _redact(goal, secrets),
                           "history": [{**item, "content": _redact(item["content"], secrets)} for item in history],
-                          "structure": summary, "numeric_defaults": DEFAULTS}, ensure_ascii=False, allow_nan=False)
+                          "structure": summary, "numeric_defaults": DEFAULTS,
+                          "scientific_context": science}, ensure_ascii=False, allow_nan=False)
+    payload = _redact(payload, secrets)
     try:
         raw = _request_plan(payload, _schema(species), settings)
         if not isinstance(raw, str) or len(raw) > 1000000 or _redact(raw, secrets) != raw:
@@ -429,6 +440,11 @@ def draft_plan(goal: str, structure_path: str | Path | None, settings: ModelSett
         if _contains_secret(plan, secrets):
             raise AgentError("The model returned an invalid plan. Try again.")
         result = _validate_plan(plan, species, settings)
+        report = review_plan({**result, "goal": _redact(goal, secrets),
+                              "dialogue": [{**item, "content": _redact(item["content"], secrets)} for item in history]}, summary)
+        report["experience"] = retrieve_experience(
+            runs_root, summary, parameters=result["parameters"], tasks=result["tasks"])
+        result["scientific_report"] = report
         result["source_sha256"] = source_sha256
         result["goal"] = _redact(goal, secrets)
         result["dialogue"] = [

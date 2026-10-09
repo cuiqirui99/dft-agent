@@ -66,12 +66,23 @@ def main():
     plan.add_argument("--model", default=os.environ.get("DFT_AGENT_MODEL", ""))
     plan.add_argument("--base-url", default=os.environ.get("DFT_AGENT_BASE_URL", ""))
     plan.add_argument("--output", type=Path, default=Path("plan.json"))
+    plan.add_argument("--runs", type=Path, help="Past runs for method guidance")
     explain = commands.add_parser("explain", help="Explain saved results")
     explain.add_argument("run_dir", type=Path)
     explain.add_argument("--question", default="Explain the results.")
     explain.add_argument("--provider", choices=("responses", "chat_completions", "codex"), default="responses")
     explain.add_argument("--model", default=os.environ.get("DFT_AGENT_MODEL", ""))
     explain.add_argument("--base-url", default=os.environ.get("DFT_AGENT_BASE_URL", ""))
+    repair = commands.add_parser("repair", help="Plan a bounded repair")
+    repair.add_argument("run_dir", type=Path)
+    repair.add_argument("--provider", choices=("responses", "chat_completions", "codex"), default="responses")
+    repair.add_argument("--model", default=os.environ.get("DFT_AGENT_MODEL", ""))
+    repair.add_argument("--base-url", default=os.environ.get("DFT_AGENT_BASE_URL", ""))
+    repair.add_argument("--output", type=Path, default=Path("repair.json"))
+    repair_prep = commands.add_parser("prepare-repair", help="Prepare reviewed repair inputs")
+    repair_prep.add_argument("run_dir", type=Path)
+    repair_prep.add_argument("new_run_dir", type=Path)
+    repair_prep.add_argument("--plan", type=Path, required=True)
     prep = commands.add_parser("prepare", help="Prepare inputs locally")
     prep.add_argument("structure", type=Path)
     prep.add_argument("run_dir", type=Path)
@@ -118,7 +129,7 @@ def main():
         if args.command == "plan":
             from .agent import ModelSettings, draft_plan
             settings = ModelSettings(provider=args.provider, model=args.model, base_url=args.base_url or None)
-            result = draft_plan(args.goal, args.structure, settings)
+            result = draft_plan(args.goal, args.structure, settings, runs_root=args.runs)
             args.output.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n")
             print(json.dumps(result, indent=2, ensure_ascii=False))
             return 0 if result["status"] == "ready" else 1
@@ -127,6 +138,19 @@ def main():
             from .explanation import explain_run
             settings = ModelSettings(provider=args.provider, model=args.model, base_url=args.base_url or None)
             result = explain_run(args.run_dir, settings, question=args.question)
+            print(json.dumps(result, indent=2, ensure_ascii=False))
+            return 0
+        if args.command == "repair":
+            from .agent import ModelSettings
+            from .recovery import draft_repair
+            settings = ModelSettings(provider=args.provider, model=args.model, base_url=args.base_url or None)
+            result = draft_repair(args.run_dir, settings)
+            args.output.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n")
+            print(json.dumps(result, indent=2, ensure_ascii=False))
+            return 0 if result["status"] == "ready" else 1
+        if args.command == "prepare-repair":
+            from .recovery import prepare_repair
+            result = prepare_repair(args.run_dir, args.new_run_dir, json.loads(args.plan.read_text()))
             print(json.dumps(result, indent=2, ensure_ascii=False))
             return 0
         from .workflow import prepare_run, prepare_plan, read_state, watch, resume, cancel, bundle_run, TERMINAL

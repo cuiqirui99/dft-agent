@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Restore scientific guidance and relevant run history in planning.
+- Review failed runs and prepare bounded repairs.
+
 ## 0.2.1 — 2026-10-07
 
 - Explain results and answer follow-up questions.

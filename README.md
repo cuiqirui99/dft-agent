@@ -30,6 +30,9 @@ dft-agent ui
 
 After an interruption, select the original run and use **Resume monitoring**. For `needs_attention`, read the error before using **Reconnect**.
 
+Plans include scientific guidance and relevant past runs. For a failed calculation,
+use **Repair** to review a proposed fix and prepare a new run. [Details](docs/harness.md).
+
 Try: “Relax this structure, then calculate its bands with SOC.” Plans can be revised before submission. Missing settings, such as U and J, trigger a question.
 
 Supports OpenAI, compatible APIs and a logged-in Codex CLI. Planning shares your goal and structure; explanations share verified results and dialogue. Manual mode needs no model account; install with `pip install .`.

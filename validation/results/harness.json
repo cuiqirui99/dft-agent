@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "checked_at": "2026-10-09T07:50:43.516599+00:00",
+  "scope": "Scientific harness candidate; not a new release or material-accuracy benchmark.",
+  "source_sha256": {
+    "src/vasp_slurm_agent/agent.py": "abc773570585bf51601bcefb82ac3a10d66f490cf43e098a1de844dd8104360e",
+    "src/vasp_slurm_agent/app.py": "80a4eda7566fd119d2f98bb1ad495d82f62074a2a7eb80f4b1e3fa8db963ad51",
+    "src/vasp_slurm_agent/cli.py": "5fe3ad7628431ed540e1a041d3e55775ae6d6a79c3fdeec4501dbe2a8708c234",
+    "src/vasp_slurm_agent/workflow.py": "9ec34e9b4403784a6c074c5282f22e83100d83c7b148c17e7607ecd6df7ac825",
+    "src/vasp_slurm_agent/guidance.py": "fdbda4e34344e564e8b3727a61c06bcf2a7221c52cd8844357583d6d0d7e4384",
+    "src/vasp_slurm_agent/experience.py": "efc6060cf4d37192e6cebd2ecd734f823b4025cbca5fa803d3966e8f63dd32c1",
+    "src/vasp_slurm_agent/recovery.py": "ccc38b3015f985caf8ad73699cc6f154c120120b78ccd940901f567d9a86d942"
+  },
+  "offline_tests": {
+    "passed": 355,
+    "failed": 0,
+    "errors": 0,
+    "latest_recovery_ui_integration_subset_passed": 63
+  },
+  "model_checks": {
+    "checked_at": "2026-10-09T07:42:22.288657+00:00",
+    "provider": "codex",
+    "cases": [
+      {
+        "case": "hybrid",
+        "passed": true,
+        "status": "ready",
+        "tasks": [
+          "bands"
+        ],
+        "sources": 4,
+        "past_cases": 2,
+        "seconds": 15.5
+      },
+      {
+        "case": "soc",
+        "passed": true,
+        "status": "ready",
+        "tasks": [
+          "relax",
+          "bands"
+        ],
+        "sources": 5,
+        "past_cases": 1,
+        "seconds": 17.0
+      },
+      {
+        "case": "missing_u",
+        "passed": true,
+        "status": "needs_input",
+        "tasks": [
+          "scf"
+        ],
+        "sources": 3,
+        "past_cases": 0,
+        "seconds": 14.7
+      }
+    ]
+  },
+  "live_repair": {
+    "material": "Si",
+    "task": "scf",
+    "solver": "VASP 6.2.1",
+    "provider": "codex",
+    "parameters": {
+      "encut_ev": 400,
+      "mesh": [
+        2,
+        2,
+        2
+      ],
+      "ediff_ev": 1e-05
+    },
+    "parent": {
+      "job_id": "7463985",
+      "scheduler_state": "COMPLETED",
+      "accepted": false,
+      "reason": "Electronic convergence was not reached.",
+      "nelm": 1,
+      "vasprun_sha256": "7422f27f38aed1a7b2ef2f56ac0e46181fafe7e03db7e2daa0421c92f740156f"
+    },
+    "repair": {
+      "job_id": "7464012",
+      "scheduler_state": "COMPLETED",
+      "accepted": true,
+      "nelm": 120,
+      "vasprun_sha256": "adefcfe648c717a50f27020cb9a8baf121ec946bd181486a23d3af3936dc1ba5"
+    },
+    "attempt": 1,
+    "max_attempts": 2,
+    "changes": [
+      {
+        "scope": "parameters",
+        "key": "nelm",
+        "before": 1,
+        "after": 120
+      }
+    ],
+    "checks": {
+      "original_files_unchanged": true,
+      "same_poscar": true,
+      "same_kpoints": true,
+      "only_incar_change": "NELM",
+      "current_code_rechecked_saved_evidence": true,
+      "current_code_reproduced_frozen_inputs": true
+    },
+    "scientific_accuracy_validated": false
+  },
+  "limits": [
+    "One live nonmagnetic Si SCF repair on one Slurm cluster.",
+    "NELM was deliberately set to 1 to exercise a known failure.",
+    "Ionic-limit and time-limit repairs were tested offline.",
+    "Live model calls used Codex; other providers were tested offline.",
+    "No live repairs of magnetic, SOC, DFT+U or hybrid jobs in this check.",
+    "Failed PBE bands/DOS needing original CHGCAR require manual review."
+  ]
+}

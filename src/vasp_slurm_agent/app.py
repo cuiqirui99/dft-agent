@@ -266,6 +266,28 @@ def _prepare_from_plan(upload, runs_root, config, plan):
     st.success("Inputs ready. Review below, then submit.")
 
 
+def _science_details(report):
+    if not report:
+        return
+    with st.expander("Scientific guidance"):
+        for item in report.get("method_decisions", []):
+            st.write(item["decision"])
+        for item in report.get("risks", []):
+            st.caption(item)
+        for item in report.get("questions", []):
+            st.info(item)
+        for item in report.get("validation_plan", []):
+            st.write("• " + item)
+        sources = {}
+        for item in report.get("evidence", []):
+            for source in item.get("sources", []):
+                sources[source["url"]] = item["title"]
+        for url, title in sources.items():
+            st.markdown(f"[{title}]({url})")
+        if report.get("experience"):
+            st.caption(f"Matched past runs: {len(report['experience'])}. Suggestions only; settings are unchanged.")
+
+
 def _agent_plan(upload, structure, config, runs_root, settings):
     from vasp_slurm_agent.agent import _redact, _secrets, draft_plan
 
@@ -293,7 +315,7 @@ def _agent_plan(upload, structure, config, runs_root, settings):
                 source = Path(directory) / f"structure{suffix}"
                 source.write_bytes(upload.getvalue())
                 with st.spinner("Planning…"):
-                    plan = draft_plan(goal.strip(), source, settings, history=history[-12:])
+                    plan = draft_plan(goal.strip(), source, settings, history=history[-12:], runs_root=runs_root)
             prefix = [{**item, "content": _redact(item["content"], _secrets(settings))} for item in history[:-12]]
             history = prefix + plan.get("dialogue", history[-12:] + [{"role": "assistant", "content": json.dumps(plan, ensure_ascii=False)}])
             saved = {"stamp": stamp, "plan": plan, "goal": plan.get("goal", goal.strip())}
@@ -312,8 +334,9 @@ def _agent_plan(upload, structure, config, runs_root, settings):
         st.info(question)
     if plan.get("status") == "unsupported":
         st.warning("This plan cannot run yet.")
+    _science_details(plan.get("scientific_report"))
     with st.expander("Plan details", expanded=plan.get("status") == "ready"):
-        st.json({key: value for key, value in plan.items() if key not in {"provenance", "dialogue", "goal"}})
+        st.json({key: value for key, value in plan.items() if key not in {"provenance", "dialogue", "goal", "scientific_report"}})
     if revision.strip():
         st.info("Update the plan before preparing inputs.")
     if st.button("Prepare inputs", disabled=plan.get("status") != "ready" or config is None or bool(revision.strip())):
@@ -454,6 +477,39 @@ def _result_dialogue(run_dir, settings, context):
                 st.write(step)
 
 
+def _repair_panel(run_dir, settings):
+    from vasp_slurm_agent.recovery import draft_repair, prepare_repair
+
+    key = f"repair_{run_dir}"
+    with st.expander("Repair"):
+        if st.button("Plan repair", key=f"plan_repair_{run_dir}"):
+            st.session_state.pop(key, None)
+            try:
+                with st.spinner("Checking the failed run…"):
+                    st.session_state[key] = draft_repair(run_dir, settings)
+            except Exception as exc:
+                st.error(str(exc))
+        proposal = st.session_state.get(key)
+        if not proposal:
+            return
+        st.write(proposal["diagnosis"])
+        for question in proposal.get("questions", []):
+            st.info(question)
+        if proposal.get("changes"):
+            st.dataframe(proposal["changes"], hide_index=True)
+            st.caption(f"Repair {proposal['attempt']} of {proposal['max_attempts']}.")
+        if st.button("Prepare repair", key=f"prepare_repair_{run_dir}", disabled=proposal["status"] != "ready"):
+            try:
+                name = datetime.now().strftime("%Y%m%d-%H%M%S") + "-repair-" + uuid.uuid4().hex[:8]
+                child = run_dir.parent / name
+                prepare_repair(run_dir, child, proposal)
+                st.session_state["active_run"] = str(child)
+                st.session_state.pop(key, None)
+                st.rerun()
+            except Exception as exc:
+                st.error(f"Cannot prepare repair: {exc}")
+
+
 @st.fragment(run_every="5s")
 def _run_panel(run_dir: Path, model_settings=None) -> None:
     from vasp_slurm_agent.explanation import load_run_context
@@ -572,6 +628,8 @@ def _run_panel(run_dir: Path, model_settings=None) -> None:
         st.info("Complete. Results are ready to download.")
     elif status == "needs_attention":
         st.info("Check the error before reconnecting. Settings are unchanged.")
+    if status in {"needs_attention", "failed"}:
+        _repair_panel(run_dir, model_settings)
     _result_dialogue(run_dir, model_settings, context)
 
 

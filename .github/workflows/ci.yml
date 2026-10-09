@@ -32,8 +32,10 @@ jobs:
           /tmp/dft-agent-wheel/bin/python -m pip install dist/*.whl
           cd /tmp
           /tmp/dft-agent-wheel/bin/dft-agent --help
+          /tmp/dft-agent-wheel/bin/dft-agent repair --help
+          /tmp/dft-agent-wheel/bin/dft-agent prepare-repair --help
           /tmp/dft-agent-wheel/bin/vasp-agent --help
-          /tmp/dft-agent-wheel/bin/python -c "import vasp_slurm_agent.app"
+          /tmp/dft-agent-wheel/bin/python -c "from vasp_slurm_agent import app, guidance, experience, recovery"
           /tmp/dft-agent-wheel/bin/python - <<'PY'
           from importlib.resources import files
           import json

@@ -257,6 +257,7 @@ def test_agent_proposal_requires_review_and_keeps_runtime_plan(workbench, monkey
     proposal = json.loads((root / "proposal.json").read_text())
     frozen = json.loads((root / "plan.json").read_text())
     assert proposal["status"] == "ready" and frozen["stages"]
+    assert proposal["scientific_report"]["evidence"]
     assert "status" not in frozen
     assert state["plan_sha256"] == hashlib.sha256((root / "plan.json").read_bytes()).hexdigest()
     workflow._check_config(root, state)
@@ -575,3 +576,47 @@ def test_explanation_does_not_save_answer_if_results_change_during_request(workb
     assert not (root / "explanations.json").exists()
     assert not any("The requested relaxation completed." == item.value for item in app.markdown)
     worker.assert_not_called()
+
+
+def test_repair_actions_require_explicit_planning_and_submission(workbench, monkeypatch):
+    from vasp_slurm_agent import recovery
+
+    app, worker, _ = workbench
+    app.file_uploader[0].upload("Si.cif", silicon_bytes()).run()
+    widget(app.button, "Prepare inputs").click().run()
+    parent = Path(app.session_state["active_run"])
+    state = workflow.read_state(parent)
+    state.update(status="needs_attention", last_error=None)
+    state["stages"][0].update(status="needs_attention", scheduler_state="COMPLETED", job_id="123",
+                               result={"success": False, "reason": "Electronic convergence was not reached."})
+    (parent / "run.json").write_text(json.dumps(state))
+    before = (parent / "run.json").read_bytes()
+    draft = Mock(return_value={"status": "ready", "diagnosis": "Increase the iteration limit.",
+        "questions": [], "attempt": 1, "max_attempts": 2,
+        "changes": [{"scope": "parameters", "key": "nelm", "before": 120, "after": 240}]})
+    monkeypatch.setattr(recovery, "draft_repair", draft)
+
+    def prepare(original, destination, proposal):
+        assert original == parent
+        return workflow.prepare_run(parent / "source/input/structure.cif", destination,
+                                    ClusterConfig.load(parent / "config.json"), "scf", {"nelm": 240})
+
+    preparation = Mock(side_effect=prepare)
+    monkeypatch.setattr(recovery, "prepare_repair", preparation)
+    app.run()
+    draft.assert_not_called()
+    widget(app.button, "Plan repair").click().run()
+    assert not app.exception and draft.call_count == 1
+    worker.assert_not_called()
+    app.run()
+    assert draft.call_count == 1
+    widget(app.button, "Prepare repair").click().run()
+    assert not app.exception and preparation.call_count == 1
+    child = Path(app.session_state["active_run"])
+    assert child != parent
+    assert widget(app.button, "Submit calculation").disabled
+    worker.assert_not_called()
+    widget(app.checkbox, "Structure, settings and resources reviewed.").check().run()
+    widget(app.button, "Submit calculation").click().run()
+    worker.assert_called_once_with(child)
+    assert (parent / "run.json").read_bytes() == before
