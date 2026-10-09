@@ -172,9 +172,23 @@ def _snapshot(run_dir):
                 raise AgentError("The next-stage moments do not match the relaxed sites.")
             approved_parameters["magmom"] = [deepcopy(moments[position]) for position in order]
     # Rebuild from the frozen plan so edited metadata cannot approve new physics.
+    policy = plan.get("input_policy", 1)
+    if type(policy) is not int or policy not in {1, 2}:
+        raise AgentError("The frozen input policy is unsupported.")
+    if policy == 1:
+        from .legacy_inputs import prepare_legacy_inputs
+        build = prepare_legacy_inputs
+    else:
+        build = workflow.prepare_warm_inputs if stage.get("warm_start") else workflow.prepare_inputs
     with tempfile.TemporaryDirectory(prefix="dft-repair-check-") as temporary:
-        approved = workflow.prepare_inputs(approved_source, Path(temporary), stage["name"], approved_parameters, config.potcar_symbols)
-    for key in ("input_sha256", "method", "method_fingerprint", "parameters", "potcar_labels"):
+        approved = build(approved_source, Path(temporary), stage["name"], approved_parameters, config.potcar_symbols)
+        if approved.get("warm_start"):
+            from .restart import INPUT_FILES
+            for name in INPUT_FILES:
+                saved = _path(root, folder + "/inputs/" + name)
+                if not saved.is_file() or _sha(saved) != _sha(Path(temporary) / name):
+                    raise AgentError("The prepared seed inputs no longer match the frozen plan.")
+    for key in ("input_sha256", "method", "method_fingerprint", "parameters", "potcar_labels", "warm_start"):
         if approved.get(key) != metadata.get(key):
             raise AgentError("The prepared inputs no longer match the frozen plan.")
     lineage = plan.get("repair")
@@ -382,9 +396,13 @@ def prepare_repair(run_dir, new_run_dir, proposal: dict) -> dict:
                 config_values[change["key"]] = change["after"]
         config = ClusterConfig(**config_values)
         remaining = snapshot["state"]["stages"][snapshot["index"]:]
+        normalize_parameters = _parameters
+        if snapshot["plan"].get("input_policy", 1) == 1:
+            from .legacy_inputs import legacy_parameters
+            normalize_parameters = legacy_parameters
         recipes = []
         for position, original in enumerate(remaining):
-            params = {**deepcopy(METHOD_DEFAULTS), **_parameters(deepcopy(original["parameters"]))}
+            params = {**deepcopy(METHOD_DEFAULTS), **normalize_parameters(deepcopy(original["parameters"]))}
             if position == 0:
                 params = deepcopy(parameters)
             elif params.get("magmom") is not None:
@@ -398,9 +416,18 @@ def prepare_repair(run_dir, new_run_dir, proposal: dict) -> dict:
         first_scf = next((i for i, stage in enumerate(remaining) if stage["name"] == "scf"), len(remaining))
         requested = [position for position, stage in enumerate(remaining)
                      if stage["name"] != "scf" or position == first_scf < first_spectrum]
+        planning_recipes = [deepcopy(recipes[position]) for position in requested]
+        if requested and requested[0] == 0:
+            # Compare the approved recipes before resolving automatic numerics.
+            # The verified concrete first-stage settings are restored below.
+            planning_recipes[0] = {**deepcopy(METHOD_DEFAULTS),
+                                   **normalize_parameters(deepcopy(remaining[0]["parameters"]))}
+            if planning_recipes[0].get("magmom") is not None:
+                planning_recipes[0]["magmom"] = deepcopy(parameters["magmom"])
         state = workflow.prepare_plan(snapshot["inputs"] / "POSCAR", temporary / "run", config,
                                       [remaining[position]["name"] for position in requested],
-                                      stage_parameters=[recipes[position] for position in requested])
+                                      stage_parameters=planning_recipes,
+                                      _input_policy=snapshot["plan"].get("input_policy", 1))
         prepared = temporary / "run"
         plan = _read(prepared / "plan.json")
         if [stage["name"] for stage in state["stages"]] != [stage["name"] for stage in remaining]:

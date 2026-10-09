@@ -18,6 +18,7 @@ from . import agent
 from .agent import AgentError, ModelSettings
 from .methods import METHOD_DEFAULTS
 from .vasp import DEFAULTS, TASKS, analyze_outputs
+from .restart import INPUT_FILES as RESTART_INPUTS, OUTPUT_FILES as RESTART_OUTPUTS
 
 
 _LIMITS = [
@@ -100,6 +101,11 @@ def _current_result(task: str, xml: str, outcar: str, poscar: str,
         temporary = Path(temporary)
         shutil.copyfile(xml, temporary / "vasprun.xml")
         shutil.copyfile(outcar, temporary / "OUTCAR")
+        if json.loads(metadata).get("warm_start"):
+            source = Path(xml).parent
+            for name in (*RESTART_INPUTS, *RESTART_OUTPUTS, "potcar_hash.sha256"):
+                if (source / name).is_file():
+                    shutil.copyfile(source / name, temporary / name)
         (temporary / "metadata.json").write_text(metadata, encoding="utf-8")
         return analyze_outputs(temporary, task, poscar)
 
@@ -199,6 +205,13 @@ def load_run_context(run_dir: str | Path) -> dict[str, Any]:
         for name in ("vasprun.xml", "OUTCAR", "input_hashes.sha256"):
             expected = (manifest.get(name) or {}).get("sha256")
             identity = bool(digest(output + "/" + name) == expected and expected and identity)
+        warm_files = []
+        if metadata.get("warm_start"):
+            warm_files = ["seed.INCAR", "seed.metadata.json", "warm_start.spec.json", "warm_start.json", "seed.vasprun.xml",
+                          "seed.OUTCAR", "hybrid.stdout", "potcar_hash.sha256"]
+            for name in warm_files:
+                expected = (manifest.get(name) or {}).get("sha256")
+                identity = bool(digest(output + "/" + name) == expected and expected and identity)
         identity = bool(identity and fingerprints.get(output + "/vasprun.xml") == result.get("vasprun_sha256"))
         try:
             submitted = {line.split()[-1]: line.split()[0] for line in path(output + "/input_hashes.sha256").read_text().splitlines() if len(line.split()) == 2}
@@ -224,7 +237,8 @@ def load_run_context(run_dir: str | Path) -> dict[str, Any]:
             current = _current_result(task, str(path(output + "/vasprun.xml")), str(path(output + "/OUTCAR")),
                                       str(path(inputs + "/POSCAR")), _canonical(parser_metadata),
                                       tuple(fingerprints.get(relative) or "" for relative in
-                                            (output + "/vasprun.xml", output + "/OUTCAR", inputs + "/POSCAR")))
+                                            (output + "/vasprun.xml", output + "/OUTCAR", inputs + "/POSCAR",
+                                             *(output + "/" + name for name in warm_files))))
             accepted = bool(current.get("success"))
             if not accepted:
                 validation_issue = ("The current output checks rejected inconsistent hybrid-band orbitals at equivalent k-points."

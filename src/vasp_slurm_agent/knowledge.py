@@ -308,6 +308,7 @@ def retrieve_knowledge(goal, structure, *, parameters=None, tasks=None, runs_roo
             "topics", "tasks", "formulas", "methods", "origin")}
         reference["evidence"] = [{"sha256": item["sha256"], "description": item["description"]} for item in record["evidence"]]
         reference["use"] = "Reference only. Recheck applicability; do not copy settings or infer a ground state."
+        reference["numerical_convergence_verified"] = False
         matches.append((score, record["id"], reference))
     matches.sort(key=lambda item: (-item[0], item[1]))
     return [item[2] for item in matches[:min(limit, MAX_RESULTS)]]

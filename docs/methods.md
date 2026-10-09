@@ -23,6 +23,13 @@ The Ni example above is illustrative. Element settings follow the actual
 POSCAR/POTCAR order. [VASP DFT+U guide](https://vasp.at/wiki/LDAU).
 
 HSE06 uses 25% exact exchange and screening of 0.2 Å⁻¹; PBE0 is unscreened.
+New hybrid jobs first run a static PBE seed on the same structure, k points,
+potentials and spin settings. The hybrid step reads its checked WAVECAR with
+`ISTART=1` and `ICHARG=0`. A failed seed or an incompatible restart stops the job.
+Seed evidence is retained; WAVECAR stays on the cluster. Previously prepared
+jobs keep their original inputs. [VASP hybrid guide](https://vasp.at/wiki/LHFCALC).
+Inspect final moments: the PBE seed can change the magnetic state, and MAGMOM
+does not reset moments when restarting. [VASP MAGMOM](https://vasp.at/wiki/MAGMOM).
 Hybrid bands require VASP 6 with [LFOCKACE](https://vasp.at/wiki/LFOCKACE) support.
 They combine a weighted mesh and a zero-weight path and are
 self-consistent and do not use `ICHARG=11`. A minimum of ten electronic steps

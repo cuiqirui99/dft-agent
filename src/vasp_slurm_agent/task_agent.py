@@ -37,6 +37,9 @@ Copy each explicit stage requirement independently into requirements. For a new
 task unspecified settings use nonmagnetic PBE and the supplied numeric defaults.
 For continuation, inherit previous_parameters unless the user changes them; moments
 must still match the edited structure. Null numeric settings use runner defaults.
+Leave mesh null for automatic reciprocal spacing and vacuum-axis detection.
+Use electronic_type metal or insulator only when specified or established by evidence;
+otherwise use auto. Leave ismear and sigma null for material-aware defaults.
 Hubbard entries require element, l, u and j in eV; ask for missing values, never
 guess J=0. Leave hubbard_u empty when unused. Ask for magnetic ordering and moments
 if unspecified. Moments need one scalar or one three-vector per edited site.

@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.4.1 — 2026-10-09
+
+- Generate k meshes from cell size and detect vacuum directions.
+- Choose smearing, symmetry and PAW defaults with explicit overrides.
+- Start hybrid calculations from a checked PBE WAVECAR.
+- Support multiple nodes and extra Slurm resource options.
+- Use structured Claude output and specific provider errors.
+- Preserve prepared calculations when upgrading.
+
 ## 0.4.0 — 2026-10-09
 
 - Plan structure edits and calculations in one conversation.

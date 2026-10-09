@@ -2,7 +2,7 @@
 
 ![DFT Agent](docs/assets/dft-agent-logo.png)
 
-Version `0.4.0`.
+Version `0.4.1`.
 
 [Qirui Cui](https://www.kth.se/profile/qiruic?l=en) · KTH Royal Institute of Technology · [ORCID](https://orcid.org/0009-0005-6165-3237)
 
@@ -73,8 +73,8 @@ Use ordered periodic structures. Check the starting parameters for your material
 
 ## Citation
 
-Cui, Q. (2026). *DFT Agent* (v0.4.0). [GitHub](https://github.com/cuiqirui99/dft-agent/releases/tag/v0.4.0).
+Cui, Q. (2026). *DFT Agent* (v0.4.1). [GitHub](https://github.com/cuiqirui99/dft-agent/releases/tag/v0.4.1).
 
 [Archived v0.3.0](https://doi.org/10.5281/zenodo.23260917).
 
-[Quickstart](docs/quickstart.md) · [Methods](docs/methods.md) · [CLI examples](docs/examples.md) · [Validation](docs/validation-0.4.0.md) · [MIT license](LICENSE) · [Notices](NOTICE.md) · [Citation](CITATION.cff)
+[Quickstart](docs/quickstart.md) · [Methods](docs/methods.md) · [Input defaults](docs/input-defaults.md) · [CLI examples](docs/examples.md) · [Validation](docs/validation-0.4.1.md) · [MIT license](LICENSE) · [Notices](NOTICE.md) · [Citation](CITATION.cff)

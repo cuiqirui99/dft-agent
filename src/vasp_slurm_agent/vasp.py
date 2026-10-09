@@ -19,6 +19,7 @@ from pymatgen.core import Structure
 from pymatgen.io.vasp import Incar, Kpoints, Poscar, Vasprun
 
 from .methods import METHOD_DEFAULTS, HYBRID_BAND_NELMIN, method_fingerprint, method_incar, normalize_method, validate_method_output
+from .numerical_defaults import potcar_choices, resolve_numerics
 
 
 TASKS = frozenset({"relax", "scf", "bands", "dos"})
@@ -29,9 +30,11 @@ DEFAULTS = {
     "ediff": 1e-5,
     "ediffg": -0.03,
     "nsw": 100,
-    "mesh": [4, 4, 4],
-    "ismear": 0,
-    "sigma": 0.05,
+    "mesh": None,
+    "kspacing": 0.25,
+    "ismear": None,
+    "sigma": None,
+    "electronic_type": "auto",
     "cell_relax": False,
     "nelm": 120,
     "line_density": 20,
@@ -68,14 +71,16 @@ def _validate_structure(structure: Structure) -> None:
 def _parameters(parameters: dict[str, Any]) -> dict[str, Any]:
     parameters = dict(parameters)
     if "kpoint_grid" in parameters:
-        if "mesh" in parameters and parameters["mesh"] != parameters["kpoint_grid"]:
+        if parameters.get("mesh") is not None and parameters["mesh"] != parameters["kpoint_grid"]:
             raise ValueError("mesh and kpoint_grid disagree.")
         parameters["mesh"] = parameters.pop("kpoint_grid")
     unknown = set(parameters) - set(DEFAULTS) - set(METHOD_DEFAULTS)
     if unknown:
         raise ValueError(f"Unsupported VASP parameters: {', '.join(sorted(unknown))}")
     result = {**DEFAULTS, **parameters}
-    for key in ("encut", "ediff", "sigma"):
+    for key in ("encut", "ediff", "kspacing", "sigma"):
+        if key == "sigma" and result[key] is None:
+            continue
         if isinstance(result[key], bool) or not math.isfinite(float(result[key])) or float(result[key]) <= 0:
             raise ValueError(f"{key} must be finite and positive.")
         result[key] = float(result[key])
@@ -90,12 +95,14 @@ def _parameters(parameters: dict[str, Any]) -> dict[str, Any]:
         raise ValueError("nedos must be at least 2.")
     if type(result["cell_relax"]) is not bool:
         raise ValueError("cell_relax must be a boolean.")
-    if type(result["ismear"]) is not int or result["ismear"] not in {-5, -1, 0, 1, 2}:
+    if result["ismear"] is not None and (type(result["ismear"]) is not int or result["ismear"] not in {-5, -1, 0, 1, 2}):
         raise ValueError("ismear must be one of -5, -1, 0, 1, 2.")
+    if result["electronic_type"] not in {"auto", "metal", "insulator"}:
+        raise ValueError("electronic_type must be auto, metal or insulator.")
     mesh = result["mesh"]
-    if not isinstance(mesh, (list, tuple)) or len(mesh) != 3 or any(type(n) is not int or n <= 0 for n in mesh):
+    if mesh is not None and (not isinstance(mesh, (list, tuple)) or len(mesh) != 3 or any(type(n) is not int or n <= 0 for n in mesh)):
         raise ValueError("mesh must contain three positive integers.")
-    result["mesh"] = list(mesh)
+    result["mesh"] = list(mesh) if mesh is not None else None
     return result
 
 
@@ -116,6 +123,7 @@ def prepare_inputs(
     settings = _parameters(parameters)
     structure = Structure.from_file(source)
     _validate_structure(structure)
+    settings, numerical_choices = resolve_numerics(structure, task, settings)
     method = normalize_method(settings, [site.specie.symbol for site in structure])
     # Match species, counts and POTCAR order.
     site_order = sorted(range(len(structure)), key=lambda index: structure[index])
@@ -128,8 +136,7 @@ def prepare_inputs(
     requires_ncl = method["soc"] or method["spin"] == "noncollinear"
     if hybrid and task == "bands" and settings["nelm"] <= HYBRID_BAND_NELMIN:
         raise ValueError(f"Hybrid bands require nelm > {HYBRID_BAND_NELMIN}.")
-    symbols = potcar_symbols or {}
-    labels = [symbols.get(symbol, symbol) for symbol in poscar.site_symbols]
+    labels, potential_choices = potcar_choices(poscar.site_symbols, potcar_symbols)
     if any(not isinstance(label, str) or not re.fullmatch(r"[A-Za-z][A-Za-z0-9_]*", label) for label in labels):
         raise ValueError("POTCAR labels must be simple symbols such as Si or Na_pv.")
 
@@ -161,6 +168,7 @@ def prepare_inputs(
         "schema_version": 1, "task": task,
         "formula": structure.composition.reduced_formula,
         "number_of_atoms": len(structure), "parameters": settings,
+        "numerical_choices": numerical_choices, "potential_choices": potential_choices,
         "source_sha256": _sha256(source), "potcar_labels": labels,
         "potcar_elements": poscar.site_symbols,
         "requires_chgcar": fixed_charge, "requires_ncl": requires_ncl,
@@ -607,6 +615,9 @@ def analyze_outputs(output_dir: str | Path, task: str, expected_structure_path: 
                     f"Hybrid band orbitals disagree at equivalent k-points: {check['max_energy_deviation_ev']:.4f} eV "
                     f"exceeds {HYBRID_KPOINT_TOLERANCE_EV:.2f} eV. Increase orbital iterations or change the electronic optimizer and rerun."
                 )
+        if metadata.get("warm_start"):
+            from .restart import validate_warm_start
+            result["warm_start"] = validate_warm_start(output, run, metadata)
         artifacts = _export_plots(run, output, task)
         if task in {"scf", "bands", "dos"}:
             result["band_gap"] = _band_gap(run, task, metadata)

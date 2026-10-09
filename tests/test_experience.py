@@ -87,7 +87,9 @@ def test_retrieves_verified_context_without_private_text(runs):
     assert record["stages"][0]["accepted"]
     assert record["stages"][0]["same_input_geometry"]
     assert {fact["id"]: fact["value"] for fact in record["stages"][0]["evidence"]}["stage_1.energy"] == -10
-    assert record["stages"][0]["settings"]["mesh"] == [4, 4, 4]
+    metadata = json.loads((run / "01_scf/inputs/metadata.json").read_text())
+    assert record["stages"][0]["settings"]["mesh"] == metadata["parameters"]["mesh"]
+    assert record["numerical_convergence_verified"] is False
     assert record["context_sha256"] == explanation.load_run_context(run)["context_sha256"]
     encoded = json.dumps(record)
     for secret in ("private-host", "private-user", "private-secret", "private research", "/private/", str(run)):

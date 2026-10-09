@@ -1,0 +1,411 @@
+{
+  "version": "0.4.1",
+  "scope": "Workflow and default-input checks, not material convergence benchmarks.",
+  "cases": [
+    {
+      "case": "si-auto",
+      "stage": "scf",
+      "job_id": "7465955",
+      "scheduler_state": "COMPLETED",
+      "accepted": true,
+      "input_sha256": {
+        "POSCAR": "2942e884c6a7feb5a81a19d1c86a53a8d24b7399939435eff0c6b302e121b303",
+        "INCAR": "982af8e56b7a43871a468d85fb98cc775e70da4dcc3012dde94dd5600e995e63",
+        "KPOINTS": "b54745262090d70c667ad9d3e69fb8273545834fe4b3d090c949721f8d03a1a6"
+      },
+      "method": {
+        "spin": "none",
+        "magmom": null,
+        "soc": false,
+        "saxis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "functional": "PBE",
+        "hubbard_u": {}
+      },
+      "parameters": {
+        "encut": 520.0,
+        "ediff": 1e-05,
+        "ediffg": -0.03,
+        "nsw": 100,
+        "mesh": [
+          9,
+          9,
+          9
+        ],
+        "kspacing": 0.25,
+        "ismear": 0,
+        "sigma": 0.05,
+        "electronic_type": "insulator",
+        "cell_relax": false,
+        "nelm": 120,
+        "line_density": 20,
+        "nedos": 2001
+      },
+      "numerical_choices": {
+        "mesh_mode": "reciprocal_spacing",
+        "mesh": [
+          9,
+          9,
+          9
+        ],
+        "kspacing_inv_angstrom": 0.25,
+        "reciprocal_convention": "Physical reciprocal vectors include 2*pi; N_i=ceil(|G_i|/kspacing).",
+        "vacuum_axes": [],
+        "smearing_mode": "material_type",
+        "electronic_type": "insulator",
+        "ismear": 0,
+        "sigma_ev": 0.05,
+        "notes": [],
+        "sources": [
+          "https://vasp.at/wiki/KSPACING",
+          "https://vasp.at/wiki/Smearing_technique"
+        ]
+      },
+      "potcar_labels": [
+        "Si"
+      ],
+      "energy_ev_per_atom": -5.421644395,
+      "band_gap": {
+        "available": true,
+        "status": "gapped",
+        "scope": "sampled_kpoints",
+        "gap_ev": 0.5845000000000002,
+        "direct_gap_ev": 2.5656000000000008,
+        "vbm_ev": 5.8245,
+        "cbm_ev": 6.409,
+        "partial_occupations": false,
+        "occupation_tolerance": 0.001,
+        "full_bz_validated": false,
+        "reason": "Only the retained k-points were checked; this is not a converged full-zone or optical gap.",
+        "kpoint_count": 35
+      },
+      "warm_start": null,
+      "evidence_sha256": {
+        "vasprun.xml": "89dd84c2b2f74a49dcbb77499d6d9ec0d2b9606f1b5dce68fea5f931e6d7b8c2",
+        "OUTCAR": "aac614ba358dd38e1f1c44866e7a32dad26cc0fc840c45e52ee420bc153025f7",
+        "potcar_hash.sha256": "29d407c69d148c9fe21db93fc38e963f1a3c04feb8f267ae50d41b04f34fda7f",
+        "execution.json": "3230f3be296f85c52e49d53cf77bf0ac75edb1eca1a0c8ae0c535dc5bdcdd87d"
+      }
+    },
+    {
+      "case": "al-metal",
+      "stage": "scf",
+      "job_id": "7465956",
+      "scheduler_state": "COMPLETED",
+      "accepted": true,
+      "input_sha256": {
+        "POSCAR": "1029ca6b5966e2dee7faa2d35200cabf389683416d4815b00002b4d60e77fd8d",
+        "INCAR": "ca17fb6fcf66ad0355de15e74c5e5d08f3fcd4a7ad5e95bf4a9c14b65c76c2df",
+        "KPOINTS": "52fba280aaa5cbd54be7d0fb25b235a0bb87ca6288e9f307ceffe5cfeaa5e100"
+      },
+      "method": {
+        "spin": "none",
+        "magmom": null,
+        "soc": false,
+        "saxis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "functional": "PBE",
+        "hubbard_u": {}
+      },
+      "parameters": {
+        "encut": 520.0,
+        "ediff": 1e-05,
+        "ediffg": -0.03,
+        "nsw": 100,
+        "mesh": [
+          11,
+          11,
+          11
+        ],
+        "kspacing": 0.25,
+        "ismear": 1,
+        "sigma": 0.2,
+        "electronic_type": "metal",
+        "cell_relax": false,
+        "nelm": 120,
+        "line_density": 20,
+        "nedos": 2001
+      },
+      "numerical_choices": {
+        "mesh_mode": "reciprocal_spacing",
+        "mesh": [
+          11,
+          11,
+          11
+        ],
+        "kspacing_inv_angstrom": 0.25,
+        "reciprocal_convention": "Physical reciprocal vectors include 2*pi; N_i=ceil(|G_i|/kspacing).",
+        "vacuum_axes": [],
+        "smearing_mode": "material_type",
+        "electronic_type": "metal",
+        "ismear": 1,
+        "sigma_ev": 0.2,
+        "notes": [
+          "Check the smearing entropy term and converge SIGMA for metallic forces."
+        ],
+        "sources": [
+          "https://vasp.at/wiki/KSPACING",
+          "https://vasp.at/wiki/Smearing_technique"
+        ]
+      },
+      "potcar_labels": [
+        "Al"
+      ],
+      "energy_ev_per_atom": -3.75397105,
+      "band_gap": {
+        "available": false,
+        "status": "unavailable",
+        "scope": "sampled_kpoints",
+        "gap_ev": null,
+        "direct_gap_ev": null,
+        "vbm_ev": null,
+        "cbm_ev": null,
+        "partial_occupations": false,
+        "occupation_tolerance": 0.001,
+        "full_bz_validated": false,
+        "reason": "Occupations are outside the supported zero-to-one convention."
+      },
+      "warm_start": null,
+      "evidence_sha256": {
+        "vasprun.xml": "0200753affedbc3c19d333701b161707ef7062b3211970aaceb78a043e7b7d79",
+        "OUTCAR": "c562fe8c810426cb465d1ae9ea9e420258c18f1d16fa2c0f4559ec99218d3853",
+        "potcar_hash.sha256": "4a8d4cc31ebc73a7e66d4f3d638f0e02f7f0dd967330387a9ebe0017908d3741",
+        "execution.json": "0f3ab5afebbdbb4b8ed2eb0036e43d656bb83e26801d6d3d26a7cfa5306ca653"
+      }
+    },
+    {
+      "case": "si-hse-bands-warm-r2",
+      "stage": "bands",
+      "job_id": "7465992",
+      "scheduler_state": "COMPLETED",
+      "accepted": true,
+      "input_sha256": {
+        "POSCAR": "2942e884c6a7feb5a81a19d1c86a53a8d24b7399939435eff0c6b302e121b303",
+        "INCAR": "c55f848366c95adbccf06a7300b1d540e48967beb11454c3c4e35220a82071e7",
+        "KPOINTS": "8799adfaa191cfabeaf82b27e77dc587c31946eb4459a7e65a99928a7f9364ab"
+      },
+      "method": {
+        "spin": "none",
+        "magmom": null,
+        "soc": false,
+        "saxis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "functional": "HSE06",
+        "hubbard_u": {}
+      },
+      "parameters": {
+        "encut": 350.0,
+        "ediff": 1e-05,
+        "ediffg": -0.03,
+        "nsw": 100,
+        "mesh": [
+          2,
+          2,
+          2
+        ],
+        "kspacing": 0.25,
+        "ismear": 0,
+        "sigma": 0.05,
+        "electronic_type": "auto",
+        "cell_relax": false,
+        "nelm": 160,
+        "line_density": 2,
+        "nedos": 2001,
+        "functional": "HSE06"
+      },
+      "numerical_choices": {
+        "mesh_mode": "explicit",
+        "mesh": [
+          2,
+          2,
+          2
+        ],
+        "kspacing_inv_angstrom": 0.25,
+        "reciprocal_convention": "Physical reciprocal vectors include 2*pi; N_i=ceil(|G_i|/kspacing).",
+        "vacuum_axes": [],
+        "smearing_mode": "explicit",
+        "electronic_type": "auto",
+        "ismear": 0,
+        "sigma_ev": 0.05,
+        "notes": [],
+        "sources": [
+          "https://vasp.at/wiki/KSPACING",
+          "https://vasp.at/wiki/Smearing_technique"
+        ]
+      },
+      "potcar_labels": [
+        "Si"
+      ],
+      "energy_ev_per_atom": -6.645103375,
+      "band_gap": {
+        "available": true,
+        "status": "gapped",
+        "scope": "sampled_path",
+        "gap_ev": 2.3734,
+        "direct_gap_ev": 4.3482,
+        "vbm_ev": 4.7179,
+        "cbm_ev": 7.0913,
+        "partial_occupations": false,
+        "occupation_tolerance": 0.001,
+        "full_bz_validated": false,
+        "reason": "Only the retained k-points were checked; this is not a converged full-zone or optical gap.",
+        "kpoint_count": 8
+      },
+      "warm_start": {
+        "mode": "pbe_wavecar",
+        "verified": true,
+        "seed_converged_electronic": true,
+        "wavecar_sha256": "ec4389b59ddb3eb758e7f62c568d4a37df87da1d6ebb72fc66a71473c57ae1de",
+        "nbands": 8,
+        "nkpoints": 16,
+        "seed_xml_sha256": "02a74c6bdb8aed5d67af3befd029e12e746505ed2ac1acb3d9fafe7af0b925ea"
+      },
+      "evidence_sha256": {
+        "vasprun.xml": "1b21a503e3c73d78579905a01b321487e50e7fb2afedf168b6ddb37688644166",
+        "OUTCAR": "7aab257b2ab709ccff2a8506a1c9a9d65e0b2cf6bdfb91552f07ddd080edc257",
+        "potcar_hash.sha256": "29d407c69d148c9fe21db93fc38e963f1a3c04feb8f267ae50d41b04f34fda7f",
+        "execution.json": "e8e35c8c311ac503e9baa70c535564e4353ec7623ae8c33f6aa6d79d472a37d5",
+        "seed.vasprun.xml": "02a74c6bdb8aed5d67af3befd029e12e746505ed2ac1acb3d9fafe7af0b925ea",
+        "warm_start.json": "f0bc87b6ed6c9225c7ba32e00a221834f69f7cbfd9047998bb9a1fa486979d4d"
+      }
+    },
+    {
+      "case": "si-soc-hse-warm-r2",
+      "stage": "scf",
+      "job_id": "7465993",
+      "scheduler_state": "COMPLETED",
+      "accepted": true,
+      "input_sha256": {
+        "POSCAR": "2942e884c6a7feb5a81a19d1c86a53a8d24b7399939435eff0c6b302e121b303",
+        "INCAR": "c3765fc9ea2c586483eb4b45d60b47869deb8902f93968f659f0d2fc7f0ba607",
+        "KPOINTS": "05fa3f2833592ca87d434e5066d99a9beba466c70b3af66a26347a1d4a08953e"
+      },
+      "method": {
+        "spin": "noncollinear",
+        "magmom": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "soc": true,
+        "saxis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "functional": "HSE06",
+        "hubbard_u": {}
+      },
+      "parameters": {
+        "encut": 350.0,
+        "ediff": 1e-05,
+        "ediffg": -0.03,
+        "nsw": 100,
+        "mesh": [
+          1,
+          1,
+          1
+        ],
+        "kspacing": 0.25,
+        "ismear": 0,
+        "sigma": 0.05,
+        "electronic_type": "auto",
+        "cell_relax": false,
+        "nelm": 160,
+        "line_density": 20,
+        "nedos": 2001,
+        "functional": "HSE06",
+        "spin": "noncollinear",
+        "soc": true,
+        "magmom": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "saxis": [
+          0,
+          0,
+          1
+        ]
+      },
+      "numerical_choices": {
+        "mesh_mode": "explicit",
+        "mesh": [
+          1,
+          1,
+          1
+        ],
+        "kspacing_inv_angstrom": 0.25,
+        "reciprocal_convention": "Physical reciprocal vectors include 2*pi; N_i=ceil(|G_i|/kspacing).",
+        "vacuum_axes": [],
+        "smearing_mode": "explicit",
+        "electronic_type": "auto",
+        "ismear": 0,
+        "sigma_ev": 0.05,
+        "notes": [],
+        "sources": [
+          "https://vasp.at/wiki/KSPACING",
+          "https://vasp.at/wiki/Smearing_technique"
+        ]
+      },
+      "potcar_labels": [
+        "Si"
+      ],
+      "energy_ev_per_atom": 0.414369885,
+      "band_gap": {
+        "available": true,
+        "status": "gapped",
+        "scope": "sampled_kpoints",
+        "gap_ev": 4.8058,
+        "direct_gap_ev": 4.8058,
+        "vbm_ev": 5.0489,
+        "cbm_ev": 9.8547,
+        "partial_occupations": false,
+        "occupation_tolerance": 0.001,
+        "full_bz_validated": false,
+        "reason": "Only the retained k-points were checked; this is not a converged full-zone or optical gap.",
+        "kpoint_count": 1
+      },
+      "warm_start": {
+        "mode": "pbe_wavecar",
+        "verified": true,
+        "seed_converged_electronic": true,
+        "wavecar_sha256": "c8aba5df7f9f9230c58b960222c47ded63636f0d3c9b378a2cc048b63ae82f38",
+        "nbands": 16,
+        "nkpoints": 1,
+        "seed_xml_sha256": "e9b4d496504ff25e4d011a76c8fa8b4e1dc5b586ca18cd794f8d22fd85d9a166"
+      },
+      "evidence_sha256": {
+        "vasprun.xml": "b8b4294d67a62d9ce9871fb1961f1b870f3ec5b1a8046032bb0ea65e028b38da",
+        "OUTCAR": "c8abed6cac308eab158a09062a34fc9800b00f8fcfb8e28d31e2671e54c389b2",
+        "potcar_hash.sha256": "29d407c69d148c9fe21db93fc38e963f1a3c04feb8f267ae50d41b04f34fda7f",
+        "execution.json": "290e9651f8c0b5b0a7ff8648f3057bf1a44fbfd5cf3c9eef885a618da88cd38a",
+        "seed.vasprun.xml": "e9b4d496504ff25e4d011a76c8fa8b4e1dc5b586ca18cd794f8d22fd85d9a166",
+        "warm_start.json": "0bb61874ef21c0784869e999d27116ace4336dec61ebb7fb73b102dbd1312fc6"
+      }
+    }
+  ]
+}

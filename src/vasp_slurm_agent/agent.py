@@ -65,6 +65,9 @@ defaults. Explain any chosen defaults briefly in notes. Numeric null means use
 the runner default. Preserve explicit numeric values, methods and exclusions.
 For inactive relaxation settings use null, not NSW=0 or EDIFFG=0; the runner sets
 the actual static VASP tags. nsw, nelm, line_density and mesh entries are positive.
+Leave mesh null for automatic reciprocal spacing and vacuum-axis detection.
+Use electronic_type metal or insulator only when specified or established by evidence;
+otherwise use auto. Leave ismear and sigma null for the runner's material-aware defaults.
 For +U, ask for missing l/U/J; do not guess literature values or silently use J=0.
 For magnetism require one scalar per original input site (collinear), or one
 three-component vector per site (noncollinear), in exactly the supplied site order.
@@ -125,6 +128,10 @@ def _schema(species: list[str]) -> dict[str, Any]:
             item = {"type": "integer", "minimum": 2 if key == "nedos" else 1}
         if key == "ismear":
             item = {"type": "integer", "enum": [-5, -1, 0, 1, 2]}
+        if key == "electronic_type":
+            item = {"type": "string", "enum": ["auto", "metal", "insulator"]}
+        if key == "kspacing":
+            item = {"type": "number", "minimum": 0.01, "maximum": 10}
         if key == "mesh":
             item = {"type": "array", "items": {"type": "integer", "minimum": 1}, "minItems": 3, "maxItems": 3}
         parameters[key] = _nullable(item)
@@ -280,6 +287,13 @@ def _request_structured(payload: str, schema: dict[str, Any], settings: ModelSet
                     payload=payload, instructions=instructions, schema=schema, output=output, max_output_tokens=limit)
                 if getattr(response, "status", None) == "incomplete":
                     raise AgentError("The model response is incomplete. No plan was accepted; try again or reduce the requested output.")
+                if any(getattr(block, "type", None) == "refusal"
+                       for item in (getattr(response, "output", None) or [])
+                       for block in (getattr(item, "content", None) or [])):
+                    raise AgentError("The model declined to respond.")
+                if getattr(response, "status", "completed") != "completed":
+                    raise AgentError("The model did not return a complete response.")
+                _validate_json(output, schema)
                 return ModelResponse(output, usage)
             preset = PROVIDERS[settings.provider]
             request_instructions = _json_instructions(instructions, schema) if preset.get("json_mode") else instructions
@@ -295,24 +309,27 @@ def _request_structured(payload: str, schema: dict[str, Any], settings: ModelSet
             if preset.get("extra_body"):
                 options["extra_body"] = preset["extra_body"]
             response = client.chat.completions.create(**options)
-            message = response.choices[0].message
+            choices = getattr(response, "choices", None) or []
+            message = choices[0].message if choices else None
             usage = usage_record(settings.provider, settings.model,
                 reported=getattr(response, "usage", None), latency_seconds=time.monotonic() - started,
-                payload=payload, instructions=request_instructions, schema=schema, output=message.content, max_output_tokens=limit)
+                payload=payload, instructions=request_instructions, schema=schema,
+                output=getattr(message, "content", None), max_output_tokens=limit)
+            if message is None:
+                raise AgentError("The model returned invalid structured data. No plan was accepted.")
             if getattr(message, "refusal", None):
                 raise AgentError("The model declined to respond.")
             if getattr(response.choices[0], "finish_reason", None) == "length":
                 raise AgentError("The model response is incomplete. No plan was accepted; try again or reduce the requested output.")
-            if settings.provider != "chat_completions":
-                if getattr(response.choices[0], "finish_reason", None) != "stop":
-                    raise AgentError("The model did not return a complete response.")
-                _validate_json(message.content, schema)
+            if getattr(response.choices[0], "finish_reason", "stop") != "stop":
+                raise AgentError("The model did not return a complete response.")
+            _validate_json(message.content, schema)
             return ModelResponse(message.content, usage)
     except AgentError as exc:
         exc.model_usage = usage
         raise
-    except Exception:
-        raise AgentError("The model request failed. Check the provider, model and connection.",
+    except Exception as exc:
+        raise AgentError(_provider_error_message(exc, settings.provider),
                          model_usage=usage or usage_record(settings.provider, settings.model,
                              latency_seconds=time.monotonic() - started, payload=payload,
                              instructions=instructions, schema=schema, max_output_tokens=limit)) from None
@@ -322,51 +339,160 @@ def _json_instructions(instructions: str, schema: dict) -> str:
     return instructions + "\nReturn one JSON object, with no Markdown, matching this schema:\n" + json.dumps(schema, separators=(",", ":"))
 
 
+def _provider_error_message(error: Exception, provider: str) -> str:
+    """Classify SDK failures without exposing response bodies or credentials."""
+    label = PROVIDERS[provider]["label"]
+    status = getattr(error, "status_code", None)
+    body = getattr(error, "body", None)
+    detail = body.get("error", body) if isinstance(body, dict) else {}
+    terms = " ".join(str(detail.get(key, "")) for key in ("type", "code", "message")) if isinstance(detail, dict) else ""
+    if status == 401:
+        return f"{label} rejected the API key. Check the key and selected provider."
+    if status == 403:
+        return f"{label} denied access. Check model permissions and account or workspace access."
+    if status == 404:
+        return f"{label} model or endpoint was not found. Check the model name and API URL."
+    if status == 402 or (status in {400, 429} and re.search(
+            r"insufficient[_ ]quota|credit balance|spend(?:ing)? (?:limit|cap)|billing|insufficient (?:balance|credits)|quota exceeded", terms, re.I)):
+        return f"{label} API credit or spending limit was reached. Check billing and account limits."
+    if status == 429:
+        return f"{label} rate or usage limit was reached. Wait before another request and check account limits."
+    names = {kind.__name__ for kind in type(error).__mro__}
+    if "APIResponseValidationError" in names:
+        return f"{label} returned invalid structured data. No plan was accepted."
+    if status in {408, 504} or names & {"APITimeoutError", "TimeoutException", "TimeoutError", "ReadTimeout", "ConnectTimeout"}:
+        return f"{label} request timed out. Check the connection and try again."
+    if names & {"APIConnectionError", "ConnectError", "NetworkError"}:
+        return f"Cannot connect to {label}. Check the API URL and network connection."
+    if status == 413:
+        return f"{label} rejected the request size. Use a smaller task or conversation."
+    if status in {400, 422}:
+        return f"{label} rejected the request format. Check the model and structured-output support."
+    if type(status) is int and status >= 500:
+        return f"{label} is temporarily unavailable (HTTP {status}). Try again later."
+    return "The model request failed. Check the provider, model and connection."
+
+
 def _validate_json(output: str, schema: dict) -> None:
     try:
         value = json.loads(output)
     except (ValueError, TypeError):
         raise AgentError("The model returned invalid JSON. No plan was accepted.") from None
-    _check_schema(value, schema)
+    try:
+        _check_schema(value, schema)
+    except AgentError:
+        raise AgentError("The model returned invalid structured data. No plan was accepted.") from None
+
+
+def _claude_nullable(schema: dict) -> dict | None:
+    choices = schema.get("anyOf", [])
+    values = [item for item in choices if item.get("type") != "null"]
+    return values[0] if len(choices) == 2 and len(values) == 1 else None
+
+
+def _claude_wire_schema(schema: dict) -> dict:
+    """Encode nullable values without exceeding Claude's union-parameter limit."""
+    value = _claude_nullable(schema)
+    if value is not None:
+        return {"type": "array", "items": _claude_wire_schema(value), "maxItems": 1,
+                "description": "Nullable value: [] means null; [value] supplies that value."}
+    result = dict(schema)
+    if "properties" in schema:
+        result["properties"] = {key: _claude_wire_schema(value) for key, value in schema["properties"].items()}
+    if "items" in schema:
+        result["items"] = _claude_wire_schema(schema["items"])
+    if "anyOf" in schema:
+        result["anyOf"] = [_claude_wire_schema(value) for value in schema["anyOf"]]
+    return result
+
+
+def _claude_decode(value: Any, schema: dict) -> Any:
+    nullable = _claude_nullable(schema)
+    if nullable is not None:
+        return _claude_decode(value[0], nullable) if value else None
+    if "anyOf" in schema:
+        for option in schema["anyOf"]:
+            try:
+                _check_schema(value, _claude_wire_schema(option))
+            except AgentError:
+                continue
+            return _claude_decode(value, option)
+        raise AgentError("The model returned invalid structured data. No plan was accepted.")
+    if schema["type"] == "object":
+        return {key: _claude_decode(item, schema["properties"][key]) for key, item in value.items()}
+    if schema["type"] == "array":
+        return [_claude_decode(item, schema["items"]) for item in value]
+    return value
+
+
+def _claude_output(output: str, schema: dict, wire_schema: dict) -> str:
+    fence = re.fullmatch(r"\s*```(?:json)?[ \t]*\r?\n([\s\S]*?)\r?\n```\s*", output, re.I)
+    text = fence.group(1) if fence else output
+    try:
+        value = json.loads(text)
+        try:
+            _check_schema(value, wire_schema)
+            value = _claude_decode(value, schema)
+        except AgentError:
+            if not fence:
+                raise
+            # Some compatible endpoints still wrap otherwise valid JSON in one fence.
+            _check_schema(value, schema)
+        _check_schema(value, schema)
+        return json.dumps(value, ensure_ascii=False, separators=(",", ":"), allow_nan=False)
+    except (ValueError, TypeError, KeyError, IndexError, AgentError):
+        raise AgentError("The model returned invalid structured data. No plan was accepted.") from None
 
 
 def _anthropic_request(payload: str, schema: dict, settings: ModelSettings, *, instructions: str) -> str:
     try:
-        from anthropic import Anthropic
+        from anthropic import Anthropic, transform_schema
     except ImportError:
         raise AgentError('Install Claude support with pip install "anthropic>=0.86,<2".') from None
     key = effective_key(settings.provider, settings.api_key)
     if not key:
         raise AgentError("Set a Claude API key or ANTHROPIC_API_KEY.")
     limit = _output_limit(payload)
-    instructions = _json_instructions(instructions, schema)
+    wire_schema = _claude_wire_schema(schema)
+    request_schema = wire_schema
+    instructions += ("\nReturn JSON matching the supplied output schema. Fields whose schema says "
+                     "'Nullable value' use [] for null and [value] for a supplied value. Only those "
+                     "fields use this encoding, which takes precedence over instructions to write null. "
+                     "A null numeric default in such a field is [], never an invented number. "
+                     "Other arrays and fields that explicitly allow null keep their normal meaning. "
+                     "Do not use Markdown fences.")
     started = time.monotonic()
     usage = None
     try:
+        request_schema = transform_schema(wire_schema)
         with Anthropic(api_key=key, base_url=settings.base_url, timeout=120.0, max_retries=0) as client:
             client.auth_token = None
             response = client.messages.create(model=settings.model, max_tokens=limit, system=instructions,
-                                              messages=[{"role": "user", "content": payload}])
+                                              messages=[{"role": "user", "content": payload}],
+                                              output_config={"format": {"type": "json_schema",
+                                                                        "schema": request_schema}})
         output = "".join(block.text for block in response.content if block.type == "text")
         usage = usage_record(settings.provider, settings.model, reported=getattr(response, "usage", None),
                              latency_seconds=time.monotonic() - started, payload=payload,
-                             instructions=instructions, schema=schema, output=output, max_output_tokens=limit)
+                             instructions=instructions, schema=request_schema, output=output, max_output_tokens=limit)
         if response.stop_reason == "max_tokens":
             raise AgentError("The model response is incomplete. No plan was accepted; try again or reduce the requested output.")
-        if response.stop_reason == "refusal":
+        if response.stop_reason == "refusal" or any(block.type == "refusal" for block in response.content):
             raise AgentError("The model declined to respond.")
         if response.stop_reason != "end_turn":
             raise AgentError("The model did not return a complete response.")
-        _validate_json(output, schema)
-        return ModelResponse(output, usage)
+        if any(block.type not in {"text", "thinking", "redacted_thinking"} for block in response.content):
+            raise AgentError("The model returned invalid structured data. No plan was accepted.")
+        decoded = _claude_output(output, schema, wire_schema)
+        return ModelResponse(decoded, usage)
     except AgentError as exc:
         exc.model_usage = usage
         raise
-    except Exception:
-        raise AgentError("The model request failed. Check the provider, model and connection.",
+    except Exception as exc:
+        raise AgentError(_provider_error_message(exc, settings.provider),
                          model_usage=usage or usage_record(settings.provider, settings.model,
                              latency_seconds=time.monotonic() - started, payload=payload,
-                             instructions=instructions, schema=schema, max_output_tokens=limit)) from None
+                             instructions=instructions, schema=request_schema, max_output_tokens=limit)) from None
 
 
 def _output_limit(payload: str) -> int:

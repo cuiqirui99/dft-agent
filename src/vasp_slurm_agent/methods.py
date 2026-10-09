@@ -79,11 +79,11 @@ def normalize_method(parameters: dict[str, Any], species: list[str]) -> dict[str
 
 def method_incar(method: dict[str, Any], elements: list[str], task: str) -> dict[str, Any]:
     ncl = method["soc"] or method["spin"] == "noncollinear"
-    tags: dict[str, Any] = {"ISPIN": 2 if method["spin"] == "collinear" else 1}
+    tags: dict[str, Any] = {"ISPIN": 2 if method["spin"] == "collinear" else 1,
+                            "ISYM": 0 if task == "bands" else 3 if method["functional"] != "PBE" else 2}
     if method["magmom"] is not None:
         tags["MAGMOM"] = np.asarray(method["magmom"]).reshape(-1).tolist()
         tags["LORBIT"] = 11
-        tags["ISYM"] = -1
     if ncl:
         tags.update(LNONCOLLINEAR=True, LSORBIT=method["soc"], SAXIS=method["saxis"], GGA_COMPAT=False, ISYM=-1)
     hubbard = method["hubbard_u"]

@@ -12,6 +12,7 @@ from pymatgen.core import Lattice, Structure
 from pymatgen.io.vasp import Incar, Kpoints, Poscar
 
 from vasp_slurm_agent import vasp
+from vasp_slurm_agent.numerical_defaults import POTCAR_RECOMMENDATIONS
 
 
 EXAMPLES = Path(__file__).resolve().parents[1] / "examples"
@@ -22,12 +23,13 @@ def test_public_examples_prepare_without_licensed_data(tmp_path, name):
     result = vasp.prepare_inputs(EXAMPLES / f"{name}.cif", tmp_path, "scf", {})
     poscar = Poscar.from_file(tmp_path / "POSCAR", check_for_potcar=False)
     incar = Incar.from_file(tmp_path / "INCAR")
-    assert result["potcar_labels"] == poscar.site_symbols
+    assert result["potcar_labels"] == [POTCAR_RECOMMENDATIONS.get(symbol, symbol) for symbol in poscar.site_symbols]
     assert incar["LCHARG"] is True
     assert incar["ISPIN"] == 1 and incar["GGA"] == "Pe"
     assert incar["ENCUT"] == 520 and incar["EDIFF"] == 1e-5
     assert incar["NSW"] == 0 and incar["ICHARG"] == 2
-    assert Kpoints.from_file(tmp_path / "KPOINTS").kpts == [(4, 4, 4)]
+    assert Kpoints.from_file(tmp_path / "KPOINTS").kpts == [tuple(result["parameters"]["mesh"])]
+    assert result["numerical_choices"]["mesh_mode"] == "reciprocal_spacing"
     assert not (tmp_path / "POTCAR").exists()
     assert len(result["input_sha256"]) == 3
     json.dumps(result, allow_nan=False)

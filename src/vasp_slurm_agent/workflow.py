@@ -22,11 +22,12 @@ import zipfile
 from .config import ClusterConfig
 from .transport import SSHTransport, TransportError
 from .vasp import prepare_inputs, analyze_outputs
+from .restart import INPUT_FILES as RESTART_INPUTS, OUTPUT_FILES as RESTART_OUTPUTS, prepare_warm_inputs
 
 TERMINAL = {"succeeded", "needs_attention", "failed", "cancelled"}
 MAX_REMOTE_FAILURES = 3
 SLURM_TERMINAL = {"COMPLETED", "FAILED", "CANCELLED", "TIMEOUT", "OUT_OF_MEMORY", "NODE_FAIL", "PREEMPTED", "BOOT_FAIL", "DEADLINE", "REVOKED"}
-FILES = ("INCAR", "KPOINTS", "POSCAR", "OUTCAR", "OSZICAR", "vasprun.xml", "CONTCAR", "EIGENVAL", "DOSCAR", "slurm.out", "slurm.err", "execution.json", "input_hashes.sha256", "potcar_hash.sha256", "potcar_titles.txt")
+FILES = ("INCAR", "KPOINTS", "POSCAR", "OUTCAR", "OSZICAR", "vasprun.xml", "CONTCAR", "EIGENVAL", "DOSCAR", "slurm.out", "slurm.err", "execution.json", "input_hashes.sha256", "potcar_hash.sha256", "potcar_titles.txt", *RESTART_INPUTS, *RESTART_OUTPUTS)
 
 
 def utc_now():
@@ -86,19 +87,26 @@ def _stage_recipes(tasks, parameters, stage_parameters):
     return [{**deepcopy(parameters), **deepcopy(item)} for item in stage_parameters]
 
 
-def _charge_recipe(parameters):
+def _charge_recipe(parameters, input_policy=2):
     from .methods import METHOD_DEFAULTS
     from .vasp import _parameters
+    if input_policy == 1:
+        from .legacy_inputs import legacy_parameters
+        parameters = legacy_parameters(parameters)
     settings = {**METHOD_DEFAULTS, **_parameters(parameters)}
+    if settings.get("mesh") is not None:
+        settings.pop("kspacing", None)
     return {key: value for key, value in settings.items()
             if key not in {"nsw", "ediffg", "cell_relax", "line_density", "nedos"}}
 
 
 def prepare_plan(structure_path, run_dir, config, tasks, parameters=None, magnetic_states=None, initial_moment=3.0,
-                 stage_parameters=None):
+                 stage_parameters=None, *, _input_policy=2):
     """Freeze an offline plan; prepare post-relaxation inputs only after acceptance."""
     if isinstance(magnetic_states, (list, tuple)) and not magnetic_states:
         magnetic_states = None
+    if type(_input_policy) is not int or _input_policy not in {1, 2}:
+        raise ValueError("Unknown frozen input policy.")
     if not isinstance(tasks, (list, tuple)) or not tasks or any(task not in {"relax", "scf", "bands", "dos"} for task in tasks):
         raise ValueError("Choose an ordered list of relax, scf, bands or dos tasks.")
     tasks = list(tasks)
@@ -139,7 +147,7 @@ def prepare_plan(structure_path, run_dir, config, tasks, parameters=None, magnet
             scf_recipe = None
             for task, recipe in zip(tasks, recipes):
                 hybrid = recipe.get("functional", "PBE") in {"HSE06", "PBE0"}
-                identity = _charge_recipe(recipe)
+                identity = _charge_recipe(recipe, _input_policy)
                 if task in {"bands", "dos"} and not hybrid and identity != scf_recipe:
                     sequence.append({"name": "scf", "parameters": deepcopy(recipe)})
                     scf_recipe = identity
@@ -159,12 +167,14 @@ def prepare_plan(structure_path, run_dir, config, tasks, parameters=None, magnet
                      "status": "planned", "job_id": None, "metadata": {}, "staged": False,
                      "materialized": False, "result": None, "structure_from": relaxed,
                      "charge_from": charge_from, "source_path": source_relative}
+            if _input_policy == 2 and str(spec["parameters"].get("functional", "PBE")).upper() in {"HSE06", "PBE0"}:
+                stage["warm_start"] = True
             stages.append(stage)
             if name == "relax":
                 relaxed, scf = index, None
             elif name == "scf" and magnetic_states is None:
                 scf = index
-        plan = {"schema_version": 1, "tasks": tasks, "parameters": parameters,
+        plan = {"schema_version": 1, "input_policy": _input_policy, "tasks": tasks, "parameters": parameters,
                 "sources": frozen_sources, "magnetic_seeds": seed_info,
                 "stages": [{key: deepcopy(stage[key]) for key in ("name", "folder", "parameters", "structure_from", "charge_from", "source_path")}
                            for stage in stages]}
@@ -173,9 +183,11 @@ def prepare_plan(structure_path, run_dir, config, tasks, parameters=None, magnet
         for spec, stage in zip(plan["stages"], stages):
             if "label" in stage:
                 spec["label"] = stage["label"]
+            if stage.get("warm_start"):
+                spec["warm_start"] = True
         _write(temporary / "plan.json", plan)
         config.save(temporary / "config.json")
-        state = {"schema_version": 2, "run_id": run_id,
+        state = {"schema_version": 2, "input_policy": _input_policy, "run_id": run_id,
                  "task": "magnetic" if magnetic_states is not None else tasks[0] if len(tasks) == 1 else "pipeline",
                  "tasks": tasks, "formula": "", "status": "planned", "parameters": parameters,
                  "current_stage": 0, "stages": stages, "created_at": utc_now(), "history": [],
@@ -192,8 +204,9 @@ def prepare_plan(structure_path, run_dir, config, tasks, parameters=None, magnet
                 # Validate later recipes before any job starts; their actual inputs
                 # still wait for the accepted relaxed structure.
                 preview = temporary / ".recipe-check"
-                metadata = prepare_inputs(temporary / source_relative, preview, stage["name"],
-                                          stage["parameters"], config.potcar_symbols)
+                build = _input_builder(state, stage)
+                metadata = build(temporary / source_relative, preview, stage["name"],
+                                 stage["parameters"], config.potcar_symbols)
                 _launch_command(config, metadata)
                 shutil.rmtree(preview)
         state["formula"] = stages[0]["metadata"].get("formula", "")
@@ -203,6 +216,16 @@ def prepare_plan(structure_path, run_dir, config, tasks, parameters=None, magnet
     finally:
         if temporary.exists():
             shutil.rmtree(temporary)
+
+
+def _input_builder(state, stage):
+    policy = state.get("input_policy", 1)
+    if policy == 1:
+        from .legacy_inputs import prepare_legacy_inputs
+        return prepare_legacy_inputs
+    if policy != 2:
+        raise ValueError("Unknown frozen input policy.")
+    return prepare_warm_inputs if stage.get("warm_start") else prepare_inputs
 
 
 def _materialize_stage(root, state, config, stage):
@@ -236,7 +259,8 @@ def _materialize_stage(root, state, config, stage):
     destination = root / stage["folder"] / "inputs"
     temporary = Path(tempfile.mkdtemp(prefix=".inputs-", dir=root))
     try:
-        metadata = prepare_inputs(source, temporary / "inputs", stage["name"], parameters, config.potcar_symbols)
+        build = _input_builder(state, stage)
+        metadata = build(source, temporary / "inputs", stage["name"], parameters, config.potcar_symbols)
         _launch_command(config, metadata)
         destination.parent.mkdir(parents=True, exist_ok=True)
         if destination.exists():
@@ -266,6 +290,8 @@ def _check_config(root, state):
         if _digest(root / "plan.json") != state["plan_sha256"]:
             raise ValueError("The frozen plan changed. Prepare a new run.")
         plan = json.loads((root / "plan.json").read_text())
+        if state.get("input_policy", 1) != plan.get("input_policy", 1):
+            raise ValueError("The frozen input policy changed.")
         if len(plan["stages"]) != len(state["stages"]):
             raise ValueError("Run stages differ from the frozen plan.")
         for spec, stage in zip(plan["stages"], state["stages"]):
@@ -292,14 +318,33 @@ def _script(config, stage, previous):
     if needs_charge:
         dependency = f"test -s {shlex.quote(previous + '/CHGCAR')}\ncp {shlex.quote(previous + '/CHGCAR')} CHGCAR\n"
     setup = "\n".join(config.setup_commands)
+    resources = "\n".join(config.sbatch_resource_lines())
+    launch = command
+    if stage["metadata"].get("warm_start"):
+        launch = f'''(
+set -e
+python3 restart.py initialize
+set +e
+(cd .pbe_seed && {command}) > seed.stdout 2> seed.stderr
+seed_code=$?
+set -e
+python3 restart.py seed "$seed_code"
+set +e
+{command} > hybrid.stdout 2> hybrid.stderr
+hybrid_code=$?
+set -e
+cat hybrid.stdout
+cat hybrid.stderr >&2
+python3 restart.py finish "$hybrid_code"
+)'''
     return f'''#!/bin/bash
 #SBATCH --partition={config.partition}
-#SBATCH --nodes=1
+#SBATCH --nodes={config.nodes}
 #SBATCH --ntasks={config.tasks}
 #SBATCH --time={config.walltime}
 #SBATCH --output=slurm.out
 #SBATCH --error=slurm.err
-{account}set -e
+{account}{resources + chr(10) if resources else ''}set -e
 {setup}
 {dependency}cat {' '.join(paths)} > POTCAR
 test -s POTCAR
@@ -311,7 +356,7 @@ import json,os,datetime
 json.dump({{"job_id":os.environ.get("SLURM_JOB_ID"),"started_at":datetime.datetime.now(datetime.timezone.utc).isoformat(),"tasks":os.environ.get("SLURM_NTASKS")}},open("execution.json","w"))
 PY
 set +e
-{command}
+{launch}
 code=$?
 set -e
 python3 - "$code" <<'PY'
@@ -356,6 +401,13 @@ def _submit(root, state, config, transport):
         _command(transport, "mkdir -p " + shlex.quote(remote))
         (inputs / "submit.sh").write_text(_script(config, stage, previous))
         files = [inputs / name for name in ("POSCAR", "INCAR", "KPOINTS", "submit.sh")]
+        if stage["metadata"].get("warm_start"):
+            from .restart import sha256
+            spec = stage["metadata"]["warm_start"]
+            if sha256(inputs / "warm_start.spec.json") != spec["spec_sha256"]:
+                raise ValueError("Prepared warm-start inputs changed. Prepare a new run.")
+            files.extend(inputs / name for name in RESTART_INPUTS)
+            files.append(Path(__file__).with_name("restart.py"))
         files.append(Path(__file__).with_name("dispatch.py"))
         if hasattr(transport, "upload_many"):
             transport.upload_many(files, remote)

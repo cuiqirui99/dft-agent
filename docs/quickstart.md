@@ -45,11 +45,16 @@ Check SSH access and the host key first. In **Cluster setup**, enter:
 - A writable remote run directory.
 - VASP command, POTCAR directory and element mapping.
 - SOC / noncollinear command, using `vasp_ncl`, if needed.
-- Slurm partition, account, MPI tasks and walltime.
+- Slurm partition, account, nodes, total MPI tasks and walltime.
+- **Extra Slurm options** for memory, QoS or other resources, one per line.
 - Required environment commands, one per line.
 
 Start with 8 MPI tasks for small examples, adjusting to your cluster's rules.
 Save and run the environment check; it submits no jobs.
+For example, use `--mem=16G` or `--qos=normal` in **Extra Slurm options**.
+Keep `#SBATCH` directives out of environment commands. In a configuration file,
+use `"nodes": 2` and `"extra_sbatch": ["--mem=16G", "--ntasks-per-node=8"]`
+with `"tasks": 16`. Your VASP launch command must support the requested resources.
 
 Use SSH keys or **SSH password (optional)**. Passwords stay in memory;
 **Clear password** clears the session copy, while running monitors keep theirs
@@ -95,7 +100,10 @@ The **Method** section sets spin, SOC, U/J and the functional.
 PBE bands and DOS run SCF first. Hybrid spectra are self-consistent.
 
 Check the structure, cutoff, k mesh, smearing and convergence thresholds.
+The k mesh is automatic by default; an explicit grid overrides it.
+Choose **Electronic type** when known, or leave it at **auto** for Gaussian smearing.
 For relaxation, also set the step limit and whether to relax the cell.
+The cell stays fixed unless **Relax the cell** is selected.
 The positive force threshold becomes negative `EDIFFG` in INCAR.
 
 Click **Prepare inputs**, review the settings, tick the confirmation box,

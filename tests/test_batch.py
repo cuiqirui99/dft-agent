@@ -156,6 +156,11 @@ def accept_child(root, energy, results):
         (output / name).write_bytes((inputs / name).read_bytes())
     (output / "vasprun.xml").write_text(state["run_id"])
     (output / "OUTCAR").write_text("retained solver fixture")
+    if stage["metadata"].get("warm_start"):
+        for name in ("seed.metadata.json", "warm_start.spec.json"):
+            (output / name).write_bytes((inputs / name).read_bytes())
+        for name in ("warm_start.json", "seed.vasprun.xml", "seed.OUTCAR", "hybrid.stdout", "potcar_hash.sha256"):
+            (output / name).write_text("warm-start fixture; parsing is stubbed in this test")
     (output / "input_hashes.sha256").write_text("\n".join(
         f"{workflow._digest(inputs / name)}  {name}" for name in ("INCAR", "KPOINTS", "POSCAR")))
     structure = Structure.from_file(inputs / "POSCAR")

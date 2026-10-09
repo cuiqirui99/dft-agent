@@ -35,7 +35,7 @@ def test_collinear_site_order_and_method_identity(tmp_path):
     incar = Incar.from_file(tmp_path / "afm/INCAR")
     assert meta["input_site_order"] == [1, 3, 0, 2]
     assert incar["MAGMOM"] == [4, -4, .1, -.1]
-    assert incar["ISPIN"] == 2 and incar["ISYM"] == -1 and incar["LORBIT"] == 11
+    assert incar["ISPIN"] == 2 and incar["ISYM"] == 2 and incar["LORBIT"] == 11
     assert not meta["requires_ncl"]
     fm = vasp.prepare_inputs(source, tmp_path / "fm", "scf", {**parameters, "magmom": [.1, 4, .1, 4]})
     assert fm["method_fingerprint"] != meta["method_fingerprint"]

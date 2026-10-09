@@ -35,8 +35,10 @@ For Claude, create a key scoped to the workspace you will use.
 
 Choose a text model. OpenAI needs Responses with strict JSON-schema output;
 Grok uses strict JSON-schema output through Chat Completions. Claude uses its
-native Messages API. Qwen, GLM and DeepSeek use JSON mode. All returned plans
-are checked locally; invalid or incomplete responses cannot prepare a run.
+native Messages API with [structured JSON output](https://platform.claude.com/docs/en/build-with-claude/structured-outputs).
+Use a model that supports this feature, such as Sonnet 4.6. Qwen, GLM and DeepSeek
+use JSON mode. All returned plans are checked locally; invalid or incomplete
+responses cannot prepare a run.
 
 Provider adapters have offline request tests. These do not establish live success
 for every provider, model or account. Use the Si test below with your own account.
@@ -130,15 +132,19 @@ Use a provider suitable for the data you send.
 
 ## If it fails
 
-For the general message “The model request failed,” check the items below.
+Use the reported error to choose the next step.
 
 | Message or symptom | Check |
 | --- | --- |
-| Missing or invalid key | Paste a valid key for the selected provider. |
-| Model not found or access denied | Use an exact model ID available to your account. |
+| API key rejected | Paste a valid key for the selected provider. |
+| Access denied | Check model permissions and account or workspace access. |
+| Model or endpoint not found | Check the exact model ID and API URL. |
 | Quota or billing error | Check credits, billing and account limits with the provider. |
 | Rate limit | Wait before requesting another plan. |
-| JSON schema or unsupported parameter error | The model or endpoint may not support the required API. |
+| Request format rejected | Check that the model and endpoint support structured output. |
+| Timeout or connection failure | Check the network and API URL, then try again. |
+| Provider unavailable | Try again later. |
+| Invalid or incomplete output | No plan was accepted. Simplify the request or choose another model. |
 | Codex not found or signed out | Install or update the CLI, then run `codex login status` in the app's terminal environment. |
 
 Do not post API keys when reporting an error.

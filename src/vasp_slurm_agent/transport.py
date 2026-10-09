@@ -34,11 +34,14 @@ class Result:
 
 _META_PREFIX = "__DFT_AGENT_FILE_META__"
 _BULK_META_PREFIX = "__DFT_AGENT_BULK_META__"
-UPLOAD_ALLOWLIST = frozenset({"POSCAR", "INCAR", "KPOINTS", "submit.sh", "dispatch.py"})
+UPLOAD_ALLOWLIST = frozenset({"POSCAR", "INCAR", "KPOINTS", "submit.sh", "dispatch.py", "restart.py",
+                              "seed.INCAR", "seed.metadata.json", "warm_start.spec.json"})
 DOWNLOAD_ALLOWLIST = frozenset({
     "INCAR", "KPOINTS", "POSCAR", "OUTCAR", "OSZICAR", "vasprun.xml", "CONTCAR",
     "EIGENVAL", "DOSCAR", "slurm.out", "slurm.err", "execution.json", "input_hashes.sha256",
     "potcar_hash.sha256", "potcar_titles.txt",
+    "seed.INCAR", "seed.metadata.json", "warm_start.spec.json", "seed.vasprun.xml", "seed.OUTCAR",
+    "seed.IBZKPT", "seed.stdout", "seed.stderr", "hybrid.stdout", "hybrid.stderr", "warm_start.json", "IBZKPT",
 })
 _HASH_CODE = """\
 def metadata(path):

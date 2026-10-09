@@ -26,3 +26,40 @@ def test_control_socket_expands_and_survives_save(tmp_path):
 
 def test_legacy_config_keeps_private_transport():
     assert config().ssh_control_path == ""
+
+
+def test_multinode_resources_survive_save(tmp_path):
+    value = config(nodes=2, tasks=16, extra_sbatch=["--mem=32G", "#SBATCH --qos normal",
+                   "--ntasks-per-node=8", "--cpus-per-task=2", "--constraint=zen4", "--gpus=2"])
+    assert ClusterConfig.load(value.save(tmp_path / "cluster.json")) == value
+    assert value.sbatch_resource_lines()[1] == "#SBATCH --qos=normal"
+
+
+@pytest.mark.parametrize("options", [
+    {"nodes": 0}, {"nodes": 9}, {"extra_sbatch": "--mem=1G"},
+    {"tasks": 1.5}, {"tasks": True}, {"port": 22.5},
+    {"extra_sbatch": ["--mem=1G\n#SBATCH --output=elsewhere"]},
+    {"extra_sbatch": ["--output=elsewhere"]}, {"extra_sbatch": ["--wrap=command"]},
+    {"extra_sbatch": ["--nodes=3"]}, {"extra_sbatch": ["--mem=1G", "--mem-per-cpu=1G"]},
+    {"extra_sbatch": ["--qos"]}, {"extra_sbatch": ["--cpus-per-task=0"]},
+    {"extra_sbatch": ["--gres=gpu:1", "--gpus-per-node=1"]},
+    {"nodes": 2, "tasks": 16, "extra_sbatch": ["--ntasks-per-node=4"]},
+    {"setup_commands": ["module load vasp\n#SBATCH --mem=2G"]},
+])
+def test_invalid_resource_config(options):
+    with pytest.raises(ValueError):
+        config(**options)
+
+
+def test_cpu_binding_belongs_to_srun():
+    with pytest.raises(ValueError, match="with srun in the VASP command"):
+        config(extra_sbatch=["--cpu-bind=cores"])
+
+
+def test_slurm_directives_precede_shell_commands():
+    from vasp_slurm_agent.workflow import _script
+    value = config(nodes=2, tasks=16, extra_sbatch=["--mem=32G", "--qos=normal"],
+                   setup_commands=["module load vasp"])
+    script = _script(value, {"name": "scf", "metadata": {"potcar_labels": ["Si"]}}, None)
+    assert "#SBATCH --nodes=2" in script
+    assert script.index("#SBATCH --qos=normal") < script.index("set -e") < script.index("module load vasp")

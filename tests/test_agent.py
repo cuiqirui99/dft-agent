@@ -65,6 +65,19 @@ def test_multistep_preserves_original_sites_and_hides_paths(monkeypatch, structu
     assert result["provenance"] == {"provider": "codex", "model": "Codex CLI default"}
 
 
+def test_material_type_and_spacing_reach_preparation(monkeypatch, structure, tmp_path):
+    plan = response(tasks=["scf"])
+    plan["intent"]["requested_tasks"] = ["scf"]
+    plan["parameters"].update(electronic_type="metal", kspacing=0.3)
+    stub(monkeypatch, plan)
+    result = draft_plan("SCF for this metal", structure, ModelSettings("codex"))
+    from vasp_slurm_agent.vasp import prepare_inputs
+    metadata = prepare_inputs(structure, tmp_path / "input", "scf", result["parameters"])
+    assert metadata["parameters"]["ismear"] == 1
+    assert metadata["parameters"]["mesh"] != [4, 4, 4]
+    assert metadata["numerical_choices"]["mesh_mode"] == "reciprocal_spacing"
+
+
 @pytest.mark.parametrize("bad", ["not JSON", "```json\n{}\n```", '{"status":"ready"}', '[1]', 'NaN'])
 def test_malformed_response_is_rejected(monkeypatch, structure, bad):
     monkeypatch.setattr(agent, "_request_plan", lambda *args: bad)

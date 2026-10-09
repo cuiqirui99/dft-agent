@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 
 from pymatgen.core import Structure
 from pymatgen.io.cif import CifWriter
+from pymatgen.io.vasp import Incar, Kpoints
 import numpy as np
 import pytest
 from streamlit.testing.v1 import AppTest
@@ -137,6 +138,104 @@ def test_invalid_structure_cannot_be_prepared(workbench):
     assert any("Cannot read structure" in message.value for message in app.error)
     assert widget(app.button, "Prepare inputs").disabled
     assert not runs_root.exists()
+    worker.assert_not_called()
+
+
+@pytest.mark.parametrize("electronic_type, expected_smearing, expected_sigma", [
+    ("auto", 0, 0.05), ("metal", 1, 0.2),
+])
+def test_manual_automatic_numerics_reach_inputs(workbench, electronic_type, expected_smearing, expected_sigma):
+    app, worker, _ = workbench
+    app.file_uploader[0].upload("Si.cif", silicon_bytes()).run()
+    assert widget(app.text_input, "Gamma-centered k-point grid").value == ""
+    assert widget(app.selectbox, "ISMEAR").value is None
+    widget(app.selectbox, "Electronic type").select(electronic_type)
+    widget(app.button, "Prepare inputs").click().run()
+    assert not app.exception
+    run_dir = Path(app.session_state["active_run"])
+    inputs = run_dir / "01_relax" / "inputs"
+    metadata = json.loads((inputs / "metadata.json").read_text())
+    incar = Incar.from_file(inputs / "INCAR")
+    assert Kpoints.from_file(inputs / "KPOINTS").kpts == [(9, 9, 9)]
+    assert metadata["numerical_choices"]["mesh_mode"] == "reciprocal_spacing"
+    assert metadata["parameters"]["electronic_type"] == electronic_type
+    assert incar["ISMEAR"] == expected_smearing and incar["SIGMA"] == expected_sigma
+    assert incar["ISIF"] == 2
+    assert widget(app.button, "Submit calculation").disabled
+    worker.assert_not_called()
+
+
+def test_manual_explicit_numerics_override_automatic_choices(workbench):
+    app, worker, _ = workbench
+    app.file_uploader[0].upload("Si.cif", silicon_bytes()).run()
+    widget(app.selectbox, "Electronic type").select("metal")
+    widget(app.number_input, "K-point spacing / Å⁻¹").set_value(0.1)
+    widget(app.text_input, "Gamma-centered k-point grid").set_value("3, 4, 5")
+    widget(app.selectbox, "ISMEAR").select(-1)
+    widget(app.text_input, "SIGMA / eV (optional)").set_value("0.08")
+    widget(app.checkbox, "Relax the cell as well as atomic positions").check()
+    widget(app.button, "Prepare inputs").click().run()
+    assert not app.exception
+    run_dir = Path(app.session_state["active_run"])
+    inputs = run_dir / "01_relax" / "inputs"
+    metadata = json.loads((inputs / "metadata.json").read_text())
+    incar = Incar.from_file(inputs / "INCAR")
+    assert Kpoints.from_file(inputs / "KPOINTS").kpts == [(3, 4, 5)]
+    assert metadata["numerical_choices"]["mesh_mode"] == "explicit"
+    assert incar["ISMEAR"] == -1 and incar["SIGMA"] == 0.08 and incar["ISIF"] == 3
+    assert widget(app.button, "Submit calculation").disabled
+    worker.assert_not_called()
+
+
+@pytest.mark.parametrize("value", ["nan", "-0.1", "not a number"])
+def test_manual_invalid_sigma_is_visible_and_does_not_submit(workbench, value):
+    app, worker, _ = workbench
+    app.file_uploader[0].upload("Si.cif", silicon_bytes()).run()
+    widget(app.text_input, "SIGMA / eV (optional)").set_value(value)
+    widget(app.button, "Prepare inputs").click().run()
+    assert not app.exception
+    assert any("Cannot prepare inputs" in error.value for error in app.error)
+    assert not any(button.label == "Submit calculation" for button in app.button)
+    worker.assert_not_called()
+
+
+def test_cluster_editor_saves_resources_used_by_prepared_job(workbench):
+    app, worker, _ = workbench
+    widget(app.number_input, "MPI tasks").set_value(16)
+    widget(app.number_input, "Nodes").set_value(2)
+    widget(app.text_area, "Extra Slurm options").set_value(
+        "--mem=32G\n#SBATCH --qos normal\n--ntasks-per-node=8\n--cpus-per-task=2")
+    widget(app.button, "Save cluster settings").click().run()
+    assert not app.exception
+    path = Path(widget(app.text_input, "Configuration file").value)
+    saved = ClusterConfig.load(path)
+    assert saved.tasks == 16 and saved.nodes == 2
+    assert saved.extra_sbatch == ["--mem=32G", "#SBATCH --qos normal", "--ntasks-per-node=8", "--cpus-per-task=2"]
+    assert widget(app.number_input, "Nodes").value == 2
+    assert "--mem=32G" in widget(app.text_area, "Extra Slurm options").value
+    app.file_uploader[0].upload("Si.cif", silicon_bytes()).run()
+    widget(app.button, "Prepare inputs").click().run()
+    assert not app.exception
+    run_dir = Path(app.session_state["active_run"])
+    state = workflow.read_state(run_dir)
+    frozen = ClusterConfig.load(run_dir / "config.json")
+    assert frozen == saved
+    script = workflow._script(frozen, state["stages"][0], None)
+    assert "#SBATCH --nodes=2" in script and "#SBATCH --ntasks=16" in script
+    assert "#SBATCH --qos=normal" in script and "#SBATCH --ntasks-per-node=8" in script
+    assert script.index("#SBATCH --mem=32G") < script.index("set -e")
+    worker.assert_not_called()
+
+
+def test_cluster_editor_rejects_srun_option_without_replacing_saved_config(workbench):
+    app, worker, _ = workbench
+    path = Path(widget(app.text_input, "Configuration file").value)
+    original = path.read_bytes()
+    widget(app.text_area, "Extra Slurm options").set_value("--cpu-bind=cores")
+    widget(app.button, "Save cluster settings").click().run()
+    assert not app.exception
+    assert any("with srun in the VASP command" in error.value for error in app.error)
+    assert path.read_bytes() == original
     worker.assert_not_called()
 
 

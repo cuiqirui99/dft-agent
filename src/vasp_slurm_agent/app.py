@@ -97,10 +97,12 @@ def _config_editor(path: Path, config: ClusterConfig | None) -> None:
         with right:
             partition = st.text_input("Slurm partition", value=value("partition", ""))
             account = st.text_input("Slurm account (optional)", value=value("account", ""))
-            tasks = st.number_input("MPI tasks", 1, 4096, int(value("tasks", 8)),
-                                    help="Start with 8 tasks for small cells. More cores may not help.")
+            tasks = st.number_input("MPI tasks", 1, 4096, int(value("tasks", 8)), help="Total across all nodes.")
+            nodes = st.number_input("Nodes", 1, 4096, int(value("nodes", 1)))
             walltime = st.text_input("Time limit per stage", value=value("walltime", "00:30:00"))
             timeout = st.number_input("SSH connection timeout (s)", 1, 120, int(value("connect_timeout", 15)))
+            sbatch = st.text_area("Extra Slurm options", value="\n".join(value("extra_sbatch", [])),
+                                  placeholder="--mem=16G\n--qos=normal", help="One resource option per line.")
             setup = st.text_area("Environment setup commands (one per line)", value="\n".join(value("setup_commands", [])),
                                  placeholder="module load your-vasp-module")
         symbols = st.text_area("POTCAR element mapping (JSON)", value=json.dumps(value("potcar_symbols", {}), ensure_ascii=False),
@@ -119,6 +121,7 @@ def _config_editor(path: Path, config: ClusterConfig | None) -> None:
                 connect_timeout=int(timeout), potcar_symbols=mapping,
                 vasp_ncl_command=ncl_command.strip(),
                 ssh_control_path=control_path.strip(),
+                nodes=int(nodes), extra_sbatch=[line for line in sbatch.splitlines() if line.strip()],
             )
             candidate.save(path)
         except Exception as exc:
@@ -710,13 +713,17 @@ def _new_run(config: ClusterConfig | None, runs_root: Path, model_settings=None)
             encut = st.number_input("ENCUT / eV", 100.0, 2000.0, 520.0, 10.0)
             ediff = st.number_input("EDIFF / eV", min_value=1e-10, max_value=1e-2, value=1e-5,
                                     format="%.1e")
-            ismear = st.selectbox("ISMEAR", [-5, -1, 0, 1, 2], index=2)
-            sigma = st.number_input("SIGMA / eV", 0.001, 1.0, 0.05, 0.01, format="%.3f")
+            electronic_type = st.selectbox("Electronic type", ["auto", "metal", "insulator"])
+            ismear = st.selectbox("ISMEAR", [None, -5, -1, 0, 1, 2], format_func=lambda v: "Automatic" if v is None else str(v))
+            sigma_text = st.text_input("SIGMA / eV (optional)", "", placeholder="Automatic")
         with right:
-            k_grid = st.text_input("Gamma-centered k-point grid", "4 4 4", help="Three positive integers, e.g. 4 4 4.")
+            kspacing = st.number_input("K-point spacing / Å⁻¹", 0.01, 10.0, 0.25, 0.01,
+                                       help="Reciprocal spacing includes 2π. An explicit grid overrides it.")
+            k_grid = st.text_input("Gamma-centered k-point grid", "", placeholder="Automatic", help="Optional override: three positive integers.")
             nsw = st.number_input("Maximum relaxation steps (NSW)", 1, 1000, 100)
             ediffg = st.number_input("Force convergence threshold (eV/Å)", 0.0001, 1.0, 0.03, 0.005, format="%.4f")
             cell_relax = st.checkbox("Relax the cell as well as atomic positions", value=False)
+            st.caption("Unchecked: relax atoms at fixed cell.")
         with st.expander("Method"):
             functional = st.selectbox("Functional", ["PBE", "HSE06", "PBE0"])
             spin = st.selectbox("Spin", ["none", "collinear", "noncollinear"])
@@ -731,11 +738,12 @@ def _new_run(config: ClusterConfig | None, runs_root: Path, model_settings=None)
         st.info("Save Cluster setup before preparing inputs.")
     if prepared:
         try:
-            grid = [int(part) for part in k_grid.replace(",", " ").split()]
-            if len(grid) != 3 or any(part < 1 for part in grid):
+            grid = [int(part) for part in k_grid.replace(",", " ").split()] if k_grid.strip() else None
+            if grid is not None and (len(grid) != 3 or any(part < 1 for part in grid)):
                 raise ValueError("Use three positive integers for the k-point grid.")
             parameters = dict(encut=encut, ediff=ediff, ediffg=-ediffg, nsw=int(nsw),
-                              kpoint_grid=grid, ismear=ismear, sigma=sigma, cell_relax=cell_relax,
+                              mesh=grid, kspacing=kspacing, electronic_type=electronic_type,
+                              ismear=ismear, sigma=float(sigma_text) if sigma_text.strip() else None, cell_relax=cell_relax,
                               functional=functional, spin=spin, soc=soc, magmom=json.loads(moments),
                               saxis=[float(v) for v in axis.split()], hubbard_u=json.loads(hubbard))
             run_id = datetime.now().strftime("%Y%m%d-%H%M%S") + "-" + uuid.uuid4().hex[:8]

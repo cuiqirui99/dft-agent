@@ -82,11 +82,13 @@ def failed_run(tmp_path, monkeypatch):
         workflow._write(root / "run.json", state)
         return root
 
-    def create(task="scf", kind="electronic", scheduler="COMPLETED", parameters=None, source=EXAMPLE, stage_parameters=None):
+    def create(task="scf", kind="electronic", scheduler="COMPLETED", parameters=None, source=EXAMPLE, stage_parameters=None,
+               input_policy=2):
         root = tmp_path / f"run-{len(list(tmp_path.iterdir()))}"
         structure = Structure.from_file(source)
         structures[structure.composition.reduced_formula] = structure
-        workflow.prepare_plan(source, root, config, task if isinstance(task, list) else [task], parameters or {}, stage_parameters=stage_parameters)
+        workflow.prepare_plan(source, root, config, task if isinstance(task, list) else [task], parameters or {},
+                              stage_parameters=stage_parameters, _input_policy=input_policy)
         return collect(root, kind, scheduler)
 
     return create, collect, calls
@@ -167,6 +169,15 @@ def test_nonmagnetic_soc_and_u_survive_repair(failed_run, tmp_path):
     assert str(root) not in json.dumps(state["repair"])
 
 
+@pytest.mark.parametrize("filename", ["seed.INCAR", "seed.metadata.json", "warm_start.spec.json"])
+def test_hybrid_repair_rejects_changed_seed_inputs(failed_run, filename):
+    root = failed_run[0](parameters={"functional": "HSE06"})
+    path = root / "01_scf/inputs" / filename
+    path.write_text(path.read_text() + " ")
+    with pytest.raises(AgentError, match="seed inputs.*frozen plan"):
+        recovery.draft_repair(root, SETTINGS)
+
+
 def test_small_iteration_limits_increase_to_default(failed_run):
     root = failed_run[0](parameters={"nelm": 1})
     proposal = recovery.draft_repair(root, SETTINGS)
@@ -216,8 +227,9 @@ def test_stale_evidence_refuses_preparation(failed_run, tmp_path, target):
     assert not (tmp_path / "repair").exists()
 
 
-def test_matching_mutated_metadata_cannot_override_frozen_plan(failed_run):
-    root = failed_run[0]()
+@pytest.mark.parametrize("input_policy", [1, 2])
+def test_matching_mutated_metadata_cannot_override_frozen_plan(failed_run, input_policy):
+    root = failed_run[0](input_policy=input_policy)
     state = workflow.read_state(root)
     stage = state["stages"][0]
     inputs, output = root / "01_scf/inputs", root / "01_scf/outputs"
@@ -327,6 +339,61 @@ def test_repair_continues_after_accepted_relaxation(failed_run, tmp_path):
     assert state["stages"][0]["parameters"]["nelm"] == 240
     assert state["stages"][1]["parameters"].get("nelm", 120) == 120
     assert (child / "01_scf/inputs/POSCAR").read_bytes() == (root / "02_scf/inputs/POSCAR").read_bytes()
+
+
+@pytest.mark.parametrize("parameters", [{}, {"spin": "collinear", "magmom": [2, -2]},
+                                         {"functional": "HSE06"}])
+def test_old_failed_run_repair_preserves_approved_policy(failed_run, tmp_path, parameters):
+    source = tmp_path / "Ni.vasp"
+    Poscar(Structure([[4, 0, 0], [0, 4, 0], [0, 0, 4]], ["Ni", "Ni"],
+                    [[0, 0, 0], [.5, .5, .5]])).write_file(source)
+    root = failed_run[0](parameters=parameters, source=source, input_policy=1)
+    # Real pre-policy plans have neither marker.
+    plan, parent = recovery._read(root / "plan.json"), workflow.read_state(root)
+    plan.pop("input_policy")
+    parent.pop("input_policy")
+    workflow._write(root / "plan.json", plan)
+    parent["plan_sha256"] = recovery._sha(root / "plan.json")
+    workflow._write(root / "run.json", parent)
+    before = {str(path.relative_to(root)): recovery._sha(path) for path in root.rglob("*") if path.is_file()}
+    child = tmp_path / "repair"
+    state = recovery.prepare_repair(root, child, recovery.draft_repair(root, SETTINGS))
+    metadata = state["stages"][0]["metadata"]
+    assert state["input_policy"] == 1 and not state["stages"][0].get("warm_start")
+    assert metadata["parameters"]["mesh"] == [4, 4, 4] and metadata["potcar_labels"] == ["Ni"]
+    assert "numerical_choices" not in metadata and "kspacing" not in metadata["parameters"]
+    old, new = (dict(Incar.from_file(folder / "01_scf/inputs/INCAR")) for folder in (root, child))
+    assert new == {**old, "NELM": 240}
+    assert new.get("ISYM") == (-1 if parameters.get("magmom") else None)
+    for name in ("POSCAR", "KPOINTS"):
+        assert (root / "01_scf/inputs" / name).read_bytes() == (child / "01_scf/inputs" / name).read_bytes()
+    assert before == {str(path.relative_to(root)): recovery._sha(path) for path in root.rglob("*") if path.is_file()}
+
+
+def test_old_repair_keeps_later_stage_defaults(failed_run, tmp_path):
+    root = failed_run[0](["relax", "scf", "dos"], "accepted", input_policy=1)
+    failed_run[1](root)
+    child = tmp_path / "old-continuation"
+    state = recovery.prepare_repair(root, child, recovery.draft_repair(root, SETTINGS))
+    assert [stage["name"] for stage in state["stages"]] == ["scf", "dos"]
+    for stage in state["stages"]:
+        assert stage["metadata"]["parameters"]["mesh"] == [4, 4, 4]
+        assert stage["metadata"]["parameters"]["ismear"] == 0
+        assert stage["metadata"]["parameters"]["sigma"] == .05
+        assert "numerical_choices" not in stage["metadata"]
+
+
+def test_repair_charge_recipe_uses_same_sorted_moments(failed_run, tmp_path):
+    source = tmp_path / "NiO.vasp"
+    Poscar(Structure([[4, 0, 0], [0, 4, 0], [0, 0, 4]], ["O", "Ni"],
+                    [[0, 0, 0], [.5, .5, .5]])).write_file(source)
+    root = failed_run[0](["relax", "scf", "dos"], "accepted", source=source,
+                         parameters={"spin": "collinear", "magmom": [.1, 2]})
+    failed_run[1](root)
+    state = recovery.prepare_repair(root, tmp_path / "magnetic-repair", recovery.draft_repair(root, SETTINGS))
+    assert [stage["name"] for stage in state["stages"]] == ["scf", "dos"]
+    assert state["stages"][1]["charge_from"] == 0
+    assert all(stage["metadata"]["method"]["magmom"] == [2, .1] for stage in state["stages"])
 
 
 def test_pbe_spectrum_needing_old_charge_density_needs_input(failed_run):

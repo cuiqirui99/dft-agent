@@ -240,6 +240,7 @@ def retrieve_experience(runs_root: Path | str | None, structure: dict | None, *,
                             "formula": query.composition.reduced_formula,
                             "status": context["status"], "stages": stages,
                             "applicability": "matching_method" if query_method is not None else "context_only",
+                            "numerical_convergence_verified": False,
                             "source": "checked_saved_run", "limits": list(_LIMITS)})
         except (OSError, KeyError, IndexError, TypeError, ValueError, AttributeError):
             continue

@@ -57,7 +57,10 @@ def test_pbe_relaxation_then_hybrid_is_self_consistent(setup, monkeypatch, funct
     state = complete_stage(root, remote)
     assert state["status"] == "succeeded"
     incar = Incar.from_file(root / "02_bands/inputs/INCAR")
-    assert incar["LHFCALC"] and incar["ICHARG"] == 2
+    assert incar["LHFCALC"] and incar["ICHARG"] == 0 and incar["ISTART"] == 1
+    assert state["stages"][1]["metadata"]["warm_start"]["mode"] == "pbe_wavecar"
+    seed = Incar.from_file(root / "02_bands/inputs/seed.INCAR")
+    assert seed["LWAVE"] and seed["ICHARG"] == 2 and not seed.get("LHFCALC", False)
     assert "CHGCAR" not in (root / "02_bands/inputs/submit.sh").read_text()
 
 
