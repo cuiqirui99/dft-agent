@@ -2,6 +2,8 @@
 
 Version `0.2.1`.
 
+The DFT agent can help you automate the first-principles calculations
+
 Describe a calculation, review the plan, and run VASP on your Slurm cluster. DFT Agent handles relaxation, SCF, bands and DOS with magnetism, SOC, DFT+U, HSE06 or PBE0.
 
 Requires macOS or Linux, Python 3.11+, SSH, and access to licensed VASP and POTCAR files on your cluster.
