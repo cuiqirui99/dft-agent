@@ -2,7 +2,7 @@
 
 Version `0.2.1`.
 
-The DFT agent can help you automate the first-principles calculations
+The DFT agent automates first-principles calculations on HPC clusters, requiring only a simple natural language description of the desired calculation.
 
 Describe a calculation, review the plan, and run VASP on your Slurm cluster. DFT Agent handles relaxation, SCF, bands and DOS with magnetism, SOC, DFT+U, HSE06 or PBE0.
 
