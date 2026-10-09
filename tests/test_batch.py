@@ -157,7 +157,7 @@ def accept_child(root, energy, results):
     (output / "vasprun.xml").write_text(state["run_id"])
     (output / "OUTCAR").write_text("retained solver fixture")
     if stage["metadata"].get("warm_start"):
-        for name in ("seed.metadata.json", "warm_start.spec.json"):
+        for name in ("seed.INCAR", "seed.metadata.json", "warm_start.spec.json"):
             (output / name).write_bytes((inputs / name).read_bytes())
         for name in ("warm_start.json", "seed.vasprun.xml", "seed.OUTCAR", "hybrid.stdout", "potcar_hash.sha256"):
             (output / name).write_text("warm-start fixture; parsing is stubbed in this test")
