@@ -4,7 +4,8 @@
 
 Version `0.4.1`.
 
-[Qirui Cui](https://www.kth.se/profile/qiruic?l=en) · KTH Royal Institute of Technology · [ORCID](https://orcid.org/0009-0005-6165-3237)
+[Qirui Cui](https://www.kth.se/profile/qiruic?l=en) · KTH Royal Institute of Technology 
+[Anna Delin](https://www.kth.se/profile/annadel) · KTH Royal Institute of Technology 
 
 The DFT agent automates first-principles calculations on HPC clusters, requiring only a simple natural language description of the desired calculation.
 
