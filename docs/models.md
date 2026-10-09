@@ -8,32 +8,38 @@ access. [Install and open the app](quickstart.md#1-install), then choose a route
 An **API key** is a credential for your model account. **Tokens** measure the
 text a model reads and generates. You enter a key, not a number of tokens.
 
-| Route | What you need |
-| --- | --- |
-| OpenAI | An OpenAI API account, billing and API key |
-| Codex CLI | Codex installed and signed in on the computer running DFT Agent |
-| Compatible API | A provider with the required API, plus its model name, URL and key |
-| Manual | No model account; choose the calculation settings yourself |
+## API providers
 
-## OpenAI
+1. Open your provider's account page below. Create an API key and check billing
+   or available credits. A chat subscription does not automatically include API use.
+2. In **Model**, select the provider and paste its key into **API key**.
+3. Enter an exact **Model name** available to your account. The examples below
+   are starting points; model availability can change.
+4. Leave **API URL** blank for the preset endpoint. Qwen needs your regional URL;
+   GLM users on BigModel must replace the Z.AI default.
 
-1. Sign in to the [OpenAI Platform](https://platform.openai.com/).
-2. Set up [API billing](https://platform.openai.com/settings/organization/billing/overview).
-   A ChatGPT subscription does not pay for direct API requests.
-3. Create an [API key](https://platform.openai.com/api-keys). Keep it private.
-4. In the app's **Model** panel, enter:
+| Provider | Account and setup | Model example | API URL |
+| --- | --- | --- | --- |
+| OpenAI | [Create a key](https://platform.openai.com/api-keys) · [Billing](https://platform.openai.com/settings/organization/billing/overview) | `gpt-6.1-sol` | Leave blank |
+| Claude | [Create a key](https://platform.claude.com/settings/keys) · [API guide](https://platform.claude.com/docs/en/get-started) | `claude-sonnet-4-6` | `https://api.anthropic.com` |
+| Qwen | [Model Studio setup](https://www.alibabacloud.com/help/en/model-studio/compatibility-of-openai-with-dashscope) | `qwen-plus` | Copy your workspace's regional base URL |
+| Grok | [xAI console](https://console.x.ai/) | `grok-4.7` | `https://api.x.ai/v1` |
+| GLM | [Z.AI API guide](https://docs.z.ai/api-reference/llm/chat-completion) | `glm-5.3` | `https://api.z.ai/api/paas/v4` |
+| DeepSeek | [DeepSeek API guide](https://api-docs.deepseek.com/en) | `deepseek-flash` | `https://api.deepseek.com` |
 
-   | Field | Value |
-   | --- | --- |
-   | Provider | OpenAI |
-   | Model name | An available model ID, for example `gpt-6.1-sol` |
-   | API URL | Leave blank |
-   | API key | Your key |
+For Qwen, the key and URL must belong to the same region and workspace. Use the
+OpenAI-compatible base URL from Model Studio, ending in `/compatible-mode/v1`.
+For GLM through [BigModel in China](https://docs.bigmodel.cn/cn/guide/develop/openai/introduction.md),
+use `https://open.bigmodel.cn/api/paas/v4` and a BigModel key.
+For Claude, create a key scoped to the workspace you will use.
 
-The model must support Responses and structured JSON output. Check that your
-account can use the model you choose; the example is not an access guarantee.
-See the [API quickstart](https://developers.openai.com/api/docs/quickstart) and
-[model page](https://developers.openai.com/api/docs/models/gpt-6.1-sol).
+Choose a text model. OpenAI needs Responses with strict JSON-schema output;
+Grok uses strict JSON-schema output through Chat Completions. Claude uses its
+native Messages API. Qwen, GLM and DeepSeek use JSON mode. All returned plans
+are checked locally; invalid or incomplete responses cannot prepare a run.
+
+Provider adapters have offline request tests. These do not establish live success
+for every provider, model or account. Use the Si test below with your own account.
 
 ## Codex CLI
 
@@ -92,16 +98,31 @@ provider's dashboard for charges and remaining access. DFT Agent does not sell
 tokens or set a spending cap. [Usage details](token-use.md).
 
 API costs depend on the model's input and output rates and the tokens used.
-Check [current prices](https://developers.openai.com/api/docs/pricing) before
-starting. Begin with the Si example and review usage before larger requests.
+Check your provider's prices before starting. Begin with the Si example and
+review usage before larger requests.
 
 ## Keys and data
 
 The key entered in the app stays in memory and is not saved in calculation
-files. **Clear API key** clears that field. Environment keys still work:
-`DFT_AGENT_API_KEY` takes precedence over `OPENAI_API_KEY` when the field is
-empty. `DFT_AGENT_MODEL` and `DFT_AGENT_BASE_URL` can also fill the model settings.
+files. **Clear API key** clears that field. Each provider has separate fields,
+so switching providers does not send a previous provider's key to the new one.
 Keep keys on the computer running the app; they are not needed on the cluster.
+
+Instead of pasting a key, you can set the matching environment variable before
+starting the app:
+
+| Provider | Key variable |
+| --- | --- |
+| OpenAI / Compatible API | `DFT_AGENT_API_KEY` or `OPENAI_API_KEY` |
+| Claude | `ANTHROPIC_API_KEY` |
+| Qwen | `DASHSCOPE_API_KEY` |
+| Grok | `XAI_API_KEY` |
+| GLM | `ZAI_API_KEY` or `ZHIPUAI_API_KEY` |
+| DeepSeek | `DEEPSEEK_API_KEY` |
+
+A key entered in the app takes priority. Named providers use only their own
+key variables. `DFT_AGENT_MODEL` and `DFT_AGENT_BASE_URL` apply to OpenAI and
+Compatible API; enter other providers' settings in their fields or CLI options.
 
 Model requests include the structure and task context needed for the action.
 Result explanations use extracted results rather than entire output files.

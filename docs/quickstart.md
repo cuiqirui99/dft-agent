@@ -23,10 +23,13 @@ DFT Agent includes no model tokens. Use your own API key or Codex CLI login.
 Follow [Model setup](models.md) for account, billing and key instructions.
 An API key is your credential; tokens measure model usage.
 
-In the sidebar, open **Model** and choose your provider. For OpenAI, enter your
-model name and API key, leaving **API URL** blank. For Codex, run `codex login`
-first and choose **Codex CLI**. Compatible APIs need their own key, model and
-base URL, with support for structured JSON output.
+In the sidebar, open **Model** and choose OpenAI, Claude, Qwen, Grok, GLM or
+DeepSeek. Enter your provider's API key and model name. Leave **API URL** blank
+for the preset endpoint; Qwen needs the URL for your Model Studio region.
+[Model setup](models.md) lists the account links and URLs, including BigModel
+for GLM in China. For Codex, run `codex login` first and choose **Codex CLI**.
+Other services can use **Compatible API** if they support strict JSON-schema
+output through Chat Completions.
 
 Test before connecting a cluster: open **New calculation**, select
 **Example → Si**, choose **Agent**, and enter “Relax this structure with PBE.”
@@ -142,8 +145,8 @@ same environment with `python -m pip install --upgrade 'PATH_TO_WHEEL[agent]'`.
 Updating does not restart saved calculations.
 
 The app is available to researchers with their own cluster and VASP access.
-Model features also need a model account; compatible APIs must support the chosen
-Responses or Chat Completions endpoint and structured JSON output.
+Model features also need a model account. Provider support includes request
+format and local output checks; an account's available models and limits vary.
 
 ## Scope
 

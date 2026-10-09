@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.3 — 2026-10-09
+
+- Add Claude, Qwen, Grok, GLM and DeepSeek providers.
+- Keep each provider's credentials separate.
+- Include setup instructions and token counts for the new providers.
+
 ## 0.3.2 — 2026-10-09
 
 - Add model setup, API key and token billing instructions.

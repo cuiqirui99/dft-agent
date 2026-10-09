@@ -2,7 +2,7 @@
 
 ![DFT Agent](docs/assets/dft-agent-logo.png)
 
-Version `0.3.2`.
+Version `0.3.3`.
 
 [Qirui Cui](https://www.kth.se/profile/qiruic?l=en) · KTH Royal Institute of Technology · [ORCID](https://orcid.org/0009-0005-6165-3237)
 
@@ -26,17 +26,19 @@ dft-agent ui
 
 ## Connect a model
 
-Open **Model** in the sidebar. Choose one option:
+Open **Model** in the sidebar. Choose your provider:
 
 | Provider | What to enter | Usage |
 | --- | --- | --- |
 | OpenAI | Your API key and model name; leave API URL blank | Your OpenAI API account |
+| Claude, Grok, GLM or DeepSeek | Your provider's API key and model name | Your provider's API account |
+| Qwen | Your key, model name and regional API URL | Your Model Studio account |
 | Codex CLI | Run `codex login` first; model name can be blank | Your CLI account's plan or API billing |
 | Compatible API | Your provider's key, model name and base URL | Your provider's account |
 
 An **API key** gives the app access to your account. **Tokens** measure how much
 the model reads and generates. You do not paste tokens into the app.
-ChatGPT subscription usage and direct API billing are separate.
+Consumer chat subscriptions do not automatically include API credits.
 
 **[Model setup: get a key, connect and check usage](docs/models.md).**
 
@@ -68,7 +70,7 @@ recommendations. [Memory](docs/memory.md).
 
 Try: “Relax this structure, then calculate its bands with SOC.” Plans can be revised before submission. Missing settings, such as U and J, trigger a question.
 
-Supports OpenAI, compatible APIs and a logged-in Codex CLI. Planning shares your goal and structure; explanations share verified results and dialogue. Manual mode needs no model account; install with `pip install .`.
+Supports OpenAI, Claude, Qwen, Grok, GLM, DeepSeek, compatible APIs and a logged-in Codex CLI. Planning shares your goal and structure; explanations share verified results and dialogue. Manual mode needs no model account; install with `pip install .`.
 
 Model calls use compact context and record reported token counts. [Model use](docs/token-use.md).
 
@@ -76,7 +78,7 @@ Use ordered periodic structures. Check the starting parameters for your material
 
 ## Citation
 
-Cui, Q. (2026). *DFT Agent* (v0.3.2). [GitHub](https://github.com/cuiqirui99/dft-agent/releases/tag/v0.3.2).
+Cui, Q. (2026). *DFT Agent* (v0.3.3). [GitHub](https://github.com/cuiqirui99/dft-agent/releases/tag/v0.3.3).
 
 [Archived v0.3.0](https://doi.org/10.5281/zenodo.23260917).
 

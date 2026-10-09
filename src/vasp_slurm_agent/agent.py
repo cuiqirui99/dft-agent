@@ -22,6 +22,7 @@ from pymatgen.core import Structure
 from .methods import normalize_method
 from .model_usage import ModelResponse, codex_usage, response_usage, usage_record
 from .prompt_context import compact_history, compact_scientific_context, compact_structure
+from .providers import PROVIDERS, credential_envs, effective_key
 from .vasp import DEFAULTS, TASKS, _parameters, _validate_structure
 
 
@@ -177,8 +178,9 @@ def _check_schema(value: Any, schema: dict[str, Any]) -> None:
 
 
 def _secrets(settings: ModelSettings) -> list[str]:
-    return [value for value in (settings.api_key, os.getenv("DFT_AGENT_API_KEY"),
-            os.getenv("OPENAI_API_KEY"), os.getenv("DFT_AGENT_SSH_PASSWORD")) if value]
+    names = {name for provider in PROVIDERS for name in credential_envs(provider)}
+    return [value for value in (settings.api_key, os.getenv("DFT_AGENT_SSH_PASSWORD"),
+            *(os.getenv(name) for name in names)) if value]
 
 
 def _redact(text: str, secrets: list[str]) -> str:
@@ -198,22 +200,30 @@ def _contains_secret(value: Any, secrets: list[str]) -> bool:
 
 
 def _settings(settings: ModelSettings) -> ModelSettings:
-    if settings.provider not in {"responses", "chat_completions", "codex"}:
-        raise AgentError("Choose responses, chat_completions or codex as the model provider.")
+    if settings.provider not in PROVIDERS:
+        raise AgentError("Choose a supported model provider.")
     model = settings.model.strip()
     if not model and settings.provider == "codex":
         model = _codex_default_model()
-    if not model and settings.provider != "codex":
+    if not model and settings.provider in {"responses", "chat_completions"}:
         model = os.getenv("DFT_AGENT_MODEL", "").strip()
     if not model and settings.provider != "codex":
-        raise AgentError("Set a model name or DFT_AGENT_MODEL.")
+        raise AgentError("Set a model name for the selected provider.")
     if len(model) > 200 or any(character.isspace() for character in model):
         raise AgentError("The model name is invalid.")
-    if settings.base_url:
-        parsed = urlsplit(settings.base_url)
+    base_url = settings.base_url
+    if not base_url and settings.provider in {"responses", "chat_completions"}:
+        base_url = os.getenv("DFT_AGENT_BASE_URL") or None
+    base_url = base_url or PROVIDERS[settings.provider]["base_url"]
+    if settings.provider == "codex":
+        base_url = None
+    if settings.provider == "qwen" and not base_url:
+        raise AgentError("Set the Qwen API URL from your Model Studio workspace. Match its region to your key.")
+    if base_url:
+        parsed = urlsplit(base_url)
         if parsed.scheme not in {"http", "https"} or not parsed.hostname or parsed.username or parsed.password or parsed.query or parsed.fragment:
             raise AgentError("Use an HTTP(S) API base URL without credentials or query parameters.")
-    return ModelSettings(settings.provider, model, settings.base_url, settings.api_key)
+    return ModelSettings(settings.provider, model, base_url, settings.api_key)
 
 
 def _codex_default_model() -> str:
@@ -244,13 +254,15 @@ def _request_structured(payload: str, schema: dict[str, Any], settings: ModelSet
         raise AgentError("The model context is too large. Use a smaller structure or start a new conversation with the required settings.")
     if settings.provider == "codex":
         return _codex_plan(payload, schema, settings, instructions=instructions)
+    if settings.provider == "anthropic":
+        return _anthropic_request(payload, schema, settings, instructions=instructions)
     limit = _output_limit(payload)
     started = time.monotonic()
     try:
         from openai import OpenAI
     except ImportError:
         raise AgentError('Install model support with pip install "openai>=1.99,<3".') from None
-    key = settings.api_key or os.getenv("DFT_AGENT_API_KEY") or os.getenv("OPENAI_API_KEY")
+    key = effective_key(settings.provider, settings.api_key)
     if not key:
         raise AgentError("Set an API key or choose your configured Codex CLI.")
     usage = None
@@ -269,22 +281,84 @@ def _request_structured(payload: str, schema: dict[str, Any], settings: ModelSet
                 if getattr(response, "status", None) == "incomplete":
                     raise AgentError("The model response is incomplete. No plan was accepted; try again or reduce the requested output.")
                 return ModelResponse(output, usage)
-            response = client.chat.completions.create(
-                    model=settings.model, messages=[{"role": "system", "content": instructions},
-                                                {"role": "user", "content": payload}],
-                    max_completion_tokens=limit,
-                response_format={"type": "json_schema", "json_schema": {
-                    "name": name, "schema": schema, "strict": True}}, store=False,
-            )
+            preset = PROVIDERS[settings.provider]
+            request_instructions = _json_instructions(instructions, schema) if preset.get("json_mode") else instructions
+            options = {
+                "model": settings.model,
+                "messages": [{"role": "system", "content": request_instructions}, {"role": "user", "content": payload}],
+                preset.get("token_parameter", "max_completion_tokens"): limit,
+                "response_format": {"type": "json_object"} if preset.get("json_mode") else {
+                    "type": "json_schema", "json_schema": {"name": name, "schema": schema, "strict": True}},
+            }
+            if settings.provider == "chat_completions":
+                options["store"] = False
+            if preset.get("extra_body"):
+                options["extra_body"] = preset["extra_body"]
+            response = client.chat.completions.create(**options)
             message = response.choices[0].message
             usage = usage_record(settings.provider, settings.model,
                 reported=getattr(response, "usage", None), latency_seconds=time.monotonic() - started,
-                payload=payload, instructions=instructions, schema=schema, output=message.content, max_output_tokens=limit)
+                payload=payload, instructions=request_instructions, schema=schema, output=message.content, max_output_tokens=limit)
             if getattr(message, "refusal", None):
                 raise AgentError("The model declined to respond.")
             if getattr(response.choices[0], "finish_reason", None) == "length":
                 raise AgentError("The model response is incomplete. No plan was accepted; try again or reduce the requested output.")
+            if settings.provider != "chat_completions":
+                if getattr(response.choices[0], "finish_reason", None) != "stop":
+                    raise AgentError("The model did not return a complete response.")
+                _validate_json(message.content, schema)
             return ModelResponse(message.content, usage)
+    except AgentError as exc:
+        exc.model_usage = usage
+        raise
+    except Exception:
+        raise AgentError("The model request failed. Check the provider, model and connection.",
+                         model_usage=usage or usage_record(settings.provider, settings.model,
+                             latency_seconds=time.monotonic() - started, payload=payload,
+                             instructions=instructions, schema=schema, max_output_tokens=limit)) from None
+
+
+def _json_instructions(instructions: str, schema: dict) -> str:
+    return instructions + "\nReturn one JSON object, with no Markdown, matching this schema:\n" + json.dumps(schema, separators=(",", ":"))
+
+
+def _validate_json(output: str, schema: dict) -> None:
+    try:
+        value = json.loads(output)
+    except (ValueError, TypeError):
+        raise AgentError("The model returned invalid JSON. No plan was accepted.") from None
+    _check_schema(value, schema)
+
+
+def _anthropic_request(payload: str, schema: dict, settings: ModelSettings, *, instructions: str) -> str:
+    try:
+        from anthropic import Anthropic
+    except ImportError:
+        raise AgentError('Install Claude support with pip install "anthropic>=0.86,<2".') from None
+    key = effective_key(settings.provider, settings.api_key)
+    if not key:
+        raise AgentError("Set a Claude API key or ANTHROPIC_API_KEY.")
+    limit = _output_limit(payload)
+    instructions = _json_instructions(instructions, schema)
+    started = time.monotonic()
+    usage = None
+    try:
+        with Anthropic(api_key=key, base_url=settings.base_url, timeout=120.0, max_retries=0) as client:
+            client.auth_token = None
+            response = client.messages.create(model=settings.model, max_tokens=limit, system=instructions,
+                                              messages=[{"role": "user", "content": payload}])
+        output = "".join(block.text for block in response.content if block.type == "text")
+        usage = usage_record(settings.provider, settings.model, reported=getattr(response, "usage", None),
+                             latency_seconds=time.monotonic() - started, payload=payload,
+                             instructions=instructions, schema=schema, output=output, max_output_tokens=limit)
+        if response.stop_reason == "max_tokens":
+            raise AgentError("The model response is incomplete. No plan was accepted; try again or reduce the requested output.")
+        if response.stop_reason == "refusal":
+            raise AgentError("The model declined to respond.")
+        if response.stop_reason != "end_turn":
+            raise AgentError("The model did not return a complete response.")
+        _validate_json(output, schema)
+        return ModelResponse(output, usage)
     except AgentError as exc:
         exc.model_usage = usage
         raise

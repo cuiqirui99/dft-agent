@@ -3,6 +3,7 @@
 [Set up your model account](models.md) before making your first request.
 An API key grants access; tokens measure input and output. No tokens are bundled
 with DFT Agent. Check your provider's dashboard for charges and remaining usage.
+OpenAI, Claude, Qwen, Grok, GLM and DeepSeek each use your own provider account.
 
 DFT Agent calls a model when you request a calculation or structure plan,
 revision, explanation or repair. Applying structure edits, format conversion,
@@ -20,8 +21,8 @@ locally when no supported repair exists.
 - Explain verified facts instead of sending entire OUTCAR or XML files.
 
 Reports and source checks stay on disk. Context compression uses no extra model
-call. Requests over 96,000 UTF-8 bytes stop before calling the provider; they are
-not silently truncated. History has no message-count cutoff. If a request exceeds
+call. Task context over 96,000 UTF-8 bytes stops before calling the provider; it is
+not silently truncated. History has no message-count cutoff. If the context exceeds
 the byte limit, start again with the reviewed settings you want to retain.
 
 API output budgets start at 8,192 tokens and grow for larger site lists. Set
@@ -35,6 +36,10 @@ tokens when the provider reports them, plus latency and character counts.
 Missing token counts are **unknown**, not zero. Character counts are not token
 estimates. Cached tokens are part of input tokens; reasoning tokens are part of
 output tokens. Do not add either twice.
+
+For Claude, displayed input includes fresh tokens, cache reads and cache writes.
+For Grok, displayed output includes reasoning tokens, which xAI reports separately
+from visible completions. Its output limit is not a spending cap.
 
 The app shows a short usage line. Saved plans, explanations and repairs retain
 the record. Failed responses can also carry reported usage; a connection failure

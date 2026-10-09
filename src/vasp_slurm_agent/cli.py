@@ -10,6 +10,7 @@ import shlex
 import sys
 
 from .config import ClusterConfig
+from .providers import PROVIDERS
 
 DEFAULT_CONFIG = Path.home() / ".config" / "vasp-slurm-agent" / "cluster.json"
 
@@ -63,18 +64,18 @@ def main():
     plan.add_argument("structure", type=Path)
     plan.add_argument("goal")
     plan.add_argument("--previous", type=Path, help="Revise a saved calculation plan")
-    plan.add_argument("--provider", choices=("responses", "chat_completions", "codex"), default="responses")
-    plan.add_argument("--model", default=os.environ.get("DFT_AGENT_MODEL", ""))
-    plan.add_argument("--base-url", default=os.environ.get("DFT_AGENT_BASE_URL", ""))
+    plan.add_argument("--provider", choices=tuple(PROVIDERS), default="responses")
+    plan.add_argument("--model", default="")
+    plan.add_argument("--base-url", default="")
     plan.add_argument("--output", type=Path, default=Path("plan.json"))
     plan.add_argument("--runs", type=Path, help="Past runs for method guidance")
     structure_plan = commands.add_parser("structure-plan", help="Plan structure edits")
     structure_plan.add_argument("structure", type=Path)
     structure_plan.add_argument("goal")
     structure_plan.add_argument("--previous", type=Path, help="Revise a saved structure plan")
-    structure_plan.add_argument("--provider", choices=("responses", "chat_completions", "codex"), default="responses")
-    structure_plan.add_argument("--model", default=os.environ.get("DFT_AGENT_MODEL", ""))
-    structure_plan.add_argument("--base-url", default=os.environ.get("DFT_AGENT_BASE_URL", ""))
+    structure_plan.add_argument("--provider", choices=tuple(PROVIDERS), default="responses")
+    structure_plan.add_argument("--model", default="")
+    structure_plan.add_argument("--base-url", default="")
     structure_plan.add_argument("--output", type=Path, default=Path("structure-plan.json"))
     memory = commands.add_parser("memory", help="Browse or import memory")
     memory_commands = memory.add_subparsers(dest="memory_command", required=True)
@@ -100,14 +101,14 @@ def main():
     explain = commands.add_parser("explain", help="Explain saved results")
     explain.add_argument("run_dir", type=Path)
     explain.add_argument("--question", default="Explain the results.")
-    explain.add_argument("--provider", choices=("responses", "chat_completions", "codex"), default="responses")
-    explain.add_argument("--model", default=os.environ.get("DFT_AGENT_MODEL", ""))
-    explain.add_argument("--base-url", default=os.environ.get("DFT_AGENT_BASE_URL", ""))
+    explain.add_argument("--provider", choices=tuple(PROVIDERS), default="responses")
+    explain.add_argument("--model", default="")
+    explain.add_argument("--base-url", default="")
     repair = commands.add_parser("repair", help="Plan a bounded repair")
     repair.add_argument("run_dir", type=Path)
-    repair.add_argument("--provider", choices=("responses", "chat_completions", "codex"), default="responses")
-    repair.add_argument("--model", default=os.environ.get("DFT_AGENT_MODEL", ""))
-    repair.add_argument("--base-url", default=os.environ.get("DFT_AGENT_BASE_URL", ""))
+    repair.add_argument("--provider", choices=tuple(PROVIDERS), default="responses")
+    repair.add_argument("--model", default="")
+    repair.add_argument("--base-url", default="")
     repair.add_argument("--output", type=Path, default=Path("repair.json"))
     repair_prep = commands.add_parser("prepare-repair", help="Prepare reviewed repair inputs")
     repair_prep.add_argument("run_dir", type=Path)

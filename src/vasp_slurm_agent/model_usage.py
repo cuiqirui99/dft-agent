@@ -6,6 +6,8 @@ import json
 from typing import Any
 from uuid import uuid4
 
+from .providers import PROVIDERS
+
 
 class ModelResponse(str):
     """A normal response string with per-call usage attached."""
@@ -26,10 +28,27 @@ def _count(value):
 
 def normalize_usage(value, provider: str) -> dict[str, int | str | None]:
     """Cache and reasoning counts are subsets, never extra tokens."""
-    if provider == "chat_completions":
+    if provider == "anthropic":
+        fresh, outputs = _count(_field(value, "input_tokens")), _field(value, "output_tokens")
+        cached, written = _field(value, "cache_read_input_tokens"), _field(value, "cache_creation_input_tokens")
+        # Claude reports fresh input separately from cache reads and writes.
+        parts = [fresh, _count(cached) if cached is not None else 0,
+                 _count(written) if written is not None else 0]
+        inputs = sum(parts) if all(part is not None for part in parts) else None
+        reasoning = None
+    elif PROVIDERS.get(provider, {}).get("protocol") == "chat_completions":
         inputs, outputs = _field(value, "prompt_tokens"), _field(value, "completion_tokens")
         cached = _field(_field(value, "prompt_tokens_details"), "cached_tokens")
+        if cached is None and provider == "deepseek":
+            cached = _field(value, "prompt_cache_hit_tokens")
         reasoning = _field(_field(value, "completion_tokens_details"), "reasoning_tokens")
+        if provider == "grok":
+            # xAI reports visible completion tokens separately from reasoning.
+            reported_total, prompt, visible = map(_count, (_field(value, "total_tokens"), inputs, outputs))
+            if reported_total is not None and prompt is not None and reported_total >= prompt + (visible or 0):
+                outputs = reported_total - prompt
+            elif visible is not None and _count(reasoning) is not None:
+                outputs = visible + reasoning
     else:
         inputs, outputs = _field(value, "input_tokens"), _field(value, "output_tokens")
         cached = (_field(value, "cached_input_tokens") if provider == "codex"

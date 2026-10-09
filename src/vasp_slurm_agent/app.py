@@ -242,27 +242,50 @@ def _stage_results(run_dir: Path, stage: dict, scf_fermi_energy: float | None = 
 
 def _model_editor():
     from vasp_slurm_agent.agent import ModelSettings
+    from vasp_slurm_agent.providers import PROVIDERS, credential_envs
 
     with st.expander("Model"):
-        provider = st.selectbox("Provider", ["responses", "chat_completions", "codex"],
-                               format_func=lambda value: {"responses": "OpenAI", "chat_completions": "Compatible API", "codex": "Codex CLI"}[value])
+        provider = st.selectbox("Provider", list(PROVIDERS),
+                               format_func=lambda value: PROVIDERS[value]["label"])
+        preset = PROVIDERS[provider]
         st.caption("[Model setup](https://github.com/cuiqirui99/dft-agent/blob/main/docs/models.md) · Use your own account.")
         if provider == "codex":
             st.caption("Run `codex login` first. Usage follows that CLI account.")
         elif provider == "responses":
             st.caption("[Get an API key](https://platform.openai.com/api-keys). API billing is separate from ChatGPT.")
+        elif provider == "qwen":
+            st.caption("Use the key and API URL from the same Model Studio region.")
+        elif provider == "glm":
+            st.caption("Use a Z.AI key, or a BigModel key with its matching API URL.")
+        elif provider == "chat_completions":
+            st.caption("Use your provider's key and base URL. Strict JSON-schema output is required.")
         else:
-            st.caption("Use your provider's key and base URL. Structured JSON output is required.")
-        model = st.text_input("Model name", value=os.environ.get("DFT_AGENT_MODEL", ""),
+            st.caption(f"Use your {preset['label']} API key.")
+        model = st.text_input("Model name", key=f"model_name_{provider}",
+                              value=os.environ.get("DFT_AGENT_MODEL", "")
+                              if provider in {"responses", "chat_completions"} else "",
+                              placeholder=preset.get("model_example") or "",
                               help="Leave blank for the Codex CLI default." if provider == "codex"
                               else "Enter a model ID available to your API account.")
-        base_url = st.text_input("API URL (optional)", value=os.environ.get("DFT_AGENT_BASE_URL", ""),
+        base_url = st.text_input("API URL" if provider in {"qwen", "chat_completions"} else "API URL (optional)",
+                                 key=f"model_base_url_{provider}",
+                                 value=os.environ.get("DFT_AGENT_BASE_URL", "")
+                                 if provider in {"responses", "chat_completions"} else "",
+                                 placeholder=preset.get("base_url") or "",
                                  disabled=provider == "codex",
-                                 help="Leave blank for OpenAI. For a compatible API, use its base URL, usually ending in /v1.")
-        key = st.text_input("API key", type="password", key="model_api_key", disabled=provider == "codex",
-                            help="Kept in memory. Leave blank if DFT_AGENT_API_KEY or OPENAI_API_KEY is set. Clear removes only the session key.")
+                                 help="Copy your regional Model Studio base URL, ending in /compatible-mode/v1."
+                                 if provider == "qwen" else "Enter the service's API base URL, not its chat website."
+                                 if provider == "chat_completions" else "Leave blank for OpenAI."
+                                 if provider == "responses" else "Leave blank to use the shown default.")
+        key_widget = "model_api_key" if provider == "responses" else f"model_api_key_{provider}"
+        env_names = " or ".join(credential_envs(provider))
+        key_help = "Kept in memory. Clear removes only the session key."
+        if env_names:
+            key_help += f" Leave blank if {env_names} is set."
+        key = st.text_input("API key", type="password", key=key_widget, disabled=provider == "codex",
+                            help=key_help)
         st.button("Clear API key", disabled=provider == "codex",
-                  on_click=lambda: st.session_state.update(model_api_key=""))
+                  on_click=lambda: st.session_state.update({key_widget: ""}))
         st.caption("Tokens measure model use. No tokens are included with DFT Agent.")
     return ModelSettings(provider=provider, model=model.strip(),
                          base_url=None if provider == "codex" else base_url.strip() or None,
