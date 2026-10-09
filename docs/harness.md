@@ -32,8 +32,9 @@ experience and repair planning. It keeps the current executor and its result che
 It does not import the old private corpus, run unrestricted model tools, or search
 the literature automatically. See [sources and method limits](harness-sources.md).
 
-Validation: 357 offline tests passed. Real model checks covered HSE06, SOC and
-missing U/J values. On Slurm, a deliberately unconverged Si SCF was rejected;
-the reviewed NELM increase produced a converged run with unchanged structure,
-k-points and thresholds. Ionic and time-limit repairs were tested offline.
-See the [validation record](../validation/results/harness.json).
+The v0.3.0 checks include 488 passing offline tests and real Codex calls for
+revisions, method choices and missing inputs. On Slurm, reviewed electronic,
+ionic and time-limit repairs succeeded with unchanged structures, k-points,
+methods and thresholds.
+See the [current validation](validation-0.3.0.md) and
+[earlier harness record](../validation/results/harness.json).

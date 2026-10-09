@@ -1,6 +1,7 @@
 # v0.1.0 validation
 
-For the current release, see [v0.2.1 validation](validation-0.2.1.md).
+For current checks, see [v0.3.0 validation](validation-0.3.0.md).
+The previous release is covered in [v0.2.1 validation](validation-0.2.1.md).
 
 The first release focused on getting from an input structure to a completed
 VASP calculation and a structure you can download. Its validation finished on

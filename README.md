@@ -46,4 +46,4 @@ Model calls use compact context and record reported token counts. [Model use](do
 
 Use ordered periodic structures. Check the starting parameters for your material. Magnetic comparisons test NM, FM and one AFM seed; they do not search all magnetic orders. Keep the app local.
 
-[Quickstart](docs/quickstart.md) · [Methods](docs/methods.md) · [CLI examples](docs/examples.md) · [Validation](docs/validation.md) · [MIT license](LICENSE) · [Notices](NOTICE.md) · [Citation](CITATION.cff)
+[Quickstart](docs/quickstart.md) · [Methods](docs/methods.md) · [CLI examples](docs/examples.md) · [Validation](docs/validation-0.3.0.md) · [MIT license](LICENSE) · [Notices](NOTICE.md) · [Citation](CITATION.cff)

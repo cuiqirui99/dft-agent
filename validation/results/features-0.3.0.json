@@ -1,0 +1,4288 @@
+{
+  "schema_version": 1,
+  "version": "0.3.0",
+  "exported_at": "2026-10-09T09:20:59.415540+00:00",
+  "complete": true,
+  "completion_scope": "Saved functional acceptance campaign settled; not a claim that every method, material, or advertised feature passed live validation.",
+  "remaining_checks": [],
+  "scientific_accuracy_validated": false,
+  "all_parameters_or_materials_proven": false,
+  "offline_suite": {
+    "tests": 488,
+    "passed": 488,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "all_passed": true,
+    "evidence": {
+      "base": "private_acceptance",
+      "path": "tests.xml",
+      "sha256": "44e8abd4777ca6ae6e9b19c1e30cddcf537b531e14eff04dd0345faf5a0da623",
+      "distributed": false,
+      "available": true
+    }
+  },
+  "source_identity": {
+    "current_head": "d1765b815220b2b08bece8e0e46f7ffab6c79091",
+    "current_module_sha256": {
+      "__init__.py": "b99293ddd009479a9fec3163538d74da21cc405e7285aba73203c0f8a0049849",
+      "agent.py": "9eba7d32f47b72b64a95173da362f7eeff269e44d310588339cb71325a0b8587",
+      "app.py": "d5e671e8da49fe2089dcbee0dfca286d88fe0980d95fa4e8fcb6e41627d8729b",
+      "cli.py": "925dd3e7dada8e6a4bb1da30fbf926d5af94deb7eff8bec4bc617f9e171d4b34",
+      "config.py": "f8f3c0ede1f7418c9e4b56efbb187260a73b739d2f4b32581dbed60357256a78",
+      "dispatch.py": "9c9a5a98b26a2fc8846b2ed2ab804a9a44e28383bfb3c2ea455bbadc47830aba",
+      "experience.py": "efc6060cf4d37192e6cebd2ecd734f823b4025cbca5fa803d3966e8f63dd32c1",
+      "explanation.py": "74f94be04a32839201705cf84bf83ce96bca29c9d3f4adcf74c7cead41f28469",
+      "guidance.py": "183c1494f76007496fa499470d72777f3014bb554f82cfd973d6d1fbf6afb32a",
+      "magnetic.py": "f44d748f5e50bd7ba27317236cb48f64dd9dc7a902812fd54d1ae499423477b8",
+      "methods.py": "39c574e7f0c149cdd1d671683db31ea22c7293efdcc4612a3f0a344269545856",
+      "model_usage.py": "8c9597a1f039f636d7f0be6aad5b90812c84914ae0a63ab8b12eabf62a8027aa",
+      "prompt_context.py": "0c33906b56dd724bd38069849dd0ae5a8144f1503bff26ff037eb45d410786e2",
+      "recovery.py": "54dbea9e7671c57052be5c3d0fa47e2e19eb8de978692a97f1688ea5db24c786",
+      "structure_agent.py": "931ea253d4d88813773ac64416dfc6b7519d38b7066e384fa482fda715e8e87a",
+      "structures.py": "ab10e83be378272a3dbbfdb834251bd08618d6b9999c1732088680e1534d9c1e",
+      "transport.py": "1c0b27513d136cecaf14c221ca7cfdc844f8dbf36dfaa64a25307a1a7d4a4006",
+      "vasp.py": "de260713cab09b9036b06df37bb6f0502844811216a1b2d7b9b78a4b63432800",
+      "workflow.py": "cb808d0b1a87bcae5d116c6e6f8ff1c69d87f01d52d41ed4981a38157522a3d3"
+    },
+    "campaign_import_head": "f16fc003cdc46c673b6366cbf8303d4da6643159",
+    "campaign_import_module_sha256": {
+      "config.py": "4e36b95dfeef02e46a345b01e8ad37c3811fef73710bc2e52db35e2de6e9a4d6",
+      "recovery.py": "ccc38b3015f985caf8ad73699cc6f154c120120b78ccd940901f567d9a86d942",
+      "methods.py": "23ac74bce05c01ae812e34c7964c2ac39e47c16dfd5358f25664630fc7c33401",
+      "transport.py": "d95bba5706df03d189bd0552671676493b4aa4049ee4ef40b3899c6b51d45d1c",
+      "dispatch.py": "9c9a5a98b26a2fc8846b2ed2ab804a9a44e28383bfb3c2ea455bbadc47830aba",
+      "experience.py": "efc6060cf4d37192e6cebd2ecd734f823b4025cbca5fa803d3966e8f63dd32c1",
+      "__init__.py": "c8facba452c1b6e4a270e3964d4c45d4df50cb686372cd7b55c54457c41f6705",
+      "explanation.py": "af186b224bafb6af58a2e339be0c72fd9cc7ff6eaa73ce425c75e465b6da6bf3",
+      "cli.py": "5fe3ad7628431ed540e1a041d3e55775ae6d6a79c3fdeec4501dbe2a8708c234",
+      "magnetic.py": "f44d748f5e50bd7ba27317236cb48f64dd9dc7a902812fd54d1ae499423477b8",
+      "agent.py": "2f218c7a9283b0caf49fe3ce29e9103af064d350bcffa12ab1ec9d0fa56bf38d",
+      "app.py": "d3b1e5f8a6054ed73c762eb061c46e9d903050ca554a98def6c9c7ad40278f17",
+      "workflow.py": "9ec34e9b4403784a6c074c5282f22e83100d83c7b148c17e7607ecd6df7ac825",
+      "guidance.py": "fdbda4e34344e564e8b3727a61c06bcf2a7221c52cd8844357583d6d0d7e4384",
+      "vasp.py": "1c4f1e4c16fdc5a844c1a73104de9afa136bed5a9b7eec916e17312bf062825a"
+    },
+    "byte_identical_modules": [
+      "dispatch.py",
+      "experience.py",
+      "magnetic.py"
+    ],
+    "changed_or_added_since_campaign_import": [
+      "__init__.py",
+      "agent.py",
+      "app.py",
+      "cli.py",
+      "config.py",
+      "explanation.py",
+      "guidance.py",
+      "methods.py",
+      "model_usage.py",
+      "prompt_context.py",
+      "recovery.py",
+      "structure_agent.py",
+      "structures.py",
+      "transport.py",
+      "vasp.py",
+      "workflow.py"
+    ],
+    "note": "Current hashes identify this export. Changed modules need separate recheck receipts; original jobs were not rerun.",
+    "campaign_import_evidence": {
+      "base": "private_acceptance",
+      "path": "execution-source.json",
+      "sha256": "769f609c83188d6fe6d63a5ce8a87c322f6921f440a6feeaac518ac0a97a3f40",
+      "distributed": false,
+      "available": true
+    }
+  },
+  "checked_at": "2026-10-09T09:20:59.360796+00:00",
+  "scope": "Feature evidence snapshot. No model calls,SSH,submissions or product edits performed by this audit.",
+  "evidence": {
+    "base": "private_acceptance",
+    "path": "feature-matrix.final.json",
+    "sha256": "ab1bed9036134d17d595a52d1ff63faba79c3ec891b4e15902e74d9fb5aed5ce",
+    "distributed": false,
+    "available": true
+  },
+  "feature_count": 64,
+  "status_counts": {
+    "passed_representative": 44,
+    "refusal_verified": 1,
+    "not_run": 12,
+    "partial_representative": 4,
+    "pending_or_partial": 1,
+    "pending_release": 1,
+    "passed_codex_only": 1
+  },
+  "features": [
+    {
+      "id": "F01",
+      "feature": "CIF/POSCAR import, ordered periodic structure validation",
+      "claim": "CIF/POSCAR inputs are parsed and checked for ordered, finite, non-overlapping periodic structures.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_app.test_structure_import_and_review_gate": {
+              "tests": 2,
+              "all_passed": true
+            },
+            "test_vasp": {
+              "tests": 35,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "structure_dialogue"
+        }
+      ],
+      "limits": [],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F02",
+      "feature": "Structure generation from chemical formula / arbitrary new material",
+      "claim": "A source crystal is required. Formula-only crystal/phase invention is not supported.",
+      "implementation_status": "outside_scope",
+      "offline_status": "passed",
+      "live_status": "refusal_verified",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_structure_agent.test_source_required": {
+              "tests": 1,
+              "all_passed": true
+            },
+            "test_structure_agent.test_unsupported": {
+              "tests": 1,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "structure_dialogue"
+        }
+      ],
+      "limits": [],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F03",
+      "feature": "Cluster init, config, doctor, SSH/password, Slurm environment",
+      "claim": "Cluster configuration and doctor checks have local tests and recorded Paracloud/Arrhenius connection evidence.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_config": {
+              "tests": 8,
+              "all_passed": true
+            },
+            "test_transport": {
+              "tests": 38,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "arrhenius_doctor"
+        },
+        {
+          "source": "arrhenius_startup"
+        }
+      ],
+      "limits": [
+        "This does not establish compatibility with every Slurm site or VASP installation."
+      ],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F04",
+      "feature": "Manual preparation and explicit submission gate",
+      "claim": "Preparation and submission remain separate reviewed actions in UI and CLI.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_app.test_agent_proposal_requires_review": {
+              "tests": 1,
+              "all_passed": true
+            },
+            "test_app.test_manual_method_controls": {
+              "tests": 3,
+              "all_passed": true
+            },
+            "test_cli_plan": {
+              "tests": 7,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "run:runs/si-pbe-chain",
+          "available": true,
+          "case": "runs/si-pbe-chain",
+          "status": "succeeded",
+          "stages": [
+            {
+              "task": "relax",
+              "folder": "01_relax",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464406",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "scf",
+              "folder": "02_scf",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464417",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "bands",
+              "folder": "03_bands",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464428",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "dos",
+              "folder": "04_dos",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464458",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            }
+          ]
+        }
+      ],
+      "limits": [],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F05",
+      "feature": "Codex natural-language planning + guidance + history",
+      "claim": "Codex interprets goals, guidance and preserved conversation constraints in finite live acceptance cases.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_agent": {
+              "tests": 37,
+              "all_passed": true
+            },
+            "test_harness": {
+              "tests": 4,
+              "all_passed": true
+            },
+            "test_prompt_context": {
+              "tests": 9,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "calculation_dialogue"
+        },
+        {
+          "source": "token_pairs"
+        }
+      ],
+      "limits": [
+        "Finite acceptance examples are not a universal intent-understanding success rate."
+      ],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F06",
+      "feature": "OpenAI Responses adapter",
+      "claim": "Responses structured-output adapter, limits and usage normalization pass mocked SDK tests.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "not_run",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_agent.test_sdk": {
+              "tests": 1,
+              "all_passed": true
+            },
+            "test_model_usage": {
+              "tests": 20,
+              "all_passed": true
+            }
+          }
+        }
+      ],
+      "limits": [
+        "No current live Responses-provider receipt. Codex results do not verify this adapter."
+      ],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F07",
+      "feature": "Compatible Chat Completions adapter",
+      "claim": "Chat Completions structured-output adapter, limits and usage normalization pass mocked SDK tests.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "not_run",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_agent.test_chat": {
+              "tests": 1,
+              "all_passed": true
+            },
+            "test_model_usage": {
+              "tests": 20,
+              "all_passed": true
+            }
+          }
+        }
+      ],
+      "limits": [
+        "No current live compatible Chat Completions-provider receipt."
+      ],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F08",
+      "feature": "Clarifications, revisions, exclusions, stale-plan refusal",
+      "claim": "Clarifications, revisions, exclusions and stale-source refusal are tested; long revised constraints also passed live Codex checks.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_agent": {
+              "tests": 37,
+              "all_passed": true
+            },
+            "test_app.test_agent_revision": {
+              "tests": 1,
+              "all_passed": true
+            },
+            "test_app.test_agent_cannot_prepare_stale": {
+              "tests": 2,
+              "all_passed": true
+            },
+            "test_cli_plan.test_cli_revision": {
+              "tests": 1,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "calculation_dialogue"
+        },
+        {
+          "source": "token_pairs"
+        }
+      ],
+      "limits": [],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F09",
+      "feature": "Unsupported task/method response",
+      "claim": "Unsupported calculations/methods are explicitly rejected; geometry edits are routed to the structure editor.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "partial_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_agent.test_unsupported": {
+              "tests": 2,
+              "all_passed": true
+            },
+            "test_agent.test_silent_method": {
+              "tests": 1,
+              "all_passed": true
+            },
+            "test_structure_agent.test_unsupported": {
+              "tests": 1,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "structure_dialogue"
+        }
+      ],
+      "limits": [
+        "Current phonon/NEB rejection is covered offline; do not present the structure-lattice live refusal as a live NEB run."
+      ],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F10",
+      "feature": "Local scientific guidance and sources",
+      "claim": "Local method guidance keeps source links and is included without changing explicit user choices.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_guidance": {
+              "tests": 18,
+              "all_passed": true
+            },
+            "test_harness": {
+              "tests": 4,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "token_pairs"
+        }
+      ],
+      "limits": [],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F11",
+      "feature": "Scoped past-run experience / rejected output exclusion",
+      "claim": "Past-run retrieval filters method/source/geometry mismatches and preserves negative evidence; large advisory vectors are references, not copied parameters.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_experience": {
+              "tests": 17,
+              "all_passed": true
+            },
+            "test_prompt_context": {
+              "tests": 9,
+              "all_passed": true
+            },
+            "test_harness": {
+              "tests": 4,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "token_pairs"
+        }
+      ],
+      "limits": [],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F12",
+      "feature": "PBE relax, SCF and bands",
+      "claim": "Representative PBE relaxation, SCF and bands completed with independently audited outputs.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_methods": {
+              "tests": 57,
+              "all_passed": true
+            },
+            "test_plan": {
+              "tests": 17,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "run:runs/si-pbe-chain",
+          "available": true,
+          "case": "runs/si-pbe-chain",
+          "status": "succeeded",
+          "stages": [
+            {
+              "task": "relax",
+              "folder": "01_relax",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464406",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "scf",
+              "folder": "02_scf",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464417",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "bands",
+              "folder": "03_bands",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464428",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "dos",
+              "folder": "04_dos",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464458",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            }
+          ]
+        }
+      ],
+      "limits": [],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F13",
+      "feature": "PBE DOS",
+      "claim": "Representative PBE DOS completed with exported data and independent checks.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_methods": {
+              "tests": 57,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "run:runs/si-pbe-chain",
+          "available": true,
+          "case": "runs/si-pbe-chain",
+          "status": "succeeded",
+          "stages": [
+            {
+              "task": "relax",
+              "folder": "01_relax",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464406",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "scf",
+              "folder": "02_scf",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464417",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "bands",
+              "folder": "03_bands",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464428",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "dos",
+              "folder": "04_dos",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464458",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            }
+          ]
+        }
+      ],
+      "limits": [],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F14",
+      "feature": "Variable-cell relaxation",
+      "claim": "MgO variable-cell relaxation completed; cell setting/outputs are independently checked.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_vasp": {
+              "tests": 35,
+              "all_passed": true
+            },
+            "test_methods": {
+              "tests": 57,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "run:runs/mgo-cell-relax",
+          "available": true,
+          "case": "runs/mgo-cell-relax",
+          "status": "succeeded",
+          "stages": [
+            {
+              "task": "relax",
+              "folder": "01_relax",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464403",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            }
+          ]
+        }
+      ],
+      "limits": [
+        "One small strained MgO case, not a general cell-convergence validation."
+      ],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F15",
+      "feature": "Relaxed structure / Cartesian frame handoff",
+      "claim": "Relaxed structure, site order and Cartesian-frame handoff have invariant tests and audited live propagation.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_methods": {
+              "tests": 57,
+              "all_passed": true
+            },
+            "test_plan": {
+              "tests": 17,
+              "all_passed": true
+            },
+            "test_experience": {
+              "tests": 17,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "method_audit"
+        },
+        {
+          "source": "run:runs/fe-soc-chain",
+          "available": true,
+          "case": "runs/fe-soc-chain",
+          "status": "succeeded",
+          "stages": [
+            {
+              "task": "relax",
+              "folder": "01_relax",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464487",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "scf",
+              "folder": "02_scf",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464510",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "bands",
+              "folder": "03_bands",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464522",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "dos",
+              "folder": "04_dos",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464530",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            }
+          ]
+        },
+        {
+          "source": "run:runs/si-pbe-chain",
+          "available": true,
+          "case": "runs/si-pbe-chain",
+          "status": "succeeded",
+          "stages": [
+            {
+              "task": "relax",
+              "folder": "01_relax",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464406",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "scf",
+              "folder": "02_scf",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464417",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "bands",
+              "folder": "03_bands",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464428",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "dos",
+              "folder": "04_dos",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464458",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            }
+          ]
+        }
+      ],
+      "limits": [],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F16",
+      "feature": "Collinear FM/AFM + local moments",
+      "claim": "Representative collinear Fe/NiO calculations and local moments are checked.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_methods": {
+              "tests": 57,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "run:runs/fe-collinear-chain",
+          "available": true,
+          "case": "runs/fe-collinear-chain",
+          "status": "succeeded",
+          "stages": [
+            {
+              "task": "relax",
+              "folder": "01_relax",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464414",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "scf",
+              "folder": "02_scf",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464425",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "bands",
+              "folder": "03_bands",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464442",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "dos",
+              "folder": "04_dos",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464472",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            }
+          ]
+        },
+        {
+          "source": "run:runs/nio-u-chain",
+          "available": true,
+          "case": "runs/nio-u-chain",
+          "status": "succeeded",
+          "stages": [
+            {
+              "task": "relax",
+              "folder": "01_relax",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464503",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "scf",
+              "folder": "02_scf",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464512",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "bands",
+              "folder": "03_bands",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464526",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "dos",
+              "folder": "04_dos",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464534",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            }
+          ]
+        }
+      ],
+      "limits": [
+        "Initial FM/AFM seeds do not establish a magnetic ground state."
+      ],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F17",
+      "feature": "NM/FM/AFM shared-cell comparison and ranking",
+      "claim": "The shared-cell Fe NM/FM/AFM comparison completed with independently audited stages; ranking also has current offline checks.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_plan.test_magnetic_seeds": {
+              "tests": 1,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "method_audit"
+        },
+        {
+          "source": "run:runs/fe-seed-comparison",
+          "available": true,
+          "case": "runs/fe-seed-comparison",
+          "status": "succeeded",
+          "stages": [
+            {
+              "task": "scf",
+              "folder": "01_scf_nm",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "3568969",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "scf",
+              "folder": "02_scf_fm",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "3568982",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "scf",
+              "folder": "03_scf_afm",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "3569006",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            }
+          ]
+        }
+      ],
+      "limits": [
+        "This compares three specified seeds; it is not an exhaustive magnetic search or proof of the magnetic ground state."
+      ],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F18",
+      "feature": "Noncollinear without SOC",
+      "claim": "Noncollinear Fe without SOC completed through relaxation,SCF,bands,DOS.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_methods": {
+              "tests": 57,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "run:runs/fe-noncollinear-chain",
+          "available": true,
+          "case": "runs/fe-noncollinear-chain",
+          "status": "succeeded",
+          "stages": [
+            {
+              "task": "relax",
+              "folder": "01_relax",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464484",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "scf",
+              "folder": "02_scf",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464506",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "bands",
+              "folder": "03_bands",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464517",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "dos",
+              "folder": "04_dos",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464527",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            }
+          ]
+        }
+      ],
+      "limits": [],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F19",
+      "feature": "Noncollinear SOC",
+      "claim": "Noncollinear SOC with nondefault SAXIS completed through all four tasks.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_methods": {
+              "tests": 57,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "run:runs/fe-soc-chain",
+          "available": true,
+          "case": "runs/fe-soc-chain",
+          "status": "succeeded",
+          "stages": [
+            {
+              "task": "relax",
+              "folder": "01_relax",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464487",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "scf",
+              "folder": "02_scf",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464510",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "bands",
+              "folder": "03_bands",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464522",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "dos",
+              "folder": "04_dos",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464530",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            }
+          ]
+        }
+      ],
+      "limits": [],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F20",
+      "feature": "SOC with spin:none zero-vector seed",
+      "claim": "Si SOC initialized from explicit zero vectors completed through all four tasks.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_methods.test_soc_nonmagnetic": {
+              "tests": 1,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "run:runs/si-zero-seed-soc-chain",
+          "available": true,
+          "case": "runs/si-zero-seed-soc-chain",
+          "status": "succeeded",
+          "stages": [
+            {
+              "task": "relax",
+              "folder": "01_relax",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464502",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "scf",
+              "folder": "02_scf",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464511",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "bands",
+              "folder": "03_bands",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464523",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "dos",
+              "folder": "04_dos",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464533",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            }
+          ]
+        }
+      ],
+      "limits": [
+        "Zero initial moments do not impose constrained nonmagnetism."
+      ],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F21",
+      "feature": "Dudarev DFT+U",
+      "claim": "Explicit Dudarev U/J parameters are preserved; representative NiO +U completed through all four tasks.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_methods": {
+              "tests": 57,
+              "all_passed": true
+            },
+            "test_agent.test_missing_u": {
+              "tests": 2,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "run:runs/nio-u-chain",
+          "available": true,
+          "case": "runs/nio-u-chain",
+          "status": "succeeded",
+          "stages": [
+            {
+              "task": "relax",
+              "folder": "01_relax",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464503",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "scf",
+              "folder": "02_scf",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464512",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "bands",
+              "folder": "03_bands",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464526",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "dos",
+              "folder": "04_dos",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464534",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            }
+          ]
+        }
+      ],
+      "limits": [],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F22",
+      "feature": "SOC + DFT+U",
+      "claim": "SOC +U representative chain stages are tracked separately; only independently audited completed stages count as accepted.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_methods": {
+              "tests": 57,
+              "all_passed": true
+            },
+            "test_recovery.test_nonmagnetic_soc": {
+              "tests": 1,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "run:runs/nio-u-soc-chain",
+          "available": true,
+          "case": "runs/nio-u-soc-chain",
+          "status": "succeeded",
+          "stages": [
+            {
+              "task": "relax",
+              "folder": "01_relax",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464537",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "scf",
+              "folder": "02_scf",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464558",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "bands",
+              "folder": "03_bands",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464629",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "dos",
+              "folder": "04_dos",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464939",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            }
+          ]
+        }
+      ],
+      "limits": [],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F23",
+      "feature": "Noncollinear without SOC + DFT+U",
+      "claim": "Noncollinear +U without SOC completed in the NiO SCF probe.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_methods": {
+              "tests": 57,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "run:runs/nio-u-noncollinear-scf",
+          "available": true,
+          "case": "runs/nio-u-noncollinear-scf",
+          "status": "succeeded",
+          "stages": [
+            {
+              "task": "scf",
+              "folder": "01_scf",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464536",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            }
+          ]
+        }
+      ],
+      "limits": [
+        "SCF probe only; no claim for its relaxation/bands/DOS Cartesian product."
+      ],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F24",
+      "feature": "HSE06 nonmagnetic",
+      "claim": "Nonmagnetic HSE06 Si completed through all four tasks.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_methods": {
+              "tests": 57,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "run:runs/si-hse06-chain",
+          "available": true,
+          "case": "runs/si-hse06-chain",
+          "status": "succeeded",
+          "stages": [
+            {
+              "task": "relax",
+              "folder": "01_relax",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464404",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "scf",
+              "folder": "02_scf",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464416",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "bands",
+              "folder": "03_bands",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464429",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "dos",
+              "folder": "04_dos",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464467",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            }
+          ]
+        }
+      ],
+      "limits": [],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F25",
+      "feature": "PBE0 nonmagnetic",
+      "claim": "Nonmagnetic PBE0 Si completed through all four tasks.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_methods": {
+              "tests": 57,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "run:runs/si-pbe0-chain",
+          "available": true,
+          "case": "runs/si-pbe0-chain",
+          "status": "succeeded",
+          "stages": [
+            {
+              "task": "relax",
+              "folder": "01_relax",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464405",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "scf",
+              "folder": "02_scf",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464415",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "bands",
+              "folder": "03_bands",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464426",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "dos",
+              "folder": "04_dos",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464455",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            }
+          ]
+        }
+      ],
+      "limits": [],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F26",
+      "feature": "Magnetic HSE06/PBE0",
+      "claim": "Magnetic hybrid workflows have fresh cluster evidence tracked per stage; pending branches remain unverified.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_methods": {
+              "tests": 57,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "run:runs/nio-hse06-magnetic-chain",
+          "available": true,
+          "case": "runs/nio-hse06-magnetic-chain",
+          "status": "succeeded",
+          "stages": [
+            {
+              "task": "relax",
+              "folder": "01_relax",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464543",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "scf",
+              "folder": "02_scf",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464579",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "bands",
+              "folder": "03_bands",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464640",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "dos",
+              "folder": "04_dos",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464957",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            }
+          ]
+        },
+        {
+          "source": "run:runs/nio-pbe0-magnetic-chain",
+          "available": true,
+          "case": "runs/nio-pbe0-magnetic-chain",
+          "status": "succeeded",
+          "stages": [
+            {
+              "task": "relax",
+              "folder": "01_relax",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464624",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "scf",
+              "folder": "02_scf",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464938",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "bands",
+              "folder": "03_bands",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464985",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "dos",
+              "folder": "04_dos",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7465015",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            }
+          ]
+        }
+      ],
+      "limits": [
+        "Do not label queued/planned spectra or PBE0 stages as completed."
+      ],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F27",
+      "feature": "Hybrid + SOC and Hybrid + SOC + U",
+      "claim": "Hybrid+SOC and hybrid+SOC+U probes have accepted, rejected and pending stages tracked separately.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "pending_or_partial",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_methods": {
+              "tests": 57,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "run:runs/si-hse06-soc-probe-gate",
+          "available": true,
+          "case": "runs/si-hse06-soc-probe-gate",
+          "status": "succeeded",
+          "stages": [
+            {
+              "task": "scf",
+              "folder": "01_scf",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464545",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            }
+          ]
+        },
+        {
+          "source": "run:runs/nio-hse06-u-soc-probe",
+          "available": true,
+          "case": "runs/nio-hse06-u-soc-probe",
+          "status": "succeeded",
+          "stages": [
+            {
+              "task": "scf",
+              "folder": "01_scf",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464550",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            }
+          ]
+        },
+        {
+          "source": "run:runs/si-hse06-soc-probe",
+          "available": true,
+          "case": "runs/si-hse06-soc-probe",
+          "status": "succeeded",
+          "stages": [
+            {
+              "task": "relax",
+              "folder": "01_relax",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464584",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "scf",
+              "folder": "02_scf",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464649",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "bands",
+              "folder": "03_bands",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464966",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "dos",
+              "folder": "04_dos",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7465007",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            }
+          ]
+        },
+        {
+          "source": "run:runs/si-pbe0-soc-probe",
+          "available": true,
+          "case": "runs/si-pbe0-soc-probe",
+          "status": "needs_attention",
+          "stages": [
+            {
+              "task": "relax",
+              "folder": "01_relax",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "3568989",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "scf",
+              "folder": "02_scf",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "3569013",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "bands",
+              "folder": "03_bands",
+              "status": "needs_attention",
+              "scheduler_state": "COMPLETED",
+              "job_id": "3569036",
+              "reported_success": false,
+              "input_identity_verified": true,
+              "failure_code": "RESULT_REJECTED",
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": false
+            },
+            {
+              "task": "dos",
+              "folder": "04_dos",
+              "status": "planned",
+              "scheduler_state": null,
+              "job_id": null,
+              "reported_success": null,
+              "input_identity_verified": null,
+              "failure_code": null,
+              "converged_electronic": null,
+              "converged_ionic": null,
+              "independent_audit_passed": false
+            }
+          ]
+        },
+        {
+          "source": "run:runs/nio-pbe0-u-soc-probe",
+          "available": true,
+          "case": "runs/nio-pbe0-u-soc-probe",
+          "status": "succeeded",
+          "stages": [
+            {
+              "task": "scf",
+              "folder": "01_scf",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "3568968",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            }
+          ]
+        }
+      ],
+      "limits": [
+        "SCF capability probes do not prove all hybrid/SOC/U combinations or task sequences. A numerically converged stage rejected by method checks is not accepted."
+      ],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F28",
+      "feature": "Bands/DOS CSV, plots, energy references, hybrid equal-k gate",
+      "claim": "Bands/DOS exports, energy references and hybrid equal-k checks have current tests and representative live artifacts.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_methods": {
+              "tests": 57,
+              "all_passed": true
+            },
+            "test_app.test_spectral_results": {
+              "tests": 4,
+              "all_passed": true
+            },
+            "test_app.test_hybrid_spectrum": {
+              "tests": 2,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "run:runs/si-pbe-chain",
+          "available": true,
+          "case": "runs/si-pbe-chain",
+          "status": "succeeded",
+          "stages": [
+            {
+              "task": "relax",
+              "folder": "01_relax",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464406",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "scf",
+              "folder": "02_scf",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464417",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "bands",
+              "folder": "03_bands",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464428",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "dos",
+              "folder": "04_dos",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464458",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            }
+          ]
+        },
+        {
+          "source": "run:runs/si-hse06-chain",
+          "available": true,
+          "case": "runs/si-hse06-chain",
+          "status": "succeeded",
+          "stages": [
+            {
+              "task": "relax",
+              "folder": "01_relax",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464404",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "scf",
+              "folder": "02_scf",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464416",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "bands",
+              "folder": "03_bands",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464429",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "dos",
+              "folder": "04_dos",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464467",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            }
+          ]
+        },
+        {
+          "source": "run:runs/fe-noncollinear-chain",
+          "available": true,
+          "case": "runs/fe-noncollinear-chain",
+          "status": "succeeded",
+          "stages": [
+            {
+              "task": "relax",
+              "folder": "01_relax",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464484",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "scf",
+              "folder": "02_scf",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464506",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "bands",
+              "folder": "03_bands",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464517",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "dos",
+              "folder": "04_dos",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464527",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            }
+          ]
+        }
+      ],
+      "limits": [],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F29",
+      "feature": "Background worker, progress, status and browser closure",
+      "claim": "Stateful workers progress independent of UI; refresh does not submit calculations.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_workflow.test_second_worker": {
+              "tests": 1,
+              "all_passed": true
+            },
+            "test_workflow": {
+              "tests": 26,
+              "all_passed": true
+            },
+            "test_app.test_completed_result": {
+              "tests": 2,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "transport_control"
+        }
+      ],
+      "limits": [
+        "Fresh control demonstrates process restart; no separate recorded manual browser-close experiment."
+      ],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F30",
+      "feature": "Resume/reconnect without duplicate submission",
+      "claim": "A fresh process recovered the original scheduler job receipt without duplicate submission.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_workflow": {
+              "tests": 26,
+              "all_passed": true
+            },
+            "test_dispatch": {
+              "tests": 12,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "transport_control"
+        }
+      ],
+      "limits": [],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F31",
+      "feature": "Cancel active or paused job",
+      "claim": "Cancellation of the same active/paused scheduler job was confirmed.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_workflow": {
+              "tests": 26,
+              "all_passed": true
+            },
+            "test_app.test_paused_job_can_request_cancel": {
+              "tests": 5,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "transport_control"
+        }
+      ],
+      "limits": [],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F32",
+      "feature": "Lost reply, UNKNOWN state, failed transfer handling",
+      "claim": "Lost reply and transport/poll failures preserve identity and bound retries; negative branches are tested.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_transport": {
+              "tests": 38,
+              "all_passed": true
+            },
+            "test_dispatch": {
+              "tests": 12,
+              "all_passed": true
+            },
+            "test_workflow": {
+              "tests": 26,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "transport_control"
+        }
+      ],
+      "limits": [],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F33",
+      "feature": "Explain results and follow-up dialogue",
+      "claim": "The current installed wheel produced a grounded explanation after edited-Si5Ge relaxation/SCF; follow-up UI and changed-context behavior also pass offline checks.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_explanation": {
+              "tests": 29,
+              "all_passed": true
+            },
+            "test_app.test_explanation": {
+              "tests": 3,
+              "all_passed": true
+            },
+            "test_model_usage.test_explanation": {
+              "tests": 2,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "prior_explanations"
+        },
+        {
+          "source": "installed_wheel_current",
+          "available": true
+        }
+      ],
+      "limits": [
+        "One fresh installed live explanation plus retained historical cases; not every question or material is established."
+      ],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F34",
+      "feature": "Changed results invalidate explanation/history",
+      "claim": "Changed result/source identity invalidates old answers and history.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "not_run",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_explanation": {
+              "tests": 29,
+              "all_passed": true
+            },
+            "test_app.test_changed_result_context": {
+              "tests": 1,
+              "all_passed": true
+            },
+            "test_app.test_current_evidence": {
+              "tests": 1,
+              "all_passed": true
+            }
+          }
+        }
+      ],
+      "limits": [
+        "Test fixtures are deliberately changed; scientific originals were not edited."
+      ],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F35",
+      "feature": "Repair electronic iteration limit (NELM)",
+      "claim": "A fresh NELM1 failure produced a reviewed NELM120 child that succeeded, preserving parent/input identity.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_recovery": {
+              "tests": 32,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "electronic_control"
+        }
+      ],
+      "limits": [],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F36",
+      "feature": "Repair ionic iteration limit (NSW)",
+      "claim": "A fresh ionic failure produced a reviewed accepted child with preserved input/parent identity.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_recovery.test_ionic": {
+              "tests": 1,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "run:controls/ionic",
+          "available": true,
+          "case": "controls/ionic",
+          "status": "needs_attention",
+          "stages": [
+            {
+              "task": "relax",
+              "folder": "01_relax",
+              "status": "needs_attention",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464644",
+              "reported_success": false,
+              "input_identity_verified": true,
+              "failure_code": "RESULT_REJECTED",
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": false
+            }
+          ]
+        },
+        {
+          "source": "ionic_control",
+          "available": true
+        }
+      ],
+      "limits": [
+        "Representative control,not a guarantee that every failed calculation can be repaired."
+      ],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F37",
+      "feature": "Repair walltime limit",
+      "claim": "A fresh walltime failure produced a reviewed accepted child with preserved input/parent identity.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_recovery": {
+              "tests": 32,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "run:controls/walltime",
+          "available": true,
+          "case": "controls/walltime",
+          "status": "needs_attention",
+          "stages": [
+            {
+              "task": "scf",
+              "folder": "01_scf",
+              "status": "needs_attention",
+              "scheduler_state": "TIMEOUT",
+              "job_id": "3569373",
+              "reported_success": false,
+              "input_identity_verified": true,
+              "failure_code": "TIME_LIMIT",
+              "converged_electronic": false,
+              "converged_ionic": false,
+              "independent_audit_passed": false
+            }
+          ]
+        },
+        {
+          "source": "walltime_control",
+          "available": true
+        }
+      ],
+      "limits": [
+        "Representative control,not a guarantee that every failed calculation can be repaired."
+      ],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F38",
+      "feature": "Repair bounds, source preservation, unsupported failure refusal",
+      "claim": "Repair bounds, parent preservation, method settings and unsupported-failure refusal are tested.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "partial_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_recovery": {
+              "tests": 32,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "electronic_control"
+        }
+      ],
+      "limits": [
+        "Fresh end-to-end accepted repair controls: electronic, ionic, walltime. Other branches remain scoped to the cited tests."
+      ],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F39",
+      "feature": "Repair magnetic/SOC/U/hybrid runs",
+      "claim": "Advanced-method repair preserves source/order/SOC/U/hybrid settings in targeted fixture tests.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "not_run",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_recovery": {
+              "tests": 32,
+              "all_passed": true
+            }
+          }
+        }
+      ],
+      "limits": [
+        "This does not establish live repair success for every advanced method; GaFe2O4 failure is negative evidence, not accepted repair."
+      ],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F40",
+      "feature": "Result ZIP, licensed-file exclusion, saved plans/dialogue/repair",
+      "claim": "Bundles preserve reviewed plans, dialogue and structure provenance while excluding licensed wavefunction/potential files.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_cli_structure.test_bundle": {
+              "tests": 1,
+              "all_passed": true
+            },
+            "test_harness": {
+              "tests": 4,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "run:runs/si-pbe-chain",
+          "available": true,
+          "case": "runs/si-pbe-chain",
+          "status": "succeeded",
+          "stages": [
+            {
+              "task": "relax",
+              "folder": "01_relax",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464406",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "scf",
+              "folder": "02_scf",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464417",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "bands",
+              "folder": "03_bands",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464428",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "dos",
+              "folder": "04_dos",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464458",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            }
+          ]
+        },
+        {
+          "source": "installed_wheel_current",
+          "available": true
+        }
+      ],
+      "limits": [
+        "Fresh installed-wheel bundle verification covers edited Si5Ge and its result/provenance records."
+      ],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F41",
+      "feature": "Fresh wheel installation outside checkout",
+      "claim": "The installed0.3.0 wheel passed reviewed two-turn structure editing,CLI preparation,Arrhenius relaxation/SCF,grounded explanation and bundle checks outside the checkout.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_app.test_installed_examples": {
+              "tests": 1,
+              "all_passed": true
+            },
+            "test_cli_structure": {
+              "tests": 3,
+              "all_passed": true
+            },
+            "test_cli_plan": {
+              "tests": 7,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "run:installed-run/si-ge",
+          "available": true,
+          "case": "installed-run/si-ge",
+          "status": "succeeded",
+          "stages": [
+            {
+              "task": "relax",
+              "folder": "01_relax",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "3568640",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            },
+            {
+              "task": "scf",
+              "folder": "02_scf",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "3568725",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            }
+          ]
+        },
+        {
+          "source": "installed_wheel_current",
+          "available": true
+        }
+      ],
+      "limits": [
+        "One edited Si5Ge case, not validation of every installed method/material."
+      ],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F42",
+      "feature": "Python 3.11/3.12/3.13 and macOS/Linux",
+      "claim": "All 488 local tests passed. GitHub CI for the same Python sources and tests passed on Python 3.11, 3.12 and 3.13, including package installation.",
+      "implementation_status": "implemented",
+      "offline_status": "not_applicable",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests"
+        },
+        {
+          "source": "ci",
+          "available": true
+        }
+      ],
+      "limits": [
+        "Recorded CI source identity is verified by file hashes; final release publication is checked separately."
+      ],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F43",
+      "feature": "Public GitHub default/release availability",
+      "claim": "Public release/default-branch/asset availability must be verified after publication.",
+      "implementation_status": "pending_publication",
+      "offline_status": "not_applicable",
+      "live_status": "pending_release",
+      "evidence": [],
+      "limits": [
+        "Local tests, artifacts and candidate wheel are not a published release."
+      ],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F44",
+      "feature": "Diverse cluster cqr/cqr2 examples",
+      "claim": "Seventeen packaged examples import/prepare offline. Diverse fresh cluster example outcomes are tracked separately.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "partial_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_vasp.test_public_examples": {
+              "tests": 8,
+              "all_passed": true
+            },
+            "test_app.test_packaged_example": {
+              "tests": 3,
+              "all_passed": true
+            },
+            "test_app.test_example_resources": {
+              "tests": 1,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "example_sources"
+        },
+        {
+          "source": "example_failures"
+        },
+        {
+          "source": "arrhenius_startup"
+        },
+        {
+          "source": "run:example-checks/runs/CrCl3",
+          "available": true,
+          "case": "example-checks/runs/CrCl3",
+          "status": "succeeded",
+          "stages": [
+            {
+              "task": "scf",
+              "folder": "01_scf",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "3567853",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            }
+          ]
+        },
+        {
+          "source": "run:example-checks/runs/CrOCl",
+          "available": true,
+          "case": "example-checks/runs/CrOCl",
+          "status": "succeeded",
+          "stages": [
+            {
+              "task": "scf",
+              "folder": "01_scf",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "3568059",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            }
+          ]
+        },
+        {
+          "source": "run:example-checks/runs/CrOCl-MoS2",
+          "available": true,
+          "case": "example-checks/runs/CrOCl-MoS2",
+          "status": "cancelled",
+          "stages": [
+            {
+              "task": "scf",
+              "folder": "01_scf",
+              "status": "cancelled",
+              "scheduler_state": "CANCELLED",
+              "job_id": "7464612",
+              "reported_success": null,
+              "input_identity_verified": null,
+              "failure_code": null,
+              "converged_electronic": null,
+              "converged_ionic": null,
+              "independent_audit_passed": false
+            }
+          ]
+        },
+        {
+          "source": "run:example-checks/runs/CrPS4",
+          "available": true,
+          "case": "example-checks/runs/CrPS4",
+          "status": "succeeded",
+          "stages": [
+            {
+              "task": "scf",
+              "folder": "01_scf",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "3567851",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            }
+          ]
+        },
+        {
+          "source": "run:example-checks/runs/CrSBr",
+          "available": true,
+          "case": "example-checks/runs/CrSBr",
+          "status": "succeeded",
+          "stages": [
+            {
+              "task": "scf",
+              "folder": "01_scf",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "3568011",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            }
+          ]
+        },
+        {
+          "source": "run:example-checks/runs/GaFe2O4",
+          "available": true,
+          "case": "example-checks/runs/GaFe2O4",
+          "status": "needs_attention",
+          "stages": [
+            {
+              "task": "scf",
+              "folder": "01_scf",
+              "status": "needs_attention",
+              "scheduler_state": "COMPLETED",
+              "job_id": "7464611",
+              "reported_success": false,
+              "input_identity_verified": true,
+              "failure_code": "RESULT_REJECTED",
+              "converged_electronic": false,
+              "converged_ionic": true,
+              "independent_audit_passed": false
+            }
+          ]
+        },
+        {
+          "source": "run:example-checks/runs/In2Se3",
+          "available": true,
+          "case": "example-checks/runs/In2Se3",
+          "status": "succeeded",
+          "stages": [
+            {
+              "task": "scf",
+              "folder": "01_scf",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "3568119",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            }
+          ]
+        },
+        {
+          "source": "run:example-checks/runs/V2Te2O",
+          "available": true,
+          "case": "example-checks/runs/V2Te2O",
+          "status": "succeeded",
+          "stages": [
+            {
+              "task": "scf",
+              "folder": "01_scf",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "3568062",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            }
+          ]
+        },
+        {
+          "source": "run:example-checks/runs/VSe2",
+          "available": true,
+          "case": "example-checks/runs/VSe2",
+          "status": "succeeded",
+          "stages": [
+            {
+              "task": "scf",
+              "folder": "01_scf",
+              "status": "succeeded",
+              "scheduler_state": "COMPLETED",
+              "job_id": "3568117",
+              "reported_success": true,
+              "input_identity_verified": true,
+              "failure_code": null,
+              "converged_electronic": true,
+              "converged_ionic": true,
+              "independent_audit_passed": true
+            }
+          ]
+        }
+      ],
+      "limits": [
+        "The original GaFe2O4 run reached NELM without convergence and is not accepted. Consult each run state for later outcomes. Source files are not universal scientific references."
+      ],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F45",
+      "feature": "Supercells",
+      "claim": "Diagonal and general integer supercell matrices preserve source geometry/site provenance.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_structures.test_supercell": {
+              "tests": 1,
+              "all_passed": true
+            },
+            "test_structures.test_general_supercell": {
+              "tests": 1,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "structure_dialogue"
+        }
+      ],
+      "limits": [
+        "Live dialogue covered diagonal repeat revisions; general matrices have offline geometry tests."
+      ],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F46",
+      "feature": "Species and site substitution",
+      "claim": "Whole-species and selected-site substitutions preserve ordering and source indices.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_structures.test_species_replacement": {
+              "tests": 1,
+              "all_passed": true
+            },
+            "test_structure_agent": {
+              "tests": 23,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "structure_dialogue"
+        }
+      ],
+      "limits": [
+        "Live substitution used a specified Si site; substitution energetics were not established."
+      ],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F47",
+      "feature": "Vacancies",
+      "claim": "Vacancies remove explicit sites after ordered preceding operations; revisions replace the earlier site choice.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_structures": {
+              "tests": 30,
+              "all_passed": true
+            },
+            "test_structure_agent": {
+              "tests": 23,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "structure_dialogue"
+        }
+      ],
+      "limits": [
+        "Defect formation energies and arbitrary defect searches remain outside scope."
+      ],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F48",
+      "feature": "Site translation",
+      "claim": "Cartesian/fractional site translations preserve nonorthogonal-cell semantics.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "not_run",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_structures.test_cartesian_translation": {
+              "tests": 1,
+              "all_passed": true
+            },
+            "test_structures.test_fractional_translation": {
+              "tests": 1,
+              "all_passed": true
+            }
+          }
+        }
+      ],
+      "limits": [],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F49",
+      "feature": "Coordinate editing",
+      "claim": "Explicit fractional-coordinate edits are validated; a revision replaces the previous coordinate.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_structures.test_fractional_translation": {
+              "tests": 1,
+              "all_passed": true
+            },
+            "test_structure_agent": {
+              "tests": 23,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "structure_dialogue"
+        }
+      ],
+      "limits": [],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F50",
+      "feature": "Slabs and terminations",
+      "claim": "Slabs require orientation,thickness,vacuum and an explicit choice when terminations are ambiguous.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_structures.test_slab": {
+              "tests": 2,
+              "all_passed": true
+            },
+            "test_structure_agent.test_slab": {
+              "tests": 1,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "structure_dialogue"
+        }
+      ],
+      "limits": [
+        "Generated slabs are unrelaxed geometric models; stability,polarity and surface convergence are not proven."
+      ],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F51",
+      "feature": "CIF/POSCAR conversion",
+      "claim": "CIF↔POSCAR conversion needs no model/cluster call and preserves cell metrics and site order through checked exports.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_structures.test_export": {
+              "tests": 3,
+              "all_passed": true
+            },
+            "test_cli_structure.test_convert": {
+              "tests": 1,
+              "all_passed": true
+            },
+            "test_app.test_format_conversion": {
+              "tests": 1,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "structure_dialogue"
+        }
+      ],
+      "limits": [
+        "CIF preserves cell metrics/fractional geometry, not an arbitrary Cartesian frame."
+      ],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F52",
+      "feature": "Structure revisions and CLI continuation",
+      "claim": "Structure revisions replay the complete operation list once against the original upload, including CLI--previous.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_structure_agent.test_revision": {
+              "tests": 1,
+              "all_passed": true
+            },
+            "test_cli_structure.test_structure_cli_revision": {
+              "tests": 1,
+              "all_passed": true
+            },
+            "test_app.test_structure_revisions": {
+              "tests": 1,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "structure_dialogue"
+        }
+      ],
+      "limits": [],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F53",
+      "feature": "Structure source and preview verification",
+      "claim": "Applying structure edits requires matching source and preview hashes; bundles retain provenance.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_structures.test_apply": {
+              "tests": 2,
+              "all_passed": true
+            },
+            "test_cli_structure.test_bundle": {
+              "tests": 1,
+              "all_passed": true
+            },
+            "test_app.test_structure_editor_indices": {
+              "tests": 1,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "structure_dialogue"
+        }
+      ],
+      "limits": [],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F54",
+      "feature": "Clear stale calculation state after edits",
+      "claim": "Using edited geometry clears stale calculation drafts and magnetic moments.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "not_run",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_app.test_structure_revisions": {
+              "tests": 1,
+              "all_passed": true
+            }
+          }
+        }
+      ],
+      "limits": [],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F55",
+      "feature": "Calculation CLI continuation",
+      "claim": "CLI calculation--previous preserves original goal/history and rejects a changed source.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "not_run",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_cli_plan.test_cli_revision": {
+              "tests": 1,
+              "all_passed": true
+            }
+          }
+        }
+      ],
+      "limits": [
+        "New current CLI revision path is tested with mocked provider; no separate real CLI continuation call yet."
+      ],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F56",
+      "feature": "Long conversation history",
+      "claim": "UI retains constraints beyond six rounds for calculations,structures and explanations; helpers preserve all user turns.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "partial_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_app.test_full_history": {
+              "tests": 3,
+              "all_passed": true
+            },
+            "test_prompt_context.test_long_history": {
+              "tests": 1,
+              "all_passed": true
+            },
+            "test_model_usage.test_long_calculation": {
+              "tests": 1,
+              "all_passed": true
+            },
+            "test_model_usage.test_explanation_preserves": {
+              "tests": 1,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "token_pairs"
+        }
+      ],
+      "limits": [
+        "UI is exercised by Streamlit AppTest with provider doubles; the long-revision paired Codex case verifies backend semantics separately."
+      ],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F57",
+      "feature": "Per-call model usage",
+      "claim": "Per-call provider token counts and latency are saved across planner,structure,explanation and repair outputs.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_codex_only",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_model_usage": {
+              "tests": 20,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "token_pairs"
+        }
+      ],
+      "limits": [
+        "Live Codex counts verified. Responses/chat field normalization is mocked SDK evidence. Missing counts stay unknown; cached/reasoning counts are subsets."
+      ],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F58",
+      "feature": "Lossless prompt compaction",
+      "claim": "Compact prompts preserve complete geometry and user constraints; advisory large vectors remain available in saved reports.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_prompt_context": {
+              "tests": 9,
+              "all_passed": true
+            },
+            "test_harness": {
+              "tests": 4,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "token_pairs"
+        }
+      ],
+      "limits": [
+        "Three single paired samples establish their measured counts and semantics,not typical savings or latency."
+      ],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F59",
+      "feature": "Input size admission",
+      "claim": "A96,000-byte UTF-8 compact payload admission bound rejects oversize requests before invoking the provider.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "not_run",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_model_usage.test_context_budget": {
+              "tests": 1,
+              "all_passed": true
+            }
+          }
+        }
+      ],
+      "limits": [
+        "Bytes and characters are not token estimates. No truncation is used to admit the request."
+      ],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F60",
+      "feature": "API output budget",
+      "claim": "API output budgets are finite/configurable,scale for sites,and reject incomplete or length-limited responses.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "not_run",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_model_usage.test_cap": {
+              "tests": 1,
+              "all_passed": true
+            },
+            "test_model_usage.test_length_limited": {
+              "tests": 2,
+              "all_passed": true
+            }
+          }
+        }
+      ],
+      "limits": [
+        "API-provider limit behavior tested with SDK doubles. Codex retains its own output budget."
+      ],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F61",
+      "feature": "Refresh without model calls",
+      "claim": "Refreshing plan,result or repair views reuses saved usage/results without another model request.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "not_run",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_app.test_calculation_usage": {
+              "tests": 1,
+              "all_passed": true
+            },
+            "test_app.test_explanation_is_explicit": {
+              "tests": 1,
+              "all_passed": true
+            },
+            "test_app.test_repair_actions": {
+              "tests": 1,
+              "all_passed": true
+            },
+            "test_app.test_structure_revisions": {
+              "tests": 1,
+              "all_passed": true
+            }
+          }
+        }
+      ],
+      "limits": [
+        "Streamlit AppTest verifies call counts across reruns."
+      ],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F62",
+      "feature": "Failed-call usage persistence",
+      "claim": "Failed model calls retain measurable usage across refresh without replacing accepted evidence.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "not_run",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_app.test_failed_model_usage": {
+              "tests": 1,
+              "all_passed": true
+            },
+            "test_model_usage.test_invalid_model_reply": {
+              "tests": 1,
+              "all_passed": true
+            }
+          }
+        }
+      ],
+      "limits": [],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F63",
+      "feature": "Arrhenius SSH master reuse",
+      "claim": "Arrhenius can reuse an explicitly configured SSH master for SSH/SCP without closing the user master.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "passed_representative",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_transport.test_external_control_socket": {
+              "tests": 1,
+              "all_passed": true
+            },
+            "test_config.test_control_socket": {
+              "tests": 1,
+              "all_passed": true
+            },
+            "test_app.test_cluster_control_socket": {
+              "tests": 1,
+              "all_passed": true
+            }
+          }
+        },
+        {
+          "source": "arrhenius_doctor"
+        },
+        {
+          "source": "arrhenius_startup"
+        }
+      ],
+      "limits": [
+        "Specific authenticated Arrhenius session verified,not a general remote-login guarantee."
+      ],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    },
+    {
+      "id": "F64",
+      "feature": "Explicit model-call triggers",
+      "claim": "Only explicit planning/explanation/repair requests call the model; observation and preparation/submission gates stay separate.",
+      "implementation_status": "implemented",
+      "offline_status": "passed",
+      "live_status": "not_run",
+      "evidence": [
+        {
+          "source": "tests",
+          "selectors": {
+            "test_app.test_agent_proposal_requires_review": {
+              "tests": 1,
+              "all_passed": true
+            },
+            "test_app.test_explanation_is_explicit": {
+              "tests": 1,
+              "all_passed": true
+            },
+            "test_app.test_repair_actions": {
+              "tests": 1,
+              "all_passed": true
+            },
+            "test_cli_plan.test_cli_explain": {
+              "tests": 1,
+              "all_passed": true
+            }
+          }
+        }
+      ],
+      "limits": [],
+      "scientific_accuracy_validated": false,
+      "all_parameters_or_materials_proven": false
+    }
+  ],
+  "evidence_registry": {
+    "tests": {
+      "base": "private_acceptance",
+      "path": "tests.xml",
+      "sha256": "44e8abd4777ca6ae6e9b19c1e30cddcf537b531e14eff04dd0345faf5a0da623",
+      "kind": "offline",
+      "note": "Current source regression tests; provider/scheduler doubles are not live services.",
+      "distributed": false,
+      "current_sha256": "44e8abd4777ca6ae6e9b19c1e30cddcf537b531e14eff04dd0345faf5a0da623",
+      "matches_recorded_sha256": true
+    },
+    "method_audit": {
+      "base": "private_acceptance",
+      "path": "independent-audit.json",
+      "sha256": "b76d955959221041963411ff16ddb9c11a755db0bb81f0f29cf4dcd86b90e4fc",
+      "kind": "cluster_output_audit",
+      "note": "Independent parsing and receipt checks of completed functional tests; no parameter-convergence study or ground-state claim.",
+      "distributed": false,
+      "current_sha256": "b76d955959221041963411ff16ddb9c11a755db0bb81f0f29cf4dcd86b90e4fc",
+      "matches_recorded_sha256": true
+    },
+    "feature_audit": {
+      "base": "private_acceptance",
+      "path": "independent-feature-audit.json",
+      "sha256": "7414f4c258dad2c577369749bf5de46e4016538091e582d08aaa02ae658f7885",
+      "kind": "independent_review",
+      "note": "",
+      "distributed": false,
+      "current_sha256": "7414f4c258dad2c577369749bf5de46e4016538091e582d08aaa02ae658f7885",
+      "matches_recorded_sha256": true
+    },
+    "execution_source": {
+      "base": "private_acceptance",
+      "path": "execution-source.json",
+      "sha256": "769f609c83188d6fe6d63a5ce8a87c322f6921f440a6feeaac518ac0a97a3f40",
+      "kind": "source_identity",
+      "note": "Campaign import snapshot predates final source freeze.",
+      "distributed": false,
+      "current_sha256": "769f609c83188d6fe6d63a5ce8a87c322f6921f440a6feeaac518ac0a97a3f40",
+      "matches_recorded_sha256": true
+    },
+    "calculation_dialogue": {
+      "base": "repository",
+      "path": "validation/results/dialogue-0.3.0.json",
+      "sha256": "7614aac3f4028f9c5c002df9c03e76464e5a3b861c9e0263776d0ee68699811e",
+      "kind": "live_codex",
+      "note": "11 real calls; before later context compaction; see token pairs for current provider/context semantics.",
+      "distributed": true,
+      "current_sha256": "7614aac3f4028f9c5c002df9c03e76464e5a3b861c9e0263776d0ee68699811e",
+      "matches_recorded_sha256": true
+    },
+    "structure_dialogue": {
+      "base": "repository",
+      "path": "validation/results/structures-0.3.0.json",
+      "sha256": "1dc04c913c92cb9284d4d7614f7317cf6e2bd347377453eda9351821c0023dab",
+      "kind": "live_codex_and_local_export",
+      "note": "14 real calls,9 exports,19 checks; before later question cleanup/context compaction.",
+      "distributed": true,
+      "current_sha256": "1dc04c913c92cb9284d4d7614f7317cf6e2bd347377453eda9351821c0023dab",
+      "matches_recorded_sha256": true
+    },
+    "token_pairs": {
+      "base": "repository",
+      "path": "validation/results/token-use-0.3.0.json",
+      "sha256": "52a46de87ede272f189fcd92e571fc3970ae8f05800f176c0fd9f22438b89b5b",
+      "kind": "live_codex",
+      "note": "Six calls in three controlled pairs; all semantic checks passed. No general savings estimate.",
+      "distributed": true,
+      "current_sha256": "52a46de87ede272f189fcd92e571fc3970ae8f05800f176c0fd9f22438b89b5b",
+      "matches_recorded_sha256": true
+    },
+    "prior_methods": {
+      "base": "repository",
+      "path": "validation/results/methods-0.2.0.json",
+      "sha256": "ea6c6aaf6a4fde0df5c22ef2c42c5c665c4d190cf0f3c419ba95f10676733fc9",
+      "kind": "retained_cluster",
+      "note": "Historical method checks; not fresh current UI/provider evidence.",
+      "distributed": true,
+      "current_sha256": "ea6c6aaf6a4fde0df5c22ef2c42c5c665c4d190cf0f3c419ba95f10676733fc9",
+      "matches_recorded_sha256": true
+    },
+    "prior_explanations": {
+      "base": "repository",
+      "path": "validation/results/explanations-0.2.1.json",
+      "sha256": "5f4126536f4991155a899b929ce7ae110d9b4ed304ff648d0dea661fe88b1402",
+      "kind": "retained_live_codex",
+      "note": "Historical result explanations; current changes additionally covered offline.",
+      "distributed": true,
+      "current_sha256": "5f4126536f4991155a899b929ce7ae110d9b4ed304ff648d0dea661fe88b1402",
+      "matches_recorded_sha256": true
+    },
+    "transport_control": {
+      "base": "private_acceptance",
+      "path": "controls/transport/fault_acceptance.json",
+      "sha256": "f6193f6306d0e81df77f9204b0844fa3083ceabb06885cc7bbfde2d97d8a34d1",
+      "kind": "live_scheduler_control",
+      "note": "One owned sleep job, not a scientific VASP calculation.",
+      "distributed": false,
+      "current_sha256": "f6193f6306d0e81df77f9204b0844fa3083ceabb06885cc7bbfde2d97d8a34d1",
+      "matches_recorded_sha256": true
+    },
+    "electronic_control": {
+      "base": "private_acceptance",
+      "path": "controls/electronic-report.json",
+      "sha256": "bf8b43febfe764e10f29a0b2e8973f9c98357335bb2853726333631e88a8918f",
+      "kind": "live_vasp_repair",
+      "note": "",
+      "distributed": false,
+      "current_sha256": "bf8b43febfe764e10f29a0b2e8973f9c98357335bb2853726333631e88a8918f",
+      "matches_recorded_sha256": true
+    },
+    "arrhenius_doctor": {
+      "base": "private_acceptance",
+      "path": "arrhenius-doctor.json",
+      "sha256": "b9b69c976574a4d192d9275adf1618b064d73083b8b42392000fce43fdf5975b",
+      "kind": "live_cluster_connection",
+      "note": "Stock SSHTransport with explicit existing control socket; master survived.",
+      "distributed": false,
+      "current_sha256": "b9b69c976574a4d192d9275adf1618b064d73083b8b42392000fce43fdf5975b",
+      "matches_recorded_sha256": true
+    },
+    "arrhenius_startup": {
+      "base": "private_acceptance",
+      "path": "independent-feature-audit.json",
+      "sha256": "7414f4c258dad2c577369749bf5de46e4016538091e582d08aaa02ae658f7885",
+      "kind": "live_cluster_startup",
+      "note": "Recorded VASP5.4.4 startup,32 MPI ranks and input identity for CrPS4/CrCl3; full outcomes separate.",
+      "distributed": false,
+      "current_sha256": "7414f4c258dad2c577369749bf5de46e4016538091e582d08aaa02ae658f7885",
+      "matches_recorded_sha256": true
+    },
+    "example_sources": {
+      "base": "repository",
+      "path": "examples/sources.json",
+      "sha256": "98604c233ec882af8d291440f0170de2823f2bcf858ecca51d73c3abb1bb2266",
+      "kind": "structure_provenance",
+      "note": "Source metadata, not proof of ground-state geometry.",
+      "distributed": true,
+      "current_sha256": "98604c233ec882af8d291440f0170de2823f2bcf858ecca51d73c3abb1bb2266",
+      "matches_recorded_sha256": true
+    },
+    "example_failures": {
+      "base": "private_acceptance",
+      "path": "example-checks/GaFe2O4-failure-audit.json",
+      "sha256": "207f71be4678f2aa97ea7521ece8c810eb090bf971642615ec85a7b7843e2136",
+      "kind": "negative_cluster_evidence",
+      "note": "Electronic nonconvergence explicitly rejected despite scheduler completion.",
+      "distributed": false,
+      "current_sha256": "207f71be4678f2aa97ea7521ece8c810eb090bf971642615ec85a7b7843e2136",
+      "matches_recorded_sha256": true
+    },
+    "run:runs/si-pbe-chain": {
+      "base": "private_acceptance",
+      "path": "runs/si-pbe-chain/run.json",
+      "sha256": "78296d88673cf539863bc2e11d7cc7b8a1ae62f3af3cd6b5426dee60fa7c43c1",
+      "kind": "saved_cluster_run",
+      "note": "Saved scheduler/result state only; independently audited stages are separately identified.",
+      "distributed": false,
+      "current_sha256": "78296d88673cf539863bc2e11d7cc7b8a1ae62f3af3cd6b5426dee60fa7c43c1",
+      "matches_recorded_sha256": true
+    },
+    "run:runs/mgo-cell-relax": {
+      "base": "private_acceptance",
+      "path": "runs/mgo-cell-relax/run.json",
+      "sha256": "b8ade668947158dea40a66b0eb1870eacf0c6a459a873f0770d83788cb3a9533",
+      "kind": "saved_cluster_run",
+      "note": "Saved scheduler/result state only; independently audited stages are separately identified.",
+      "distributed": false,
+      "current_sha256": "b8ade668947158dea40a66b0eb1870eacf0c6a459a873f0770d83788cb3a9533",
+      "matches_recorded_sha256": true
+    },
+    "run:runs/fe-soc-chain": {
+      "base": "private_acceptance",
+      "path": "runs/fe-soc-chain/run.json",
+      "sha256": "4d07cb9c2b87b94b26d1ac8d4d3f8df2a2bac8f960ff4f90062592f92b35a92a",
+      "kind": "saved_cluster_run",
+      "note": "Saved scheduler/result state only; independently audited stages are separately identified.",
+      "distributed": false,
+      "current_sha256": "4d07cb9c2b87b94b26d1ac8d4d3f8df2a2bac8f960ff4f90062592f92b35a92a",
+      "matches_recorded_sha256": true
+    },
+    "run:runs/fe-collinear-chain": {
+      "base": "private_acceptance",
+      "path": "runs/fe-collinear-chain/run.json",
+      "sha256": "bf8e94c3f9b0c86fc6ee453e3efd8ed1387bf7e8922c913bc0b90ac8fb02efd7",
+      "kind": "saved_cluster_run",
+      "note": "Saved scheduler/result state only; independently audited stages are separately identified.",
+      "distributed": false,
+      "current_sha256": "bf8e94c3f9b0c86fc6ee453e3efd8ed1387bf7e8922c913bc0b90ac8fb02efd7",
+      "matches_recorded_sha256": true
+    },
+    "run:runs/nio-u-chain": {
+      "base": "private_acceptance",
+      "path": "runs/nio-u-chain/run.json",
+      "sha256": "f73d4b5ff5859bfe1b7697ed54d5fe6a8d8707d54f57653381b3bde16957fdad",
+      "kind": "saved_cluster_run",
+      "note": "Saved scheduler/result state only; independently audited stages are separately identified.",
+      "distributed": false,
+      "current_sha256": "f73d4b5ff5859bfe1b7697ed54d5fe6a8d8707d54f57653381b3bde16957fdad",
+      "matches_recorded_sha256": true
+    },
+    "run:runs/fe-seed-comparison": {
+      "base": "private_acceptance",
+      "path": "runs/fe-seed-comparison/run.json",
+      "sha256": "d7974a203aedeb786494f6cd0035d283960596d5ef15ea3c9a60e1479c5218c0",
+      "kind": "saved_cluster_run",
+      "note": "Saved scheduler/result state only; independently audited stages are separately identified.",
+      "distributed": false,
+      "current_sha256": "d7974a203aedeb786494f6cd0035d283960596d5ef15ea3c9a60e1479c5218c0",
+      "matches_recorded_sha256": true
+    },
+    "run:runs/fe-noncollinear-chain": {
+      "base": "private_acceptance",
+      "path": "runs/fe-noncollinear-chain/run.json",
+      "sha256": "dd40a017d1e354e571cedef7053bff9765396342600eafb396cf2c6b5e4f0dd2",
+      "kind": "saved_cluster_run",
+      "note": "Saved scheduler/result state only; independently audited stages are separately identified.",
+      "distributed": false,
+      "current_sha256": "dd40a017d1e354e571cedef7053bff9765396342600eafb396cf2c6b5e4f0dd2",
+      "matches_recorded_sha256": true
+    },
+    "run:runs/si-zero-seed-soc-chain": {
+      "base": "private_acceptance",
+      "path": "runs/si-zero-seed-soc-chain/run.json",
+      "sha256": "f6fff47985525625331222975b88416caf6f30dec09e2163bf184a9d9076b430",
+      "kind": "saved_cluster_run",
+      "note": "Saved scheduler/result state only; independently audited stages are separately identified.",
+      "distributed": false,
+      "current_sha256": "f6fff47985525625331222975b88416caf6f30dec09e2163bf184a9d9076b430",
+      "matches_recorded_sha256": true
+    },
+    "run:runs/nio-u-soc-chain": {
+      "base": "private_acceptance",
+      "path": "runs/nio-u-soc-chain/run.json",
+      "sha256": "7f6b416dd763ee71c924d7e2cbbd5868a7c45cd38b81bf49bd0495b992f224d1",
+      "kind": "saved_cluster_run",
+      "note": "Saved scheduler/result state only; independently audited stages are separately identified.",
+      "distributed": false,
+      "current_sha256": "7f6b416dd763ee71c924d7e2cbbd5868a7c45cd38b81bf49bd0495b992f224d1",
+      "matches_recorded_sha256": true
+    },
+    "run:runs/nio-u-noncollinear-scf": {
+      "base": "private_acceptance",
+      "path": "runs/nio-u-noncollinear-scf/run.json",
+      "sha256": "c6582c7703a7a3404cad12e536a08380cdf015859096d401322f5c5a591ab25f",
+      "kind": "saved_cluster_run",
+      "note": "Saved scheduler/result state only; independently audited stages are separately identified.",
+      "distributed": false,
+      "current_sha256": "c6582c7703a7a3404cad12e536a08380cdf015859096d401322f5c5a591ab25f",
+      "matches_recorded_sha256": true
+    },
+    "run:runs/si-hse06-chain": {
+      "base": "private_acceptance",
+      "path": "runs/si-hse06-chain/run.json",
+      "sha256": "8aded39ee20695e2f03e85e3909b725ec6ab4b131c2d2bfe506a8aa114c41970",
+      "kind": "saved_cluster_run",
+      "note": "Saved scheduler/result state only; independently audited stages are separately identified.",
+      "distributed": false,
+      "current_sha256": "8aded39ee20695e2f03e85e3909b725ec6ab4b131c2d2bfe506a8aa114c41970",
+      "matches_recorded_sha256": true
+    },
+    "run:runs/si-pbe0-chain": {
+      "base": "private_acceptance",
+      "path": "runs/si-pbe0-chain/run.json",
+      "sha256": "171334c9caa4120885bcf0f634443df99c068d0ad59654ef2672b51250b6e519",
+      "kind": "saved_cluster_run",
+      "note": "Saved scheduler/result state only; independently audited stages are separately identified.",
+      "distributed": false,
+      "current_sha256": "171334c9caa4120885bcf0f634443df99c068d0ad59654ef2672b51250b6e519",
+      "matches_recorded_sha256": true
+    },
+    "run:runs/nio-hse06-magnetic-chain": {
+      "base": "private_acceptance",
+      "path": "runs/nio-hse06-magnetic-chain/run.json",
+      "sha256": "d53c650ed60082903c01644786a70dbeca68281a33d37241744123637a117493",
+      "kind": "saved_cluster_run",
+      "note": "Saved scheduler/result state only; independently audited stages are separately identified.",
+      "distributed": false,
+      "current_sha256": "d53c650ed60082903c01644786a70dbeca68281a33d37241744123637a117493",
+      "matches_recorded_sha256": true
+    },
+    "run:runs/nio-pbe0-magnetic-chain": {
+      "base": "private_acceptance",
+      "path": "runs/nio-pbe0-magnetic-chain/run.json",
+      "sha256": "34dc4c3ed31be3cb4ea3f6672b1f9f7278d085fa3b2e57331af5c2e97127dbf3",
+      "kind": "saved_cluster_run",
+      "note": "Saved scheduler/result state only; independently audited stages are separately identified.",
+      "distributed": false,
+      "current_sha256": "34dc4c3ed31be3cb4ea3f6672b1f9f7278d085fa3b2e57331af5c2e97127dbf3",
+      "matches_recorded_sha256": true
+    },
+    "run:runs/si-hse06-soc-probe-gate": {
+      "base": "private_acceptance",
+      "path": "runs/si-hse06-soc-probe-gate/run.json",
+      "sha256": "a42dd62398684897d9498930b541a7ddaa4fa3a3a648f06670be516ec10f7e02",
+      "kind": "saved_cluster_run",
+      "note": "Saved scheduler/result state only; independently audited stages are separately identified.",
+      "distributed": false,
+      "current_sha256": "a42dd62398684897d9498930b541a7ddaa4fa3a3a648f06670be516ec10f7e02",
+      "matches_recorded_sha256": true
+    },
+    "run:runs/nio-hse06-u-soc-probe": {
+      "base": "private_acceptance",
+      "path": "runs/nio-hse06-u-soc-probe/run.json",
+      "sha256": "612233dd4b53018f1647a2d0682e9ef57b62735ad556da570a6b56648ccf78d3",
+      "kind": "saved_cluster_run",
+      "note": "Saved scheduler/result state only; independently audited stages are separately identified.",
+      "distributed": false,
+      "current_sha256": "612233dd4b53018f1647a2d0682e9ef57b62735ad556da570a6b56648ccf78d3",
+      "matches_recorded_sha256": true
+    },
+    "run:runs/si-hse06-soc-probe": {
+      "base": "private_acceptance",
+      "path": "runs/si-hse06-soc-probe/run.json",
+      "sha256": "b49c223aca539b5a3ec5396257af1a3b2d6235af3c4d164a2a3875b14e46dd0d",
+      "kind": "saved_cluster_run",
+      "note": "Saved scheduler/result state only; independently audited stages are separately identified.",
+      "distributed": false,
+      "current_sha256": "b49c223aca539b5a3ec5396257af1a3b2d6235af3c4d164a2a3875b14e46dd0d",
+      "matches_recorded_sha256": true
+    },
+    "run:runs/si-pbe0-soc-probe": {
+      "base": "private_acceptance",
+      "path": "runs/si-pbe0-soc-probe/run.json",
+      "sha256": "cf0d6c609d28d1dcf0395eeb3c153bcb757caaefbf5ced0d3f0b60250d7b42ef",
+      "kind": "saved_cluster_run",
+      "note": "Saved scheduler/result state only; independently audited stages are separately identified.",
+      "distributed": false,
+      "current_sha256": "cf0d6c609d28d1dcf0395eeb3c153bcb757caaefbf5ced0d3f0b60250d7b42ef",
+      "matches_recorded_sha256": true
+    },
+    "run:runs/nio-pbe0-u-soc-probe": {
+      "base": "private_acceptance",
+      "path": "runs/nio-pbe0-u-soc-probe/run.json",
+      "sha256": "e10dbc996cbbcd9b22e04aecd20fee712738a17ee1e4ef20439f3c2a75f3e030",
+      "kind": "saved_cluster_run",
+      "note": "Saved scheduler/result state only; independently audited stages are separately identified.",
+      "distributed": false,
+      "current_sha256": "e10dbc996cbbcd9b22e04aecd20fee712738a17ee1e4ef20439f3c2a75f3e030",
+      "matches_recorded_sha256": true
+    },
+    "run:controls/ionic": {
+      "base": "private_acceptance",
+      "path": "controls/ionic/run.json",
+      "sha256": "227f02a17168f11089daaa68ebc3072b82e8c6e7a1229f729674fcfac38de132",
+      "kind": "saved_cluster_run",
+      "note": "Saved scheduler/result state only; independently audited stages are separately identified.",
+      "distributed": false,
+      "current_sha256": "227f02a17168f11089daaa68ebc3072b82e8c6e7a1229f729674fcfac38de132",
+      "matches_recorded_sha256": true
+    },
+    "run:controls/walltime": {
+      "base": "private_acceptance",
+      "path": "controls/walltime/run.json",
+      "sha256": "29eb1e66fcc6e294ead0ed93adc48d299ec9c6c18f608e63b8e77f40f045b789",
+      "kind": "saved_cluster_run",
+      "note": "Saved scheduler/result state only; independently audited stages are separately identified.",
+      "distributed": false,
+      "current_sha256": "29eb1e66fcc6e294ead0ed93adc48d299ec9c6c18f608e63b8e77f40f045b789",
+      "matches_recorded_sha256": true
+    },
+    "run:installed-run/si-ge": {
+      "base": "private_acceptance",
+      "path": "installed-run/si-ge/run.json",
+      "sha256": "4a775809dbfc9a793d79b133faf2f345460baa8a5891e983839e527288332380",
+      "kind": "saved_cluster_run",
+      "note": "Saved scheduler/result state only; independently audited stages are separately identified.",
+      "distributed": false,
+      "current_sha256": "4a775809dbfc9a793d79b133faf2f345460baa8a5891e983839e527288332380",
+      "matches_recorded_sha256": true
+    },
+    "ionic_control": {
+      "base": "private_acceptance",
+      "path": "controls/ionic-report.json",
+      "sha256": "c6354ddd850bf6627fe5bf75933949a6e74ce6fb6e62cc215f51a75b8ef48d96",
+      "kind": "live_vasp_repair",
+      "note": "",
+      "distributed": false,
+      "current_sha256": "c6354ddd850bf6627fe5bf75933949a6e74ce6fb6e62cc215f51a75b8ef48d96",
+      "matches_recorded_sha256": true
+    },
+    "walltime_control": {
+      "base": "private_acceptance",
+      "path": "controls/walltime-report.json",
+      "sha256": "c02c2137070749c1c9f708d3f23de02e593e86e21d508880b3b38243eb22f267",
+      "kind": "live_vasp_repair",
+      "note": "",
+      "distributed": false,
+      "current_sha256": "c02c2137070749c1c9f708d3f23de02e593e86e21d508880b3b38243eb22f267",
+      "matches_recorded_sha256": true
+    },
+    "installed_wheel_current": {
+      "base": "private_acceptance",
+      "path": "installed-wheel.json",
+      "sha256": "bb32e0f1d7e19da71fb5819920eb24a134fc56f8b00be6ab3ed6d84170506d84",
+      "kind": "installed_wheel_live_cluster",
+      "note": "",
+      "distributed": false,
+      "current_sha256": "bb32e0f1d7e19da71fb5819920eb24a134fc56f8b00be6ab3ed6d84170506d84",
+      "matches_recorded_sha256": true
+    },
+    "run:example-checks/runs/CrCl3": {
+      "base": "private_acceptance",
+      "path": "example-checks/runs/CrCl3/run.json",
+      "sha256": "7e37653065a925dd0fcb3e48188db7597f27e43efc1154ae744d599f810203e3",
+      "kind": "saved_cluster_run",
+      "note": "Saved scheduler/result state only; independently audited stages are separately identified.",
+      "distributed": false,
+      "current_sha256": "7e37653065a925dd0fcb3e48188db7597f27e43efc1154ae744d599f810203e3",
+      "matches_recorded_sha256": true
+    },
+    "run:example-checks/runs/CrOCl": {
+      "base": "private_acceptance",
+      "path": "example-checks/runs/CrOCl/run.json",
+      "sha256": "8a60c455d8636ce693b7ca3f419ac6a634339bdab7a535acf633372492bd1d2a",
+      "kind": "saved_cluster_run",
+      "note": "Saved scheduler/result state only; independently audited stages are separately identified.",
+      "distributed": false,
+      "current_sha256": "8a60c455d8636ce693b7ca3f419ac6a634339bdab7a535acf633372492bd1d2a",
+      "matches_recorded_sha256": true
+    },
+    "run:example-checks/runs/CrOCl-MoS2": {
+      "base": "private_acceptance",
+      "path": "example-checks/runs/CrOCl-MoS2/run.json",
+      "sha256": "aafe6c885ea37fc962d02b61218ba173fd5183a9327dea01cb9ed581f3c02434",
+      "kind": "saved_cluster_run",
+      "note": "Saved scheduler/result state only; independently audited stages are separately identified.",
+      "distributed": false,
+      "current_sha256": "aafe6c885ea37fc962d02b61218ba173fd5183a9327dea01cb9ed581f3c02434",
+      "matches_recorded_sha256": true
+    },
+    "run:example-checks/runs/CrPS4": {
+      "base": "private_acceptance",
+      "path": "example-checks/runs/CrPS4/run.json",
+      "sha256": "c2f088f50fc8449706676e3207ee4e1bbbd1e5d1dd24fe49d7cc524016b8cb45",
+      "kind": "saved_cluster_run",
+      "note": "Saved scheduler/result state only; independently audited stages are separately identified.",
+      "distributed": false,
+      "current_sha256": "c2f088f50fc8449706676e3207ee4e1bbbd1e5d1dd24fe49d7cc524016b8cb45",
+      "matches_recorded_sha256": true
+    },
+    "run:example-checks/runs/CrSBr": {
+      "base": "private_acceptance",
+      "path": "example-checks/runs/CrSBr/run.json",
+      "sha256": "63692b37974aec373076cda3fd9c23f536320db2e636228048e3dbfde625d875",
+      "kind": "saved_cluster_run",
+      "note": "Saved scheduler/result state only; independently audited stages are separately identified.",
+      "distributed": false,
+      "current_sha256": "63692b37974aec373076cda3fd9c23f536320db2e636228048e3dbfde625d875",
+      "matches_recorded_sha256": true
+    },
+    "run:example-checks/runs/GaFe2O4": {
+      "base": "private_acceptance",
+      "path": "example-checks/runs/GaFe2O4/run.json",
+      "sha256": "5ab0b2888e5403e1a2cc73a72b4c668b2916577a07a3dda08e75f38f860238f7",
+      "kind": "saved_cluster_run",
+      "note": "Saved scheduler/result state only; independently audited stages are separately identified.",
+      "distributed": false,
+      "current_sha256": "5ab0b2888e5403e1a2cc73a72b4c668b2916577a07a3dda08e75f38f860238f7",
+      "matches_recorded_sha256": true
+    },
+    "run:example-checks/runs/In2Se3": {
+      "base": "private_acceptance",
+      "path": "example-checks/runs/In2Se3/run.json",
+      "sha256": "641dbcd7e8ca52feeac4c7bacda592dc53f9cb61dd0d9426059e60a40fa68731",
+      "kind": "saved_cluster_run",
+      "note": "Saved scheduler/result state only; independently audited stages are separately identified.",
+      "distributed": false,
+      "current_sha256": "641dbcd7e8ca52feeac4c7bacda592dc53f9cb61dd0d9426059e60a40fa68731",
+      "matches_recorded_sha256": true
+    },
+    "run:example-checks/runs/V2Te2O": {
+      "base": "private_acceptance",
+      "path": "example-checks/runs/V2Te2O/run.json",
+      "sha256": "646981a651f16bfec92faf88fc684347ef1e0196d51490e3750a2a53b55ecaf3",
+      "kind": "saved_cluster_run",
+      "note": "Saved scheduler/result state only; independently audited stages are separately identified.",
+      "distributed": false,
+      "current_sha256": "646981a651f16bfec92faf88fc684347ef1e0196d51490e3750a2a53b55ecaf3",
+      "matches_recorded_sha256": true
+    },
+    "run:example-checks/runs/VSe2": {
+      "base": "private_acceptance",
+      "path": "example-checks/runs/VSe2/run.json",
+      "sha256": "bc02afe89788bf55a1c9effb6b88616559254e2fb49ffa673000083acda2f6d6",
+      "kind": "saved_cluster_run",
+      "note": "Saved scheduler/result state only; independently audited stages are separately identified.",
+      "distributed": false,
+      "current_sha256": "bc02afe89788bf55a1c9effb6b88616559254e2fb49ffa673000083acda2f6d6",
+      "matches_recorded_sha256": true
+    },
+    "ci": {
+      "base": "private_acceptance",
+      "path": "ci-checks.json",
+      "sha256": "e0fb90a4883bde09450a97bf9bbe2eb273bac435bb3319105f953fc90e19c5b8",
+      "kind": "github_actions",
+      "note": "",
+      "distributed": false,
+      "current_sha256": "e0fb90a4883bde09450a97bf9bbe2eb273bac435bb3319105f953fc90e19c5b8",
+      "matches_recorded_sha256": true
+    },
+    "run:runs/si-pbe0-soc-probe-gate": {
+      "base": "private_acceptance",
+      "path": "runs/si-pbe0-soc-probe-gate/run.json",
+      "sha256": "a3bc1a45bb3a5d3fe5d8201122c7cca5071f84ef05ff537c132e9f19b9e4bff0",
+      "kind": "saved_cluster_run",
+      "note": "Saved scheduler/result state only; independently audited stages are separately identified.",
+      "distributed": false,
+      "current_sha256": "a3bc1a45bb3a5d3fe5d8201122c7cca5071f84ef05ff537c132e9f19b9e4bff0",
+      "matches_recorded_sha256": true
+    }
+  },
+  "matrix_offline_suite": {
+    "tests": 488,
+    "passed": 488,
+    "all_passed": true,
+    "source": "tests"
+  },
+  "matrix_cluster_audit_snapshot": {
+    "checked_at": "2026-10-09T09:17:51.857405+00:00",
+    "independently_audited_completed_stages": 71,
+    "passed_completed": true,
+    "pending_at_that_audit": 0
+  },
+  "matrix_saved_state_pending_snapshot": [],
+  "matrix_not_started_checks": [],
+  "independent_review_gap_disposition": [
+    {
+      "gap": "The 18 frozen method workflows are representative regimes, not every supported method/task Cartesian product or a convergence study.",
+      "disposition": "retained explicitly in feature limits; current status is in matrix rows"
+    },
+    {
+      "gap": "The initial feature matrix predates structure editing, telemetry, prompt compaction, and Arrhenius; final coverage must include their current tests/evidence.",
+      "disposition": "retained explicitly in feature limits; current status is in matrix rows"
+    },
+    {
+      "gap": "Live Responses/Chat Completions adapters need own configured-provider evidence; Codex live success cannot establish those adapters.",
+      "disposition": "retained explicitly in feature limits; current status is in matrix rows"
+    },
+    {
+      "gap": "Current campaign controls still require completed ionic/timeout repair and same-job resume/cancel evidence before declaring all controls live-verified.",
+      "disposition": "same-job resume/cancel now established by fresh transport_control; ionic/walltime remain individually tracked"
+    },
+    {
+      "gap": "Advanced-method repairs have targeted invariant tests; the current live repair sample does not establish every spin/U/hybrid regime.",
+      "disposition": "retained explicitly in feature limits; current status is in matrix rows"
+    },
+    {
+      "gap": "CLI calculation planning currently has no --previous conversation continuation option; UI does. Structure CLI does support --previous.",
+      "disposition": "resolved_offline_by_cli_previous_test; live_CLI_revision_not_yet_recorded"
+    },
+    {
+      "gap": "Current installed-wheel execution and public release/CI must be verified after final source freeze; editable-source tests alone do not establish installation.",
+      "disposition": "retained explicitly in feature limits; current status is in matrix rows"
+    }
+  ],
+  "not_claimed": [
+    "Every method/task/material parameter combination works.",
+    "Numerical convergence studies or validated scientific accuracy.",
+    "Magnetic ground states or stable surface/defect structures.",
+    "Current live Responses/chat adapter verification.",
+    "A public release or final remote CI result before its own verification."
+  ],
+  "release_readiness": "Remaining cluster controls/branches and publication checks have separate statuses below; consult root release report. Local acceptance is not publication.",
+  "current_cluster_report": "cluster-0.3.0.json",
+  "notes": [
+    "Feature claims are scoped by each row's evidence and limits.",
+    "Private evidence references are not distributed. Hashes preserve the recorded evidence identity; current hash comparisons expose stale matrix references.",
+    "Report completion does not promote offline, untested, refused, or pending features to live-validated features."
+  ]
+}

@@ -1,0 +1,266 @@
+{
+  "schema_version": 1,
+  "release_status": "candidate",
+  "scope": "Installed candidate wheel: two-turn structure editing, local CLI preparation, VASP relaxation and SCF, grounded explanation, and result bundle.",
+  "checked_at": "2026-10-09T08:41:02.977751+00:00",
+  "version": "0.3.0",
+  "installed_outside_checkout": true,
+  "source_hashes_match": true,
+  "examples": 17,
+  "edit_turns": 2,
+  "original_atoms": 2,
+  "edited_atoms": 6,
+  "composition": "Si5Ge",
+  "original_unchanged": true,
+  "revision_not_cumulative": true,
+  "local_cli_preparation": true,
+  "explanation_verified": true,
+  "bundle_provenance_verified": true,
+  "passed": true,
+  "source_note": "The installation and source-hash checks apply at the recorded timestamp. Later source changes require a new candidate check.",
+  "stages": [
+    {
+      "task": "relax",
+      "status": "succeeded",
+      "xml_sha256": "ad59c1a78da88c24bf6b9da2b5c6d0d636eba427d776261ffca1e9c6e8c55cfb",
+      "energy_ev": -27.55642718
+    },
+    {
+      "task": "scf",
+      "status": "succeeded",
+      "xml_sha256": "0ebdaa924893e559003562b2b66fefcde762526be1b38da9d1571aa43ae9e65f",
+      "energy_ev": -27.55642535
+    }
+  ],
+  "model_usage": [
+    {
+      "purpose": "structure_plan",
+      "input_tokens": 12907,
+      "output_tokens": 67,
+      "cached_input_tokens": 0,
+      "reasoning_tokens": 0,
+      "total_tokens": 12974,
+      "token_counts_source": "provider",
+      "provider": "codex",
+      "model": "gpt-6-astra",
+      "latency_seconds": 5.607934,
+      "input_characters": 520,
+      "instruction_characters": 2939,
+      "schema_characters": 3072,
+      "output_characters": 211,
+      "max_output_tokens": null
+    },
+    {
+      "purpose": "structure_revision",
+      "input_tokens": 13049,
+      "output_tokens": 109,
+      "cached_input_tokens": 10624,
+      "reasoning_tokens": 0,
+      "total_tokens": 13158,
+      "token_counts_source": "provider",
+      "provider": "codex",
+      "model": "gpt-6-astra",
+      "latency_seconds": 7.114507,
+      "input_characters": 1042,
+      "instruction_characters": 2939,
+      "schema_characters": 3072,
+      "output_characters": 370,
+      "max_output_tokens": null
+    },
+    {
+      "purpose": "calculation_plan",
+      "input_tokens": 13742,
+      "output_tokens": 285,
+      "cached_input_tokens": 0,
+      "reasoning_tokens": 0,
+      "total_tokens": 14027,
+      "token_counts_source": "provider",
+      "provider": "codex",
+      "model": "gpt-6-astra",
+      "latency_seconds": 9.586673,
+      "input_characters": 1756,
+      "instruction_characters": 3666,
+      "schema_characters": 3511,
+      "output_characters": 943,
+      "max_output_tokens": null
+    },
+    {
+      "purpose": "explanation",
+      "input_tokens": 13711,
+      "output_tokens": 142,
+      "cached_input_tokens": 0,
+      "reasoning_tokens": 0,
+      "total_tokens": 13853,
+      "token_counts_source": "provider",
+      "provider": "codex",
+      "model": "gpt-6-astra",
+      "latency_seconds": 9.094686,
+      "input_characters": 5796,
+      "instruction_characters": 1354,
+      "schema_characters": 305,
+      "output_characters": 567,
+      "max_output_tokens": null
+    }
+  ],
+  "usage_note": "Counts come from the provider. Cached input and reasoning are included in input and output totals, respectively; character counts are not token estimates.",
+  "vasp5_energy_crosscheck": {
+    "checked_at": "2026-10-09T08:42:36.150156+00:00",
+    "scope": "Independent energy parsing of nine retained VASP 5.4.4 outputs; two are from this installed-wheel run.",
+    "parser": "Independent xml.etree.ElementTree+OUTCARregex (no pymatgen energy parsing)",
+    "formula": "round(last_ionic.e_fr_energy + last_scf.e_0_energy - last_scf.e_fr_energy, 8)",
+    "tolerance_ev": 1e-07,
+    "all_passed": true,
+    "outputs_checked": 9,
+    "rows": [
+      {
+        "case": "VSe2",
+        "stage": "01_scf",
+        "vasp_version": "5.4.4.18Apr17-6-g9f103f2a35",
+        "reconstructed_ev": -16.69045462,
+        "outcar_sigma0_ev": -16.69045462,
+        "app_ev": -16.69045462,
+        "app_vs_outcar_ev": 0.0,
+        "reconstructed_vs_outcar_ev": 0.0,
+        "hashes": {
+          "OUTCAR": "e81b906a4397c0c7d01fe3d4ae371743ec7a6d1b0fb3078b309ed9b0e683c3b9",
+          "vasprun.xml": "5cb591fb5644af1b64e524808caac6842fbc80d265998b60c8e301e63f486d53",
+          "result.json": "6bb37fbeb059c063455c6b414fe2877c8ebe9bf0c81ffe2f1d021821eb9252fe"
+        }
+      },
+      {
+        "case": "CrOCl",
+        "stage": "01_scf",
+        "vasp_version": "5.4.4.18Apr17-6-g9f103f2a35",
+        "reconstructed_ev": -41.67146882,
+        "outcar_sigma0_ev": -41.67146882,
+        "app_ev": -41.67146882,
+        "app_vs_outcar_ev": 0.0,
+        "reconstructed_vs_outcar_ev": 0.0,
+        "hashes": {
+          "OUTCAR": "bec0e7d072ad4f82b4f09d0c9b42aea6c079a836c112b65b586368d125c14b51",
+          "vasprun.xml": "342b9ebc4da8336c476bccba4620e66507c0098dc6f6b6aa4325731d77e334e0",
+          "result.json": "8a205d55382851184ce9549b099ba17f0e3abecbb829cb57310910cd960ce57e"
+        }
+      },
+      {
+        "case": "CrCl3",
+        "stage": "01_scf",
+        "vasp_version": "5.4.4.18Apr17-6-g9f103f2a35",
+        "reconstructed_ev": -78.03846449,
+        "outcar_sigma0_ev": -78.03846449,
+        "app_ev": -78.03846449,
+        "app_vs_outcar_ev": 0.0,
+        "reconstructed_vs_outcar_ev": 0.0,
+        "hashes": {
+          "OUTCAR": "c45fec989514cebc1900d6daebf5639044946532cdab785e11cf5e8840bfd316",
+          "vasprun.xml": "1ce5815d468bbcaf243167e8f405f948ad8984d3a37eef5db76e533542195a02",
+          "result.json": "4652722b4e388ea06f96a19d7eb08d894b5b736ddef93417ab2781943cc6ad20"
+        }
+      },
+      {
+        "case": "V2Te2O",
+        "stage": "01_scf",
+        "vasp_version": "5.4.4.18Apr17-6-g9f103f2a35",
+        "reconstructed_ev": -33.91860291,
+        "outcar_sigma0_ev": -33.91860291,
+        "app_ev": -33.91860291,
+        "app_vs_outcar_ev": 0.0,
+        "reconstructed_vs_outcar_ev": 0.0,
+        "hashes": {
+          "OUTCAR": "b130ee512cd1c1c1bcd2bd97879f7e86cdc96b13681fd11b203c49b40cd5f3c3",
+          "vasprun.xml": "e908cc31effcad0c06b7f43bb2805b6b29fe7a49bfc23449db8dad6ff5373778",
+          "result.json": "3d9054b90389c2d7ac1a1583ff23f7048141dd41dfaa974e115d4e2107d20eca"
+        }
+      },
+      {
+        "case": "In2Se3",
+        "stage": "01_scf",
+        "vasp_version": "5.4.4.18Apr17-6-g9f103f2a35",
+        "reconstructed_ev": -16.30762334,
+        "outcar_sigma0_ev": -16.30762334,
+        "app_ev": -16.30762334,
+        "app_vs_outcar_ev": 0.0,
+        "reconstructed_vs_outcar_ev": 0.0,
+        "hashes": {
+          "OUTCAR": "adc46a513d4a7a94f47e162354bafb3639bf44972392f1852081865597bf798f",
+          "vasprun.xml": "502edeba4ab69cd50b2b1ba8206ecb77f08374082edd8d0efa32d5a591f2639c",
+          "result.json": "8ccacb4e325ee75c8d4d66933d234e385e01c193b3ee2d618e80da11a027c7f1"
+        }
+      },
+      {
+        "case": "CrSBr",
+        "stage": "01_scf",
+        "vasp_version": "5.4.4.18Apr17-6-g9f103f2a35",
+        "reconstructed_ev": -34.56175855,
+        "outcar_sigma0_ev": -34.56175855,
+        "app_ev": -34.56175855,
+        "app_vs_outcar_ev": 0.0,
+        "reconstructed_vs_outcar_ev": 0.0,
+        "hashes": {
+          "OUTCAR": "233c612f4abd9df7a2c814505c42d63bcfe8b335be70ccad0ad00dc1b61c65cf",
+          "vasprun.xml": "977d6234b929e99f5c42d3c08ef9de8b01efba7b2b3ce1ad1bf59f9f001f830a",
+          "result.json": "d01400906f51a6b83466be45585f2b512364449a66d73e6c1385bd3510bc52f7"
+        }
+      },
+      {
+        "case": "CrPS4",
+        "stage": "01_scf",
+        "vasp_version": "5.4.4.18Apr17-6-g9f103f2a35",
+        "reconstructed_ev": -135.96625341,
+        "outcar_sigma0_ev": -135.96625341,
+        "app_ev": -135.96625341,
+        "app_vs_outcar_ev": 0.0,
+        "reconstructed_vs_outcar_ev": 0.0,
+        "hashes": {
+          "OUTCAR": "63562ffe88d206b5778d55725485249f51a581a876d1cefe5c4d28a56e205c76",
+          "vasprun.xml": "39a2b43c181a42cc41f5b130423b2c20ea2fa4ea874c102b21bef5da5f6a8fe5",
+          "result.json": "bd717f07e341a1ef1ed2a964563b95a63d84dce85b188bba718f101381b3728e"
+        }
+      },
+      {
+        "case": "si-ge",
+        "stage": "02_scf",
+        "vasp_version": "5.4.4.18Apr17-6-g9f103f2a35",
+        "reconstructed_ev": -27.55642535,
+        "outcar_sigma0_ev": -27.55642535,
+        "app_ev": -27.55642535,
+        "app_vs_outcar_ev": 0.0,
+        "reconstructed_vs_outcar_ev": 0.0,
+        "hashes": {
+          "OUTCAR": "09cea74ebf62a539c6f7b150d941f5cd35119cccb7af52295d7843254f307c72",
+          "vasprun.xml": "0ebdaa924893e559003562b2b66fefcde762526be1b38da9d1571aa43ae9e65f",
+          "result.json": "8eae9610ac8f45278a3bf300f223d8c23419dd57838fd33a8140d57d4ef2a4fc"
+        }
+      },
+      {
+        "case": "si-ge",
+        "stage": "01_relax",
+        "vasp_version": "5.4.4.18Apr17-6-g9f103f2a35",
+        "reconstructed_ev": -27.55642718,
+        "outcar_sigma0_ev": -27.55642718,
+        "app_ev": -27.55642718,
+        "app_vs_outcar_ev": 0.0,
+        "reconstructed_vs_outcar_ev": 0.0,
+        "hashes": {
+          "OUTCAR": "a777d262833a75f43fed21c6371f0ef8dbb03376d5894ab90f6683359ce76b65",
+          "vasprun.xml": "ad59c1a78da88c24bf6b9da2b5c6d0d636eba427d776261ffca1e9c6e8c55cfb",
+          "result.json": "dc1a5a6e8aa094d162404154f85739bc2b8f22036f7f3ae29931a8c39f233d0c"
+        }
+      }
+    ],
+    "reconstruction_source": {
+      "pymatgen_local_version": "2026.9.24",
+      "upstream_url": "https://raw.githubusercontent.com/materialsproject/pymatgen-core/v2026.9.23/src/pymatgen/io/vasp/outputs.py",
+      "upstream_sha256": "bcbf78190f1f53dec1afdb4faac3a600098134e914052732ddef9cee9aa26f9f",
+      "line_start": 784,
+      "line_end": 807
+    },
+    "interpretation": "Reconstructed and application energies match OUTCAR sigma-to-zero energies. This checks parsing, not physical accuracy or convergence."
+  },
+  "source_receipts": {
+    "installed-wheel.json": "bb32e0f1d7e19da71fb5819920eb24a134fc56f8b00be6ab3ed6d84170506d84",
+    "arrhenius-vasp5-energy-audit.json": "3959afdd9cb9411816e5db29937b656cde4d71e82c86ce2b14a9bbb5587efd4b"
+  },
+  "scientific_accuracy_validated": false,
+  "all_parameters_or_materials_proven": false
+}
