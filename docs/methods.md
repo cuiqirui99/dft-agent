@@ -43,9 +43,14 @@ search over all magnetic orders. PAW-sphere moments are not the full-cell moment
 
 ## Plans
 
-Plans can chain relaxation, SCF, bands and DOS. PBE spectra reuse an SCF charge
-density; hybrid spectra solve self-consistently. Magnetic comparisons currently
-support SCF only. The same method settings apply throughout a chain.
+Plans can chain relaxation, SCF, bands and DOS with separate method settings
+for each stage. PBE spectra reuse a matching SCF charge; hybrid spectra solve
+self-consistently. A changed method starts a matching calculation.
+
+The NM/FM/AFM preset comparison uses SCF. Explicit batches can instead use
+supplied magnetic patterns, U/J values or strain points with the same stage
+sequence. Keep the cell fixed during strain relaxation. Compare energies only
+within a matching method and U/J choice. [Workflows](workflows.md).
 
 The structure editor supports substitutions, vacancies and slabs. Defect formation
 energies, phonons, NEB and MD remain outside this release.

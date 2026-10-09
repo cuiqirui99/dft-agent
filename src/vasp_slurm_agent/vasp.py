@@ -436,6 +436,64 @@ def _export_plots(run: Vasprun, output: Path, task: str) -> list[str]:
         plt.close(fig)
 
 
+def _band_gap(run, task: str, metadata: dict[str, Any]) -> dict[str, Any]:
+    """Occupation-based edges on the retained k-points, never a full-zone claim."""
+    tolerance = 1e-3
+    result = {"available": False, "status": "unavailable",
+              "scope": "sampled_path" if task == "bands" else "sampled_kpoints",
+              "gap_ev": None, "direct_gap_ev": None, "vbm_ev": None, "cbm_ev": None,
+              "partial_occupations": False, "occupation_tolerance": tolerance,
+              "full_bz_validated": False, "reason": "Eigenvalues and occupations are unavailable."}
+    if task not in {"scf", "bands", "dos"}:
+        return result
+    eigenvalues = getattr(run, "eigenvalues", None)
+    if not isinstance(eigenvalues, dict) or not eigenvalues:
+        return result
+    try:
+        channels = [np.asarray(value, dtype=float) for value in eigenvalues.values()]
+        count = len(getattr(run, "actual_kpoints", []))
+        if not count or any(value.ndim != 3 or value.shape[0] != count or value.shape[2] != 2
+                            or not np.isfinite(value).all() for value in channels):
+            return result
+        if task == "bands":
+            offset, length = metadata.get("band_path_offset", 0), metadata.get("band_path_count")
+            if type(offset) is not int or type(length) is not int or offset < 0 or length < 1 or offset + length != count:
+                result["reason"] = "The eigenvalues are not linked to the prepared band path."
+                return result
+            channels = [value[offset:offset + length] for value in channels]
+        # vasprun.xml reports occupations per state in [0, 1], including ISPIN=1.
+        values = np.concatenate(channels, axis=1)
+        energies, occupations = values[:, :, 0], values[:, :, 1]
+        if np.any(occupations < -tolerance) or np.any(occupations > 1 + tolerance):
+            result["reason"] = "Occupations are outside the supported zero-to-one convention."
+            return result
+        result["kpoint_count"] = len(values)
+        partial = (occupations > tolerance) & (occupations < 1 - tolerance)
+        if np.any(partial):
+            result.update(status="metallic_or_partially_occupied", partial_occupations=True,
+                          reason="Partial occupations prevent a resolved gap; smearing can also cause them.")
+            return result
+        occupied, empty = occupations >= 1 - tolerance, occupations <= tolerance
+        if not np.all(occupied.any(axis=1)) or not np.all(empty.any(axis=1)):
+            result["reason"] = "Both occupied and empty states are needed at every sampled k-point."
+            return result
+        valence = np.where(occupied, energies, -np.inf).max(axis=1)
+        conduction = np.where(empty, energies, np.inf).min(axis=1)
+        vbm, cbm = float(valence.max()), float(conduction.min())
+        # A different number of occupied states at different k-points signals a
+        # Fermi surface even if sparse sampling leaves a positive edge separation.
+        crossing = any(np.ptp((channel[:, :, 1] >= 1 - tolerance).sum(axis=1)) > 0 for channel in channels)
+        metallic = bool(crossing or cbm <= vbm)
+        result.update(available=True, status="metallic" if metallic else "gapped",
+                      gap_ev=0.0 if metallic else cbm - vbm,
+                      direct_gap_ev=None if metallic else float((conduction - valence).min()),
+                      vbm_ev=vbm, cbm_ev=cbm,
+                      reason="Only the retained k-points were checked; this is not a converged full-zone or optical gap.")
+    except (TypeError, ValueError):
+        pass
+    return result
+
+
 def analyze_outputs(output_dir: str | Path, task: str, expected_structure_path: str | Path) -> dict[str, Any]:
     """Reject incomplete, unconverged or mismatched XML.
 
@@ -471,7 +529,7 @@ def analyze_outputs(output_dir: str | Path, task: str, expected_structure_path: 
         xml = output / "vasprun.xml"
         if not xml.is_file() or not xml.stat().st_size:
             raise ValueError("vasprun.xml is missing or empty. The job may have ended before VASP finished.")
-        run = Vasprun(xml, parse_potcar_file=False, parse_eigen=task == "bands", parse_dos=task in {"scf", "dos"} or (hybrid and task == "bands"), exception_on_bad_xml=True)
+        run = Vasprun(xml, parse_potcar_file=False, parse_eigen=task in {"scf", "bands", "dos"}, parse_dos=task in {"scf", "dos"} or (hybrid and task == "bands"), exception_on_bad_xml=True)
         result["vasprun_sha256"] = _sha256(xml)
         result["vasp_version"] = str(run.vasp_version)
         fermi = getattr(run, "efermi", None)
@@ -550,6 +608,8 @@ def analyze_outputs(output_dir: str | Path, task: str, expected_structure_path: 
                     f"exceeds {HYBRID_KPOINT_TOLERANCE_EV:.2f} eV. Increase orbital iterations or change the electronic optimizer and rerun."
                 )
         artifacts = _export_plots(run, output, task)
+        if task in {"scf", "bands", "dos"}:
+            result["band_gap"] = _band_gap(run, task, metadata)
         if task in {"bands", "dos"}:
             result["plot_settings"] = {"energy_window_ev": list(PLOT_ENERGY_WINDOW_EV), "csv_contains_full_data": True}
         if task == "bands":

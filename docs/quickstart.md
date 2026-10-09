@@ -70,6 +70,12 @@ All [17 examples](structures.md) are included in the installed package.
 Select a material to preview it; **Download input** saves its structure for
 command-line use.
 
+In **Agent** mode, describe the structure edits and calculations together in
+**Goal**, then click **Plan**. Review the edited structure, stage methods and
+any comparison points. Use **Change the plan** to answer questions or revise
+the whole task. Edits are reapplied to the original upload on each revision.
+[Workflows](workflows.md).
+
 In **Edit structure**, describe a change and click **Plan structure**. Answer any
 questions in **Follow-up**, then **Preview structure**. Check the cell and site
 order before clicking **Use structure**. Each revision starts from the original
@@ -81,10 +87,8 @@ applying an edit and converting formats run locally. Neither needs a cluster
 connection. Calculations use the edited POSCAR to preserve site order and the
 Cartesian frame.
 
-Enter a **Goal**, then click **Plan**. Use **Change the plan** to answer a
-question or revise settings. For example: “Relax this structure, then calculate
-its bands and DOS with PBE.” Later stages use the accepted relaxed structure.
-Planning sends the goal, structure summary and dialogue to your provider.
+Later stages use the accepted relaxed structure. Each stage can have its own
+method. Planning sends the goal, structure summary and dialogue to your provider.
 
 Or choose **Manual** for `relax`, `scf`, `bands` or `dos` without a model.
 The **Method** section sets spin, SOC, U/J and the functional.
@@ -108,6 +112,9 @@ read the error, then use **Reconnect**. Both actions keep the same job and setti
 Use **Cancel calculation** to request cancellation and check the resulting
 status. Use **Explain results** to review findings, then ask a follow-up question.
 Explanations use verified saved outputs and never submit calculations.
+For a batch, review its comparison table and open individual runs for details.
+Use **Continue** to plan a new calculation from an accepted stage. Review and
+prepare it before submission; the original run stays intact.
 For files, use **Download structure (.cif)** or **Prepare download**
 followed by **Download results (.zip)**. Check the saved status before using
 an incomplete run's files.

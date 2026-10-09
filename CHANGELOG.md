@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.0 — 2026-10-09
+
+- Plan structure edits and calculations in one conversation.
+- Choose methods by stage and compare magnetic orders, U values and strains.
+- Extract sampled band gaps and continue from accepted structures.
+- Connect scientific checks to planning and preserve stage settings during repair.
+
 ## 0.3.3 — 2026-10-09
 
 - Add Claude, Qwen, Grok, GLM and DeepSeek providers.

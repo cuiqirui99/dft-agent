@@ -69,6 +69,15 @@ def main():
     plan.add_argument("--base-url", default="")
     plan.add_argument("--output", type=Path, default=Path("plan.json"))
     plan.add_argument("--runs", type=Path, help="Past runs for method guidance")
+    task = commands.add_parser("task", help="Plan edits, stages and comparisons")
+    task.add_argument("structure", type=Path)
+    task.add_argument("goal")
+    task.add_argument("--previous", type=Path, help="Revise a saved task")
+    task.add_argument("--provider", choices=tuple(PROVIDERS), default="responses")
+    task.add_argument("--model", default="")
+    task.add_argument("--base-url", default="")
+    task.add_argument("--output", type=Path, default=Path("task.json"))
+    task.add_argument("--runs", type=Path)
     structure_plan = commands.add_parser("structure-plan", help="Plan structure edits")
     structure_plan.add_argument("structure", type=Path)
     structure_plan.add_argument("goal")
@@ -123,8 +132,16 @@ def main():
     source.add_argument("--plan", type=Path)
     prep.add_argument("--magnetic-states", nargs="+", choices=("NM", "FM", "AFM"))
     prep.add_argument("--parameters", default="{}", help="Calculation settings as a JSON object")
+    continuation = commands.add_parser("continue", help="Prepare from an accepted stage")
+    continuation.add_argument("source_run", type=Path)
+    continuation.add_argument("stage", help="Stage folder, for example 01_relax")
+    continuation.add_argument("run_dir", type=Path)
+    continuation.add_argument("--tasks", nargs="+", choices=("relax", "scf", "bands", "dos"), required=True)
+    continuation.add_argument("--parameters", default="{}", help="Changes to inherited settings (JSON)")
+    continuation.add_argument("--stage-parameters", default="null", help="Per-stage changes (JSON list)")
     command_help = {
         "watch": "Submit and monitor",
+        "watch-batch": "Submit and monitor a batch",
         "resume": "Reconnect and monitor",
         "status": "Show saved status",
         "cancel": "Cancel job",
@@ -133,9 +150,9 @@ def main():
     for name, help_text in command_help.items():
         sub = commands.add_parser(name, help=help_text)
         sub.add_argument("run_dir", type=Path)
-        if name in {"watch", "resume", "cancel"}:
+        if name in {"watch", "watch-batch", "resume", "cancel"}:
             sub.add_argument("--password", action="store_true", help="Ask for your SSH password")
-        if name == "watch":
+        if name in {"watch", "watch-batch"}:
             sub.add_argument("--interval", type=float, default=20)
     args = parser.parse_args()
     try:
@@ -176,8 +193,9 @@ def main():
                                    *item.get("topics", []), *item.get("formulas", []), *item.get("methods", [])]).lower())]
             print(json.dumps(result, indent=2, ensure_ascii=False))
             return 0
-        if args.command == "plan":
+        if args.command in {"plan", "task"}:
             from .agent import ModelSettings, draft_plan
+            from .task_agent import draft_task
             goal, history = args.goal, []
             if args.previous:
                 previous = json.loads(args.previous.read_text())
@@ -188,7 +206,8 @@ def main():
                 goal = previous["goal"]
                 history = previous["dialogue"] + [{"role": "user", "content": args.goal}]
             settings = ModelSettings(provider=args.provider, model=args.model, base_url=args.base_url or None)
-            result = draft_plan(goal, args.structure, settings, history=history, runs_root=args.runs)
+            planner = draft_task if args.command == "task" else draft_plan
+            result = planner(goal, args.structure, settings, history=history, runs_root=args.runs)
             args.output.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n")
             print(json.dumps(result, indent=2, ensure_ascii=False))
             return 0 if result["status"] == "ready" else 1
@@ -236,6 +255,32 @@ def main():
             print(json.dumps(result, indent=2, ensure_ascii=False))
             return 0
         from .workflow import prepare_run, prepare_plan, read_state, watch, resume, cancel, bundle_run, TERMINAL
+        if args.command == "continue":
+            from .continuation import prepare_continuation
+            result = prepare_continuation(args.source_run, args.stage, args.run_dir,
+                                         ClusterConfig.load(args.source_run / "config.json"), args.tasks,
+                                         parameters=json.loads(args.parameters), stage_parameters=json.loads(args.stage_parameters))
+            print(json.dumps(result, indent=2))
+            return 0
+        if args.command in {"watch", "watch-batch", "status", "resume", "cancel", "bundle"} and (args.run_dir / "batch.json").is_file():
+            from .batch import watch_batch, read_batch, resume_batch, cancel_batch, bundle_batch
+            if args.command == "bundle":
+                print(bundle_batch(args.run_dir))
+                return 0
+            if args.command in {"watch", "watch-batch"}:
+                if args.interval < 1:
+                    raise ValueError("Choose a polling interval of at least one second.")
+                result = watch_batch(args.run_dir, args.interval)
+            elif args.command == "resume":
+                result = resume_batch(args.run_dir)
+                if result["status"] not in TERMINAL:
+                    result = watch_batch(args.run_dir)
+            else:
+                result = (cancel_batch if args.command == "cancel" else read_batch)(args.run_dir)
+            print(json.dumps(result, indent=2))
+            return 1 if result.get("status") in {"failed", "needs_attention"} else 0
+        if args.command == "watch-batch":
+            raise ValueError("Choose a prepared batch folder.")
         if args.command == "prepare":
             config = ClusterConfig.load(args.config)
             if args.plan:
@@ -246,9 +291,14 @@ def main():
                     raise ValueError("Resolve the plan's questions before preparing inputs.")
                 if proposal.get("source_sha256") != hashlib.sha256(args.structure.read_bytes()).hexdigest():
                     raise ValueError("The structure differs from the plan. Create a new plan.")
-                result = prepare_plan(args.structure, args.run_dir, config, proposal["tasks"], proposal["parameters"],
-                                      proposal.get("magnetic_states") or None, proposal.get("initial_moment", 3.0))
-                (args.run_dir / "proposal.json").write_text(json.dumps(proposal, indent=2, ensure_ascii=False) + "\n")
+                if proposal.get("kind") == "task":
+                    from .task_agent import prepare_task
+                    result = prepare_task(args.structure, args.run_dir, config, proposal)
+                else:
+                    result = prepare_plan(args.structure, args.run_dir, config, proposal["tasks"], proposal["parameters"],
+                                          proposal.get("magnetic_states") or None, proposal.get("initial_moment", 3.0))
+                if proposal.get("kind") != "task":
+                    (args.run_dir / "proposal.json").write_text(json.dumps(proposal, indent=2, ensure_ascii=False) + "\n")
             elif args.magnetic_states:
                 result = prepare_plan(args.structure, args.run_dir, config, [args.task or "scf"],
                                       json.loads(args.parameters), args.magnetic_states)

@@ -82,11 +82,11 @@ def failed_run(tmp_path, monkeypatch):
         workflow._write(root / "run.json", state)
         return root
 
-    def create(task="scf", kind="electronic", scheduler="COMPLETED", parameters=None, source=EXAMPLE):
+    def create(task="scf", kind="electronic", scheduler="COMPLETED", parameters=None, source=EXAMPLE, stage_parameters=None):
         root = tmp_path / f"run-{len(list(tmp_path.iterdir()))}"
         structure = Structure.from_file(source)
         structures[structure.composition.reduced_formula] = structure
-        workflow.prepare_plan(source, root, config, task if isinstance(task, list) else [task], parameters or {})
+        workflow.prepare_plan(source, root, config, task if isinstance(task, list) else [task], parameters or {}, stage_parameters=stage_parameters)
         return collect(root, kind, scheduler)
 
     return create, collect, calls
@@ -334,6 +334,81 @@ def test_pbe_spectrum_needing_old_charge_density_needs_input(failed_run):
     failed_run[1](root, "unknown")
     proposal = recovery.draft_repair(root, SETTINGS)
     assert proposal["status"] == "needs_input" and "charge density" in proposal["diagnosis"]
+
+
+def test_mixed_method_repair_preserves_later_recipes_and_dependencies(failed_run, tmp_path):
+    create, collect, _ = failed_run
+    source = tmp_path / "POSCAR.niosorted"
+    Poscar(Structure([[4, 0, 0], [0, 4, 0], [0, 0, 4]], ["O", "Ni"], [[0, 0, 0], [.5, .5, .5]])).write_file(source)
+    hse = {"functional": "HSE06", "spin": "collinear", "magmom": [.1, 3]}
+    soc = {"spin": "noncollinear", "soc": True, "magmom": [[0, .1, 0], [0, 3, 0]],
+           "saxis": [1, 0, 0], "hubbard_u": {"Ni": {"l": 2, "u": 5, "j": 0}}}
+    root = create(["relax", "scf", "bands", "dos"], "accepted", source=source,
+                  stage_parameters=[{}, hse, hse, soc])
+    collect(root)  # Failed HSE SCF after a successful PBE relaxation.
+    before = {str(path.relative_to(root)): recovery._sha(path) for path in root.rglob("*") if path.is_file()}
+    proposal = recovery.draft_repair(root, SETTINGS)
+    child = tmp_path / "mixed-repair"
+    state = recovery.prepare_repair(root, child, proposal)
+    assert [stage["name"] for stage in state["stages"]] == ["scf", "bands", "scf", "dos"]
+    assert state["stages"][1]["parameters"]["functional"] == "HSE06"
+    assert state["stages"][1]["parameters"]["magmom"] == [3, .1]
+    assert state["stages"][2]["metadata"]["method"]["magmom"] == [[0, 3, 0], [0, .1, 0]]
+    assert state["stages"][2]["metadata"]["method"]["hubbard_u"] == soc["hubbard_u"]
+    assert state["stages"][3]["charge_from"] == 2
+    assert state["stages"][0]["parameters"]["nelm"] == 240
+    assert state["stages"][1]["parameters"].get("nelm", 120) == 120
+    assert not state["stages"][0]["metadata"]["method"]["soc"]
+    assert {str(path.relative_to(root)): recovery._sha(path) for path in root.rglob("*") if path.is_file()} == before
+
+
+def test_failed_relaxation_repair_keeps_explicit_later_scf(failed_run, tmp_path):
+    root = failed_run[0](["relax", "scf", "dos"], stage_parameters=[{}, {"functional": "HSE06"}, {"functional": "HSE06"}])
+    state = recovery.prepare_repair(root, tmp_path / "repair-mixed-relax", recovery.draft_repair(root, SETTINGS))
+    assert [stage["name"] for stage in state["stages"]] == ["relax", "scf", "dos"]
+    assert state["stages"][1]["parameters"]["functional"] == "HSE06"
+    assert state["stages"][1]["structure_from"] == 0
+
+
+def test_repair_snapshot_keeps_new_vector_seeds_after_collinear_relaxation(failed_run, tmp_path):
+    root = failed_run[0](["relax", "scf"], "accepted", stage_parameters=[
+        {"spin": "collinear", "magmom": [1, -1]},
+        {"spin": "noncollinear", "soc": True, "magmom": [[0, 2, 0], [0, -2, 0]], "functional": "HSE06"},
+    ])
+    failed_run[1](root)
+    state = recovery.prepare_repair(root, tmp_path / "new-vector-repair", recovery.draft_repair(root, SETTINGS))
+    method = state["stages"][0]["metadata"]["method"]
+    assert method["magmom"] == [[0, 2, 0], [0, -2, 0]]
+    assert method["spin"] == "noncollinear" and method["soc"] and method["functional"] == "HSE06"
+
+
+def test_task_goal_and_dialogue_remain_bound_after_repair(failed_run, tmp_path):
+    from vasp_slurm_agent.task_agent import _save_proposal
+    root = failed_run[0](["relax", "scf"], "accepted", stage_parameters=[{}, {"functional": "HSE06"}])
+    failed_run[1](root)
+    _save_proposal(root, {"kind": "task", "goal": "Relax, then use HSE06.",
+                          "dialogue": [{"role": "user", "content": "Keep SOC off."}]})
+    proposal = recovery.draft_repair(root, SETTINGS)
+    child = tmp_path / "task-repair"
+    recovery.prepare_repair(root, child, proposal)
+    context = explanation.load_run_context(child)
+    assert context["goal"] == "Relax, then use HSE06."
+    assert context["dialogue"] == [{"role": "user", "content": "Keep SOC off."}]
+    saved = json.loads((child / "proposal.json").read_text())
+    assert saved["execution"]["plan_sha256"] == recovery._sha(child / "plan.json")
+    assert saved["execution"]["tasks"] == ["scf"]
+
+
+def test_changed_task_goal_makes_repair_proposal_stale(failed_run, tmp_path):
+    from vasp_slurm_agent.task_agent import _save_proposal
+    root = failed_run[0]()
+    _save_proposal(root, {"kind": "task", "goal": "SCF.", "dialogue": []})
+    proposal = recovery.draft_repair(root, SETTINGS)
+    saved = json.loads((root / "proposal.json").read_text())
+    saved["goal"] = "Different task."
+    workflow._write(root / "proposal.json", saved)
+    with pytest.raises(AgentError, match="stale"):
+        recovery.prepare_repair(root, tmp_path / "changed-task", proposal)
 
 
 def test_model_cannot_add_commands_or_choose_unsupported_action(failed_run, monkeypatch):

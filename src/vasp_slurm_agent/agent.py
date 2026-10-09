@@ -593,6 +593,10 @@ def draft_plan(goal: str, structure_path: str | Path | None, settings: ModelSett
         result = _validate_plan(plan, species, settings)
         report = review_plan({**result, "goal": _redact(goal, secrets),
                               "dialogue": [{**item, "content": _redact(item["content"], secrets)} for item in history]}, summary)
+        if report["required_inputs"] and result["status"] != "unsupported":
+            result["status"] = "needs_input"
+            result["questions"] = list(dict.fromkeys(result["questions"] +
+                [item["question"] for item in report["required_inputs"]]))
         report["experience"] = retrieve_experience(
             runs_root, summary, parameters=result["parameters"], tasks=result["tasks"])
         imported = retrieve_imported_runs(runs_root, summary, parameters=result["parameters"], tasks=result["tasks"])

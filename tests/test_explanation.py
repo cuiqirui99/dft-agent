@@ -92,6 +92,23 @@ def test_context_whitelist_preserves_goal_without_private_config(accepted_run):
     assert before == {str(path.relative_to(root)): sha(path) for path in root.rglob("*") if path.is_file()}
 
 
+@pytest.mark.parametrize("tamper", [None, "plan_sha256", "source_sha256", "source_path", "tasks", "parameters", "stage_parameters"])
+def test_task_goal_is_bound_to_its_executed_plan(accepted_run, tamper):
+    root, _, _ = accepted_run
+    plan = json.loads((root / "plan.json").read_text())
+    execution = {"plan_sha256": sha(root / "plan.json"), "source_sha256": next(iter(plan["sources"].values())),
+                 "source_path": next(iter(plan["sources"])), "stage_parameters": plan.get("stage_parameters"),
+                 "parameters": plan["parameters"], "tasks": plan["tasks"]}
+    if tamper:
+        execution[tamper] = "changed"
+    write(root / "proposal.json", {"kind": "task", "goal": "Edit then calculate.", "source_sha256": "original-upload",
+                                   "parameters": {"encut": 520}, "operations": [{"type": "supercell", "matrix": [2, 1, 1]}],
+                                   "execution": execution, "dialogue": [{"role": "user", "content": "Keep SOC off."}]})
+    context = explanation.load_run_context(root)
+    assert bool(context["goal"]) is (tamper is None)
+    assert bool(context["dialogue"]) is (tamper is None)
+
+
 def test_parser_cache_uses_artifact_identity(accepted_run):
     root, output, parser = accepted_run
     first = explanation.load_run_context(root)
@@ -230,6 +247,69 @@ def test_missing_gap_answer_and_followup_suggestion_are_allowed(accepted_run, mo
     stub(monkeypatch, model_reply("The band gap is unavailable from these facts.", ["stage_1.accepted"],
                                  next_steps=["Extract a band gap from the accepted spectra."]))
     assert explanation.explain_run(accepted_run[0], ModelSettings(model="test"))["next_steps"]
+
+
+def add_gap(parser, **overrides):
+    original = parser.side_effect
+    def parse(*args):
+        result = original(*args)
+        result["band_gap"] = {"available": True, "status": "gapped", "scope": "sampled_kpoints",
+                              "gap_ev": 1.25, "direct_gap_ev": 1.8, "vbm_ev": 4.0, "cbm_ev": 5.25,
+                              "reason": "Only the retained k-points were checked.", **overrides}
+        return result
+    parser.side_effect = parse
+
+
+def test_explanation_can_use_only_verified_sampled_gap(accepted_run, monkeypatch):
+    root, _, parser = accepted_run
+    add_gap(parser)
+    context = explanation.load_run_context(root)
+    assert context["facts"]["stage_1.band_gap"]["value"] == 1.25
+    assert context["facts"]["stage_1.band_gap_scope"]["value"] == "sampled_kpoints"
+    assert not any("not been quantified" in item for item in context["limits"])
+    stub(monkeypatch, model_reply("The sampled band gap is {{stage_1.band_gap}}.",
+                                 ["stage_1.band_gap", "stage_1.band_gap_scope"]))
+    assert "1.25 eV" in explanation.explain_run(root, ModelSettings(model="test"))["answer"]
+
+
+@pytest.mark.parametrize("answer", ["The band gap is 1.25 eV.",
+                                     "The sampled full-zone band gap is 1.25 eV.",
+                                     "The sampled optical gap is 1.25 eV."])
+def test_gap_claim_cannot_drop_sampling_scope_or_claim_optical_gap(accepted_run, monkeypatch, answer):
+    root, _, parser = accepted_run
+    add_gap(parser)
+    stub(monkeypatch, model_reply(answer, ["stage_1.band_gap"]))
+    with pytest.raises(AgentError, match="could not be verified"):
+        explanation.explain_run(root, ModelSettings(model="test"))
+
+
+def test_partial_occupations_do_not_supply_gap_fact(accepted_run):
+    root, _, parser = accepted_run
+    add_gap(parser, available=False, status="metallic_or_partially_occupied", gap_ev=None,
+            direct_gap_ev=None, vbm_ev=None, cbm_ev=None)
+    context = explanation.load_run_context(root)
+    assert "stage_1.band_gap" not in context["facts"]
+    assert context["facts"]["stage_1.band_gap_status"]["value"] == "metallic_or_partially_occupied"
+
+
+def test_cached_gap_is_not_evidence_without_fresh_extraction(accepted_run):
+    root, output, _ = accepted_run
+    state = json.loads((root / "run.json").read_text())
+    state["stages"][0]["result"]["band_gap"] = {"available": True, "gap_ev": 999, "scope": "sampled_kpoints"}
+    write(output / "result.json", state["stages"][0]["result"])
+    write(root / "run.json", state)
+    context = explanation.load_run_context(root)
+    assert context["facts"]["stage_1.accepted"]["value"]
+    assert "stage_1.band_gap" not in context["facts"]
+
+
+def test_a_cited_fermi_energy_cannot_be_substituted_for_a_gap(accepted_run, monkeypatch):
+    root, _, parser = accepted_run
+    add_gap(parser)
+    stub(monkeypatch, model_reply("The sampled band gap is {{stage_1.fermi_energy}}.",
+                                 ["stage_1.fermi_energy", "stage_1.band_gap"]))
+    with pytest.raises(AgentError, match="could not be verified"):
+        explanation.explain_run(root, ModelSettings(model="test"))
 
 
 def test_context_changed_during_model_request_is_rejected(accepted_run, monkeypatch):

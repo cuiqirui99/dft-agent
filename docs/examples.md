@@ -15,7 +15,7 @@ Use a new directory for each run. `prepare` submits nothing.
 **Plan with a model**
 
 ```bash
-dft-agent plan examples/Si.cif "Relax, then calculate PBE bands and DOS" \
+dft-agent task examples/Si.cif "Relax, then calculate PBE bands and DOS" \
   --provider codex --output proposal.json
 dft-agent prepare examples/Si.cif runs/si-plan --config cluster.json \
   --plan proposal.json
@@ -28,7 +28,7 @@ Inspect the proposal before preparing it. A plan is bound to its source file.
 Revise it before preparation:
 
 ```bash
-dft-agent plan examples/Si.cif "Use a 6x6x6 mesh" \
+dft-agent task examples/Si.cif "Use a 6x6x6 mesh" \
   --previous proposal.json --provider codex --output revised.json
 ```
 

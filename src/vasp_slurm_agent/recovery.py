@@ -18,7 +18,8 @@ from pymatgen.io.vasp import Incar
 from . import agent, explanation, workflow
 from .agent import AgentError, ModelSettings
 from .config import ClusterConfig
-from .vasp import DEFAULTS
+from .methods import METHOD_DEFAULTS
+from .vasp import DEFAULTS, _parameters
 
 
 MAX_ATTEMPTS = 2
@@ -108,6 +109,8 @@ def _snapshot(run_dir):
     if result.get("success") is not False or result.get("input_identity_verified") is not True or result.get("scheduler_state") != stage["scheduler_state"]:
         raise AgentError("The failed output has no verified input identity.")
     fingerprints = {name: _sha(_path(root, name)) for name in ("run.json", "plan.json", "config.json", *plan["sources"])}
+    if (root / "proposal.json").is_file():
+        fingerprints["proposal.json"] = _sha(_path(root, "proposal.json"))
     for name, record in manifest.items():
         if name not in workflow.FILES or not isinstance(record, dict):
             raise AgentError("The collected artifact list is invalid.")
@@ -162,9 +165,12 @@ def _snapshot(run_dir):
         approved_source = _path(root, predecessor["folder"] + "/outputs/" + filename)
         if not approved_source.is_file() or _sha(approved_source) != structure_hash:
             raise AgentError("The accepted predecessor structure changed.")
-        moments = predecessor["metadata"].get("method", {}).get("magmom")
-        if moments is not None and approved_parameters.get("spin", "none") != "none":
-            approved_parameters["magmom"] = deepcopy(moments)
+        moments = approved_parameters.get("magmom")
+        order = predecessor["metadata"].get("input_site_order")
+        if moments is not None and order is not None:
+            if len(order) != len(moments):
+                raise AgentError("The next-stage moments do not match the relaxed sites.")
+            approved_parameters["magmom"] = [deepcopy(moments[position]) for position in order]
     # Rebuild from the frozen plan so edited metadata cannot approve new physics.
     with tempfile.TemporaryDirectory(prefix="dft-repair-check-") as temporary:
         approved = workflow.prepare_inputs(approved_source, Path(temporary), stage["name"], approved_parameters, config.potcar_symbols)
@@ -376,18 +382,32 @@ def prepare_repair(run_dir, new_run_dir, proposal: dict) -> dict:
                 config_values[change["key"]] = change["after"]
         config = ClusterConfig(**config_values)
         remaining = snapshot["state"]["stages"][snapshot["index"]:]
-        state = workflow.prepare_plan(snapshot["inputs"] / "POSCAR", temporary / "run", config,
-                                      [stage["name"] for stage in remaining], parameters)
-        prepared = temporary / "run"
-        plan = _read(prepared / "plan.json")
-        if len(state["stages"]) != len(remaining):
-            raise AgentError("This repair would add a prerequisite. Review a new plan instead.")
-        for position, stage in enumerate(state["stages"]):
-            original = remaining[position]
-            params = deepcopy(original["parameters"])
-            params.update(_method_parameters(snapshot["metadata"]))
+        recipes = []
+        for position, original in enumerate(remaining):
+            params = {**deepcopy(METHOD_DEFAULTS), **_parameters(deepcopy(original["parameters"]))}
             if position == 0:
                 params = deepcopy(parameters)
+            elif params.get("magmom") is not None:
+                original_structure = Structure.from_file(_path(source, original["source_path"]))
+                order = sorted(range(len(original_structure)), key=lambda index: original_structure[index])
+                params["magmom"] = [deepcopy(params["magmom"][index]) for index in order]
+            recipes.append(params)
+        # Later SCFs are spectrum prerequisites; the runner recreates them from
+        # the corresponding recipe, including changes of method or charge mesh.
+        first_spectrum = next((i for i, stage in enumerate(remaining) if stage["name"] in {"bands", "dos"}), len(remaining))
+        first_scf = next((i for i, stage in enumerate(remaining) if stage["name"] == "scf"), len(remaining))
+        requested = [position for position, stage in enumerate(remaining)
+                     if stage["name"] != "scf" or position == first_scf < first_spectrum]
+        state = workflow.prepare_plan(snapshot["inputs"] / "POSCAR", temporary / "run", config,
+                                      [remaining[position]["name"] for position in requested],
+                                      stage_parameters=[recipes[position] for position in requested])
+        prepared = temporary / "run"
+        plan = _read(prepared / "plan.json")
+        if [stage["name"] for stage in state["stages"]] != [stage["name"] for stage in remaining]:
+            raise AgentError("This repair would add a prerequisite. Review a new plan instead.")
+        for position, stage in enumerate(state["stages"]):
+            params = recipes[position]
+            if position == 0:
                 for change in changes:
                     if change["scope"] == "parameters":
                         params[change["key"]] = change["after"]
@@ -422,8 +442,15 @@ def prepare_repair(run_dir, new_run_dir, proposal: dict) -> dict:
         for stage in state["stages"]:
             stage["job_name"] = state["run_id"] + "-" + stage["folder"]
         state["parameters"] = plan["parameters"] = deepcopy(state["stages"][0]["parameters"])
+        plan["stage_parameters"] = [deepcopy(recipes[position]) for position in requested]
         workflow._write(prepared / "plan.json", plan)
         state["plan_sha256"] = _sha(prepared / "plan.json")
+        if (source / "proposal.json").is_file():
+            original_proposal = _read(source / "proposal.json")
+            if original_proposal.get("kind") == "task" and explanation.load_run_context(source)["goal"]:
+                from .task_agent import _save_proposal
+                original_proposal["repair"] = lineage
+                _save_proposal(prepared, original_proposal)
         workflow._write(prepared / "repair.json", proposal)
         workflow._save(prepared, state, "Repair prepared. Review inputs before submitting.")
         if _snapshot(source)["evidence_sha256"] != expected["evidence_sha256"]:

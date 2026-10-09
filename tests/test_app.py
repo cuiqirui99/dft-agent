@@ -16,12 +16,27 @@ from streamlit.testing.v1 import AppTest
 
 from vasp_slurm_agent import workflow
 from vasp_slurm_agent.config import ClusterConfig
-from vasp_slurm_agent import agent
+from vasp_slurm_agent import agent, task_agent
 from test_cli_plan import model_response
 
 
 MODEL_USAGE = {"input_tokens": 1234, "output_tokens": 56, "cached_input_tokens": 1024,
                "reasoning_tokens": None, "latency_seconds": 1.25}
+
+
+def task_response(tasks=None, missing_moments=False):
+    legacy = model_response(tasks, missing_moments)
+    parameters = deepcopy(legacy["parameters"])
+    parameters["hubbard_u"] = [{"element": element, **value}
+                              for element, value in parameters["hubbard_u"].items() if value is not None]
+    return {"status": legacy["status"], "summary": legacy["summary"], "operations": [],
+            "stages": [{"task": task, "parameters": deepcopy(parameters),
+                        "requirements": {key: legacy["intent"][key]
+                                         for key in ("spin", "soc", "functional", "hubbard_u")}}
+                       for task in legacy["tasks"]],
+            "variants": [], "questions": legacy["questions"], "notes": legacy["notes"],
+            "intent": {key: legacy["intent"][key]
+                       for key in ("requested_tasks", "forbidden_tasks", "unsupported")}}
 
 
 def widget(elements, label):
@@ -226,7 +241,7 @@ def test_packaged_example_prepares_without_upload(workbench, name):
 
 def test_switching_example_invalidates_existing_plan(workbench, monkeypatch):
     app, worker, _ = workbench
-    monkeypatch.setattr(agent, "_request_plan", lambda *args: json.dumps(model_response()))
+    monkeypatch.setattr(agent, "_request_structured", lambda *args, **kwargs: json.dumps(task_response()))
     widget(app.radio, "Structure source").set_value("Example").run()
     widget(app.selectbox, "Example").select("Si.cif").run()
     widget(app.radio, "Mode").set_value("Agent").run()
@@ -336,11 +351,11 @@ def test_structure_revisions_use_original_and_clear_calculation_state(workbench,
 
 def test_calculation_usage_is_saved_without_model_calls_on_refresh(workbench, monkeypatch):
     app, worker, _ = workbench
-    reply = model_response()
+    reply = task_response()
     reply.update(model_usage=MODEL_USAGE, source_sha256=hashlib.sha256(silicon_bytes()).hexdigest(),
                  dialogue=[{"role": "assistant", "content": "Relax the structure."}])
     planner = Mock(return_value=reply)
-    monkeypatch.setattr(agent, "draft_plan", planner)
+    monkeypatch.setattr(task_agent, "draft_task", planner)
     app.file_uploader[0].upload("Si.cif", silicon_bytes()).run()
     widget(app.radio, "Mode").set_value("Agent").run()
     widget(app.text_area, "Goal").set_value("Relax this structure.").run()
@@ -371,12 +386,12 @@ def test_full_history_reaches_model_after_eight_rounds(workbench, monkeypatch, k
         assert planner.call_args.kwargs["history"] == history
     elif kind == "calculation":
         def draft(*args, history=None, **kwargs):
-            result = model_response()
+            result = task_response()
             result.update(source_sha256=hashlib.sha256(silicon_bytes()).hexdigest(),
                           dialogue=history + [{"role": "assistant", "content": "Plan updated."}])
             return result
         planner = Mock(side_effect=draft)
-        monkeypatch.setattr(agent, "draft_plan", planner)
+        monkeypatch.setattr(task_agent, "draft_task", planner)
         open_agent(app)
         app.session_state["agent_history"] = history
         app.run()
@@ -520,8 +535,8 @@ def open_agent(app):
 
 def test_agent_proposal_requires_review_and_keeps_runtime_plan(workbench, monkeypatch):
     app, worker, runs_root = workbench
-    provider = Mock(return_value=json.dumps(model_response()))
-    monkeypatch.setattr(agent, "_request_plan", provider)
+    provider = Mock(return_value=json.dumps(task_response()))
+    monkeypatch.setattr(agent, "_request_structured", provider)
     open_agent(app)
     widget(app.button, "Plan").click().run()
     assert not app.exception
@@ -550,7 +565,7 @@ def test_agent_proposal_requires_review_and_keeps_runtime_plan(workbench, monkey
 
 def test_agent_questions_block_preparation(workbench, monkeypatch):
     app, worker, runs_root = workbench
-    monkeypatch.setattr(agent, "_request_plan", lambda *args: json.dumps(model_response(["scf"], missing_moments=True)))
+    monkeypatch.setattr(agent, "_request_structured", lambda *args, **kwargs: json.dumps(task_response(["scf"], missing_moments=True)))
     open_agent(app)
     widget(app.button, "Plan").click().run()
     assert not app.exception
@@ -564,9 +579,9 @@ def test_agent_questions_block_preparation(workbench, monkeypatch):
 
 def test_agent_revision_failure_preserves_feedback_and_blocks_stale_prepare(workbench, monkeypatch):
     app, worker, runs_root = workbench
-    provider = Mock(side_effect=[json.dumps(model_response()), agent.AgentError("Provider unavailable"),
-                                 json.dumps(model_response(["scf"]))])
-    monkeypatch.setattr(agent, "_request_plan", provider)
+    provider = Mock(side_effect=[json.dumps(task_response()), agent.AgentError("Provider unavailable"),
+                                 json.dumps(task_response(["scf"]))])
+    monkeypatch.setattr(agent, "_request_structured", provider)
     open_agent(app)
     widget(app.button, "Plan").click().run()
     widget(app.text_input, "Change the plan").set_value("SCF only. Do not relax.").run()
@@ -599,11 +614,11 @@ def test_agent_revision_failure_preserves_feedback_and_blocks_stale_prepare(work
 
 def test_agent_clarification_is_saved_with_accepted_plan(workbench, monkeypatch):
     app, worker, _ = workbench
-    reply = model_response(["scf"], missing_moments=True)
-    resolved = model_response(["scf"], missing_moments=True)
-    resolved["parameters"]["magmom"] = [1, -1]
+    reply = task_response(["scf"], missing_moments=True)
+    resolved = task_response(["scf"], missing_moments=True)
+    resolved["stages"][0]["parameters"]["magmom"] = [1, -1]
     provider = Mock(side_effect=[json.dumps(reply), json.dumps(resolved)])
-    monkeypatch.setattr(agent, "_request_plan", provider)
+    monkeypatch.setattr(agent, "_request_structured", provider)
     open_agent(app)
     widget(app.button, "Plan").click().run()
     assert widget(app.button, "Prepare inputs").disabled
@@ -622,8 +637,8 @@ def test_agent_clarification_is_saved_with_accepted_plan(workbench, monkeypatch)
 @pytest.mark.parametrize("changed", ["goal", "structure"])
 def test_agent_cannot_prepare_stale_proposal(workbench, monkeypatch, changed):
     app, worker, runs_root = workbench
-    provider = Mock(return_value=json.dumps(model_response()))
-    monkeypatch.setattr(agent, "_request_plan", provider)
+    provider = Mock(return_value=json.dumps(task_response()))
+    monkeypatch.setattr(agent, "_request_structured", provider)
     open_agent(app)
     widget(app.button, "Plan").click().run()
     assert not widget(app.button, "Prepare inputs").disabled
@@ -643,7 +658,7 @@ def test_agent_preparation_rechecks_source_hash(workbench, monkeypatch):
     app, worker, runs_root = workbench
     proposal = {"status": "ready", "summary": "SCF", "tasks": ["scf"], "parameters": {},
                 "source_sha256": "0" * 64, "questions": []}
-    monkeypatch.setattr(agent, "draft_plan", Mock(return_value=proposal))
+    monkeypatch.setattr(task_agent, "draft_task", Mock(return_value=proposal))
     open_agent(app)
     widget(app.button, "Plan").click().run()
     widget(app.button, "Prepare inputs").click().run()

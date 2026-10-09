@@ -6,7 +6,7 @@ import math
 import re
 
 
-VERSION = "1"
+VERSION = "2"
 CHECKED = "2026-10-09"
 _WIKI = "https://www.vasp.at/wiki/index.php/"
 _RULES = {
@@ -76,10 +76,21 @@ _PATTERNS = {
 _NEGATION = re.compile(r"\b(?:no|not|without|skip|avoid|exclude|disable|off)\b|不要|不用|不加|关闭", re.I)
 _MAGNETIC_ELEMENTS = set("Ti V Cr Mn Fe Co Ni Cu Ru Rh Pd Os Ir Ce Pr Nd Sm Eu Gd Tb Dy Ho Er Tm Yb U Np Pu".split())
 _LIGANDS = set("O S Se Te F Cl Br I N P As".split())
+_APPLICATION = {
+    "convergence": ("All calculations", "Use one cutoff and k mesh for an energy comparison."),
+    "magnetism": ("Selected magnetic calculations", "Specify site seeds, then inspect final local moments."),
+    "hubbard_u": ("Explicit DFT+U requests", "Ask for missing l/U/J; check charge-reuse LMAXMIX."),
+    "soc": ("SOC or noncollinear spin", "Confirm vectors and SAXIS, then use vasp_ncl."),
+    "hybrid": ("HSE06 or PBE0 spectra", "Use a weighted mesh and self-consistent charge; check path states."),
+    "pbe_spectra": ("PBE bands or DOS", "Run matching SCF before fixed-charge spectra."),
+    "smearing": ("Electronic spectra", "Check occupations and the spectral k-point sampling."),
+    "structure": ("Confirmed vacuum or surface geometry", "Review cell relaxation before changing vacuum."),
+}
 
 
 def _evidence(ids: list[str]) -> list[dict]:
     return [{"id": key, "title": _RULES[key][0], "summary": _RULES[key][1],
+             "applies_to": _APPLICATION[key][0], "next_check": _APPLICATION[key][1],
              "sources": [{"url": _WIKI + page, "checked": CHECKED} for page in _RULES[key][2]]}
             for key in dict.fromkeys(ids)]
 
@@ -194,6 +205,30 @@ def review_plan(plan: dict, structure: dict | None) -> dict:
             ids = [key for key in ids if key != "hubbard_u"]
     checks = ["Verify the executed inputs and electronic convergence.",
               "Keep workflow acceptance separate from property convergence."]
+    actions, required_inputs = [], []
+
+    def action(key: str, text: str, evidence_id: str, *, when: str = "after_run",
+               status: str = "pending", fields: list[str] | None = None):
+        ids.append(evidence_id)
+        item = {"id": key, "when": when, "status": status,
+                "applies_to": _APPLICATION[evidence_id][0], "action": text,
+                "evidence_ids": [evidence_id]}
+        if fields:
+            item["fields"] = fields
+        actions.append(item)
+        return item
+
+    def require(key: str, question: str, fields: list[str], evidence_id: str):
+        questions.append(question)
+        item = action(key, question, evidence_id, when="before_prepare", status="needs_input", fields=fields)
+        covered = {"initial_moments": (r"moments?",), "spin_axis": (r"saxis|spin axis",),
+                   "hubbard_values": (r"\bU\b", r"\bJ\b"), "structure_input": (r"structure",)}[key]
+        existing = next((text for text in plan.get("questions", []) if isinstance(text, str)
+                         and all(re.search(pattern, text, re.I) for pattern in covered)), None)
+        required_inputs.append({**item, "question": existing or question})
+
+    action("executed_method", "Compare executed INCAR, KPOINTS and structure with the reviewed inputs.", "convergence")
+    action("electronic_convergence", "Require electronic convergence before accepting a result or reusing its charge.", "convergence")
 
     def decision(topic: str, text: str, evidence_id: str):
         ids.append(evidence_id)
@@ -207,40 +242,56 @@ def review_plan(plan: dict, structure: dict | None) -> dict:
             if "bands" in tasks:
                 checks.append("Check zero-weight path orbitals and equivalent k-point energies.")
                 risks.append("A hybrid total-energy check does not prove band-path convergence.")
+                action("hybrid_path", "Check zero-weight path states separately from total-energy convergence.", "hybrid")
+            action("hybrid_charge", "Use self-consistent hybrid inputs; do not freeze a PBE CHGCAR with ICHARG=11.",
+                   "hybrid", when="before_prepare")
         else:
             decision("spectra", "Use the accepted SCF charge with the same structure and method.", "pbe_spectra")
+            action("scf_charge", "Use an accepted SCF CHGCAR with matching structure, method and spin settings.",
+                   "pbe_spectra", when="before_spectra")
         ids.append("smearing")
         checks.append("Check the k mesh, energy reference and occupations for the requested spectrum.")
+        action("spectral_sampling", "Check the k-point sampling and energy reference before interpreting a gap or DOS.", "smearing")
     if spin != "none" or comparison:
         decision("magnetism", "Treat moments as starting seeds; inspect final local moments and ordering.", "magnetism")
         checks.append("Assess local moments; zero total moment alone is not magnetic collapse.")
+        action("local_moments", "Inspect site moments and ordering; a zero total moment can be AFM.", "magnetism")
         risks.append("The tested magnetic seeds do not establish a global ground state.")
         if comparison:
             checks.append("Rank accepted magnetic seeds only with matching cell, method and numerical settings.")
+            action("magnetic_ranking", "Rank only accepted seeds with the same cell, method, U/J and numerical settings.", "magnetism")
         elif parameters.get("magmom") is None:
-            questions.append("What initial moments and site ordering should be used?")
+            require("initial_moments", "What initial moments and site ordering should be used?", ["magmom"], "magnetism")
     elif intent.get("spin") == "none":
         decision("magnetism", "Keep the explicitly requested nonmagnetic baseline.", "magnetism")
     if soc or spin == "noncollinear":
         decision("spin_coordinates", "Use vasp_ncl and preserve the SAXIS spinor basis and lattice frame.", "soc")
         checks.append("Check vector moments, SAXIS and the executed noncollinear method.")
+        action("spin_basis", "Verify vasp_ncl, vector moments, SAXIS and the preserved lattice frame.", "soc", when="before_prepare")
         if parameters.get("saxis") is None:
-            questions.append("Which SAXIS should define the spinor basis?")
+            require("spin_axis", "Which SAXIS should define the spinor basis?", ["saxis"], "soc")
     if hubbard or intent.get("hubbard_u") is True:
         decision("hubbard_u", "Use explicit Dudarev l/U/J values in the POTCAR species order.", "hubbard_u")
         checks.append("Verify LDAUL/LDAUU/LDAUJ, LMAXMIX and the source of U/J.")
+        action("hubbard_tags", "Check l/U/J in POTCAR order; charge reuse needs LMAXMIX=4 for d or 6 for f shells.",
+               "hubbard_u", when="before_prepare")
         risks.append("Total energies from different U/J choices are not a magnetic-state ranking.")
         if not hubbard or any(not isinstance(value, dict) or any(value.get(key) is None for key in ("l", "u", "j"))
                               for value in hubbard.values()):
-            questions.append("Which elements, orbitals, U and J should be used, and from which reference?")
+            require("hubbard_values", "Which elements, orbitals, U and J should be used, and from which reference?",
+                    ["hubbard_u"], "hubbard_u")
     if "relax" in tasks:
         checks.append("Require ionic convergence and the requested force threshold before reusing the structure.")
+        action("relaxed_structure", "Require ionic convergence and the requested force threshold before reusing the structure.", "convergence")
     if "structure" in ids:
         risks.append("Slab electrostatics and vacuum convergence are not validated by the bulk workflow.")
         if "relax" in tasks and parameters.get("cell_relax", True):
             questions.append("Should the cell stay fixed to preserve the vacuum?")
+            action("vacuum_cell", "Confirm whether cell relaxation should preserve the vacuum; geometry alone cannot decide.",
+                   "structure", when="before_prepare", status="review", fields=["cell_relax"])
     if not isinstance(structure, dict):
-        questions.append("Which structure should be calculated?")
+        require("structure_input", "Which structure should be calculated?", ["structure"], "convergence")
     return {"version": VERSION, "evidence": _evidence(ids), "method_decisions": decisions,
             "validation_plan": list(dict.fromkeys(checks)), "risks": list(dict.fromkeys(risks)),
-            "questions": list(dict.fromkeys(questions))}
+            "questions": list(dict.fromkeys(questions)), "action_checks": actions,
+            "required_inputs": required_inputs}

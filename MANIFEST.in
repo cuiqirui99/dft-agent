@@ -13,6 +13,7 @@ include validation/legacy-scope.json
 recursive-include validation/results *.json
 recursive-include validation/methods-0.2.0 *.vasp *.py
 recursive-include validation/methods-0.3.0 *.vasp
+recursive-include validation/tasks-0.4.0 INCAR POSCAR KPOINTS
 recursive-include validation/token-use *.json *.vasp *.py *.md *.txt POSCAR
 include validation/reference/README.md
 include validation/reference/*.py

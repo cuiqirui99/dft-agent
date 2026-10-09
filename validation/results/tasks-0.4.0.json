@@ -1,0 +1,482 @@
+{
+  "schema_version": 1,
+  "version": "0.4.0",
+  "date": "2026-10-09",
+  "scope": "Workflow acceptance at the stated settings; no precision convergence or magnetic ground-state claim.",
+  "live_model_calls": 5,
+  "live_model_provider": "codex",
+  "jobs_submitted": 11,
+  "cases": [
+    {
+      "case": "edited-soc-live",
+      "status": "succeeded",
+      "stages": [
+        {
+          "task": "relax",
+          "folder": "validation/tasks-0.4.0/edited-soc-live/01_relax",
+          "job_id": "7465802",
+          "scheduler_state": "COMPLETED",
+          "input_sha256": {
+            "POSCAR": "a79d1a589ef5696c0ebfeefabe3d6a4753419a6f23644d9f7f038a570b96fb1d",
+            "INCAR": "a0f8728a26f7d2db2d3d7fd6e2e176d171e680cc8b6e921d4af0ebc00b7b83af",
+            "KPOINTS": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49"
+          },
+          "method": {
+            "spin": "none",
+            "magmom": null,
+            "soc": false,
+            "saxis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "functional": "PBE",
+            "hubbard_u": {}
+          },
+          "output_sha256": {
+            "vasprun.xml": "6685aa237af82d41bd7b8c77521ce999a8df6f5c7e6b5756a873d16ffbd09600",
+            "OUTCAR": "ecbc5a55c1ee2edccf56a7abfcb2b0215fd2f80387bcc730ccf03e26d1d167aa"
+          },
+          "electronic_converged": true,
+          "ionic_converged": true,
+          "sampled_band_gap_ev": null,
+          "band_gap_scope": null
+        },
+        {
+          "task": "scf",
+          "folder": "validation/tasks-0.4.0/edited-soc-live/02_scf",
+          "job_id": "7465805",
+          "scheduler_state": "COMPLETED",
+          "input_sha256": {
+            "POSCAR": "843cb3099dc8cf804ecd3ac8128effec5a803f9d82f4edb5107ac31c18c18604",
+            "INCAR": "c12f2a000f5e8b36ff74cb0795a5a162de6d4226a9dabf611aa0c5d9a7a78f28",
+            "KPOINTS": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49"
+          },
+          "method": {
+            "spin": "noncollinear",
+            "magmom": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "soc": true,
+            "saxis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "functional": "PBE",
+            "hubbard_u": {}
+          },
+          "output_sha256": {
+            "vasprun.xml": "3d163463569dea0e73d90e8bbd99aa29cee66dcfa5745bb4b2ec49b836ab0f25",
+            "OUTCAR": "4515c652445982f879211a59503638ca131459a00767dbec30598327213137f6"
+          },
+          "electronic_converged": true,
+          "ionic_converged": true,
+          "sampled_band_gap_ev": 0.3956999999999997,
+          "band_gap_scope": "sampled_kpoints"
+        },
+        {
+          "task": "bands",
+          "folder": "validation/tasks-0.4.0/edited-soc-live/03_bands",
+          "job_id": "7465816",
+          "scheduler_state": "COMPLETED",
+          "input_sha256": {
+            "POSCAR": "843cb3099dc8cf804ecd3ac8128effec5a803f9d82f4edb5107ac31c18c18604",
+            "INCAR": "fb5825bc8e2ec11310d31e3c07bed588c7ec49854c0249038d13903180986636",
+            "KPOINTS": "ab997012b034f9bab265b5325e3db1217d870cd6d83361c934908e3fac15262a"
+          },
+          "method": {
+            "spin": "noncollinear",
+            "magmom": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ],
+            "soc": true,
+            "saxis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "functional": "PBE",
+            "hubbard_u": {}
+          },
+          "output_sha256": {
+            "vasprun.xml": "0ec3fa482720632bb526423a883a8650816e19507673824e90fa1000e6c6e9d5",
+            "OUTCAR": "4730f0b89e324efbb62a6d3009cc10502d53da1f6b367832d6f91d40b89e10f4"
+          },
+          "electronic_converged": true,
+          "ionic_converged": true,
+          "sampled_band_gap_ev": 0.39400000000000013,
+          "band_gap_scope": "sampled_path"
+        }
+      ]
+    },
+    {
+      "case": "pbe-hse-live",
+      "status": "succeeded",
+      "stages": [
+        {
+          "task": "relax",
+          "folder": "validation/tasks-0.4.0/pbe-hse-live/01_relax",
+          "job_id": "7465803",
+          "scheduler_state": "COMPLETED",
+          "input_sha256": {
+            "POSCAR": "2942e884c6a7feb5a81a19d1c86a53a8d24b7399939435eff0c6b302e121b303",
+            "INCAR": "460a0fee23c0093bedce7dbbcd7d4478da7c24df08568129544a4ea6b68668c7",
+            "KPOINTS": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49"
+          },
+          "method": {
+            "spin": "none",
+            "magmom": null,
+            "soc": false,
+            "saxis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "functional": "PBE",
+            "hubbard_u": {}
+          },
+          "output_sha256": {
+            "vasprun.xml": "42fa79d25b7a4e8596d3909463374e5cb235a69497c96d8d5bd2b858a069e11f",
+            "OUTCAR": "15e74077accdd7ecea69e6e5c385d2451393ce41d5e2af4881c797daf0953378"
+          },
+          "electronic_converged": true,
+          "ionic_converged": true,
+          "sampled_band_gap_ev": null,
+          "band_gap_scope": null
+        },
+        {
+          "task": "bands",
+          "folder": "validation/tasks-0.4.0/pbe-hse-live/02_bands",
+          "job_id": "7465806",
+          "scheduler_state": "COMPLETED",
+          "input_sha256": {
+            "POSCAR": "31f32fd743c79576c8b2cb974a236a6b0fd0a774894e23654eab70a1acf7a1c4",
+            "INCAR": "8bacdd1bc123a2bb9baead6284ab21db7cc51a2f5830c2bd6c32464794861e68",
+            "KPOINTS": "4c08bd31a1165a3aeabd14a25b3896bf7d381ab354ab3fb3da216254c474964f"
+          },
+          "method": {
+            "spin": "none",
+            "magmom": null,
+            "soc": false,
+            "saxis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "functional": "HSE06",
+            "hubbard_u": {}
+          },
+          "output_sha256": {
+            "vasprun.xml": "5145220e396ac0c7c737a78982e226a6a1cc63a214f6dc1694bd30d63e6f1304",
+            "OUTCAR": "a7cc1f089a51791e87ce3ff475359440009fc8c0fdbf9093d215bfbc6b1a81b7"
+          },
+          "electronic_converged": true,
+          "ionic_converged": true,
+          "sampled_band_gap_ev": 2.3711,
+          "band_gap_scope": "sampled_path"
+        }
+      ]
+    },
+    {
+      "case": "continued-dos-live",
+      "status": "succeeded",
+      "stages": [
+        {
+          "task": "scf",
+          "folder": "validation/tasks-0.4.0/continued-dos-live/01_scf",
+          "job_id": "7465824",
+          "scheduler_state": "COMPLETED",
+          "input_sha256": {
+            "POSCAR": "31f32fd743c79576c8b2cb974a236a6b0fd0a774894e23654eab70a1acf7a1c4",
+            "INCAR": "669dc2184f5aa0ce56df8b72c8a9c75ad8567990b840526a03812b90a268eeee",
+            "KPOINTS": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49"
+          },
+          "method": {
+            "spin": "none",
+            "magmom": null,
+            "soc": false,
+            "saxis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "functional": "PBE",
+            "hubbard_u": {}
+          },
+          "output_sha256": {
+            "vasprun.xml": "ebdc32997e6197ee41202f8a19b0ed193969d8c31b6967054b6d4724973837e2",
+            "OUTCAR": "2a6601fbfbc884dd75b88e73ffa916a1e641ebdff9194279f7eb0a4999fad9ec"
+          },
+          "electronic_converged": true,
+          "ionic_converged": true,
+          "sampled_band_gap_ev": 0.5975000000000001,
+          "band_gap_scope": "sampled_kpoints"
+        },
+        {
+          "task": "dos",
+          "folder": "validation/tasks-0.4.0/continued-dos-live/02_dos",
+          "job_id": "7465828",
+          "scheduler_state": "COMPLETED",
+          "input_sha256": {
+            "POSCAR": "31f32fd743c79576c8b2cb974a236a6b0fd0a774894e23654eab70a1acf7a1c4",
+            "INCAR": "cf6644cd6556e0e42b2d8dc8b198721a11c2a6a7c8387f75f502dfc4ff42296f",
+            "KPOINTS": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49"
+          },
+          "method": {
+            "spin": "none",
+            "magmom": null,
+            "soc": false,
+            "saxis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "functional": "PBE",
+            "hubbard_u": {}
+          },
+          "output_sha256": {
+            "vasprun.xml": "e22dcf8207ca8742e5bffc0dcfe4d512c097327741b4706a0ecc45cb2f774032",
+            "OUTCAR": "2d4f374552e1983c43f60a41e7b8bcccad26c4abb02263d00e0f6c8153f5248e"
+          },
+          "electronic_converged": true,
+          "ionic_converged": true,
+          "sampled_band_gap_ev": 0.5977000000000006,
+          "band_gap_scope": "sampled_kpoints"
+        }
+      ]
+    },
+    {
+      "case": "001_fm-u3",
+      "status": "succeeded",
+      "stages": [
+        {
+          "task": "scf",
+          "folder": "validation/tasks-0.4.0/001_fm-u3/01_scf",
+          "job_id": "7465807",
+          "scheduler_state": "COMPLETED",
+          "input_sha256": {
+            "POSCAR": "4ffdda2818e8f3b6c105d64478a70fa1bd7c66ceafe924c40e45521d57f89b9c",
+            "INCAR": "6a01f3717d97673f85809a8aeca3f51e84404fb0305693af52c84a458deb2358",
+            "KPOINTS": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49"
+          },
+          "method": {
+            "spin": "collinear",
+            "magmom": [
+              2.0,
+              2.0,
+              0.0,
+              0.0
+            ],
+            "soc": false,
+            "saxis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "functional": "PBE",
+            "hubbard_u": {
+              "Ni": {
+                "l": 2,
+                "u": 3.0,
+                "j": 0.0
+              }
+            }
+          },
+          "output_sha256": {
+            "vasprun.xml": "1925541dceaec2f0511be702486411b204e4f44f8d50031525b5d415752ba0f3",
+            "OUTCAR": "6a9354bc8cf0128b2c802b2e06e2a31b8275c973651211f120e288d220706f10"
+          },
+          "electronic_converged": true,
+          "ionic_converged": true,
+          "sampled_band_gap_ev": 0.7546000000000008,
+          "band_gap_scope": "sampled_kpoints"
+        }
+      ]
+    },
+    {
+      "case": "002_afm-u3",
+      "status": "succeeded",
+      "stages": [
+        {
+          "task": "scf",
+          "folder": "validation/tasks-0.4.0/002_afm-u3/01_scf",
+          "job_id": "7465811",
+          "scheduler_state": "COMPLETED",
+          "input_sha256": {
+            "POSCAR": "4ffdda2818e8f3b6c105d64478a70fa1bd7c66ceafe924c40e45521d57f89b9c",
+            "INCAR": "4675a347da5f1d61d3e5dc87fb1faa8f218d4167e65c62ef4d4197021fc871ea",
+            "KPOINTS": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49"
+          },
+          "method": {
+            "spin": "collinear",
+            "magmom": [
+              2.0,
+              -2.0,
+              0.0,
+              0.0
+            ],
+            "soc": false,
+            "saxis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "functional": "PBE",
+            "hubbard_u": {
+              "Ni": {
+                "l": 2,
+                "u": 3.0,
+                "j": 0.0
+              }
+            }
+          },
+          "output_sha256": {
+            "vasprun.xml": "d88f4a2e8bbe87a53649f624243feb3c6386637e4cc1b05fe6ebc41fe0f801af",
+            "OUTCAR": "a751afae5358b21d88471e6e9f86b83cd2e96e0153815b7163cfeb4db33faa21"
+          },
+          "electronic_converged": true,
+          "ionic_converged": true,
+          "sampled_band_gap_ev": 2.8580999999999994,
+          "band_gap_scope": "sampled_kpoints"
+        }
+      ]
+    },
+    {
+      "case": "003_afm-u4",
+      "status": "succeeded",
+      "stages": [
+        {
+          "task": "scf",
+          "folder": "validation/tasks-0.4.0/003_afm-u4/01_scf",
+          "job_id": "7465814",
+          "scheduler_state": "COMPLETED",
+          "input_sha256": {
+            "POSCAR": "4ffdda2818e8f3b6c105d64478a70fa1bd7c66ceafe924c40e45521d57f89b9c",
+            "INCAR": "178994fc02dd3471129f70da4f2dff97f35e3767db5723a5ccfbe9ec98c0e063",
+            "KPOINTS": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49"
+          },
+          "method": {
+            "spin": "collinear",
+            "magmom": [
+              2.0,
+              -2.0,
+              0.0,
+              0.0
+            ],
+            "soc": false,
+            "saxis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "functional": "PBE",
+            "hubbard_u": {
+              "Ni": {
+                "l": 2,
+                "u": 4.0,
+                "j": 0.0
+              }
+            }
+          },
+          "output_sha256": {
+            "vasprun.xml": "7ca332dc6c5fbe81388e616025d68b596877f0c79a1294aed3b4e1994197c5b1",
+            "OUTCAR": "00534435852312554331aa3c35a86ed219f94266e492e854ac3a1b3d3f0ea039"
+          },
+          "electronic_converged": true,
+          "ionic_converged": true,
+          "sampled_band_gap_ev": 3.132200000000001,
+          "band_gap_scope": "sampled_kpoints"
+        }
+      ]
+    },
+    {
+      "case": "004_afm-u3-x1pct",
+      "status": "succeeded",
+      "stages": [
+        {
+          "task": "scf",
+          "folder": "validation/tasks-0.4.0/004_afm-u3-x1pct/01_scf",
+          "job_id": "7465815",
+          "scheduler_state": "COMPLETED",
+          "input_sha256": {
+            "POSCAR": "eb44c007cdae519f146d0eb6883455daa0c27c58d42bfa910e9f185be9275e87",
+            "INCAR": "4675a347da5f1d61d3e5dc87fb1faa8f218d4167e65c62ef4d4197021fc871ea",
+            "KPOINTS": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49"
+          },
+          "method": {
+            "spin": "collinear",
+            "magmom": [
+              2.0,
+              -2.0,
+              0.0,
+              0.0
+            ],
+            "soc": false,
+            "saxis": [
+              0.0,
+              0.0,
+              1.0
+            ],
+            "functional": "PBE",
+            "hubbard_u": {
+              "Ni": {
+                "l": 2,
+                "u": 3.0,
+                "j": 0.0
+              }
+            }
+          },
+          "output_sha256": {
+            "vasprun.xml": "69cc3585a5b78e78f88231e9705678c028c14246e3ce49a11aeccb3b222df910",
+            "OUTCAR": "bd670c58c697f77b9e235673aec1f203f1c1c95739221b2668ef1533426653be"
+          },
+          "electronic_converged": true,
+          "ionic_converged": true,
+          "sampled_band_gap_ev": 2.8244,
+          "band_gap_scope": "sampled_kpoints"
+        }
+      ]
+    }
+  ],
+  "continuation_original_run_unchanged": true,
+  "batch_comparison": "Rank only the matched FM_U3 and AFM_U3 cases. U4 and strained points are reported separately."
+}

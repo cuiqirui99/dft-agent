@@ -24,6 +24,9 @@ Chemistry and vacuum detection are hints, not measurements or literature evidenc
 for a material. They never select U/J, magnetic order or extra tasks. Explicit user
 choices take priority. Keyword matching selects notes; the model and plan validator
 still handle intent. Review adds explanations and questions without changing inputs.
+Missing inputs for a selected method must be supplied before preparation. Checks
+record their source, applicable method and place in the workflow; a pending check
+is not a validated result.
 
 These notes do not establish a ground state or property convergence. They do not
-add slab construction, charged-cell treatment or automated magnetic-order searches.
+establish charged-cell treatment or an exhaustive magnetic-order search.

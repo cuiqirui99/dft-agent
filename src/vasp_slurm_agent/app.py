@@ -224,6 +224,11 @@ def _stage_results(run_dir: Path, stage: dict, scf_fermi_energy: float | None = 
     if result.get("magnetization"):
         with st.expander("Magnetic moments"):
             st.json(result["magnetization"])
+    gap = result.get("band_gap") or {}
+    if gap.get("gap_ev") is not None:
+        st.metric("Sampled band gap (eV)", f"{gap['gap_ev']:.3f}")
+    elif gap.get("partial_occupations"):
+        st.caption("Partial occupations; no insulating gap assigned.")
     output = run_dir / stage["folder"] / "outputs"
     final_structure = output / "final_structure.cif"
     if final_structure.is_file():
@@ -323,10 +328,15 @@ def _prepare_from_plan(upload, runs_root, config, plan):
     with tempfile.TemporaryDirectory(prefix="dft-agent-input-") as directory:
         source = Path(directory) / f"structure{suffix}"
         source.write_bytes(upload.getvalue())
-        prepare_plan(source, run_dir, config, tasks=plan["tasks"], parameters=plan["parameters"],
-                     magnetic_states=plan.get("magnetic_states") or None, initial_moment=plan.get("initial_moment", 3.0))
+        if plan.get("kind") == "task":
+            from vasp_slurm_agent.task_agent import prepare_task
+            prepare_task(source, run_dir, config, plan)
+        else:
+            prepare_plan(source, run_dir, config, tasks=plan["tasks"], parameters=plan["parameters"],
+                         magnetic_states=plan.get("magnetic_states") or None, initial_moment=plan.get("initial_moment", 3.0))
     _save_structure_edit(upload, run_dir)
-    (run_dir / "proposal.json").write_text(json.dumps(plan, indent=2, ensure_ascii=False) + "\n")
+    if plan.get("kind") != "task":
+        (run_dir / "proposal.json").write_text(json.dumps(plan, indent=2, ensure_ascii=False) + "\n")
     st.session_state["active_run"] = str(run_dir)
     st.success("Inputs ready. Review below, then submit.")
 
@@ -586,9 +596,9 @@ def _memory_panel(runs_root):
 
 
 def _agent_plan(upload, structure, config, runs_root, settings):
-    from vasp_slurm_agent.agent import _redact, _secrets, draft_plan
+    from vasp_slurm_agent.task_agent import draft_task
 
-    goal = st.text_area("Goal", placeholder="Relax this structure, then calculate its bands with SOC.", max_chars=4000)
+    goal = st.text_area("Goal", max_chars=4000)
     stamp = hashlib.sha256((upload.getvalue() if upload else b"") + goal.encode()).hexdigest()
     if st.session_state.get("agent_stamp") != stamp:
         for key in ("agent_proposal", "agent_history", "agent_clear_revision", "plan_revision", "agent_error_usage"):
@@ -612,7 +622,7 @@ def _agent_plan(upload, structure, config, runs_root, settings):
                 source = Path(directory) / f"structure{suffix}"
                 source.write_bytes(upload.getvalue())
                 with st.spinner("Planning…"):
-                    plan = draft_plan(goal.strip(), source, settings, history=history, runs_root=runs_root)
+                    plan = draft_task(goal.strip(), source, settings, history=history, runs_root=runs_root)
             history = plan.get("dialogue", history + [{"role": "assistant", "content": json.dumps(plan, ensure_ascii=False)}])
             saved = {"stamp": stamp, "plan": plan, "goal": plan.get("goal", goal.strip())}
             st.session_state["agent_proposal"] = saved
@@ -634,9 +644,10 @@ def _agent_plan(upload, structure, config, runs_root, settings):
         st.info(question)
     if plan.get("status") == "unsupported":
         st.warning("This plan cannot run yet.")
+    _task_preview(plan)
     _science_details(plan.get("scientific_report"))
-    with st.expander("Plan details", expanded=plan.get("status") == "ready"):
-        st.json({key: value for key, value in plan.items() if key not in {"provenance", "dialogue", "goal", "scientific_report", "model_usage"}})
+    with st.expander("Plan details"):
+        st.json({key: plan[key] for key in ("operations", "stages", "variants", "tasks", "parameters", "notes") if key in plan})
     if revision.strip():
         st.info("Update the plan before preparing inputs.")
     if st.button("Prepare inputs", disabled=plan.get("status") != "ready" or config is None or bool(revision.strip())):
@@ -647,6 +658,23 @@ def _agent_plan(upload, structure, config, runs_root, settings):
             st.error(f"Cannot prepare inputs: {exc}")
     if config is None:
         st.info("Save Cluster setup before preparing inputs.")
+
+
+def _task_preview(plan):
+    preview = plan.get("preview")
+    if preview and plan.get("operations"):
+        result = preview["output"]
+        st.write(f"{result['formula']} · {result['number_of_sites']} atoms")
+        st.dataframe(plan["operations"], hide_index=True)
+    if plan.get("stages"):
+        rows = []
+        for variant in plan.get("variants") or [{"label": "", "stages": plan["stages"]}]:
+            for stage in variant["stages"]:
+                parameters = stage["parameters"]
+                rows.append({"Variant": variant["label"], "Stage": stage["task"],
+                             "Method": parameters["functional"], "SOC": parameters["soc"],
+                             "Spin": parameters["spin"], "Strain": str(variant.get("strain") or "—")})
+        st.dataframe(rows, hide_index=True)
 
 
 def _new_run(config: ClusterConfig | None, runs_root: Path, model_settings=None) -> None:
@@ -851,6 +879,12 @@ def _run_panel(run_dir: Path, model_settings=None) -> None:
         if (stage.get("result") or {}).get("success") and not context["facts"].get(f"stage_{index}.accepted", {}).get("value"):
             message = context["facts"].get(f"stage_{index}.availability", {}).get("value", "Saved results could not be verified.")
             stage = {**stage, "status": "needs_attention", "result": {"success": False, "reason": message}}
+        elif (stage.get("result") or {}).get("success"):
+            facts = context["facts"]
+            gap = {"gap_ev": facts.get(f"stage_{index}.band_gap", {}).get("value"),
+                   "scope": facts.get(f"stage_{index}.band_gap_scope", {}).get("value"),
+                   "partial_occupations": facts.get(f"stage_{index}.band_gap_status", {}).get("value") == "metallic_or_partially_occupied"}
+            stage["result"] = {**stage["result"], "band_gap": gap}
         stages.append(stage)
     awaiting_submission = status == "planned" and not any(stage.get("job_id") for stage in stages)
     st.subheader(f"{state.get('formula', '')} · {state.get('task', '')}")
@@ -955,6 +989,111 @@ def _run_panel(run_dir: Path, model_settings=None) -> None:
     if status in {"needs_attention", "failed"}:
         _repair_panel(run_dir, model_settings)
     _result_dialogue(run_dir, model_settings, context)
+    _continue_panel(run_dir, model_settings, context)
+
+
+def _continue_panel(run_dir, settings, context):
+    from vasp_slurm_agent.continuation import inspect_continuation, prepare_task_continuation
+    from vasp_slurm_agent.task_agent import draft_task
+
+    state = read_state(run_dir)
+    choices = [index for index in range(len(state["stages"]))
+               if context["facts"].get(f"stage_{index + 1}.accepted", {}).get("value")]
+    if not choices:
+        return
+    key = f"continue_{run_dir}"
+    with st.expander("Continue"):
+        index = st.selectbox("Starting stage", choices, format_func=lambda i: state["stages"][i]["folder"], key=key + "_stage")
+        goal = st.text_area("Next calculation", key=key + "_goal")
+        stamp = (index, goal, context["context_sha256"])
+        saved = st.session_state.get(key)
+        if saved and saved["stamp"] != stamp:
+            st.session_state.pop(key, None)
+            saved = None
+        revision = st.text_input("Change the plan", key=key + "_revision") if saved else ""
+        if st.button("Plan next calculation", disabled=not goal.strip(), key=key + "_plan"):
+            try:
+                source = inspect_continuation(run_dir, index)
+                history = list(saved["plan"].get("dialogue", [])) if saved else []
+                if revision.strip():
+                    history.append({"role": "user", "content": revision.strip()})
+                with st.spinner("Planning…"):
+                    plan = draft_task(goal, source["structure_path"], settings, history=history,
+                                      runs_root=run_dir.parent, previous_parameters=source["parameters"])
+                saved = {"stamp": stamp, "source": source, "plan": plan, "revision": revision}
+                st.session_state[key] = saved
+            except Exception as exc:
+                st.error(str(exc))
+        if not saved:
+            return
+        plan = saved["plan"]
+        st.write(plan["summary"])
+        for question in plan["questions"]:
+            st.info(question)
+        _model_usage(plan.get("model_usage"))
+        _task_preview(plan)
+        _science_details(plan.get("scientific_report"))
+        with st.expander("Plan details"):
+            st.json({"operations": plan["operations"], "stages": plan["stages"], "variants": plan["variants"]})
+        if st.button("Prepare continuation", key=key + "_prepare", disabled=plan["status"] != "ready" or revision != saved.get("revision", "")):
+            try:
+                source = inspect_continuation(run_dir, index)
+                if source["context_sha256"] != saved["source"]["context_sha256"]:
+                    raise ValueError("The source results changed. Plan again.")
+                destination = run_dir.parent / (datetime.now().strftime("%Y%m%d-%H%M%S") + "-" + uuid.uuid4().hex[:8])
+                prepare_task_continuation(run_dir, index, destination, ClusterConfig.load(run_dir / "config.json"),
+                                          plan, saved["source"]["context_sha256"])
+                st.session_state["active_run"] = str(destination)
+                st.rerun()
+            except Exception as exc:
+                st.error(f"Cannot prepare continuation: {exc}")
+
+
+def _batch_panel(batch_dir, settings):
+    from vasp_slurm_agent.batch import read_batch, summarize_batch, start_batch_worker, resume_batch, cancel_batch, bundle_batch
+
+    try:
+        state = read_batch(batch_dir)
+        summary = summarize_batch(batch_dir)
+    except Exception as exc:
+        st.error(f"Cannot read batch: {exc}")
+        return
+    st.subheader("Comparison")
+    st.caption(str(batch_dir))
+    rows = summary["rows"]
+    st.dataframe([{key: row.get(key) for key in ("label", "status", "functional", "hubbard_u", "strain", "energy_ev_per_atom", "band_gap_ev", "relative_energy_mev_per_atom")}
+                  for row in rows], hide_index=True)
+    st.download_button("Download table", (batch_dir / "summary.csv").read_bytes(), file_name="comparison.csv", mime="text/csv")
+    with st.expander("Review settings", expanded=state["status"] == "planned"):
+        st.json(json.loads((batch_dir / "batch-plan.json").read_text()))
+    untouched = all(read_state(batch_dir / item["folder"])["status"] == "planned"
+                    and not any(stage.get("job_id") for stage in read_state(batch_dir / item["folder"])["stages"])
+                    for item in state["runs"])
+    if untouched and not state.get("cancel_requested"):
+        reviewed = st.checkbox("Structures, settings and resources reviewed.", key=f"batch_review_{batch_dir}")
+        if st.button("Submit batch", disabled=not reviewed, key=f"batch_submit_{batch_dir}"):
+            _with_password(start_batch_worker, batch_dir)
+            st.success("Batch monitoring started.")
+    elif state["status"] not in TERMINAL:
+        if st.button("Resume monitoring", key=f"batch_watch_{batch_dir}"):
+            _with_password(start_batch_worker, batch_dir)
+            st.success("Batch monitoring started.")
+    elif state["status"] in {"needs_attention", "failed"}:
+        if st.button("Reconnect", key=f"batch_reconnect_{batch_dir}"):
+            restored = _with_password(resume_batch, batch_dir)
+            if restored["status"] not in TERMINAL:
+                _with_password(start_batch_worker, batch_dir)
+            st.rerun()
+    if state["status"] not in {"succeeded", "cancelled"}:
+        if st.button("Cancel batch", key=f"batch_cancel_{batch_dir}"):
+            _with_password(cancel_batch, batch_dir)
+            st.rerun()
+    if st.button("Prepare download", key=f"batch_bundle_{batch_dir}"):
+        bundle_batch(batch_dir)
+    if (batch_dir / "results.zip").is_file():
+        st.download_button("Download results (.zip)", (batch_dir / "results.zip").read_bytes(), file_name="results.zip")
+    selected = st.selectbox("Calculation", state["runs"], format_func=lambda item: item["label"], key=f"batch_child_{batch_dir}")
+    _run_panel(batch_dir / selected["folder"], settings)
 
 
 def main() -> None:
@@ -980,7 +1119,7 @@ def main() -> None:
     with memory_tab:
         _memory_panel(runs_root)
     with history_tab:
-        available = sorted(runs_root.glob("*/run.json"), reverse=True) if runs_root.is_dir() else []
+        available = sorted([*runs_root.glob("*/run.json"), *runs_root.glob("*/batch.json")], reverse=True) if runs_root.is_dir() else []
         selected = st.selectbox("Select a run", [str(path.parent) for path in available], index=None,
                                 placeholder="Choose a run")
         if st.button("View run", disabled=selected is None):
@@ -990,7 +1129,11 @@ def main() -> None:
             st.session_state["active_run"] = str(Path(manual).expanduser())
     if st.session_state.get("active_run"):
         st.divider()
-        _run_panel(Path(st.session_state["active_run"]), model_settings)
+        active = Path(st.session_state["active_run"])
+        if (active / "batch.json").is_file():
+            _batch_panel(active, model_settings)
+        else:
+            _run_panel(active, model_settings)
 
 
 if __name__ == "__main__":

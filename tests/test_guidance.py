@@ -153,3 +153,48 @@ def test_returned_context_cannot_modify_the_bundled_rules():
     first["evidence"][0]["sources"][0]["url"] = "changed"
     second = build_context("SOC", cell())
     assert "changed" not in json.dumps(second)
+
+
+def test_actions_have_applicability_sources_and_a_time_to_check():
+    original = plan(functional="HSE06", spin="noncollinear", soc=True,
+                    saxis=[0, 0, 1], magmom=[[0, 0, 2], [0, 0, -2]],
+                    hubbard_u={"Fe": {"l": 2, "u": 4, "j": 0}})
+    before = deepcopy(original)
+    report = review_plan(original, cell(("Fe", "Fe")))
+    assert original == before
+    assert not report["required_inputs"]
+    actions = {item["id"]: item for item in report["action_checks"]}
+    assert {"hybrid_charge", "hybrid_path", "spin_basis", "hubbard_tags", "local_moments"} <= actions.keys()
+    assert "scf_charge" not in actions
+    for item in actions.values():
+        assert item["applies_to"] and item["action"] and item["when"]
+        assert set(item["evidence_ids"]) <= ids(report)
+        assert item["status"] == "pending"
+    assert all(item["applies_to"] and item["next_check"] for item in report["evidence"])
+
+
+def test_required_inputs_only_cover_missing_selected_method_fields():
+    original = plan(spin="noncollinear", magmom=None, soc=True, saxis=None,
+                    hubbard_u={"Ni": {"l": 2, "u": 5, "j": None}})
+    report = review_plan(original, cell(("Ni", "O")))
+    requests = report["required_inputs"]
+    assert {item["id"] for item in requests} == {"initial_moments", "spin_axis", "hubbard_values"}
+    assert all(item["status"] == "needs_input" and item["when"] == "before_prepare" for item in requests)
+    assert all(item["question"] in report["questions"] and item["fields"] for item in requests)
+    baseline = plan()
+    baseline["intent"] = {"spin": "none", "hubbard_u": False}
+    report = review_plan(baseline, cell(("Ni", "O")))
+    assert not report["required_inputs"]
+    assert not {"initial_moments", "hubbard_values", "hubbard_tags", "local_moments"} & {
+        item["id"] for item in report["action_checks"]}
+
+
+def test_vacuum_hint_is_review_only_not_a_required_cell_change():
+    structure = cell(lattice=[[5, 0, 0], [0, 5, 0], [0, 0, 20]])
+    original = plan(cell_relax=True)
+    original["tasks"] = ["relax"]
+    report = review_plan(original, structure)
+    action = next(item for item in report["action_checks"] if item["id"] == "vacuum_cell")
+    assert action["status"] == "review"
+    assert not report["required_inputs"]
+    assert original["parameters"]["cell_relax"] is True

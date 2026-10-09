@@ -53,27 +53,3 @@ Pricing and speed vary, so smaller context alone is not a cost or latency promis
 [Codex JSON events](https://developers.openai.com/codex/noninteractive), and
 [prompt caching](https://developers.openai.com/api/docs/guides/prompt-caching)
 describe the provider fields used here.
-
-## Measured pairs
-
-Six Codex calls with `gpt-6-astra` on 2026-10-09 passed the same task, parameter
-and exclusion checks before and after compaction. Each input was called once.
-
-| Context | Input tokens, before → after | Output tokens, before → after | Cached input, before → after |
-| --- | ---: | ---: | ---: |
-| Eight user revisions | 21,827 → 19,900 | 669 → 602 | 0 → 0 |
-| Complete 256-site geometry | 21,528 → 19,472 | 458 → 390 | 0 → 0 |
-| Verified past NiO runs | 16,325 → 16,180 | 538 → 567 | 0 → 0 |
-
-Input counts fell by 8.8%, 9.6% and 0.9% in these pairs. Output counts and latency
-did not always fall. These single pairs do not establish average savings; the
-counts include the full provider request. Small advisory moment arrays remained
-complete, so that case does not measure large-vector pruning.
-
-Payload sizes were 23,154 → 17,754 bytes, 23,598 → 12,598 bytes and
-8,950 → 8,597 bytes, respectively. These are UTF-8 byte counts, not tokens.
-
-The [receipt](../validation/results/token-use-0.3.0.json) includes provider events,
-semantic checks and hashes linking every call to its public input and response.
-The published fixture files match the measured files byte for byte.
-[Run the paired checks](../validation/token-use/README.md) to repeat the comparison.

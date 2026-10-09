@@ -78,7 +78,24 @@ def _launch_command(config, metadata):
     return command
 
 
-def prepare_plan(structure_path, run_dir, config, tasks, parameters=None, magnetic_states=None, initial_moment=3.0):
+def _stage_recipes(tasks, parameters, stage_parameters):
+    if stage_parameters is None:
+        return [deepcopy(parameters) for _ in tasks]
+    if not isinstance(stage_parameters, (list, tuple)) or len(stage_parameters) != len(tasks) or any(not isinstance(item, dict) for item in stage_parameters):
+        raise ValueError("Supply one parameter override object per requested task.")
+    return [{**deepcopy(parameters), **deepcopy(item)} for item in stage_parameters]
+
+
+def _charge_recipe(parameters):
+    from .methods import METHOD_DEFAULTS
+    from .vasp import _parameters
+    settings = {**METHOD_DEFAULTS, **_parameters(parameters)}
+    return {key: value for key, value in settings.items()
+            if key not in {"nsw", "ediffg", "cell_relax", "line_density", "nedos"}}
+
+
+def prepare_plan(structure_path, run_dir, config, tasks, parameters=None, magnetic_states=None, initial_moment=3.0,
+                 stage_parameters=None):
     """Freeze an offline plan; prepare post-relaxation inputs only after acceptance."""
     if isinstance(magnetic_states, (list, tuple)) and not magnetic_states:
         magnetic_states = None
@@ -92,6 +109,7 @@ def prepare_plan(structure_path, run_dir, config, tasks, parameters=None, magnet
     if magnetic_states is not None and tasks != ["scf"]:
         raise ValueError("Magnetic comparisons currently support SCF only.")
     parameters = deepcopy(dict(parameters or {}))
+    recipes = _stage_recipes(tasks, parameters, stage_parameters)
     root = Path(run_dir).expanduser().resolve()
     source = Path(structure_path).expanduser().resolve()
     if not source.is_file():
@@ -110,7 +128,7 @@ def prepare_plan(structure_path, run_dir, config, tasks, parameters=None, magnet
         if magnetic_states is not None:
             from .magnetic import make_candidates
             from pymatgen.io.vasp import Poscar
-            common, candidates, seed_info = make_candidates(temporary / source_relative, magnetic_states, parameters, initial_moment)
+            common, candidates, seed_info = make_candidates(temporary / source_relative, magnetic_states, recipes[0], initial_moment)
             source_relative = "source/comparison/POSCAR"
             (temporary / source_relative).parent.mkdir()
             Poscar(common).write_file(temporary / source_relative)
@@ -118,14 +136,18 @@ def prepare_plan(structure_path, run_dir, config, tasks, parameters=None, magnet
             sequence = [{"name": "scf", "label": candidate["label"], "parameters": candidate["parameters"]} for candidate in candidates]
         else:
             sequence = []
-            has_scf = False
-            hybrid = str(parameters.get("functional", "PBE")).upper() in {"HSE06", "PBE0"}
-            for task in tasks:
-                if task in {"bands", "dos"} and not hybrid and not has_scf:
-                    sequence.append({"name": "scf", "parameters": deepcopy(parameters)})
-                    has_scf = True
-                sequence.append({"name": task, "parameters": deepcopy(parameters)})
-                has_scf |= task == "scf"
+            scf_recipe = None
+            for task, recipe in zip(tasks, recipes):
+                hybrid = recipe.get("functional", "PBE") in {"HSE06", "PBE0"}
+                identity = _charge_recipe(recipe)
+                if task in {"bands", "dos"} and not hybrid and identity != scf_recipe:
+                    sequence.append({"name": "scf", "parameters": deepcopy(recipe)})
+                    scf_recipe = identity
+                sequence.append({"name": task, "parameters": deepcopy(recipe)})
+                if task == "scf":
+                    scf_recipe = identity
+                elif task == "relax":
+                    scf_recipe = None
         run_id = "vsa-" + uuid.uuid4().hex[:16]
         stages = []
         relaxed = scf = None
@@ -133,7 +155,7 @@ def prepare_plan(structure_path, run_dir, config, tasks, parameters=None, magnet
             name = spec["name"]
             suffix = name + ("_" + spec["label"].lower() if "label" in spec else "")
             charge_from = scf if name in {"bands", "dos"} and str(spec["parameters"].get("functional", "PBE")).upper() == "PBE" else None
-            stage = {**spec, "folder": f"{index+1:02d}_{suffix}", "job_name": f"{run_id}-{suffix}",
+            stage = {**spec, "folder": f"{index+1:02d}_{suffix}", "job_name": f"{run_id}-{index+1:02d}-{suffix}",
                      "status": "planned", "job_id": None, "metadata": {}, "staged": False,
                      "materialized": False, "result": None, "structure_from": relaxed,
                      "charge_from": charge_from, "source_path": source_relative}
@@ -146,6 +168,8 @@ def prepare_plan(structure_path, run_dir, config, tasks, parameters=None, magnet
                 "sources": frozen_sources, "magnetic_seeds": seed_info,
                 "stages": [{key: deepcopy(stage[key]) for key in ("name", "folder", "parameters", "structure_from", "charge_from", "source_path")}
                            for stage in stages]}
+        if stage_parameters is not None:
+            plan["stage_parameters"] = deepcopy(list(stage_parameters))
         for spec, stage in zip(plan["stages"], stages):
             if "label" in stage:
                 spec["label"] = stage["label"]
@@ -164,6 +188,14 @@ def prepare_plan(structure_path, run_dir, config, tasks, parameters=None, magnet
         for stage in stages:
             if stage["structure_from"] is None:
                 _materialize_stage(temporary, state, config, stage)
+            elif stage_parameters is not None:
+                # Validate later recipes before any job starts; their actual inputs
+                # still wait for the accepted relaxed structure.
+                preview = temporary / ".recipe-check"
+                metadata = prepare_inputs(temporary / source_relative, preview, stage["name"],
+                                          stage["parameters"], config.potcar_symbols)
+                _launch_command(config, metadata)
+                shutil.rmtree(preview)
         state["formula"] = stages[0]["metadata"].get("formula", "")
         _save(temporary, state, "Plan prepared. Ready to submit.")
         os.replace(temporary, root)
@@ -194,9 +226,13 @@ def _materialize_stage(root, state, config, stage):
             digest = previous["result"].get("final_structure_sha256")
         if not source.is_file() or _digest(source) != digest:
             raise ValueError("The accepted relaxed structure is missing or changed.")
-        moments = previous["metadata"].get("method", {}).get("magmom")
-        if moments is not None and parameters.get("spin", "none") != "none":
-            parameters["magmom"] = deepcopy(moments)
+        moments = parameters.get("magmom")
+        if moments is not None:
+            order = previous["metadata"].get("input_site_order")
+            if order is not None:
+                if len(order) != len(moments):
+                    raise ValueError("The next-stage moments do not match the relaxed sites.")
+                parameters["magmom"] = [deepcopy(moments[index]) for index in order]
     destination = root / stage["folder"] / "inputs"
     temporary = Path(tempfile.mkdtemp(prefix=".inputs-", dir=root))
     try:
@@ -671,6 +707,8 @@ def bundle_run(run_dir):
         archive.write(root / "run.json", "run.json")
         if (root / "proposal.json").is_file():
             archive.write(root / "proposal.json", "proposal.json")
+        if (root / "parent.json").is_file():
+            archive.write(root / "parent.json", "parent.json")
         if (root / "explanations.json").is_file():
             archive.write(root / "explanations.json", "explanations.json")
         if (root / "repair.json").is_file():

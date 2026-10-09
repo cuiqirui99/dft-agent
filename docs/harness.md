@@ -3,6 +3,9 @@
 Plans use local VASP notes, structure hints and relevant saved runs. Open
 **Scientific guidance** to see method choices, checks and sources. The report
 is saved with the plan. Past runs supply advice, never automatic parameter changes.
+Each check states when it applies, what to inspect and its source. Missing
+moments, spin axes or U/J values return the plan to a question. Geometry hints
+remain suggestions. Result checks stay pending until calculation evidence exists.
 
 Bundled memory adds checked guidance, success and failure cases, and repair
 examples. Plans and repairs retrieve matching entries and save their references.
