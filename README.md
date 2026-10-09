@@ -48,4 +48,8 @@ Model calls use compact context and record reported token counts. [Model use](do
 
 Use ordered periodic structures. Check the starting parameters for your material. Magnetic comparisons test NM, FM and one AFM seed; they do not search all magnetic orders. Keep the app local.
 
+## Citation
+
+Cui, Q. (2026). *DFT Agent* (v0.3.0). Zenodo. [10.5281/zenodo.23260917](https://doi.org/10.5281/zenodo.23260917).
+
 [Quickstart](docs/quickstart.md) · [Methods](docs/methods.md) · [CLI examples](docs/examples.md) · [Validation](docs/validation-0.3.0.md) · [MIT license](LICENSE) · [Notices](NOTICE.md) · [Citation](CITATION.cff)
