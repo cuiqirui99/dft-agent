@@ -1,5 +1,6 @@
 include LICENSE NOTICE.md CHANGELOG.md CITATION.cff
 recursive-include docs *.md
+recursive-include docs/assets *.png *.svg
 recursive-include examples *.cif *.vasp *.json
 recursive-include src/vasp_slurm_agent/examples *.cif *.vasp *.json
 include validation/protocol.v1.json

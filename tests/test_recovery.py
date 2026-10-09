@@ -39,7 +39,7 @@ def failed_run(tmp_path, monkeypatch):
         return SimpleNamespace(vasp_version="test-stub", initial_structure=structure, final_structure=structure,
                                final_energy=-10.0, efermi=0.0, converged_electronic=kind != "electronic",
                                converged_ionic=kind != "ionic", incar=incar,
-                               ionic_steps=[{"forces": [[0, 0, 0] for _ in structure], "e_0_energy": -10.0}])
+                               ionic_steps=[{"forces": [[1 if kind == "force_limit" else 0, 0, 0] for _ in structure], "e_0_energy": -10.0}])
 
     def model(payload, schema, settings, **kwargs):
         request = json.loads(payload)
@@ -120,6 +120,43 @@ def test_ionic_repair_keeps_force_tolerance(failed_run, tmp_path):
     assert proposal["action"] == "increase_nsw"
     state = recovery.prepare_repair(root, tmp_path / "repair", proposal)
     assert state["parameters"]["nsw"] == 200 and state["parameters"]["ediffg"] == -0.03
+
+
+def test_single_step_force_failure_can_increase_nsw_without_changing_tolerance(failed_run, tmp_path):
+    root = failed_run[0]("relax", "force_limit", parameters={"nsw": 1})
+    result = workflow.read_state(root)["stages"][0]["result"]
+    assert not result["converged_ionic"] and result["ionic_steps_count"] == 1
+    assert result["ionic_iteration_limit_reached"] and result["ionic_force_limit_ev_angstrom"] == .03
+    proposal = recovery.draft_repair(root, SETTINGS)
+    assert proposal["status"] == "ready"
+    assert proposal["changes"] == [{"scope": "parameters", "key": "nsw", "before": 1, "after": 100}]
+    assert "1 ionic steps" in failed_run[2][-1]["failure"]
+    child = tmp_path / "force-repair"
+    recovery.prepare_repair(root, child, proposal)
+    old = Incar.from_file(root / "01_relax/inputs/INCAR")
+    new = Incar.from_file(child / "01_relax/inputs/INCAR")
+    assert {key for key in old if old[key] != new[key]} == {"NSW"}
+    assert old["EDIFFG"] == new["EDIFFG"] == -.03
+
+
+def test_high_force_before_iteration_limit_needs_review_without_model_call(failed_run):
+    root = failed_run[0]("relax", "force_limit", parameters={"nsw": 100})
+    proposal = recovery.draft_repair(root, SETTINGS)
+    assert proposal["status"] == "needs_input" and not proposal["changes"]
+    assert not failed_run[2]
+
+
+@pytest.mark.parametrize("field,value", [("ionic_force_limit_ev_angstrom", None),
+                                         ("ionic_force_limit_ev_angstrom", .04),
+                                         ("final_max_force_ev_angstrom", float("nan")),
+                                         ("converged_electronic", False)])
+def test_force_repair_requires_fresh_complete_force_evidence(failed_run, monkeypatch, field, value):
+    root = failed_run[0]("relax", "force_limit", parameters={"nsw": 1})
+    original = explanation._current_result
+    monkeypatch.setattr(explanation, "_current_result", lambda *args: {**original(*args), field: value})
+    proposal = recovery.draft_repair(root, SETTINGS)
+    assert proposal["status"] == "needs_input" and not proposal["changes"]
+    assert not failed_run[2]
 
 
 def test_nonmagnetic_soc_and_u_survive_repair(failed_run, tmp_path):

@@ -5,6 +5,7 @@ from __future__ import annotations
 from copy import deepcopy
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -211,6 +212,22 @@ def _allowed(snapshot):
         key, cap = "nelm", 480
     elif stage["name"] == "relax" and cause == "Ionic convergence was not reached.":
         key, cap = "nsw", 400
+    elif stage["name"] == "relax" and cause == "Final atomic force exceeds the requested negative EDIFFG criterion.":
+        force = current.get("final_max_force_ev_angstrom")
+        limit = current.get("ionic_force_limit_ev_angstrom")
+        parameters = metadata.get("parameters", {})
+        ediffg = parameters.get("ediffg", DEFAULTS["ediffg"])
+        exhausted = (current.get("ionic_iteration_limit_reached") is True
+                     and type(current.get("ionic_steps_count")) is int
+                     and current["ionic_steps_count"] >= int(parameters.get("nsw", DEFAULTS["nsw"])))
+        if not (exhausted and current.get("converged_electronic") is True
+                and current.get("valid_structure") is True and current.get("forces_available") is True
+                and isinstance(force, (int, float)) and math.isfinite(force)
+                and isinstance(limit, (int, float)) and math.isfinite(limit)
+                and ediffg < 0 and limit == abs(ediffg) and force > limit > 0):
+            return "none", [], "The force limit failed before a verified ionic iteration limit was reached. Review the relaxation."
+        key, cap = "nsw", 400
+        cause = f"The relaxation reached {current['ionic_steps_count']} ionic steps (NSW={parameters.get('nsw', DEFAULTS['nsw'])}); the final force {force:.6g} eV/angstrom exceeds {limit:.6g} eV/angstrom."
     else:
         return "none", [], "The output does not establish a supported convergence failure."
     before = int(metadata.get("parameters", {}).get(key, DEFAULTS[key]))
