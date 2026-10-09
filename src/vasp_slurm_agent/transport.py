@@ -184,6 +184,10 @@ class SSHTransport:
             self._askpass_path.chmod(0o700)
 
     def _options(self) -> list[str]:
+        control_path = self._control_path
+        if any(character.isspace() or character in "\\\"'" for character in control_path):
+            # OpenSSH parses -o values as config text, even in a single argv item.
+            control_path = '"' + control_path.replace("\\", "\\\\").replace('"', '\\"') + '"'
         options = [
             "StrictHostKeyChecking=accept-new",
             f"ConnectTimeout={max(1, int(getattr(self.config, 'connect_timeout', 15)))}",
@@ -191,7 +195,7 @@ class SSHTransport:
             "ServerAliveCountMax=3",
             "ControlMaster=no" if self._external_control else "ControlMaster=auto",
             "ControlPersist=no" if self._external_control else "ControlPersist=60",
-            f"ControlPath={self._control_path}",
+            f"ControlPath={control_path}",
             "LogLevel=ERROR",
             "NumberOfPasswordPrompts=1",
             f"BatchMode={'no' if self._password else 'yes'}",

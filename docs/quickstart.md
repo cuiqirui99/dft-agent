@@ -68,7 +68,7 @@ URL. Environment variables `DFT_AGENT_MODEL`, `DFT_AGENT_API_KEY` (or
 Enter a **Goal**, then click **Plan**. Use **Change the plan** to answer a
 question or revise settings. For example: “Relax this structure, then calculate
 its bands and DOS with PBE.” Later stages use the accepted relaxed structure.
-Planning sends the goal, structure summary and recent dialogue to your provider.
+Planning sends the goal, structure summary and dialogue to your provider.
 
 Or choose **Manual** for `relax`, `scf`, `bands` or `dos` without a model.
 The **Method** section sets spin, SOC, U/J and the functional.

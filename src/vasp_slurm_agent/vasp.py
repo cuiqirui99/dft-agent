@@ -479,7 +479,7 @@ def analyze_outputs(output_dir: str | Path, task: str, expected_structure_path: 
             raise ValueError("SCF Fermi energy is unavailable from the complete XML.")
         result["converged_electronic"] = bool(run.converged_electronic)
         result["converged_ionic"] = bool(run.converged_ionic)
-        validate_method_output(run.incar, metadata)
+        validate_method_output(run.incar, metadata, vasp_version=str(run.vasp_version))
         if metadata.get("method"):
             result.update(method=metadata["method"], method_fingerprint=metadata["method_fingerprint"], method_comparison_fingerprint=metadata["method_comparison_fingerprint"])
         if task in {"bands", "dos"} and not hybrid and int(run.incar.get("ICHARG", 0)) != 11:

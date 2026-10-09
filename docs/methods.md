@@ -23,7 +23,8 @@ The Ni example above is illustrative. Element settings follow the actual
 POSCAR/POTCAR order. [VASP DFT+U guide](https://vasp.at/wiki/LDAU).
 
 HSE06 uses 25% exact exchange and screening of 0.2 Å⁻¹; PBE0 is unscreened.
-Hybrid bands combine a weighted mesh and a zero-weight path. They are
+Hybrid bands require VASP 6 with [LFOCKACE](https://vasp.at/wiki/LFOCKACE) support.
+They combine a weighted mesh and a zero-weight path and are
 self-consistent and do not use `ICHARG=11`. A minimum of ten electronic steps
 is enforced. Bands use Davidson iteration and reject equivalent k points whose
 energies disagree by more than 0.05 eV. This is a consistency check; convergence

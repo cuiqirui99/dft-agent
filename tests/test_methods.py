@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import hashlib
+import xml.etree.ElementTree as ET
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -12,9 +13,10 @@ import pytest
 from pymatgen.core import Lattice, Structure
 from pymatgen.electronic_structure.core import Spin
 from pymatgen.io.vasp import Incar, Kpoints, Poscar
+from pymatgen.io.vasp.outputs import Vasprun
 
 from vasp_slurm_agent import vasp
-from vasp_slurm_agent.methods import HYBRID_BAND_NELMIN
+from vasp_slurm_agent.methods import HYBRID_BAND_NELMIN, validate_method_output
 
 EXAMPLES = Path(__file__).resolve().parents[1] / "examples"
 
@@ -77,6 +79,32 @@ def test_u_block_uses_actual_species_order_and_lmaxmix(tmp_path):
     assert Incar.from_file(tmp_path / "f/INCAR")["LMAXMIX"] == 6
 
 
+def test_vasp5_ldautype_xml_scalar_vector_matches_prepared_method():
+    # Shape observed in VASP 5.4.4 INCAR XML; species arrays remain arrays.
+    elem = ET.fromstring('''<incar>
+      <i type="logical" name="LDAU">T</i>
+      <v type="int" name="LDAUTYPE">2</v>
+      <v type="int" name="LDAUL">2 -1</v>
+      <v name="LDAUU">5.00000000 0.00000000</v>
+      <v name="LDAUJ">0.00000000 0.00000000</v>
+    </incar>''')
+    parser = object.__new__(Vasprun)
+    parser.filename = "vasprun.xml"
+    actual = parser._parse_params(elem)
+    assert actual["LDAUTYPE"] == [2]
+    expected = {"LDAU": True, "LDAUTYPE": 2, "LDAUL": [2, -1], "LDAUU": [5., 0.], "LDAUJ": [0., 0.]}
+    validate_method_output(actual, {"method_incar_expected": expected}, vasp_version="5.4.4.18Apr17-6-g9f103f2a35")
+    assert actual["LDAUTYPE"] == [2]
+
+
+@pytest.mark.parametrize("actual,version", [([1], "5.4.4"), ([2, 2], "5.4.4"),
+                                            ([[2]], "5.4.4"), ([True], "5.4.4"),
+                                            ([2], "6.2.1"), ([2], "")])
+def test_ldautype_normalization_does_not_hide_mismatch(actual, version):
+    with pytest.raises(ValueError, match="Method mismatch.*LDAUTYPE"):
+        validate_method_output({"LDAUTYPE": actual}, {"method_incar_expected": {"LDAUTYPE": 2}}, vasp_version=version)
+
+
 @pytest.mark.parametrize("functional", ["HSE06", "PBE0"])
 @pytest.mark.parametrize("task", ["relax", "scf", "bands", "dos"])
 def test_hybrid_recipes_are_self_consistent(tmp_path, functional, task):
@@ -132,6 +160,30 @@ def _parser_stub(monkeypatch, output, task, parameters):
     (output / "vasprun.xml").write_text("parser stub; not solver evidence")
     monkeypatch.setattr(vasp, "Vasprun", lambda *args, **kwargs: run)
     return meta, run
+
+
+def test_analyzer_accepts_vasp5_singleton_ldautype(monkeypatch, tmp_path):
+    _, run = _parser_stub(monkeypatch, tmp_path, "scf", {"hubbard_u": {"Si": {"l": 1, "u": 2, "j": 0}}})
+    run.vasp_version = "5.4.4.18Apr17-6-g9f103f2a35"
+    run.incar["LDAUTYPE"] = [2]
+    result = vasp.analyze_outputs(tmp_path, "scf", EXAMPLES / "Si.cif")
+    assert result["success"]
+    run.incar["LDAUU"] = [0]
+    result = vasp.analyze_outputs(tmp_path, "scf", EXAMPLES / "Si.cif")
+    assert not result["success"] and "LDAUU" in result["reason"]
+
+
+@pytest.mark.parametrize("version", ["5.4.4.18Apr17-6-g9f103f2a35", "6.2.1"])
+def test_hybrid_bands_without_ace_remain_rejected(monkeypatch, tmp_path, version):
+    _, run = _parser_stub(monkeypatch, tmp_path, "bands", {"functional": "PBE0", "soc": True})
+    run.vasp_version = version
+    del run.incar["LFOCKACE"]
+    result = vasp.analyze_outputs(tmp_path, "bands", EXAMPLES / "Si.cif")
+    assert not result["success"]
+    if version.startswith("5."):
+        assert "Hybrid bands require VASP 6 with LFOCKACE support" in result["reason"]
+    else:
+        assert "LFOCKACE is missing" in result["reason"]
 
 
 @pytest.mark.parametrize("parameters,tag,value", [
