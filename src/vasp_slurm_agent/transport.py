@@ -170,7 +170,9 @@ class SSHTransport:
         # macOS's normal temporary directory can exceed Unix socket path limits.
         temp_parent = "/tmp" if Path("/tmp").is_dir() else None
         self._temporary = tempfile.TemporaryDirectory(prefix="dft-ssh-", dir=temp_parent)
-        self._control_path = str(Path(self._temporary.name) / "socket")
+        external_control = getattr(config, "ssh_control_path", "")
+        self._external_control = bool(external_control)
+        self._control_path = str(Path(external_control).expanduser()) if external_control else str(Path(self._temporary.name) / "socket")
         self._askpass_path = Path(self._temporary.name) / "askpass"
         if self._password:
             # Use a shell wrapper so Python paths containing spaces also work.
@@ -182,14 +184,18 @@ class SSHTransport:
             self._askpass_path.chmod(0o700)
 
     def _options(self) -> list[str]:
+        control_path = self._control_path
+        if any(character.isspace() or character in "\\\"'" for character in control_path):
+            # OpenSSH parses -o values as config text, even in a single argv item.
+            control_path = '"' + control_path.replace("\\", "\\\\").replace('"', '\\"') + '"'
         options = [
             "StrictHostKeyChecking=accept-new",
             f"ConnectTimeout={max(1, int(getattr(self.config, 'connect_timeout', 15)))}",
             "ServerAliveInterval=30",
             "ServerAliveCountMax=3",
-            "ControlMaster=auto",
-            "ControlPersist=60",
-            f"ControlPath={self._control_path}",
+            "ControlMaster=no" if self._external_control else "ControlMaster=auto",
+            "ControlPersist=no" if self._external_control else "ControlPersist=60",
+            f"ControlPath={control_path}",
             "LogLevel=ERROR",
             "NumberOfPasswordPrompts=1",
             f"BatchMode={'no' if self._password else 'yes'}",
@@ -525,7 +531,7 @@ class SSHTransport:
         if self._closed:
             return
         try:
-            if Path(self._control_path).exists():
+            if not self._external_control and Path(self._control_path).exists():
                 self._execute([*self._ssh(), "-O", "exit", "--", self._host], timeout=5)
         except TransportError:
             pass

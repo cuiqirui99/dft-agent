@@ -1,0 +1,47 @@
+{
+  "status": "ready",
+  "summary": "Draft NiO SCF calculation using collinear PBE with Ni-only Dudarev +U.",
+  "tasks": ["scf"],
+  "parameters": {
+    "spin": "collinear",
+    "soc": false,
+    "saxis": [0, 0, 1],
+    "magmom": [2, 0, -2, 0],
+    "functional": "PBE",
+    "hubbard_u": {
+      "Ni": {"l": 2, "u": 5.0, "j": 0.5},
+      "O": null
+    },
+    "encut": 500,
+    "ediff": 1e-6,
+    "ediffg": null,
+    "nsw": null,
+    "mesh": [3, 3, 3],
+    "ismear": 0,
+    "sigma": 0.05,
+    "cell_relax": null,
+    "nelm": 120,
+    "line_density": null,
+    "nedos": null
+  },
+  "magnetic_states": [],
+  "initial_moment": null,
+  "questions": [],
+  "notes": [
+    "All four initial moments follow the supplied Ni, O, Ni, O site order. No structure changes are planned.",
+    "Dudarev +U uses U−J = 4.5 eV on Ni; the requested U and J are preserved. Oxygen +U, SOC, hybrids and relaxation are excluded.",
+    "ISMEAR=0, SIGMA=0.05 eV and NELM=120 use supplied defaults. SAXIS=[0,0,1] is the convention without SOC or noncollinearity.",
+    "MAGMOM specifies initial seeds, not predicted moments or a proven ground state: https://www.vasp.at/wiki/index.php/MAGMOM",
+    "Requested cutoff and mesh are preserved; convergence remains unverified: https://www.vasp.at/wiki/index.php/ENCUT",
+    "No settings or results were copied from past runs. This is a draft for review, not a submission."
+  ],
+  "intent": {
+    "requested_tasks": ["scf"],
+    "forbidden_tasks": ["relax", "bands", "dos"],
+    "spin": "collinear",
+    "soc": false,
+    "functional": "PBE",
+    "hubbard_u": true,
+    "unsupported": []
+  }
+}

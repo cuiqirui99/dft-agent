@@ -1,0 +1,667 @@
+{
+  "actual_model_calls": 11,
+  "cases": 7,
+  "hpc_jobs_submitted": 0,
+  "checks": [
+    {
+      "check": "initial_relax_scf_bands",
+      "passed": true
+    },
+    {
+      "check": "replace_with_dos_only",
+      "passed": true
+    },
+    {
+      "check": "task_exclusions_and_mesh",
+      "passed": true
+    },
+    {
+      "check": "method_exclusions_preserved",
+      "passed": true
+    },
+    {
+      "check": "missing_u_questions",
+      "passed": true
+    },
+    {
+      "check": "explicit_u_values",
+      "passed": true
+    },
+    {
+      "check": "u_moments_exclusions_preserved",
+      "passed": true
+    },
+    {
+      "check": "nonmagnetic_soc_vectors",
+      "passed": true
+    },
+    {
+      "check": "soc_vector_axis_change",
+      "passed": true
+    },
+    {
+      "check": "soc_method_exclusions_preserved",
+      "passed": true
+    },
+    {
+      "check": "fixed_cell_initially",
+      "passed": true
+    },
+    {
+      "check": "cell_and_numeric_edit",
+      "passed": true
+    },
+    {
+      "check": "coordinate_edit_unsupported",
+      "passed": true
+    },
+    {
+      "check": "format_only_unsupported",
+      "passed": true
+    },
+    {
+      "check": "supercell_unsupported",
+      "passed": true
+    }
+  ],
+  "all_passed": true,
+  "scope": "Finite live acceptance examples, not a general language-understanding success rate.",
+  "structure_scope": "This checked the calculation planner before the dedicated structure editor was added. Geometry requests belong to that editor; its live checks are in structures-0.3.0.json.",
+  "source_note": "Measured before later token-context compaction; current-source paired semantic checks are in token-use-0.3.0.json.",
+  "summary": {
+    "mode": "actual Codex model, planning only",
+    "hpc_jobs_submitted": 0,
+    "agent_sha256": "2f218c7a9283b0caf49fe3ce29e9103af064d350bcffa12ab1ec9d0fa56bf38d",
+    "cases": [
+      {
+        "case": "task_switch",
+        "input_sha256": "ec3459fca57e82b0776a417039b1f7ba34f677186f0990cc0555fa5499302a24",
+        "turns": [
+          {
+            "turn": 1,
+            "status": "ready",
+            "tasks": [
+              "relax",
+              "scf",
+              "bands"
+            ],
+            "parameters": {
+              "spin": "none",
+              "soc": false,
+              "saxis": [
+                0,
+                0,
+                1
+              ],
+              "magmom": null,
+              "functional": "PBE",
+              "hubbard_u": {},
+              "encut": 520.0,
+              "ediff": 1e-05,
+              "ediffg": -0.03,
+              "nsw": 100,
+              "mesh": [
+                4,
+                4,
+                4
+              ],
+              "ismear": 0,
+              "sigma": 0.05,
+              "cell_relax": false,
+              "nelm": 120,
+              "line_density": 20,
+              "nedos": 2001
+            },
+            "questions": [],
+            "intent": {
+              "requested_tasks": [
+                "relax",
+                "scf",
+                "bands"
+              ],
+              "forbidden_tasks": [],
+              "spin": "none",
+              "soc": false,
+              "functional": "PBE",
+              "hubbard_u": false,
+              "unsupported": []
+            }
+          },
+          {
+            "turn": 2,
+            "status": "ready",
+            "tasks": [
+              "dos"
+            ],
+            "parameters": {
+              "spin": "none",
+              "soc": false,
+              "saxis": [
+                0,
+                0,
+                1
+              ],
+              "magmom": null,
+              "functional": "PBE",
+              "hubbard_u": {},
+              "encut": 520.0,
+              "ediff": 1e-05,
+              "mesh": [
+                6,
+                6,
+                6
+              ],
+              "ismear": 0,
+              "sigma": 0.05,
+              "nelm": 120,
+              "nedos": 2001
+            },
+            "questions": [],
+            "intent": {
+              "requested_tasks": [
+                "dos"
+              ],
+              "forbidden_tasks": [
+                "relax",
+                "bands"
+              ],
+              "spin": "none",
+              "soc": false,
+              "functional": "PBE",
+              "hubbard_u": false,
+              "unsupported": []
+            }
+          }
+        ]
+      },
+      {
+        "case": "u_clarification",
+        "input_sha256": "45dc3e0034bbb143466aa6767c324486c750bfe9325f4d9b1c1bf947636829c4",
+        "turns": [
+          {
+            "turn": 1,
+            "status": "needs_input",
+            "tasks": [
+              "scf"
+            ],
+            "parameters": {
+              "spin": "collinear",
+              "soc": false,
+              "saxis": [
+                0,
+                0,
+                1
+              ],
+              "magmom": [
+                2,
+                2,
+                -2,
+                -2,
+                0,
+                0,
+                0,
+                0
+              ],
+              "functional": "PBE",
+              "hubbard_u": {
+                "Ni": {
+                  "l": null,
+                  "u": null,
+                  "j": null
+                }
+              },
+              "encut": 520.0,
+              "ediff": 1e-05,
+              "mesh": [
+                4,
+                4,
+                4
+              ],
+              "ismear": 0,
+              "sigma": 0.05,
+              "nelm": 120
+            },
+            "questions": [
+              "What Ni orbital l, U (eV) and J (eV) should be used? Please provide their source or rationale."
+            ],
+            "intent": {
+              "requested_tasks": [
+                "scf"
+              ],
+              "forbidden_tasks": [
+                "relax"
+              ],
+              "spin": "collinear",
+              "soc": false,
+              "functional": "PBE",
+              "hubbard_u": true,
+              "unsupported": []
+            }
+          },
+          {
+            "turn": 2,
+            "status": "ready",
+            "tasks": [
+              "scf"
+            ],
+            "parameters": {
+              "spin": "collinear",
+              "soc": false,
+              "saxis": [
+                0,
+                0,
+                1
+              ],
+              "magmom": [
+                2,
+                2,
+                -2,
+                -2,
+                0,
+                0,
+                0,
+                0
+              ],
+              "functional": "PBE",
+              "hubbard_u": {
+                "Ni": {
+                  "l": 2,
+                  "u": 5,
+                  "j": 0
+                }
+              },
+              "encut": 520,
+              "ediff": 1e-05,
+              "mesh": [
+                4,
+                4,
+                4
+              ],
+              "ismear": 0,
+              "sigma": 0.05,
+              "nelm": 120
+            },
+            "questions": [],
+            "intent": {
+              "requested_tasks": [
+                "scf"
+              ],
+              "forbidden_tasks": [
+                "relax"
+              ],
+              "spin": "collinear",
+              "soc": false,
+              "functional": "PBE",
+              "hubbard_u": true,
+              "unsupported": []
+            }
+          }
+        ]
+      },
+      {
+        "case": "soc_vectors",
+        "input_sha256": "ec3459fca57e82b0776a417039b1f7ba34f677186f0990cc0555fa5499302a24",
+        "turns": [
+          {
+            "turn": 1,
+            "status": "ready",
+            "tasks": [
+              "scf"
+            ],
+            "parameters": {
+              "spin": "noncollinear",
+              "soc": true,
+              "saxis": [
+                0,
+                0,
+                1
+              ],
+              "magmom": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  0,
+                  0
+                ]
+              ],
+              "functional": "PBE",
+              "hubbard_u": {},
+              "encut": 520.0,
+              "ediff": 1e-05,
+              "mesh": [
+                4,
+                4,
+                4
+              ],
+              "ismear": 0,
+              "sigma": 0.05,
+              "nelm": 120
+            },
+            "questions": [],
+            "intent": {
+              "requested_tasks": [
+                "scf"
+              ],
+              "forbidden_tasks": [
+                "relax",
+                "bands",
+                "dos"
+              ],
+              "spin": "none",
+              "soc": true,
+              "functional": "PBE",
+              "hubbard_u": false,
+              "unsupported": []
+            }
+          },
+          {
+            "turn": 2,
+            "status": "ready",
+            "tasks": [
+              "scf"
+            ],
+            "parameters": {
+              "spin": "noncollinear",
+              "soc": true,
+              "saxis": [
+                1,
+                0,
+                0
+              ],
+              "magmom": [
+                [
+                  0,
+                  0,
+                  1
+                ],
+                [
+                  0,
+                  0,
+                  -1
+                ]
+              ],
+              "functional": "PBE",
+              "hubbard_u": {},
+              "encut": 520.0,
+              "ediff": 1e-05,
+              "mesh": [
+                4,
+                4,
+                4
+              ],
+              "ismear": 0,
+              "sigma": 0.05,
+              "nelm": 120
+            },
+            "questions": [],
+            "intent": {
+              "requested_tasks": [
+                "scf"
+              ],
+              "forbidden_tasks": [
+                "relax",
+                "bands",
+                "dos"
+              ],
+              "spin": "noncollinear",
+              "soc": true,
+              "functional": "PBE",
+              "hubbard_u": false,
+              "unsupported": []
+            }
+          }
+        ]
+      },
+      {
+        "case": "cell_mesh",
+        "input_sha256": "ec3459fca57e82b0776a417039b1f7ba34f677186f0990cc0555fa5499302a24",
+        "turns": [
+          {
+            "turn": 1,
+            "status": "ready",
+            "tasks": [
+              "relax"
+            ],
+            "parameters": {
+              "spin": "none",
+              "soc": false,
+              "saxis": [
+                0,
+                0,
+                1
+              ],
+              "magmom": null,
+              "functional": "PBE",
+              "hubbard_u": {},
+              "encut": 450,
+              "ediff": 1e-05,
+              "ediffg": -0.03,
+              "nsw": 100,
+              "mesh": [
+                4,
+                4,
+                4
+              ],
+              "ismear": 0,
+              "sigma": 0.05,
+              "cell_relax": false,
+              "nelm": 120
+            },
+            "questions": [],
+            "intent": {
+              "requested_tasks": [
+                "relax"
+              ],
+              "forbidden_tasks": [
+                "cell_relax"
+              ],
+              "spin": "none",
+              "soc": false,
+              "functional": "PBE",
+              "hubbard_u": false,
+              "unsupported": []
+            }
+          },
+          {
+            "turn": 2,
+            "status": "ready",
+            "tasks": [
+              "relax"
+            ],
+            "parameters": {
+              "spin": "none",
+              "soc": false,
+              "saxis": [
+                0,
+                0,
+                1
+              ],
+              "magmom": null,
+              "functional": "PBE",
+              "hubbard_u": {},
+              "encut": 520,
+              "ediff": 1e-05,
+              "ediffg": -0.02,
+              "nsw": 160,
+              "mesh": [
+                6,
+                6,
+                6
+              ],
+              "ismear": 0,
+              "sigma": 0.05,
+              "cell_relax": true,
+              "nelm": 120
+            },
+            "questions": [],
+            "intent": {
+              "requested_tasks": [
+                "relax"
+              ],
+              "forbidden_tasks": [],
+              "spin": "none",
+              "soc": false,
+              "functional": "PBE",
+              "hubbard_u": false,
+              "unsupported": []
+            }
+          }
+        ]
+      },
+      {
+        "case": "coordinate_edit",
+        "input_sha256": "ec3459fca57e82b0776a417039b1f7ba34f677186f0990cc0555fa5499302a24",
+        "turns": [
+          {
+            "turn": 1,
+            "status": "unsupported",
+            "tasks": [
+              "scf"
+            ],
+            "parameters": {
+              "spin": "none",
+              "soc": false,
+              "saxis": [
+                0,
+                0,
+                1
+              ],
+              "magmom": null,
+              "functional": "PBE",
+              "hubbard_u": {},
+              "encut": 520.0,
+              "ediff": 1e-05,
+              "mesh": [
+                4,
+                4,
+                4
+              ],
+              "ismear": 0,
+              "sigma": 0.05,
+              "nelm": 120
+            },
+            "questions": [],
+            "intent": {
+              "requested_tasks": [
+                "Set site index 1 to fractional coordinates [0.3,0.25,0.25] before SCF, leaving every other site and the cell unchanged.",
+                "scf"
+              ],
+              "forbidden_tasks": [
+                "relax",
+                "magnetism"
+              ],
+              "spin": "none",
+              "soc": false,
+              "functional": "PBE",
+              "hubbard_u": null,
+              "unsupported": [
+                "Site-coordinate modification before SCF"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "case": "format_only",
+        "input_sha256": "ec3459fca57e82b0776a417039b1f7ba34f677186f0990cc0555fa5499302a24",
+        "turns": [
+          {
+            "turn": 1,
+            "status": "unsupported",
+            "tasks": [],
+            "parameters": {
+              "spin": "none",
+              "soc": false,
+              "saxis": [
+                0,
+                0,
+                1
+              ],
+              "magmom": null,
+              "functional": "PBE",
+              "hubbard_u": {}
+            },
+            "questions": [],
+            "intent": {
+              "requested_tasks": [
+                "Convert CIF to POSCAR and provide the converted structure file"
+              ],
+              "forbidden_tasks": [
+                "relax",
+                "scf",
+                "bands",
+                "dos"
+              ],
+              "spin": null,
+              "soc": null,
+              "functional": null,
+              "hubbard_u": null,
+              "unsupported": [
+                "CIF-to-POSCAR structure file conversion"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "case": "supercell",
+        "input_sha256": "ec3459fca57e82b0776a417039b1f7ba34f677186f0990cc0555fa5499302a24",
+        "turns": [
+          {
+            "turn": 1,
+            "status": "unsupported",
+            "tasks": [
+              "scf"
+            ],
+            "parameters": {
+              "spin": "none",
+              "soc": false,
+              "saxis": [
+                0,
+                0,
+                1
+              ],
+              "magmom": null,
+              "functional": "PBE",
+              "hubbard_u": {},
+              "encut": 520.0,
+              "ediff": 1e-05,
+              "mesh": [
+                4,
+                4,
+                4
+              ],
+              "ismear": 0,
+              "sigma": 0.05,
+              "nelm": 120
+            },
+            "questions": [
+              "Can you supply the 2\u00d72\u00d72 silicon supercell for the SCF calculation?"
+            ],
+            "intent": {
+              "requested_tasks": [
+                "supercell generation (2\u00d72\u00d72)",
+                "scf"
+              ],
+              "forbidden_tasks": [
+                "relax",
+                "magnetism"
+              ],
+              "spin": "none",
+              "soc": null,
+              "functional": "PBE",
+              "hubbard_u": null,
+              "unsupported": [
+                "supercell generation (2\u00d72\u00d72)"
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

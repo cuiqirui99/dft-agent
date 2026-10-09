@@ -188,14 +188,54 @@ def test_hostkey_mismatch_is_not_bypassed(config, monkeypatch):
 
 def test_key_auth_uses_batch_mode_and_closed_transport_fails(config, local_wire):
     transport = SSHTransport(config, password="")
+    assert not transport._external_control
+    assert transport._control_path == str(Path(transport._temporary.name) / "socket")
     transport.run("true")
     assert "BatchMode=yes" in local_wire.calls[0][0]
-    assert any(arg.startswith("ControlPath=") for arg in local_wire.calls[0][0])
+    assert f"ControlPath={transport._control_path}" in local_wire.calls[0][0]
     assert "ControlPersist=60" in local_wire.calls[0][0]
     transport.close()
     transport.close()
     with pytest.raises(TransportError, match="closed"):
         transport.run("true")
+
+
+def test_external_control_socket_is_shared_by_ssh_and_scp_and_never_closed(config, local_wire, tmp_path):
+    socket = tmp_path / "user master.sock"
+    socket.write_text("Owned by the user's SSH session")
+    config.ssh_control_path = str(socket)
+    source = tmp_path / "source"
+    source.write_bytes(b"checked input")
+    remote = tmp_path / "remote" / "input"
+    transport = SSHTransport(config, password="test-password")
+    helper = transport._askpass_path
+    assert helper.exists()
+    transport.run("true")
+    transport.upload(source, str(remote))
+    transport.close()
+    transport.close()
+    assert socket.read_text() == "Owned by the user's SSH session"
+    assert not helper.exists()
+    assert {argv[0] for argv, _ in local_wire.calls} == {"ssh", "scp"}
+    for argv, _ in local_wire.calls:
+        assert f'ControlPath="{socket}"' in argv
+        assert "ControlMaster=no" in argv and "ControlPersist=no" in argv
+        assert "exit" not in argv
+
+
+@pytest.mark.skipif(shutil.which("ssh") is None, reason="OpenSSH is unavailable")
+@pytest.mark.parametrize("name", ["user master.sock", 'user"master.sock', r"user\master.sock", "master.sock"])
+def test_control_socket_survives_openssh_config_parsing(config, tmp_path, name):
+    config.ssh_control_path = str(tmp_path / name)
+    with SSHTransport(config, password="") as transport:
+        command = transport._ssh()
+        result = subprocess.run(
+            [command[0], "-G", "-F", os.devnull, *command[1:], "--", config.host],
+            capture_output=True, text=True, timeout=10,
+        )
+    assert result.returncode == 0, result.stderr
+    parsed = dict(line.split(" ", 1) for line in result.stdout.splitlines() if " " in line)
+    assert parsed["controlpath"] == config.ssh_control_path
 
 
 @pytest.mark.parametrize("path", ["relative/file", "/file\nnext", "/bad\x00name"])

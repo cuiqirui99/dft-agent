@@ -1,0 +1,31 @@
+{
+  "status": "ready",
+  "tasks": [
+    "scf"
+  ],
+  "magnetic_states": [],
+  "parameters": {
+    "functional": "PBE",
+    "spin": "none",
+    "soc": false,
+    "magmom": null,
+    "hubbard_u": {},
+    "encut": 500,
+    "ediff": 1e-06,
+    "mesh": [
+      1,
+      1,
+      1
+    ]
+  },
+  "intent": {
+    "forbidden_tasks_contains": [
+      "relax"
+    ],
+    "functional": "PBE",
+    "spin": "none",
+    "soc": false,
+    "hubbard_u": false,
+    "unsupported": []
+  }
+}

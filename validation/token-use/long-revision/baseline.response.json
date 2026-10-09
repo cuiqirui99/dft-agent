@@ -1,0 +1,51 @@
+{
+  "status": "ready",
+  "summary": "Draft collinear AFM NiO PBE+U plan: SCF, bands, then DOS, preserving the input cell and site order.",
+  "tasks": ["scf", "bands", "dos"],
+  "parameters": {
+    "spin": "collinear",
+    "soc": false,
+    "saxis": [0, 0, 1],
+    "magmom": [
+      2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0,
+      0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+      -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0,
+      0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
+    ],
+    "functional": "PBE",
+    "hubbard_u": {
+      "Ni": {"l": 2, "u": 5.0, "j": 0.5},
+      "O": null
+    },
+    "encut": 500,
+    "ediff": 1e-6,
+    "ediffg": null,
+    "nsw": null,
+    "mesh": [3, 3, 3],
+    "ismear": 0,
+    "sigma": 0.1,
+    "cell_relax": null,
+    "nelm": 120,
+    "line_density": 4,
+    "nedos": 401
+  },
+  "magnetic_states": [],
+  "initial_moment": null,
+  "questions": [],
+  "notes": [
+    "All 32 initial moments are preserved in input site order. Keep the input structure unchanged; no relaxation, SOC or hybrid functional.",
+    "Dudarev Ni U−J = 4.5 eV; oxygen has no +U.",
+    "NELM=120 uses the supplied default; relaxation settings are inactive.",
+    "Bands and DOS use converged SCF charge with ICHARG=11; DOS uses the mesh, not the band path (https://www.vasp.at/wiki/index.php/ICHARG).",
+    "AFM moments are initial seeds, not a ground-state claim (https://www.vasp.at/wiki/index.php/MAGMOM). Past runs use different structures and do not validate these settings or establish convergence."
+  ],
+  "intent": {
+    "requested_tasks": ["scf", "bands", "dos"],
+    "forbidden_tasks": ["relax"],
+    "spin": "collinear",
+    "soc": false,
+    "functional": "PBE",
+    "hubbard_u": true,
+    "unsupported": []
+  }
+}

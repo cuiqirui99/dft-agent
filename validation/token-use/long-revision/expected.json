@@ -1,0 +1,81 @@
+{
+  "status": "ready",
+  "tasks": [
+    "scf",
+    "bands",
+    "dos"
+  ],
+  "magnetic_states": [],
+  "parameters": {
+    "functional": "PBE",
+    "spin": "collinear",
+    "soc": false,
+    "saxis": [
+      0,
+      0,
+      1
+    ],
+    "magmom": [
+      2.0,
+      2.0,
+      2.0,
+      2.0,
+      2.0,
+      2.0,
+      2.0,
+      2.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      -2.0,
+      -2.0,
+      -2.0,
+      -2.0,
+      -2.0,
+      -2.0,
+      -2.0,
+      -2.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "encut": 500,
+    "mesh": [
+      3,
+      3,
+      3
+    ],
+    "ediff": 1e-06,
+    "line_density": 4,
+    "ismear": 0,
+    "sigma": 0.1,
+    "nedos": 401,
+    "hubbard_u": {
+      "Ni": {
+        "l": 2,
+        "u": 5.0,
+        "j": 0.5
+      }
+    }
+  },
+  "intent": {
+    "forbidden_tasks_contains": [
+      "relax"
+    ],
+    "functional": "PBE",
+    "soc": false,
+    "hubbard_u": true,
+    "spin": "collinear",
+    "unsupported": []
+  }
+}

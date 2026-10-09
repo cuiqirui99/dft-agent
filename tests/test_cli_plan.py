@@ -117,3 +117,28 @@ def test_cli_needs_input_is_saved_without_preparation(local_cli, monkeypatch, ca
     assert invoke("prepare", source, root, "--config", config, "--plan", proposal_path) == 1
     assert "questions" in capsys.readouterr().err
     assert not root.exists()
+
+
+def test_cli_revision_keeps_goal_and_rejects_changed_source(local_cli, monkeypatch, capsys):
+    source, _, root, invoke = local_cli
+    first, revised = root.parent / "first.json", root.parent / "revised.json"
+    requests = []
+
+    def reply(payload, *_):
+        requests.append(json.loads(payload))
+        response = model_response(["scf"])
+        response["parameters"]["encut"] = 400 if len(requests) == 1 else 520
+        return json.dumps(response)
+
+    monkeypatch.setattr(agent, "_request_plan", reply)
+    assert invoke("plan", source, "SCF with ENCUT 400 eV; no SOC.", "--provider", "codex", "--output", first) == 0
+    assert invoke("plan", source, "Change ENCUT to 520 eV.", "--previous", first,
+                  "--provider", "codex", "--output", revised) == 0
+    assert requests[1]["goal"] == requests[0]["goal"]
+    assert requests[1]["history"][-1] == {"role": "user", "content": "Change ENCUT to 520 eV."}
+    assert json.loads(revised.read_text())["parameters"]["encut"] == 520
+    assert not root.exists()
+    source.write_bytes(source.read_bytes() + b"\n")
+    assert invoke("plan", source, "Add DOS.", "--previous", revised, "--provider", "codex") == 1
+    assert len(requests) == 2
+    assert "source changed" in capsys.readouterr().err

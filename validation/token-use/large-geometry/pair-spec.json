@@ -1,0 +1,20 @@
+{
+  "purpose": "Isolate complete 256-site geometry encoding; no site or coordinate is omitted and no advisory runs are included.",
+  "source_sha256": "3970e6de5f14f120645c0beb61b7d5fc801076a1b58875f6b6df18cd163cd298",
+  "number_of_sites": 256,
+  "payload_bytes": {
+    "baseline": 23598,
+    "optimized": 12598
+  },
+  "advisory_case_ids": [],
+  "controls": [
+    "same model",
+    "same instructions",
+    "same schema",
+    "same complete geometry",
+    "same explicit user goal",
+    "same verified saved cases"
+  ],
+  "limitations": "Payload bytes are not tokens. No DFT result or general token saving is established by this fixture.",
+  "both_under_96000_bytes": true
+}

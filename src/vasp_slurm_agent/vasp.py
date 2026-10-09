@@ -453,6 +453,8 @@ def analyze_outputs(output_dir: str | Path, task: str, expected_structure_path: 
         "valid_structure": False, "final_energy_ev": None,
         "final_max_force_ev_angstrom": None, "vasp_version": None,
         "forces_available": False,
+        "ionic_steps_count": None, "ionic_iteration_limit_reached": False,
+        "ionic_force_limit_ev_angstrom": None,
         "fermi_energy_ev": None,
         "final_energy_ev_per_atom": None,
         "reason": "Results have not been checked yet.", "artifacts": [],
@@ -479,7 +481,14 @@ def analyze_outputs(output_dir: str | Path, task: str, expected_structure_path: 
             raise ValueError("SCF Fermi energy is unavailable from the complete XML.")
         result["converged_electronic"] = bool(run.converged_electronic)
         result["converged_ionic"] = bool(run.converged_ionic)
-        validate_method_output(run.incar, metadata)
+        if task == "relax":
+            result["ionic_steps_count"] = len(run.ionic_steps)
+            step_limit = int(run.incar.get("NSW", 0))
+            result["ionic_iteration_limit_reached"] = step_limit > 0 and len(run.ionic_steps) >= step_limit
+            ediffg = float(run.incar.get("EDIFFG", 0))
+            if ediffg < 0:
+                result["ionic_force_limit_ev_angstrom"] = abs(ediffg)
+        validate_method_output(run.incar, metadata, vasp_version=str(run.vasp_version))
         if metadata.get("method"):
             result.update(method=metadata["method"], method_fingerprint=metadata["method_fingerprint"], method_comparison_fingerprint=metadata["method_comparison_fingerprint"])
         if task in {"bands", "dos"} and not hybrid and int(run.incar.get("ICHARG", 0)) != 11:
@@ -528,6 +537,7 @@ def analyze_outputs(output_dir: str | Path, task: str, expected_structure_path: 
                 raise ValueError("Ionic convergence was not reached.")
             force_limit = float(run.incar.get("EDIFFG", 0))
             if force_limit >= 0 or result["final_max_force_ev_angstrom"] > abs(force_limit):
+                result["converged_ionic"] = False
                 raise ValueError("Final atomic force exceeds the requested negative EDIFFG criterion.")
         if hybrid and task == "bands":
             check = _hybrid_kpoint_consistency(run)

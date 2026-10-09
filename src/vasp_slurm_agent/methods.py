@@ -112,7 +112,7 @@ def method_fingerprint(method: dict[str, Any], species: list[str], potcar_labels
     return hashlib.sha256(json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()).hexdigest()
 
 
-def validate_method_output(incar: dict[str, Any], metadata: dict[str, Any]) -> None:
+def validate_method_output(incar: dict[str, Any], metadata: dict[str, Any], *, vasp_version: str = "") -> None:
     """Compare the XML's actual INCAR with the frozen method recipe."""
     expected = metadata.get("method_incar_expected")
     if expected is None:
@@ -125,7 +125,13 @@ def validate_method_output(incar: dict[str, Any], metadata: dict[str, Any]) -> N
     for tag, planned in expected.items():
         actual = incar.get(tag, False if type(planned) is bool and not planned else None)
         if actual is None:
+            if tag == "LFOCKACE" and planned is True and vasp_version.startswith("5."):
+                raise ValueError("Hybrid bands require VASP 6 with LFOCKACE support; VASP 5 does not provide it.")
             raise ValueError(f"Method mismatch: {tag} is missing from output INCAR.")
+        # VASP 5 writes this scalar as a one-element XML vector.
+        if (tag == "LDAUTYPE" and vasp_version.startswith("5.") and type(planned) is int
+                and isinstance(actual, (list, tuple)) and len(actual) == 1 and type(actual[0]) is int):
+            actual = actual[0]
         if isinstance(planned, str):
             matches = str(actual).lower() == planned.lower()
         elif type(planned) is bool:

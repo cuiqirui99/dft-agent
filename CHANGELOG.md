@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.0 — 2026-10-09
+
+- Restore scientific guidance and relevant run history in planning.
+- Review failed runs and prepare bounded repairs.
+- Edit structures through conversation and convert CIF/POSCAR.
+- Add nine structures from earlier cluster calculations.
+- Keep model context compact and record reported token use.
+
 ## 0.2.1 — 2026-10-07
 
 - Explain results and answer follow-up questions.

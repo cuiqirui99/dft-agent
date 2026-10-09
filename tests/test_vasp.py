@@ -152,7 +152,10 @@ def test_relax_force_gate_is_independent_of_parser_convergence(monkeypatch, tmp_
     run = _fake_run(ionic_steps=[{"forces": [[0.04, 0, 0], [0, 0, 0]], "e_0_energy": -10}], incar={"NSW": 100, "IBRION": 2, "EDIFFG": -0.03})
     _install_parser_stub(monkeypatch, tmp_path, run)
     result = vasp.analyze_outputs(tmp_path, "relax", EXAMPLES / "Si.cif")
-    assert result["converged_ionic"] is True
+    assert result["converged_ionic"] is False
+    assert result["ionic_steps_count"] == 1
+    assert result["ionic_iteration_limit_reached"] is False
+    assert result["ionic_force_limit_ev_angstrom"] == .03
     assert not result["success"] and "force exceeds" in result["reason"]
 
 

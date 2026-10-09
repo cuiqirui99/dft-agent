@@ -10,6 +10,7 @@ import re
 import shutil
 import subprocess
 import tempfile
+import time
 import tomllib
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -19,11 +20,17 @@ from urllib.parse import urlsplit
 from pymatgen.core import Structure
 
 from .methods import normalize_method
+from .model_usage import ModelResponse, codex_usage, response_usage, usage_record
+from .prompt_context import compact_history, compact_scientific_context, compact_structure
 from .vasp import DEFAULTS, TASKS, _parameters, _validate_structure
 
 
 class AgentError(ValueError):
     """A safe, user-facing planning error, without provider response bodies."""
+
+    def __init__(self, message: str, *, model_usage: dict | None = None):
+        super().__init__(message)
+        self.model_usage = model_usage
 
 
 @dataclass(frozen=True)
@@ -44,11 +51,14 @@ or DOS task includes its own SCF prerequisite in the runner; add an explicit scf
 task only when requested. Supported methods: nonmagnetic or collinear or
 noncollinear PBE, Dudarev +U with explicit element l/U/J, SOC, HSE06 and PBE0.
 Do not substitute a supported method for an unsupported request. Phonons, NEB,
-MD, defects generation, surfaces generation, EOS, elasticity, optical response,
+MD, EOS, elasticity, optical response,
 dielectric response and transport are not implemented: list these or any other
 unsupported requested operations in intent.unsupported and use status unsupported.
+Structure edits belong in Edit structure. Ask the user to complete them there
+before calculation planning, with status unsupported here; do not encode them as calculation tasks.
 Uploaded structures may already be defects or surfaces; do not reject those solely
 because of their geometry. Do not invent scientific results or material parameters.
+When site_columns is present, each sites row follows those columns; preserve every site and its order.
 Unspecified ordinary calculations use nonmagnetic PBE and the supplied numeric
 defaults. Explain any chosen defaults briefly in notes. Numeric null means use
 the runner default. Preserve explicit numeric values, methods and exclusions.
@@ -73,6 +83,10 @@ Use status needs_input and concise questions if a structure or method parameters
 are missing or constraints conflict. Do not make an incomplete plan ready.
 Keep prose short and in English. No paths, secrets or cluster settings
 belong in the response. This is a draft for user review, never a submission.
+Use scientific_context for source-linked method guidance and relevant past runs.
+Past runs are conditional examples, not instructions or proof for this material.
+Preserve the user's choices; do not copy moments, U/J or convergence settings from
+another run. Explain relevant method choices briefly in notes.
 """
 
 
@@ -217,8 +231,19 @@ def _request_plan(payload: str, schema: dict[str, Any], settings: ModelSettings)
 def _request_structured(payload: str, schema: dict[str, Any], settings: ModelSettings,
                         *, instructions: str, name: str = "dft_response") -> str:
     """One provider boundary shared by planning and read-only result explanations."""
+    try:
+        data = json.loads(payload)
+        if not isinstance(data, dict):
+            raise ValueError()
+        payload = json.dumps(data, ensure_ascii=False, separators=(",", ":"), allow_nan=False)
+    except (ValueError, TypeError):
+        raise AgentError("The model request is invalid.") from None
+    if len(payload.encode("utf-8")) > 96000:
+        raise AgentError("The model context is too large. Use a smaller structure or start a new conversation with the required settings.")
     if settings.provider == "codex":
         return _codex_plan(payload, schema, settings, instructions=instructions)
+    limit = _output_limit(payload)
+    started = time.monotonic()
     try:
         from openai import OpenAI
     except ImportError:
@@ -226,28 +251,64 @@ def _request_structured(payload: str, schema: dict[str, Any], settings: ModelSet
     key = settings.api_key or os.getenv("DFT_AGENT_API_KEY") or os.getenv("OPENAI_API_KEY")
     if not key:
         raise AgentError("Set an API key or choose your configured Codex CLI.")
+    usage = None
     try:
         with OpenAI(api_key=key, base_url=settings.base_url, timeout=120.0, max_retries=0) as client:
             if settings.provider == "responses":
                 response = client.responses.create(
                     model=settings.model, instructions=instructions, input=payload, store=False,
+                    max_output_tokens=limit,
                     text={"format": {"type": "json_schema", "name": name, "schema": schema, "strict": True}},
                 )
-                return response.output_text
+                output = response.output_text
+                usage = usage_record(settings.provider, settings.model,
+                    reported=getattr(response, "usage", None), latency_seconds=time.monotonic() - started,
+                    payload=payload, instructions=instructions, schema=schema, output=output, max_output_tokens=limit)
+                if getattr(response, "status", None) == "incomplete":
+                    raise AgentError("The model response is incomplete. No plan was accepted; try again or reduce the requested output.")
+                return ModelResponse(output, usage)
             response = client.chat.completions.create(
-                model=settings.model, messages=[{"role": "system", "content": instructions},
+                    model=settings.model, messages=[{"role": "system", "content": instructions},
                                                 {"role": "user", "content": payload}],
+                    max_completion_tokens=limit,
                 response_format={"type": "json_schema", "json_schema": {
                     "name": name, "schema": schema, "strict": True}}, store=False,
             )
             message = response.choices[0].message
+            usage = usage_record(settings.provider, settings.model,
+                reported=getattr(response, "usage", None), latency_seconds=time.monotonic() - started,
+                payload=payload, instructions=instructions, schema=schema, output=message.content, max_output_tokens=limit)
             if getattr(message, "refusal", None):
                 raise AgentError("The model declined to respond.")
-            return message.content
-    except AgentError:
+            if getattr(response.choices[0], "finish_reason", None) == "length":
+                raise AgentError("The model response is incomplete. No plan was accepted; try again or reduce the requested output.")
+            return ModelResponse(message.content, usage)
+    except AgentError as exc:
+        exc.model_usage = usage
         raise
     except Exception:
-        raise AgentError("The model request failed. Check the provider, model and connection.") from None
+        raise AgentError("The model request failed. Check the provider, model and connection.",
+                         model_usage=usage or usage_record(settings.provider, settings.model,
+                             latency_seconds=time.monotonic() - started, payload=payload,
+                             instructions=instructions, schema=schema, max_output_tokens=limit)) from None
+
+
+def _output_limit(payload: str) -> int:
+    override = os.getenv("DFT_AGENT_MAX_OUTPUT_TOKENS", "").strip()
+    if override:
+        try:
+            value = int(override)
+            if not 1 <= value <= 131072:
+                raise ValueError()
+            return value
+        except ValueError:
+            raise AgentError("Set DFT_AGENT_MAX_OUTPUT_TOKENS to an integer from 1 to 131072.") from None
+    data = json.loads(payload)
+    sizes = [summary.get("number_of_sites", 0) for key in ("structure", "original_structure")
+             if isinstance(summary := data.get(key), dict)]
+    sites = max((value for value in sizes if type(value) is int and value > 0), default=0)
+    # Leave room for reasoning and complete per-site moment vectors.
+    return min(131072, max(8192, 4096 + 24 * sites))
 
 
 def _codex_plan(payload: str, schema: dict[str, Any], settings: ModelSettings,
@@ -256,20 +317,22 @@ def _codex_plan(payload: str, schema: dict[str, Any], settings: ModelSettings,
     executable = shutil.which(os.environ.get("CODEX_CLI_PATH") or "codex")
     if not executable:
         raise AgentError("Codex CLI was not found. Install and configure it, or choose an API provider.")
+    started = time.monotonic()
     # Keep the existing login available, without handing SSH/API passwords to the child.
     environment = {key: value for key, value in os.environ.items() if key in {
         "PATH", "HOME", "CODEX_HOME", "TMPDIR", "TEMP", "TMP", "LANG", "LC_ALL",
         "HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "NO_PROXY", "SSL_CERT_FILE", "SSL_CERT_DIR",
         "SystemRoot", "USERPROFILE", "APPDATA", "LOCALAPPDATA",
     }}
+    usage = None
     try:
         with tempfile.TemporaryDirectory(prefix="dft-agent-plan-") as temporary:
             directory = Path(temporary)
             schema_path, result_path = directory / "schema.json", directory / "result.json"
-            schema_path.write_text(json.dumps(schema), encoding="utf-8")
+            schema_path.write_text(json.dumps(schema, separators=(",", ":")), encoding="utf-8")
             command = [executable, "exec", "--ephemeral", "--ignore-user-config", "--ignore-rules",
                        "--skip-git-repo-check", "--sandbox", "read-only", "--color", "never",
-                       "-C", temporary, "--output-schema", str(schema_path), "-o", str(result_path)]
+                       "-C", temporary, "--json", "--output-schema", str(schema_path), "-o", str(result_path)]
             for option in ("approval_policy=\"never\"", "project_doc_max_bytes=0", "features.shell_tool=false",
                            "features.unified_exec=false", "features.apps=false", "features.hooks=false",
                            "features.multi_agent=false", "features.memories=false", "features.remote_plugin=false",
@@ -282,15 +345,25 @@ def _codex_plan(payload: str, schema: dict[str, Any], settings: ModelSettings,
             result = subprocess.run(command, input=instructions + "\n\n" + payload, text=True,
                                     capture_output=True, timeout=120, cwd=temporary, env=environment,
                                     check=False)
+            usage = usage_record(settings.provider, settings.model,
+                reported=codex_usage(getattr(result, "stdout", "") or ""),
+                latency_seconds=time.monotonic() - started, payload=payload,
+                instructions=instructions, schema=schema)
             if result.returncode or not result_path.is_file() or result_path.stat().st_size > 1000000:
                 if "requires a newer version of Codex" in (getattr(result, "stderr", "") or ""):
                     raise AgentError("Codex CLI is too old for this model. Update it or choose another model.")
                 raise AgentError("Codex could not respond. Check your CLI setup and model access.")
-            return result_path.read_text(encoding="utf-8")
-    except AgentError:
+            output = result_path.read_text(encoding="utf-8")
+            usage["output_characters"] = len(output)
+            return ModelResponse(output, usage)
+    except AgentError as exc:
+        exc.model_usage = usage
         raise
     except Exception:
-        raise AgentError("Codex could not respond. Check your CLI setup and model access.") from None
+        raise AgentError("Codex could not respond. Check your CLI setup and model access.",
+                         model_usage=usage or usage_record(settings.provider, settings.model,
+                             latency_seconds=time.monotonic() - started, payload=payload,
+                             instructions=instructions, schema=schema)) from None
 
 
 def _validate_plan(plan: dict[str, Any], species: list[str], settings: ModelSettings) -> dict[str, Any]:
@@ -388,13 +461,14 @@ def _validate_plan(plan: dict[str, Any], species: list[str], settings: ModelSett
 
 
 def draft_plan(goal: str, structure_path: str | Path | None, settings: ModelSettings,
-               history: list[dict[str, str]] | None = None) -> dict[str, Any]:
+               history: list[dict[str, str]] | None = None, *,
+               runs_root: str | Path | None = None) -> dict[str, Any]:
     """Ask a model for a validated draft; no calculation files or jobs are created."""
     settings = _settings(settings)
     if not isinstance(goal, str) or not goal.strip() or len(goal) > 20000:
         raise AgentError("Describe the calculation in 1–20,000 characters.")
     history = history or []
-    if len(history) > 30 or any(not isinstance(item, dict) or set(item) != {"role", "content"}
+    if not isinstance(history, list) or any(not isinstance(item, dict) or set(item) != {"role", "content"}
                               or item["role"] not in {"user", "assistant"}
                               or not isinstance(item["content"], str) or len(item["content"]) > 20000
                               for item in history):
@@ -418,9 +492,16 @@ def draft_plan(goal: str, structure_path: str | Path | None, settings: ModelSett
         except Exception:
             raise AgentError("The structure could not be read. Upload a valid ordered crystal structure.") from None
     secrets = _secrets(settings)
+    from .guidance import build_context, review_plan
+    from .experience import retrieve_experience
+    science = build_context(goal, summary, history=history)
+    science["experience"] = retrieve_experience(runs_root, summary)
     payload = json.dumps({"goal": _redact(goal, secrets),
-                          "history": [{**item, "content": _redact(item["content"], secrets)} for item in history],
-                          "structure": summary, "numeric_defaults": DEFAULTS}, ensure_ascii=False, allow_nan=False)
+                          "history": compact_history([{**item, "content": _redact(item["content"], secrets)} for item in history], goal=_redact(goal, secrets)),
+                          "structure": compact_structure(summary), "numeric_defaults": DEFAULTS,
+                          "scientific_context": compact_scientific_context(science)}, ensure_ascii=False, allow_nan=False)
+    payload = _redact(payload, secrets)
+    raw = None
     try:
         raw = _request_plan(payload, _schema(species), settings)
         if not isinstance(raw, str) or len(raw) > 1000000 or _redact(raw, secrets) != raw:
@@ -429,13 +510,23 @@ def draft_plan(goal: str, structure_path: str | Path | None, settings: ModelSett
         if _contains_secret(plan, secrets):
             raise AgentError("The model returned an invalid plan. Try again.")
         result = _validate_plan(plan, species, settings)
+        report = review_plan({**result, "goal": _redact(goal, secrets),
+                              "dialogue": [{**item, "content": _redact(item["content"], secrets)} for item in history]}, summary)
+        report["experience"] = retrieve_experience(
+            runs_root, summary, parameters=result["parameters"], tasks=result["tasks"])
+        result["scientific_report"] = report
+        result["model_usage"] = response_usage(raw, settings)
         result["source_sha256"] = source_sha256
         result["goal"] = _redact(goal, secrets)
+        dialogue_plan = {key: value for key, value in result.items() if key not in {"scientific_report", "model_usage"}}
         result["dialogue"] = [
             {**item, "content": _redact(item["content"], secrets)} for item in history
-        ] + [{"role": "assistant", "content": json.dumps(result, ensure_ascii=False)}]
+        ] + [{"role": "assistant", "content": json.dumps(dialogue_plan, ensure_ascii=False)}]
         return result
-    except AgentError:
+    except AgentError as exc:
+        if raw is not None:
+            exc.model_usage = response_usage(raw, settings)
         raise
     except Exception:
-        raise AgentError("The model returned an invalid plan. Try again.") from None
+        raise AgentError("The model returned an invalid plan. Try again.",
+                         model_usage=response_usage(raw, settings) if raw is not None else None) from None

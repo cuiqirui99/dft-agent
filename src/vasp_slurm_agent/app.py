@@ -3,9 +3,12 @@
 from __future__ import annotations
 
 from datetime import datetime
+from importlib.resources import files
+from io import BytesIO
 from itertools import product
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import tempfile
@@ -85,6 +88,7 @@ def _config_editor(path: Path, config: ClusterConfig | None) -> None:
             host = st.text_input("SSH host", value=value("host", ""))
             user = st.text_input("SSH user", value=value("user", ""))
             port = st.number_input("SSH port", 1, 65535, int(value("port", 22)))
+            control_path = st.text_input("SSH control socket (optional)", value=value("ssh_control_path", ""))
             remote_root = st.text_input("Remote run folder (absolute path)", value=value("remote_root", ""))
             potcar_root = st.text_input("Remote POTCAR folder", value=value("potcar_root", ""))
             vasp_command = st.text_input("VASP command", value=value("vasp_command", "srun vasp_std"))
@@ -114,6 +118,7 @@ def _config_editor(path: Path, config: ClusterConfig | None) -> None:
                 account=account.strip(), setup_commands=[line for line in setup.splitlines() if line.strip()],
                 connect_timeout=int(timeout), potcar_symbols=mapping,
                 vasp_ncl_command=ncl_command.strip(),
+                ssh_control_path=control_path.strip(),
             )
             candidate.save(path)
         except Exception as exc:
@@ -250,6 +255,28 @@ def _model_editor():
     return ModelSettings(provider=provider, model=model.strip(), base_url=base_url.strip() or None, api_key=key or None)
 
 
+def _model_usage(usage):
+    if not isinstance(usage, dict):
+        return
+    fields = (("input_tokens", "input"), ("output_tokens", "output"),
+              ("cached_input_tokens", "cached"), ("reasoning_tokens", "reasoning"))
+    parts = []
+    for key, label in fields:
+        value = usage.get(key)
+        count = f"{value:,}" if type(value) is int and value >= 0 else "unknown"
+        parts.append(f"{label} {count}")
+    latency = usage.get("latency_seconds")
+    if type(latency) in {int, float} and math.isfinite(latency) and latency >= 0:
+        parts.append(f"{latency:.1f} s")
+    st.caption("Model usage · " + " · ".join(parts))
+
+
+def _failed_model_usage(usage):
+    if isinstance(usage, dict):
+        st.caption("Last failed call")
+        _model_usage(usage)
+
+
 def _prepare_from_plan(upload, runs_root, config, plan):
     if plan.get("source_sha256") != hashlib.sha256(upload.getvalue()).hexdigest():
         raise ValueError("The structure changed. Create a new plan.")
@@ -261,9 +288,187 @@ def _prepare_from_plan(upload, runs_root, config, plan):
         source.write_bytes(upload.getvalue())
         prepare_plan(source, run_dir, config, tasks=plan["tasks"], parameters=plan["parameters"],
                      magnetic_states=plan.get("magnetic_states") or None, initial_moment=plan.get("initial_moment", 3.0))
+    _save_structure_edit(upload, run_dir)
     (run_dir / "proposal.json").write_text(json.dumps(plan, indent=2, ensure_ascii=False) + "\n")
     st.session_state["active_run"] = str(run_dir)
     st.success("Inputs ready. Review below, then submit.")
+
+
+def _clear_calculation_plan():
+    for key in ("agent_stamp", "agent_proposal", "agent_history", "agent_clear_revision", "plan_revision", "agent_error_usage"):
+        st.session_state.pop(key, None)
+    st.session_state["manual_moments"] = "null"
+    st.session_state["manual_axis"] = "0 0 1"
+
+
+def _save_structure_edit(upload, run_dir):
+    for name, data in getattr(upload, "edit_files", {}).items():
+        destination = run_dir / "structure_edit" / name
+        if not destination.resolve().is_relative_to((run_dir / "structure_edit").resolve()):
+            raise ValueError("Invalid structure record path.")
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_bytes(data)
+
+
+def _edit_preview(upload, plan, origin):
+    from vasp_slurm_agent.structures import apply_structure_plan
+
+    suffix = ".cif" if upload.name.lower().endswith(".cif") else ".vasp"
+    with tempfile.TemporaryDirectory(prefix="dft-structure-preview-") as directory:
+        source = Path(directory) / f"input{suffix}"
+        source.write_bytes(upload.getvalue())
+        output = Path(directory).resolve() / "output"
+        result = apply_structure_plan(source, output, plan)
+        paths = {key: Path(value) for key, value in result["files"].items()}
+        names = {key: str(path.relative_to(output)) for key, path in paths.items()}
+        data = {names[key]: path.read_bytes() for key, path in paths.items()}
+    return {"plan": plan, "origin": origin, "input": result["input"], "output": result["output"],
+            "warnings": result.get("warnings", []), "names": names, "files": data}
+
+
+def _structure_editor(upload, settings):
+    raw_hash = hashlib.sha256(upload.getvalue()).hexdigest() if upload is not None else None
+    if st.session_state.get("structure_source_hash") != raw_hash:
+        for key in ("structure_plan", "structure_history", "structure_preview", "structure_active", "structure_original",
+                    "structure_goal", "structure_followup", "structure_goal_stamp", "structure_clear_followup", "structure_error_usage"):
+            st.session_state.pop(key, None)
+        st.session_state["structure_source_hash"] = raw_hash
+        _clear_calculation_plan()
+    if upload is None:
+        return None
+    active = st.session_state.get("structure_active")
+    with st.expander("Edit structure"):
+        st.caption("Edits are local. Review the preview before using it.")
+        try:
+            if "structure_original" not in st.session_state:
+                from vasp_slurm_agent.structures import preview_structure
+
+                suffix = ".cif" if upload.name.lower().endswith(".cif") else ".vasp"
+                with tempfile.TemporaryDirectory(prefix="dft-structure-source-") as directory:
+                    source = Path(directory) / f"input{suffix}"
+                    source.write_bytes(upload.getvalue())
+                    st.session_state["structure_original"] = preview_structure(source, [])["input"]
+            st.caption("Original site indices (starting at 0)")
+            st.dataframe(st.session_state["structure_original"]["sites"], hide_index=True)
+        except Exception as exc:
+            st.error(f"Cannot edit structure: {exc}")
+            return upload
+        goal = st.text_area("Structure goal", key="structure_goal", max_chars=4000,
+                            placeholder="Make a 2 × 2 × 1 supercell and save both formats.")
+        goal_stamp = hashlib.sha256((raw_hash + goal).encode()).hexdigest()
+        if st.session_state.get("structure_goal_stamp") != goal_stamp:
+            for key in ("structure_plan", "structure_history", "structure_preview", "structure_followup", "structure_error_usage"):
+                st.session_state.pop(key, None)
+            st.session_state["structure_goal_stamp"] = goal_stamp
+        if st.session_state.pop("structure_clear_followup", False):
+            st.session_state["structure_followup"] = ""
+        plan = st.session_state.get("structure_plan")
+        history = st.session_state.get("structure_history", [])
+        revision = st.text_input("Follow-up", key="structure_followup") if plan or history else ""
+        if st.button("Plan structure", disabled=not goal.strip()):
+            from vasp_slurm_agent.structure_agent import draft_structure
+
+            history = list(history)
+            pending = {"role": "user", "content": revision.strip()}
+            if pending["content"] and (not history or history[-1] != pending):
+                history.append(pending)
+            st.session_state["structure_history"] = history
+            st.session_state.pop("structure_plan", None)
+            st.session_state.pop("structure_preview", None)
+            try:
+                suffix = ".cif" if upload.name.lower().endswith(".cif") else ".vasp"
+                with tempfile.TemporaryDirectory(prefix="dft-structure-plan-") as directory:
+                    source = Path(directory) / f"input{suffix}"
+                    source.write_bytes(upload.getvalue())
+                    with st.spinner("Planning structure…"):
+                        plan = draft_structure(goal.strip(), source, settings, history=history)
+                st.session_state["structure_plan"] = plan
+                st.session_state.pop("structure_error_usage", None)
+                st.session_state["structure_history"] = plan.get("dialogue", history)
+                st.session_state["structure_clear_followup"] = True
+                st.rerun()
+            except Exception as exc:
+                plan = None
+                st.session_state["structure_error_usage"] = getattr(exc, "model_usage", None)
+                st.error(f"Cannot plan structure: {exc}")
+        _failed_model_usage(st.session_state.get("structure_error_usage"))
+        if plan:
+            st.write(plan["summary"])
+            _model_usage(plan.get("model_usage"))
+            for question in plan.get("questions", []):
+                st.info(question)
+            for note in plan.get("notes", []):
+                st.caption(note)
+            st.json(plan["operations"])
+            st.caption("Output: " + plan["output_format"].upper())
+            if revision.strip():
+                st.info("Update the structure plan before previewing it.")
+            if st.button("Preview structure", disabled=plan["status"] != "ready" or bool(revision.strip())):
+                try:
+                    st.session_state["structure_preview"] = _edit_preview(upload, plan, "model")
+                except Exception as exc:
+                    st.session_state.pop("structure_preview", None)
+                    st.error(f"Cannot preview structure: {exc}")
+        output_format = st.selectbox("Convert to", ["cif", "poscar", "both"], format_func=str.upper)
+        if st.button("Convert"):
+            conversion = {"status": "ready", "source_sha256": raw_hash,
+                          "operations": active["plan"]["operations"] if active else [], "output_format": output_format}
+            try:
+                st.session_state["structure_preview"] = _edit_preview(upload, conversion, "conversion")
+            except Exception as exc:
+                st.session_state.pop("structure_preview", None)
+                st.error(f"Cannot convert structure: {exc}")
+        preview = st.session_state.get("structure_preview")
+        if preview:
+            before, after = preview["input"], preview["output"]
+            st.write(f"{before['formula']} · {before['number_of_sites']} atoms → {after['formula']} · {after['number_of_sites']} atoms")
+            st.caption(f"Cell volume: {abs(np.linalg.det(before['lattice_angstrom'])):.3f} → {abs(np.linalg.det(after['lattice_angstrom'])):.3f} Å³")
+            for warning in preview["warnings"]:
+                st.warning(warning)
+            st.dataframe(after["sites"], hide_index=True)
+            for kind, label in (("cif", "Download CIF"), ("poscar", "Download POSCAR")):
+                if preview["plan"]["output_format"] in {kind, "both"}:
+                    name = preview["names"][kind]
+                    st.download_button(label, preview["files"][name], file_name=Path(name).name,
+                                       mime="chemical/x-cif" if kind == "cif" else "text/plain")
+            stale = preview["plan"].get("source_sha256") != raw_hash or (preview["origin"] == "model" and bool(revision.strip()))
+            if st.button("Use structure", disabled=stale):
+                st.session_state["structure_active"] = preview
+                _clear_calculation_plan()
+                st.rerun()
+        if active and st.button("Use original"):
+            st.session_state.pop("structure_active", None)
+            _clear_calculation_plan()
+            st.rerun()
+    if active:
+        st.caption("Using edited structure. Site moments were cleared; check the new site order.")
+        result = BytesIO(active["files"][active["names"]["poscar"]])
+        result.name = "POSCAR"
+        result.edit_files = active["files"]
+        return result
+    return upload
+
+
+def _science_details(report):
+    if not report:
+        return
+    with st.expander("Scientific guidance"):
+        for item in report.get("method_decisions", []):
+            st.write(item["decision"])
+        for item in report.get("risks", []):
+            st.caption(item)
+        for item in report.get("questions", []):
+            st.info(item)
+        for item in report.get("validation_plan", []):
+            st.write("• " + item)
+        sources = {}
+        for item in report.get("evidence", []):
+            for source in item.get("sources", []):
+                sources[source["url"]] = item["title"]
+        for url, title in sources.items():
+            st.markdown(f"[{title}]({url})")
+        if report.get("experience"):
+            st.caption(f"Matched past runs: {len(report['experience'])}. Suggestions only; settings are unchanged.")
 
 
 def _agent_plan(upload, structure, config, runs_root, settings):
@@ -272,7 +477,7 @@ def _agent_plan(upload, structure, config, runs_root, settings):
     goal = st.text_area("Goal", placeholder="Relax this structure, then calculate its bands with SOC.", max_chars=4000)
     stamp = hashlib.sha256((upload.getvalue() if upload else b"") + goal.encode()).hexdigest()
     if st.session_state.get("agent_stamp") != stamp:
-        for key in ("agent_proposal", "agent_history", "agent_clear_revision", "plan_revision"):
+        for key in ("agent_proposal", "agent_history", "agent_clear_revision", "plan_revision", "agent_error_usage"):
             st.session_state.pop(key, None)
         st.session_state["agent_stamp"] = stamp
     saved = st.session_state.get("agent_proposal")
@@ -293,27 +498,31 @@ def _agent_plan(upload, structure, config, runs_root, settings):
                 source = Path(directory) / f"structure{suffix}"
                 source.write_bytes(upload.getvalue())
                 with st.spinner("Planning…"):
-                    plan = draft_plan(goal.strip(), source, settings, history=history[-12:])
-            prefix = [{**item, "content": _redact(item["content"], _secrets(settings))} for item in history[:-12]]
-            history = prefix + plan.get("dialogue", history[-12:] + [{"role": "assistant", "content": json.dumps(plan, ensure_ascii=False)}])
+                    plan = draft_plan(goal.strip(), source, settings, history=history, runs_root=runs_root)
+            history = plan.get("dialogue", history + [{"role": "assistant", "content": json.dumps(plan, ensure_ascii=False)}])
             saved = {"stamp": stamp, "plan": plan, "goal": plan.get("goal", goal.strip())}
             st.session_state["agent_proposal"] = saved
+            st.session_state.pop("agent_error_usage", None)
             st.session_state["agent_history"] = history
             st.session_state["agent_clear_revision"] = True
             revision = ""
             st.rerun()
         except Exception as exc:
+            st.session_state["agent_error_usage"] = getattr(exc, "model_usage", None)
             st.error(str(exc))
+    _failed_model_usage(st.session_state.get("agent_error_usage"))
     if not saved:
         return
     plan = saved["plan"]
     st.write(plan["summary"])
+    _model_usage(plan.get("model_usage"))
     for question in plan.get("questions", []):
         st.info(question)
     if plan.get("status") == "unsupported":
         st.warning("This plan cannot run yet.")
+    _science_details(plan.get("scientific_report"))
     with st.expander("Plan details", expanded=plan.get("status") == "ready"):
-        st.json({key: value for key, value in plan.items() if key not in {"provenance", "dialogue", "goal"}})
+        st.json({key: value for key, value in plan.items() if key not in {"provenance", "dialogue", "goal", "scientific_report", "model_usage"}})
     if revision.strip():
         st.info("Update the plan before preparing inputs.")
     if st.button("Prepare inputs", disabled=plan.get("status") != "ready" or config is None or bool(revision.strip())):
@@ -329,7 +538,21 @@ def _agent_plan(upload, structure, config, runs_root, settings):
 def _new_run(config: ClusterConfig | None, runs_root: Path, model_settings=None) -> None:
     st.subheader("New calculation")
     st.write("Prepare inputs locally. Review before submitting.")
-    upload = st.file_uploader("Upload a structure", help="CIF or POSCAR; no extension needed for POSCAR. POTCAR stays on the cluster.")
+    source = st.radio("Structure source", ["Upload", "Example"], horizontal=True)
+    if source == "Upload":
+        upload = st.file_uploader("Upload a structure", help="CIF or POSCAR; no extension needed for POSCAR. POTCAR stays on the cluster.")
+    else:
+        examples = files("vasp_slurm_agent").joinpath("examples")
+        choices = {}
+        for item in sorted(examples.iterdir(), key=lambda item: item.name):
+            if item.name.endswith((".cif", ".vasp")):
+                choices[Path(item.name).stem] = item.name
+        name = st.selectbox("Example", [choices[label] for label in sorted(choices)], format_func=lambda value: Path(value).stem)
+        upload = BytesIO(examples.joinpath(name).read_bytes())
+        upload.name = name
+        st.download_button("Download input", upload.getvalue(), file_name=name,
+                           mime="chemical/x-cif" if name.endswith(".cif") else "text/plain")
+    upload = _structure_editor(upload, model_settings)
     structure = _preview(upload) if upload is not None else None
     mode = st.radio("Mode", ["Agent", "Manual"], horizontal=True)
     if mode == "Agent":
@@ -356,8 +579,8 @@ def _new_run(config: ClusterConfig | None, runs_root: Path, model_settings=None)
             functional = st.selectbox("Functional", ["PBE", "HSE06", "PBE0"])
             spin = st.selectbox("Spin", ["none", "collinear", "noncollinear"])
             soc = st.checkbox("SOC")
-            moments = st.text_area("Site moments (JSON)", value="null", help="One value per input site, or three components for noncollinear spins.")
-            axis = st.text_input("Spin axis", "0 0 1")
+            moments = st.text_area("Site moments (JSON)", value="null", key="manual_moments", help="One value per input site, or three components for noncollinear spins.")
+            axis = st.text_input("Spin axis", "0 0 1", key="manual_axis")
             hubbard = st.text_area("Hubbard U (JSON)", value="{}", help='Example: {"Ni": {"l": 2, "u": 5, "j": 0}}')
             comparisons = st.multiselect("Compare magnetic states", ["NM", "FM", "AFM"], help="SCF seeds on the same cell.")
         prepared = st.form_submit_button("Prepare inputs", type="primary",
@@ -380,6 +603,7 @@ def _new_run(config: ClusterConfig | None, runs_root: Path, model_settings=None)
                 source = Path(directory) / f"structure{suffix}"
                 source.write_bytes(upload.getvalue())
                 prepare_plan(source, run_dir, config, tasks=[task], parameters=parameters, magnetic_states=comparisons or None)
+            _save_structure_edit(upload, run_dir)
             st.session_state["active_run"] = str(run_dir)
             st.success("Inputs ready. Review below, then submit.")
         except Exception as exc:
@@ -411,12 +635,13 @@ def _result_dialogue(run_dir, settings, context):
     actions = st.columns(2)
     explain = actions[0].button("Explain results", key=f"explain_{run_dir}")
     ask = actions[1].button("Ask", disabled=not question.strip(), key=f"ask_{run_dir}")
+    error_usage_key = f"explanation_error_usage_{run_dir}_{context['context_sha256']}"
     if explain or ask:
         prompt = question.strip() if ask else "Explain the results."
         history = record.get("history", [])
         try:
             with st.spinner("Reading results…"):
-                response = explain_run(run_dir, settings, question=prompt, history=history[-12:])
+                response = explain_run(run_dir, settings, question=prompt, history=history)
             if response["context_sha256"] != context["context_sha256"] or response["context_sha256"] != load_run_context(run_dir)["context_sha256"]:
                 record = {}
                 raise ValueError("Results changed. Ask again for an updated explanation.")
@@ -434,13 +659,17 @@ def _result_dialogue(run_dir, settings, context):
                 os.replace(temporary, record_path)
             finally:
                 temporary.unlink(missing_ok=True)
+            st.session_state.pop(error_usage_key, None)
         except Exception as exc:
+            st.session_state[error_usage_key] = getattr(exc, "model_usage", None)
             st.error(f"Cannot explain results: {exc}")
+    _failed_model_usage(st.session_state.get(error_usage_key))
     for exchange in record.get("exchanges", []):
         with st.chat_message("user"):
             st.write(exchange["question"])
         with st.chat_message("assistant"):
             st.write(exchange["answer"])
+            _model_usage(exchange.get("model_usage"))
             with st.expander("Evidence"):
                 for fact_id in exchange.get("evidence", []):
                     fact = context["facts"].get(fact_id)
@@ -452,6 +681,43 @@ def _result_dialogue(run_dir, settings, context):
                 st.caption(limit)
             for step in exchange.get("next_steps", []):
                 st.write(step)
+
+
+def _repair_panel(run_dir, settings):
+    from vasp_slurm_agent.recovery import draft_repair, prepare_repair
+
+    key = f"repair_{run_dir}"
+    with st.expander("Repair"):
+        if st.button("Plan repair", key=f"plan_repair_{run_dir}"):
+            st.session_state.pop(key, None)
+            try:
+                with st.spinner("Checking the failed run…"):
+                    st.session_state[key] = draft_repair(run_dir, settings)
+                st.session_state.pop(key + "_error_usage", None)
+            except Exception as exc:
+                st.session_state[key + "_error_usage"] = getattr(exc, "model_usage", None)
+                st.error(str(exc))
+        _failed_model_usage(st.session_state.get(key + "_error_usage"))
+        proposal = st.session_state.get(key)
+        if not proposal:
+            return
+        st.write(proposal["diagnosis"])
+        _model_usage(proposal.get("model_usage"))
+        for question in proposal.get("questions", []):
+            st.info(question)
+        if proposal.get("changes"):
+            st.dataframe(proposal["changes"], hide_index=True)
+            st.caption(f"Repair {proposal['attempt']} of {proposal['max_attempts']}.")
+        if st.button("Prepare repair", key=f"prepare_repair_{run_dir}", disabled=proposal["status"] != "ready"):
+            try:
+                name = datetime.now().strftime("%Y%m%d-%H%M%S") + "-repair-" + uuid.uuid4().hex[:8]
+                child = run_dir.parent / name
+                prepare_repair(run_dir, child, proposal)
+                st.session_state["active_run"] = str(child)
+                st.session_state.pop(key, None)
+                st.rerun()
+            except Exception as exc:
+                st.error(f"Cannot prepare repair: {exc}")
 
 
 @st.fragment(run_every="5s")
@@ -572,6 +838,8 @@ def _run_panel(run_dir: Path, model_settings=None) -> None:
         st.info("Complete. Results are ready to download.")
     elif status == "needs_attention":
         st.info("Check the error before reconnecting. Settings are unchanged.")
+    if status in {"needs_attention", "failed"}:
+        _repair_panel(run_dir, model_settings)
     _result_dialogue(run_dir, model_settings, context)
 
 

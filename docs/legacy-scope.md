@@ -4,6 +4,9 @@ DFT Agent is a standalone application for VASP on Slurm.
 It follows the earlier project's approach to job tracking and result checks.
 It does not depend on that platform, its private datasets or old experiment state.
 
+Scientific guidance, scoped run history and repair planning are adapted from the
+earlier platform. The current executor remains in use. See [the workflow](harness.md).
+
 The 2026-10-07 audit of the earlier workspace recorded **911 passed, 93 failed
 and 2 errors** out of 1,006 tests. The
 [audit record](../validation/legacy-scope.json) preserves those results and the

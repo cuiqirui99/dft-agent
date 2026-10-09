@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "description": "Starting geometries from prior user calculations. Relaxation and magnetic ground states are not established by these examples.",
+  "structures": [
+    {
+      "name": "VSe2",
+      "formula": "VSe2",
+      "atoms": 3,
+      "source": "cqr/irvsp/POSCAR",
+      "source_sha256": "b4ffca270a95d9b60c929eca413da35ac76df0b8ae07b131847e62aa796023f0",
+      "files": {
+        "VSe2.vasp": "c622ed7d572f97043f7cfe9e53ce4a0af760cc10c16da2ea2b01a19690675674",
+        "VSe2.cif": "ddb5db888260abce7c0597371f2ab89760ffd51c9f0f9efd689a6d7fd764d115"
+      }
+    },
+    {
+      "name": "In2Se3",
+      "formula": "In2Se3",
+      "atoms": 5,
+      "source": "cqr/quantumdimer/POSCAR",
+      "source_sha256": "765d1199ad35d45110443997cfd726cc485d40eda05428fa93825e31f3eaae5a",
+      "files": {
+        "In2Se3.vasp": "9d5c4820311c71ec78da8fb2a19405b0d7d45a16fa981167211013ecbfa77119",
+        "In2Se3.cif": "8c9e946a96fe95d2cd323bf107c25069b94c7b6142a497f33117cc1e4aac2229"
+      }
+    },
+    {
+      "name": "V2Te2O",
+      "formula": "V2Te2O",
+      "atoms": 5,
+      "source": "cqr/vteowannier/POSCAR",
+      "source_sha256": "e0cd6a3d3232864c77490d47577bd2acb07544bae27fc4b84024b4ea89d31ca9",
+      "files": {
+        "V2Te2O.vasp": "9ec1a884c5cd4e75ce6f51ff4c026508e609de4457d722525d71a42649748c85",
+        "V2Te2O.cif": "cefb69e2f4dc2d488d9f94fd72c856f46aaf898ea34b8413609de30d915f9355"
+      }
+    },
+    {
+      "name": "CrSBr",
+      "formula": "CrSBr",
+      "atoms": 6,
+      "source": "cqr/Crsbrfinal/POSCAR",
+      "source_sha256": "dc982e6233943abffb9352b09ce0c299bcfe34b1229b4f64c0262f85b48ea29e",
+      "files": {
+        "CrSBr.vasp": "8ca89e71970855a7fc4f06173d066addd3701ea2ab9a3936b741b8aa8667e7cb",
+        "CrSBr.cif": "accde9ff2c37d200250f082b4e7ef2bf51189c878d6bb4c82e7f2e2a3f143c1d"
+      }
+    },
+    {
+      "name": "CrOCl",
+      "formula": "CrClO",
+      "atoms": 6,
+      "source": "cqr/crocl/POSCAR",
+      "source_sha256": "cd58a4c7ba946172054371257a7496b009dd96686132a50b6e717dd9816075cd",
+      "files": {
+        "CrOCl.vasp": "64ab5c8f593a7b2b5f9081585273e7f2c8fcbdbf977e55cada9c03e3a82278d9",
+        "CrOCl.cif": "4f318a2293ae645c99093c176e6dbc4348cf264c67ee5d73253b38a23f1ef905"
+      }
+    },
+    {
+      "name": "CrCl3",
+      "formula": "CrCl3",
+      "atoms": 16,
+      "source": "cqr/bilayercrcl3/POSCAR",
+      "source_sha256": "cbe4508c81a19891366f36e2b23269b31948f879a5c122c2a0ef5618c3febb9b",
+      "files": {
+        "CrCl3.vasp": "65832bf3bef8babb239a27377c323d190f38c04606eb45742e33d6e6820d32b5",
+        "CrCl3.cif": "4d8709cba74ed82733bba69806047f15847ddc264382ae45ce2bb080dff2eee5"
+      }
+    },
+    {
+      "name": "CrPS4",
+      "formula": "CrPS4",
+      "atoms": 24,
+      "source": "cqr2/crps4/POSCAR",
+      "source_sha256": "555eab62c819acc332852532897eda5f415cdf466324c602870e7da643fe71d7",
+      "files": {
+        "CrPS4.vasp": "c9a3e61e0556a8e465445e2cac8d7f2f62adf453030db2e8e6b96a981433f565",
+        "CrPS4.cif": "16f22384e6901b1ea71b2cf18372cb3ecfb12c9bc1ec5b28b669161efe9df8e7"
+      }
+    },
+    {
+      "name": "GaFe2O4",
+      "formula": "Ga(FeO2)2",
+      "atoms": 42,
+      "source": "cqr/fegao/POSCAR",
+      "source_sha256": "7b199d5aabd7b6af0a1c76ac2b86a47f20914736349a6b15e3d83d71d64880ac",
+      "files": {
+        "GaFe2O4.vasp": "b0cf93cab2d260af397953735f8417c19612540d6a5b2931f4e7ca08ade3525c",
+        "GaFe2O4.cif": "ccbab83cb787fd406c41ab329f6e17a8b9dc23a059ca7c77bc81c5c2f491ef13"
+      }
+    },
+    {
+      "name": "CrOCl-MoS2",
+      "formula": "Cr10Mo9S18(ClO)10",
+      "atoms": 114,
+      "source": "cqr/crocl_mos2/POSCAR",
+      "source_sha256": "f5ed5d0ba4459baa8c9bcaf573e9689439a63ceb685c646935e3e94a3bbdbabe",
+      "files": {
+        "CrOCl-MoS2.vasp": "e79b32b79574f98a6d92712ebca3f2e161e6bf5d2d02dfd8665281a70e92ac75",
+        "CrOCl-MoS2.cif": "8c544a7052e2c92f9c58ea3e6f8ab77e6cd6c6db555797863f2229f41b6cc1e8"
+      }
+    }
+  ]
+}

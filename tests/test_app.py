@@ -9,6 +9,8 @@ from unittest.mock import Mock
 import matplotlib.pyplot as plt
 
 from pymatgen.core import Structure
+from pymatgen.io.cif import CifWriter
+import numpy as np
 import pytest
 from streamlit.testing.v1 import AppTest
 
@@ -16,6 +18,10 @@ from vasp_slurm_agent import workflow
 from vasp_slurm_agent.config import ClusterConfig
 from vasp_slurm_agent import agent
 from test_cli_plan import model_response
+
+
+MODEL_USAGE = {"input_tokens": 1234, "output_tokens": 56, "cached_input_tokens": 1024,
+               "reasoning_tokens": None, "latency_seconds": 1.25}
 
 
 def widget(elements, label):
@@ -56,6 +62,22 @@ def workbench(tmp_path, monkeypatch):
 
 def silicon_bytes():
     return files("vasp_slurm_agent").joinpath("examples", "Si.cif").read_bytes()
+
+
+def usage_caption(app):
+    return next(item.value for item in app.caption if item.value.startswith("Model usage ·"))
+
+
+def test_usage_display_does_not_render_provider_text_or_invalid_numbers():
+    app = AppTest.from_string("""
+from vasp_slurm_agent.app import _model_usage
+_model_usage({'input_tokens': True, 'output_tokens': -1, 'cached_input_tokens': '/private/token',
+              'reasoning_tokens': None, 'latency_seconds': float('nan'), 'model':'secret-key'})
+""").run()
+    assert not app.exception
+    text = usage_caption(app)
+    assert text.count("unknown") == 4
+    assert "secret-key" not in text and "/private" not in text and "nan" not in text
 
 
 @pytest.mark.parametrize("file_format", ["cif", "poscar"])
@@ -146,12 +168,268 @@ def test_completed_result_is_visible_without_resubmission(workbench, accepted):
 
 def test_installed_examples_are_readable_crystal_inputs():
     examples = files("vasp_slurm_agent").joinpath("examples")
-    expected = {"Si", "C", "Ge", "Al", "Cu", "MgO", "NaCl", "SiC"}
+    expected = {"Si", "C", "Ge", "Al", "Cu", "MgO", "NaCl", "SiC",
+                "VSe2", "In2Se3", "V2Te2O", "CrSBr", "CrOCl", "CrCl3", "CrPS4", "GaFe2O4", "CrOCl-MoS2"}
     structures = {sample.name[:-4]: Structure.from_str(sample.read_text(), fmt="cif")
                   for sample in examples.iterdir() if sample.name.endswith(".cif")}
     assert structures.keys() == expected
     for structure in structures.values():
         assert structure.is_ordered and len(structure) > 0 and structure.volume > 0
+
+
+def test_example_resources_match_repository_and_preserve_geometry():
+    from vasp_slurm_agent.structures import preview_structure
+    repository = Path(__file__).resolve().parents[1] / "examples"
+    packaged = files("vasp_slurm_agent").joinpath("examples")
+    records = json.loads(packaged.joinpath("sources.json").read_text())
+    assert len(records["structures"]) == 9
+    public_names = {path.name for path in repository.iterdir() if path.suffix in {".cif", ".vasp", ".json"}}
+    package_names = {path.name for path in packaged.iterdir() if path.name.endswith((".cif", ".vasp", ".json"))}
+    assert public_names == package_names
+    for name in public_names:
+        assert (repository / name).read_bytes() == packaged.joinpath(name).read_bytes()
+    for entry in records["structures"]:
+        poscar = preview_structure(repository / (entry["name"] + ".vasp"), [])["input"]
+        cif = preview_structure(repository / (entry["name"] + ".cif"), [])["input"]
+        assert poscar["number_of_sites"] == cif["number_of_sites"] == entry["atoms"]
+        assert [site["element"] for site in poscar["sites"]] == [site["element"] for site in cif["sites"]]
+        left, right = np.asarray(poscar["lattice_angstrom"]), np.asarray(cif["lattice_angstrom"])
+        np.testing.assert_allclose(left @ left.T, right @ right.T, rtol=1e-9, atol=1e-8)
+        delta = np.asarray([site["fractional_coordinates"] for site in poscar["sites"]]) - np.asarray([site["fractional_coordinates"] for site in cif["sites"]])
+        np.testing.assert_allclose(delta - np.rint(delta), 0, atol=1e-9)
+        for name, digest in entry["files"].items():
+            assert hashlib.sha256((repository / name).read_bytes()).hexdigest() == digest
+        assert entry["source"].startswith(("cqr/", "cqr2/")) and len(entry["source_sha256"]) == 64
+    assert "/Users/" not in json.dumps(records) and "local_path" not in json.dumps(records)
+
+
+@pytest.mark.parametrize("name", ["Al.cif", "MgO.cif", "SiC.cif"])
+def test_packaged_example_prepares_without_upload(workbench, name):
+    app, worker, runs_root = workbench
+    widget(app.radio, "Structure source").set_value("Example").run()
+    widget(app.selectbox, "Example").select(name).run()
+    assert not app.exception
+    assert widget(app.download_button, "Download input").proto.url
+    assert not runs_root.exists()
+    worker.assert_not_called()
+    widget(app.button, "Prepare inputs").click().run()
+    assert not app.exception
+    run_dir = Path(app.session_state["active_run"])
+    state = workflow.read_state(run_dir)
+    assert state["status"] == "planned" and state["stages"][0]["job_id"] is None
+    assert state["formula"] == name.removesuffix(".cif")
+    expected = files("vasp_slurm_agent").joinpath("examples", name).read_bytes()
+    assert (run_dir / "source/input/structure.cif").read_bytes() == expected
+    assert widget(app.button, "Submit calculation").disabled
+    worker.assert_not_called()
+
+
+def test_switching_example_invalidates_existing_plan(workbench, monkeypatch):
+    app, worker, _ = workbench
+    monkeypatch.setattr(agent, "_request_plan", lambda *args: json.dumps(model_response()))
+    widget(app.radio, "Structure source").set_value("Example").run()
+    widget(app.selectbox, "Example").select("Si.cif").run()
+    widget(app.radio, "Mode").set_value("Agent").run()
+    widget(app.selectbox, "Provider").select("codex").run()
+    widget(app.text_area, "Goal").set_value("Relax this structure").run()
+    widget(app.button, "Plan").click().run()
+    assert not app.exception
+    assert "agent_proposal" in app.session_state
+    widget(app.selectbox, "Example").select("MgO.cif").run()
+    assert not app.exception
+    assert "agent_proposal" not in app.session_state
+    assert not any(button.label == "Prepare inputs" for button in app.button)
+    worker.assert_not_called()
+
+
+def test_complex_examples_use_poscar_without_duplicate_choices(workbench):
+    app, worker, _ = workbench
+    widget(app.radio, "Structure source").set_value("Example").run()
+    examples = widget(app.selectbox, "Example")
+    assert len(examples.options) == 17
+    examples.select("CrOCl-MoS2.vasp").run()
+    assert not app.exception
+    assert widget(app.metric, "Atoms").value == "114"
+    assert app.session_state["structure_original"]["number_of_sites"] == 114
+    worker.assert_not_called()
+
+
+def test_format_conversion_needs_no_model_or_cluster(workbench, monkeypatch):
+    app, worker, runs_root = workbench
+    monkeypatch.setattr(agent, "_request_structured", lambda *args, **kwargs: pytest.fail("Conversion must not call a model"))
+    widget(app.text_input, "Configuration file").set_value(str(runs_root.parent / "missing.json")).run()
+    widget(app.radio, "Structure source").set_value("Example").run()
+    widget(app.selectbox, "Example").select("Si.cif").run()
+    widget(app.selectbox, "Convert to").select("both").run()
+    widget(app.button, "Convert").click().run()
+    assert not app.exception
+    assert widget(app.download_button, "Download CIF").proto.url
+    assert widget(app.download_button, "Download POSCAR").proto.url
+    assert "structure_active" not in app.session_state
+    widget(app.button, "Use structure").click().run()
+    assert not app.exception
+    assert app.session_state["structure_active"]["output"]["number_of_sites"] == 2
+    assert widget(app.button, "Prepare inputs").disabled
+    assert not runs_root.exists()
+    worker.assert_not_called()
+
+
+def test_structure_revisions_use_original_and_clear_calculation_state(workbench, monkeypatch):
+    from vasp_slurm_agent import structure_agent
+    app, worker, _ = workbench
+    calls = []
+    def draft(goal, source, settings, history=None):
+        data = Path(source).read_bytes()
+        calls.append((data, history))
+        repeats = 2 if len(calls) == 1 else 3
+        return {"status": "ready", "summary": "Make a supercell.",
+                "operations": [{"type": "supercell", "matrix": [repeats, 1, 1]}],
+                "output_format": "both", "source_sha256": hashlib.sha256(data).hexdigest(),
+                "model_usage": MODEL_USAGE,
+                "questions": [], "notes": [], "dialogue": [*(history or []), {"role": "assistant", "content": "Supercell planned."}]}
+    monkeypatch.setattr(structure_agent, "draft_structure", draft)
+    app.file_uploader[0].upload("Si.cif", silicon_bytes()).run()
+    widget(app.text_area, "Site moments (JSON)").set_value("[1,-1]").run()
+    widget(app.text_input, "Spin axis").set_value("1 0 0").run()
+    widget(app.text_area, "Structure goal").set_value("Make a 2 by 1 by 1 supercell").run()
+    widget(app.button, "Plan structure").click().run()
+    assert "input 1,234" in usage_caption(app) and "reasoning unknown" in usage_caption(app)
+    for _ in range(3):
+        app.run()
+    assert len(calls) == 1
+    widget(app.button, "Preview structure").click().run()
+    assert not app.exception
+    assert app.session_state["structure_preview"]["output"]["number_of_sites"] == 4
+    assert "structure_active" not in app.session_state
+    app.session_state["agent_proposal"] = {"old": "plan"}
+    app.session_state["agent_history"] = [{"role": "user", "content": "Old goal"}]
+    widget(app.button, "Use structure").click().run()
+    assert not app.exception
+    assert "agent_proposal" not in app.session_state and "agent_history" not in app.session_state
+    assert widget(app.text_area, "Site moments (JSON)").value == "null"
+    assert widget(app.text_input, "Spin axis").value == "0 0 1"
+    widget(app.text_input, "Follow-up").set_value("Use 3 by 1 by 1 instead").run()
+    assert widget(app.button, "Preview structure").disabled
+    widget(app.button, "Plan structure").click().run()
+    widget(app.button, "Preview structure").click().run()
+    assert app.session_state["structure_preview"]["output"]["number_of_sites"] == 6
+    widget(app.button, "Use structure").click().run()
+    assert not app.exception
+    assert all(data == silicon_bytes() for data, _ in calls)
+    assert calls[-1][1][-1]["content"] == "Use 3 by 1 by 1 instead"
+    active = app.session_state["structure_active"]
+    widget(app.button, "Prepare inputs").click().run()
+    assert not app.exception
+    run_dir = Path(app.session_state["active_run"])
+    assert (run_dir / "source/input/structure.vasp").read_bytes() == active["files"]["POSCAR"]
+    assert (run_dir / "structure_edit/source.cif").read_bytes() == silicon_bytes()
+    record = json.loads((run_dir / "structure_edit/structure.json").read_text())
+    assert record["output"]["number_of_sites"] == 6
+    assert (run_dir / "structure_edit/POSCAR").read_bytes() == active["files"]["POSCAR"]
+    widget(app.button, "Use original").click().run()
+    assert not app.exception
+    assert "structure_active" not in app.session_state
+    assert widget(app.metric, "Atoms").value == "2"
+    assert widget(app.text_area, "Site moments (JSON)").value == "null"
+    worker.assert_not_called()
+
+
+def test_calculation_usage_is_saved_without_model_calls_on_refresh(workbench, monkeypatch):
+    app, worker, _ = workbench
+    reply = model_response()
+    reply.update(model_usage=MODEL_USAGE, source_sha256=hashlib.sha256(silicon_bytes()).hexdigest(),
+                 dialogue=[{"role": "assistant", "content": "Relax the structure."}])
+    planner = Mock(return_value=reply)
+    monkeypatch.setattr(agent, "draft_plan", planner)
+    app.file_uploader[0].upload("Si.cif", silicon_bytes()).run()
+    widget(app.radio, "Mode").set_value("Agent").run()
+    widget(app.text_area, "Goal").set_value("Relax this structure.").run()
+    widget(app.button, "Plan").click().run()
+    assert not app.exception
+    text = usage_caption(app)
+    assert "input 1,234" in text and "cached 1,024" in text and "1.2 s" in text
+    for _ in range(3):
+        app.run()
+    assert planner.call_count == 1
+    assert app.session_state["agent_proposal"]["plan"]["model_usage"] == MODEL_USAGE
+    worker.assert_not_called()
+
+
+@pytest.mark.parametrize("kind", ["calculation", "structure", "explanation"])
+def test_full_history_reaches_model_after_eight_rounds(workbench, monkeypatch, kind):
+    history = []
+    for index in range(8):
+        history.extend([{"role": "user", "content": f"Keep constraint {index}."},
+                        {"role": "assistant", "content": f"Constraint {index} retained."}])
+    app, worker, _ = workbench
+    if kind == "explanation":
+        app, worker, run_dir, context, planner, _ = explanation_run(workbench, monkeypatch)
+        (run_dir / "explanations.json").write_text(json.dumps({"context_sha256": context["context_sha256"],
+                                                               "history": history, "exchanges": []}))
+        app.run()
+        widget(app.button, "Explain results").click().run()
+        assert planner.call_args.kwargs["history"] == history
+    elif kind == "calculation":
+        def draft(*args, history=None, **kwargs):
+            result = model_response()
+            result.update(source_sha256=hashlib.sha256(silicon_bytes()).hexdigest(),
+                          dialogue=history + [{"role": "assistant", "content": "Plan updated."}])
+            return result
+        planner = Mock(side_effect=draft)
+        monkeypatch.setattr(agent, "draft_plan", planner)
+        open_agent(app)
+        app.session_state["agent_history"] = history
+        app.run()
+        widget(app.text_input, "Change the plan").set_value("SCF only.").run()
+        widget(app.button, "Plan").click().run()
+        assert planner.call_args.kwargs["history"][:16] == history
+        assert app.session_state["agent_history"][:16] == history
+        assert len(app.session_state["agent_history"]) == 18
+    else:
+        from vasp_slurm_agent import structure_agent
+        def draft(*args, history=None, **kwargs):
+            return {"status": "needs_input", "summary": "Choose a site.", "questions": ["Which site?"],
+                    "notes": [], "operations": [], "output_format": "both",
+                    "dialogue": history + [{"role": "assistant", "content": "Which site?"}]}
+        planner = Mock(side_effect=draft)
+        monkeypatch.setattr(structure_agent, "draft_structure", planner)
+        app.file_uploader[0].upload("Si.cif", silicon_bytes()).run()
+        widget(app.text_area, "Structure goal").set_value("Replace one silicon atom.").run()
+        app.session_state["structure_history"] = history
+        app.run()
+        widget(app.text_input, "Follow-up").set_value("Use Ge.").run()
+        widget(app.button, "Plan structure").click().run()
+        assert planner.call_args.kwargs["history"][:16] == history
+        assert app.session_state["structure_history"][:16] == history
+        assert len(app.session_state["structure_history"]) == 18
+    assert not app.exception
+    worker.assert_not_called()
+
+
+def test_cluster_control_socket_is_saved(workbench):
+    app, worker, runs_root = workbench
+    socket = str(runs_root.parent / "master.sock")
+    widget(app.text_input, "SSH control socket (optional)").set_value(socket)
+    widget(app.button, "Save cluster settings").click().run()
+    assert not app.exception
+    assert ClusterConfig.load(runs_root.parent / "cluster.json").ssh_control_path == socket
+    worker.assert_not_called()
+
+
+def test_structure_editor_indices_follow_cif_rows(workbench):
+    app, _, _ = workbench
+    structure = Structure([[4, 0, 0], [0, 4, 0], [0, 0, 4]], ["O", "Mg"], [[0, 0, 0], [0.5, 0.5, 0.5]])
+    text = str(CifWriter(structure, symprec=None, refine_struct=False))
+    app.file_uploader[0].upload("ordered.cif", text.encode()).run()
+    assert not app.exception
+    sites = app.session_state["structure_original"]["sites"]
+    assert [(site["index"], site["element"]) for site in sites] == [(0, "O"), (1, "Mg")]
+    table = app.dataframe[0].value
+    assert table["element"].tolist() == ["O", "Mg"]
+    widget(app.button, "Convert").click().run()
+    widget(app.button, "Use structure").click().run()
+    active = app.session_state["structure_active"]
+    assert [site["element"] for site in active["output"]["sites"]] == ["O", "Mg"]
 
 
 def test_paused_job_can_reconnect_from_the_result_panel(workbench):
@@ -257,6 +535,7 @@ def test_agent_proposal_requires_review_and_keeps_runtime_plan(workbench, monkey
     proposal = json.loads((root / "proposal.json").read_text())
     frozen = json.loads((root / "plan.json").read_text())
     assert proposal["status"] == "ready" and frozen["stages"]
+    assert proposal["scientific_report"]["evidence"]
     assert "status" not in frozen
     assert state["plan_sha256"] == hashlib.sha256((root / "plan.json").read_bytes()).hexdigest()
     workflow._check_config(root, state)
@@ -447,6 +726,7 @@ def explanation_run(workbench, monkeypatch):
     def answer(*args, **kwargs):
         return {"answer": "The requested relaxation completed.", "evidence": ["energy"],
                 "limits": ["Material-specific accuracy is not established."], "next_steps": ["Download the structure."],
+                "model_usage": MODEL_USAGE,
                 "context_sha256": context["context_sha256"], "provenance": {"provider": "codex", "model": "test"}}
 
     explain = Mock(side_effect=answer)
@@ -473,7 +753,10 @@ def test_explanation_is_explicit_grounded_and_persists_across_sessions(workbench
     record = json.loads((root / "explanations.json").read_text())
     assert record["context_sha256"] == context["context_sha256"]
     assert len(record["exchanges"]) == 1
-    app.run()
+    assert "output 56" in usage_caption(app)
+    assert record["exchanges"][0]["model_usage"] == MODEL_USAGE
+    for _ in range(3):
+        app.run()
     assert explain.call_count == 1
     widget(app.text_input, "Ask about this run").set_value("Where is the structure?").run()
     widget(app.button, "Ask").click().run()
@@ -488,6 +771,31 @@ def test_explanation_is_explicit_grounded_and_persists_across_sessions(workbench
     assert any("The requested relaxation completed." == item.value for item in reopened.markdown)
     assert explain.call_count == 2
     assert (root / "run.json").read_bytes() == original
+    worker.assert_not_called()
+
+
+def test_failed_model_usage_survives_refresh_without_changing_accepted_records(workbench, monkeypatch):
+    app, worker, root, context, explain, answer = explanation_run(workbench, monkeypatch)
+    widget(app.button, "Explain results").click().run()
+    accepted = (root / "explanations.json").read_bytes()
+    frozen_plan = (root / "plan.json").read_bytes()
+    failed_usage = {**MODEL_USAGE, "input_tokens": 4321, "output_tokens": 7}
+    explain.side_effect = agent.AgentError("Model returned an incomplete answer.", model_usage=failed_usage)
+    widget(app.button, "Explain results").click().run()
+    assert not app.exception
+    assert "input 4,321" in usage_caption(app)
+    assert app.session_state[f"explanation_error_usage_{root}_{context['context_sha256']}"] == failed_usage
+    for _ in range(3):
+        app.run()
+        assert "input 4,321" in usage_caption(app)
+    assert explain.call_count == 2
+    assert (root / "explanations.json").read_bytes() == accepted
+    assert (root / "plan.json").read_bytes() == frozen_plan
+    assert any("The requested relaxation completed." == item.value for item in app.markdown)
+    explain.side_effect = answer
+    widget(app.button, "Explain results").click().run()
+    assert not any(item.value == "Last failed call" for item in app.caption)
+    assert explain.call_count == 3
     worker.assert_not_called()
 
 
@@ -575,3 +883,50 @@ def test_explanation_does_not_save_answer_if_results_change_during_request(workb
     assert not (root / "explanations.json").exists()
     assert not any("The requested relaxation completed." == item.value for item in app.markdown)
     worker.assert_not_called()
+
+
+def test_repair_actions_require_explicit_planning_and_submission(workbench, monkeypatch):
+    from vasp_slurm_agent import recovery
+
+    app, worker, _ = workbench
+    app.file_uploader[0].upload("Si.cif", silicon_bytes()).run()
+    widget(app.button, "Prepare inputs").click().run()
+    parent = Path(app.session_state["active_run"])
+    state = workflow.read_state(parent)
+    state.update(status="needs_attention", last_error=None)
+    state["stages"][0].update(status="needs_attention", scheduler_state="COMPLETED", job_id="123",
+                               result={"success": False, "reason": "Electronic convergence was not reached."})
+    (parent / "run.json").write_text(json.dumps(state))
+    before = (parent / "run.json").read_bytes()
+    draft = Mock(return_value={"status": "ready", "diagnosis": "Increase the iteration limit.",
+        "model_usage": MODEL_USAGE,
+        "questions": [], "attempt": 1, "max_attempts": 2,
+        "changes": [{"scope": "parameters", "key": "nelm", "before": 120, "after": 240}]})
+    monkeypatch.setattr(recovery, "draft_repair", draft)
+
+    def prepare(original, destination, proposal):
+        assert original == parent
+        return workflow.prepare_run(parent / "source/input/structure.cif", destination,
+                                    ClusterConfig.load(parent / "config.json"), "scf", {"nelm": 240})
+
+    preparation = Mock(side_effect=prepare)
+    monkeypatch.setattr(recovery, "prepare_repair", preparation)
+    app.run()
+    draft.assert_not_called()
+    widget(app.button, "Plan repair").click().run()
+    assert not app.exception and draft.call_count == 1
+    assert "cached 1,024" in usage_caption(app)
+    worker.assert_not_called()
+    for _ in range(3):
+        app.run()
+    assert draft.call_count == 1
+    widget(app.button, "Prepare repair").click().run()
+    assert not app.exception and preparation.call_count == 1
+    child = Path(app.session_state["active_run"])
+    assert child != parent
+    assert widget(app.button, "Submit calculation").disabled
+    worker.assert_not_called()
+    widget(app.checkbox, "Structure, settings and resources reviewed.").check().run()
+    widget(app.button, "Submit calculation").click().run()
+    worker.assert_called_once_with(child)
+    assert (parent / "run.json").read_bytes() == before
