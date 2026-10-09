@@ -1,7 +1,12 @@
 # Model use
 
-DFT Agent calls a model when you request a plan, revision, explanation or repair.
-Geometry edits, input checks, Slurm polling, downloads and plots run locally.
+[Set up your model account](models.md) before making your first request.
+An API key grants access; tokens measure input and output. No tokens are bundled
+with DFT Agent. Check your provider's dashboard for charges and remaining usage.
+
+DFT Agent calls a model when you request a calculation or structure plan,
+revision, explanation or repair. Applying structure edits, format conversion,
+input checks, Slurm polling, downloads and plots run locally.
 Refreshing the app does not repeat a model request. Unknown failures are rejected
 locally when no supported repair exists.
 

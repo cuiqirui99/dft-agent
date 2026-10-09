@@ -2,7 +2,7 @@
 
 ![DFT Agent](docs/assets/dft-agent-logo.png)
 
-Version `0.3.1`.
+Version `0.3.2`.
 
 [Qirui Cui](https://www.kth.se/profile/qiruic?l=en) · KTH Royal Institute of Technology · [ORCID](https://orcid.org/0009-0005-6165-3237)
 
@@ -11,6 +11,7 @@ The DFT agent automates first-principles calculations on HPC clusters, requiring
 Describe a calculation, review the plan, and run VASP on your Slurm cluster. DFT Agent handles relaxation, SCF, bands and DOS with magnetism, SOC, DFT+U, HSE06 or PBE0.
 
 Requires macOS or Linux, Python 3.11+, SSH, and access to licensed VASP and POTCAR files on your cluster.
+Bring your own cluster and model account. DFT Agent includes no compute time or model tokens.
 
 ## Install and open
 
@@ -22,6 +23,27 @@ source .venv/bin/activate
 python -m pip install '.[agent]'
 dft-agent ui
 ```
+
+## Connect a model
+
+Open **Model** in the sidebar. Choose one option:
+
+| Provider | What to enter | Usage |
+| --- | --- | --- |
+| OpenAI | Your API key and model name; leave API URL blank | Your OpenAI API account |
+| Codex CLI | Run `codex login` first; model name can be blank | Your CLI account's plan or API billing |
+| Compatible API | Your provider's key, model name and base URL | Your provider's account |
+
+An **API key** gives the app access to your account. **Tokens** measure how much
+the model reads and generates. You do not paste tokens into the app.
+ChatGPT subscription usage and direct API billing are separate.
+
+**[Model setup: get a key, connect and check usage](docs/models.md).**
+
+Try **New calculation → Example → Si**, choose **Agent**, enter
+“Relax this structure with PBE,” then click **Plan**. This uses your model account
+but needs no cluster and submits no calculation. You should see a plan or a
+question, followed by **Model usage**.
 
 ## Use
 
@@ -54,7 +76,7 @@ Use ordered periodic structures. Check the starting parameters for your material
 
 ## Citation
 
-Cui, Q. (2026). *DFT Agent* (v0.3.1). [GitHub](https://github.com/cuiqirui99/dft-agent/releases/tag/v0.3.1).
+Cui, Q. (2026). *DFT Agent* (v0.3.2). [GitHub](https://github.com/cuiqirui99/dft-agent/releases/tag/v0.3.2).
 
 [Archived v0.3.0](https://doi.org/10.5281/zenodo.23260917).
 

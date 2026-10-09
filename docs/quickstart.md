@@ -17,7 +17,24 @@ Keep the app local on `127.0.0.1`. The cluster needs licensed VASP and POTCAR
 files, Python 3.8+, Bash, `sha256sum`, and Slurm's `sbatch`, `squeue`, `sacct`
 and `scancel` commands.
 
-## 2. Connect to your cluster
+## 2. Connect a model
+
+DFT Agent includes no model tokens. Use your own API key or Codex CLI login.
+Follow [Model setup](models.md) for account, billing and key instructions.
+An API key is your credential; tokens measure model usage.
+
+In the sidebar, open **Model** and choose your provider. For OpenAI, enter your
+model name and API key, leaving **API URL** blank. For Codex, run `codex login`
+first and choose **Codex CLI**. Compatible APIs need their own key, model and
+base URL, with support for structured JSON output.
+
+Test before connecting a cluster: open **New calculation**, select
+**Example → Si**, choose **Agent**, and enter “Relax this structure with PBE.”
+Click **Plan**. A plan or a follow-up question confirms the connection.
+**Model usage** shows reported token counts. This uses your model account but
+submits no calculation. To work without a model, choose **Manual**.
+
+## 3. Connect to your cluster
 
 Check SSH access and the host key first. In **Cluster setup**, enter:
 
@@ -43,7 +60,7 @@ If that session expires, authenticate again before reconnecting.
 Set **Configuration file** and **Run folder** in the sidebar. Each run saves
 its own configuration.
 
-## 3. Prepare and submit
+## 4. Prepare and submit
 
 In **New calculation**, upload a CIF or POSCAR, or choose **Example**.
 All [17 examples](structures.md) are included in the installed package.
@@ -56,14 +73,10 @@ order before clicking **Use structure**. Each revision starts from the original
 input. Applying an edit clears the calculation plan and site moments.
 
 For format conversion, choose **Convert to** and click **Convert**. Download the
-CIF or POSCAR, or use it for a calculation. Edits and conversion run locally;
-they need no cluster connection. Conversion needs no model. Calculations use the
-edited POSCAR to preserve site order and the Cartesian frame.
-
-In **Model**, choose OpenAI, a compatible API, or a logged-in Codex CLI.
-For an API, set its model name and key. A compatible API also needs its base
-URL. Environment variables `DFT_AGENT_MODEL`, `DFT_AGENT_API_KEY` (or
-`OPENAI_API_KEY`) and `DFT_AGENT_BASE_URL` also work. Keys stay in memory.
+CIF or POSCAR, or use it for a calculation. **Plan structure** uses the model;
+applying an edit and converting formats run locally. Neither needs a cluster
+connection. Calculations use the edited POSCAR to preserve site order and the
+Cartesian frame.
 
 Enter a **Goal**, then click **Plan**. Use **Change the plan** to answer a
 question or revise settings. For example: “Relax this structure, then calculate
@@ -81,7 +94,7 @@ The positive force threshold becomes negative `EDIFFG` in INCAR.
 Click **Prepare inputs**, review the settings, tick the confirmation box,
 then click **Submit calculation**. Preparation alone submits nothing.
 
-## 4. Monitor and download
+## 5. Monitor and download
 
 Open **Runs** to follow progress. Closing the browser leaves jobs running.
 Keep your computer awake to monitor and run later stages.

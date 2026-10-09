@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.2 — 2026-10-09
+
+- Add model setup, API key and token billing instructions.
+- Walk through a first plan without a cluster.
+- Show provider help in Model and disable unused Codex fields.
+
 ## 0.3.1 — 2026-10-09
 
 - Include checked guidance, calculation cases and repair examples.
