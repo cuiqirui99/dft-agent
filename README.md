@@ -1,5 +1,7 @@
 # DFT Agent
 
+![DFT Agent](docs/assets/dft-agent-logo.png)
+
 Version `0.2.1`.
 
 The DFT agent automates first-principles calculations on HPC clusters, requiring only a simple natural language description of the desired calculation.
