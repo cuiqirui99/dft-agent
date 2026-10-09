@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "sources": [
+    {
+      "url": "https://vasp.at/wiki/index.php/ENCUT",
+      "checked": "2026-10-09",
+      "scope": "Original short guidance checked against the official page; page text is not bundled."
+    },
+    {
+      "url": "https://vasp.at/wiki/index.php/MAGMOM",
+      "checked": "2026-10-09",
+      "scope": "Original short guidance checked against the official page; page text is not bundled."
+    },
+    {
+      "url": "https://vasp.at/wiki/index.php/LDAUTYPE",
+      "checked": "2026-10-09",
+      "scope": "Original short guidance checked against the official page; page text is not bundled."
+    },
+    {
+      "url": "https://vasp.at/wiki/index.php/LSORBIT",
+      "checked": "2026-10-09",
+      "scope": "Original short guidance checked against the official page; page text is not bundled."
+    },
+    {
+      "url": "https://vasp.at/wiki/index.php/Band-structure_calculation_using_hybrid_functionals",
+      "checked": "2026-10-09",
+      "scope": "Original short guidance checked against the official page; page text is not bundled."
+    },
+    {
+      "url": "https://vasp.at/wiki/index.php/ICHARG",
+      "checked": "2026-10-09",
+      "scope": "Original short guidance checked against the official page; page text is not bundled."
+    },
+    {
+      "url": "https://vasp.at/wiki/index.php/ISMEAR",
+      "checked": "2026-10-09",
+      "scope": "Original short guidance checked against the official page; page text is not bundled."
+    },
+    {
+      "url": "https://vasp.at/wiki/index.php/Electrostatic_corrections",
+      "checked": "2026-10-09",
+      "scope": "Original short guidance checked against the official page; page text is not bundled."
+    }
+  ]
+}

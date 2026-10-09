@@ -141,7 +141,7 @@ def _stage_inputs(root: Path, spec: dict, stage: dict) -> tuple[Structure, dict,
 
 def retrieve_experience(runs_root: Path | str | None, structure: dict | None, *,
                         parameters: dict | None = None, tasks: list | None = None,
-                        limit: int = 4) -> list[dict]:
+                        limit: int = 4, run_paths: list[Path] | None = None) -> list[dict]:
     """Inspect at most 24 recent run folders. Never copy or change settings.
 
     Without a method, same-composition cases are advisory examples. With a
@@ -159,7 +159,12 @@ def retrieve_experience(runs_root: Path | str | None, structure: dict | None, *,
         return []
     try:
         root = Path(runs_root).expanduser().resolve()
-        recent = _recent(root)
+        if run_paths is None:
+            recent = _recent(root)
+        else:
+            recent = [Path(path).expanduser().resolve() for path in run_paths[:MAX_RUNS]]
+            if any(not path.is_dir() or path == root or not path.is_relative_to(root) for path in recent):
+                return []
         query_method = normalize_method(parameters, [site.specie.symbol for site in query]) if parameters is not None else None
     except (OSError, TypeError, ValueError):
         return []

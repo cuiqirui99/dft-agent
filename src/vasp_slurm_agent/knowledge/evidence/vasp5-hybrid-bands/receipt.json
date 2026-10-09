@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "public_source": {
+    "title": "DFT Agent v0.3.0 cluster validation",
+    "url": "https://github.com/cuiqirui99/dft-agent/blob/v0.3.0/validation/results/cluster-0.3.0.json",
+    "sha256": "521919038f580cce5065ddb6c2ed117f710939c182b90936b36db42cfa3918f7"
+  },
+  "stage": {
+    "stage": "03_bands",
+    "input_sha256": {
+      "INCAR": "4ed94a20167e97eaec8a67d68d2a6e3941714e14df1ba85654d5ce1ea4ef07b3",
+      "KPOINTS": "ff6b258652e0fe23d5c977d17c2caf9462c19525476a9914699de6ee2d8bf02e",
+      "POSCAR": "31f32fd743c79576c8b2cb974a236a6b0fd0a774894e23654eab70a1acf7a1c4"
+    },
+    "original_output_sha256": {
+      "vasprun.xml": "b235b7fb05792438515392106759cc68b2f885b09912c55ba8097681ba02cf94",
+      "OUTCAR": "3403962f803d82b7f61e13bd0bdb5d945f34eda8e232ee9382064af6f92a75da",
+      "OSZICAR": "3991b4ed41bd2d69fd1ec841b9d8e0a7db1f69eb2c53edd149388dcbd7c2339a",
+      "CONTCAR": "5e3df3de2badd83f680db043d304c9a606f7b71e5274e519503ee99a66649f8b",
+      "result.json": "bd3c13d025971630b10211dd46b3d7c880b67203fd5ecdcd84b1a0267df24b0d"
+    },
+    "original_outputs_bundled": false,
+    "result": {
+      "task": "bands",
+      "success": false,
+      "converged_electronic": true,
+      "converged_ionic": true,
+      "valid_structure": false,
+      "final_energy_ev": null,
+      "final_max_force_ev_angstrom": null,
+      "vasp_version": "5.4.4.18apr17-6-g9f103f2a35",
+      "forces_available": false,
+      "fermi_energy_ev": 5.62314451,
+      "final_energy_ev_per_atom": null,
+      "reason": "ValueError: Hybrid bands require VASP 6 with LFOCKACE support; VASP 5 does not provide it.",
+      "scientific_accuracy_validated": false,
+      "input_identity_verified": true,
+      "scheduler_state": "COMPLETED",
+      "failure_code": "RESULT_REJECTED"
+    }
+  },
+  "rejection": {
+    "case": "si-pbe0-soc-probe",
+    "stage": "03_bands",
+    "status": "needs_attention",
+    "scheduler_state": "COMPLETED",
+    "reason": "ValueError: Hybrid bands require VASP 6 with LFOCKACE support; VASP 5 does not provide it.",
+    "outcome": "rejected",
+    "accepted_after_recheck": false
+  },
+  "downstream_dos_submitted": false,
+  "scope": "A solver compatibility refusal, not an accepted band result."
+}

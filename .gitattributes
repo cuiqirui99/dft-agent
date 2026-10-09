@@ -1,0 +1,3 @@
+# Keep evidence hashes and executed inputs unchanged.
+src/vasp_slurm_agent/knowledge/evidence/** -text -whitespace
+src/vasp_slurm_agent/knowledge/catalog.json -text

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.1 — 2026-10-09
+
+- Include checked guidance, calculation cases and repair examples.
+- Search memory and import selected local records.
+- Keep rejected and unverified lessons out of recommendations.
+
 ## 0.3.0 — 2026-10-09
 
 - Restore scientific guidance and relevant run history in planning.

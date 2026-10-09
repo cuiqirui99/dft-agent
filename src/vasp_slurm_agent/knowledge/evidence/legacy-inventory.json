@@ -1,0 +1,209 @@
+{
+  "schema_version": 1,
+  "checked_on": "2026-10-09",
+  "read_only": true,
+  "legacy_lessons": {
+    "total": 50,
+    "status_counts": {
+      "candidate": 18,
+      "shadow_verified": 11,
+      "rejected": 21
+    },
+    "selected": 21,
+    "selected_status_counts": {
+      "shadow_verified": 2,
+      "candidate": 16,
+      "rejected": 3
+    },
+    "omitted": 29,
+    "omission_reason": "Other scientific modules are outside this DFT release. Only aggregate counts are exported.",
+    "promoted": 0,
+    "items": [
+      {
+        "id": "legacy-energy-references",
+        "legacy_id": "combination.keep_solver_energy_references_and_sample_conditions_separate",
+        "status": "shadow_verified",
+        "version": 1,
+        "source_row_sha256": "b82a283521e69110f638412621aa4f3811c214b4cc05571f8ee15142460e409a",
+        "disposition": "Inventory only; excluded from active retrieval."
+      },
+      {
+        "id": "legacy-al-elastic",
+        "legacy_id": "dft.al_fcc.pbe54.eos_elastic_repaired_validated_candidate",
+        "status": "candidate",
+        "version": 1,
+        "source_row_sha256": "e7446c7dba087ec737a4dd5bcee3fd7fdaeadff047304b0977400c7ec733c8bb",
+        "disposition": "Inventory only; excluded from active retrieval."
+      },
+      {
+        "id": "legacy-al-k16",
+        "legacy_id": "dft.al_fcc.pbe54.reject_16_gamma_for_1mev_static_energy",
+        "status": "rejected",
+        "version": 1,
+        "source_row_sha256": "22dd420122c2b898ae15cf74dad45b52037a73e08cd90685e3e410d93478c16c",
+        "disposition": "Inventory only; excluded from active retrieval."
+      },
+      {
+        "id": "legacy-al-surface-failure",
+        "legacy_id": "dft.al_fcc.pbe54.reject_v2_vacancy_surface_integration",
+        "status": "rejected",
+        "version": 1,
+        "source_row_sha256": "e6f0f9a2839b4959a6f0689569ff14104c4e9aeea8ccc30b577013b831d5f108",
+        "disposition": "Inventory only; excluded from active retrieval."
+      },
+      {
+        "id": "legacy-al-k28",
+        "legacy_id": "dft.al_fcc.pbe54.static_tetra_k28_validated_candidate",
+        "status": "candidate",
+        "version": 1,
+        "source_row_sha256": "653ed7587dd6c13b355e0b144c86523c481b2429c3ce6c8aa47a619b1723fa97",
+        "disposition": "Inventory only; excluded from active retrieval."
+      },
+      {
+        "id": "legacy-al-surface-candidate",
+        "legacy_id": "dft.al_fcc.pbe54.vacancy_al111_final_static_validated_candidate",
+        "status": "candidate",
+        "version": 1,
+        "source_row_sha256": "d0b8eb2b1af2feb9e9926af095524877d46f3f330992735374c044488d3698c6",
+        "disposition": "Inventory only; excluded from active retrieval."
+      },
+      {
+        "id": "legacy-api-error",
+        "legacy_id": "dft.failure.agent_api_index_error",
+        "status": "candidate",
+        "version": 1,
+        "source_row_sha256": "ccfd3b99a9b3cb3877e3597062a097e0e721ed948f3362aec9a82a4e842634f1",
+        "disposition": "Inventory only; excluded from active retrieval."
+      },
+      {
+        "id": "legacy-report-memory",
+        "legacy_id": "dft.failure.benchmark_reporting_canonical_failure_memory_name_error",
+        "status": "candidate",
+        "version": 1,
+        "source_row_sha256": "7864ffda4a98ebc8bee72031d8d4ed54e820f90a12e03e708e27ceb0090ad16b",
+        "disposition": "Inventory only; excluded from active retrieval."
+      },
+      {
+        "id": "legacy-report-repair",
+        "legacy_id": "dft.failure.benchmark_reporting_repair_application_contract_summary_name_error",
+        "status": "candidate",
+        "version": 1,
+        "source_row_sha256": "ac4dadde2fb3cc837e367b3e6c990b27ee55068e23217ab6d18abc31da911e61",
+        "disposition": "Inventory only; excluded from active retrieval."
+      },
+      {
+        "id": "legacy-report-catalog",
+        "legacy_id": "dft.failure.benchmark_reporting_repair_rules_catalog_name_error",
+        "status": "candidate",
+        "version": 1,
+        "source_row_sha256": "da13a73098ba438ab24ad8c5a9307048a87211aede45747f50b4d87e2b074d17",
+        "disposition": "Inventory only; excluded from active retrieval."
+      },
+      {
+        "id": "legacy-executable",
+        "legacy_id": "dft.failure.executable_not_found",
+        "status": "candidate",
+        "version": 1,
+        "source_row_sha256": "bd0ba7d0bcdf28358c4610d4a437bbef2ca330d721d1179154a35f136d04c3a0",
+        "disposition": "Inventory only; excluded from active retrieval."
+      },
+      {
+        "id": "legacy-stage-paths",
+        "legacy_id": "dft.failure.production_script_relative_path_after_cd",
+        "status": "candidate",
+        "version": 1,
+        "source_row_sha256": "f1be6f052166fc3d340e9c7434738e63ed78af8c75d4da190cb6689882c593cd",
+        "disposition": "Inventory only; excluded from active retrieval."
+      },
+      {
+        "id": "legacy-staging",
+        "legacy_id": "dft.failure.remote_workspace_failed",
+        "status": "candidate",
+        "version": 1,
+        "source_row_sha256": "760ac4de05b7921692739b4664525b6c74c7a1ce04ecd3f9542774e6ae6b2b28",
+        "disposition": "Inventory only; excluded from active retrieval."
+      },
+      {
+        "id": "legacy-repair-receipt",
+        "legacy_id": "dft.failure.repair_application_output_contract_missing",
+        "status": "candidate",
+        "version": 1,
+        "source_row_sha256": "c0ecb1924120f7fbbd65e7c4e33365b611a2f94bd49968e9d02723e42278e78f",
+        "disposition": "Inventory only; excluded from active retrieval."
+      },
+      {
+        "id": "legacy-job-state",
+        "legacy_id": "dft.failure.scheduler_job_state_lost",
+        "status": "candidate",
+        "version": 1,
+        "source_row_sha256": "4eb22be05315c8b2c924d7725fcdc7db63524a5ba01727f4651825e475b6e572",
+        "disposition": "Inventory only; excluded from active retrieval."
+      },
+      {
+        "id": "legacy-gw-abort",
+        "legacy_id": "dft.failure.vasp_gw_after_setup_fock_abort",
+        "status": "candidate",
+        "version": 1,
+        "source_row_sha256": "dec86b771ad57f55bd5ab4518f8cdc157a0fd7ffc2f4f7710c4311dbdf6171e1",
+        "disposition": "Inventory only; excluded from active retrieval."
+      },
+      {
+        "id": "legacy-gw-diagnostics",
+        "legacy_id": "dft.failure.vasp_gw_bse_opaque_failure_needs_diagnostics",
+        "status": "candidate",
+        "version": 1,
+        "source_row_sha256": "b0c40f23ff49e71d4b544a7ce26c102cbd9df136269bc601785c3661592add2e",
+        "disposition": "Inventory only; excluded from active retrieval."
+      },
+      {
+        "id": "legacy-missing-charge",
+        "legacy_id": "dft.failure.vasp_missing_chgcar_for_icharg_gt_10",
+        "status": "candidate",
+        "version": 1,
+        "source_row_sha256": "f3fa653c8cbb4f5327d6230e6db122795b65cb6385f83e18fe067f3cc51c2189",
+        "disposition": "Inventory only; excluded from active retrieval."
+      },
+      {
+        "id": "legacy-missing-waveder",
+        "legacy_id": "dft.failure.vasp_missing_waveder_for_gw_bse",
+        "status": "candidate",
+        "version": 1,
+        "source_row_sha256": "6527bf563ea9c468338366b11d37184367def143d9c012b2af9fb0cfceecae5d",
+        "disposition": "Inventory only; excluded from active retrieval."
+      },
+      {
+        "id": "legacy-shell-modules",
+        "legacy_id": "dft.hpc.source_modules_before_enabling_shell_nounset",
+        "status": "shadow_verified",
+        "version": 1,
+        "source_row_sha256": "29e539927da93d137a2c609e66c5025b09f4e178c88968534590d6a14b540193",
+        "disposition": "Inventory only; excluded from active retrieval."
+      },
+      {
+        "id": "legacy-mgo-static",
+        "legacy_id": "scientific-parameters:mgo_rocksalt_static:PBE",
+        "status": "rejected",
+        "version": 1,
+        "source_row_sha256": "2cca57bb77b27105d28bd1fe3944bd3f9d6c88349cb9311aad1ac9fadbb864c7",
+        "disposition": "Inventory only; excluded from active retrieval."
+      }
+    ]
+  },
+  "legacy_experience": [
+    {
+      "source": "records.jsonl",
+      "records": 68,
+      "source_sha256": "46268ac32b759676d492c067bd9f57619fe8b2c8040a4b3e6bebd69b78914566",
+      "bundled_records": 0,
+      "disposition": "Kept local. Raw records contain run context and have not been audited for public redistribution or current validity."
+    },
+    {
+      "source": "failures.jsonl",
+      "records": 4,
+      "source_sha256": "2cde31a6adf156ad1b9189b6ce3163a058f2e189fd4303043b21adf89270c340",
+      "bundled_records": 0,
+      "disposition": "Kept local. Raw records contain run context and have not been audited for public redistribution or current validity."
+    }
+  ],
+  "scope": "Migration inventory, not verification of the historical science or repairs."
+}

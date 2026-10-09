@@ -1,0 +1,1690 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "id": "cutoff",
+      "kind": "guidance",
+      "title": "Energy comparisons",
+      "status": "verified",
+      "topics": [
+        "convergence"
+      ],
+      "tasks": [],
+      "formulas": [],
+      "methods": [],
+      "summary": "Keep the cutoff and numerical settings consistent when comparing energies. Check convergence for the property you need.",
+      "conditions": [
+        "Use the same functional and compatible PAW datasets for the comparison."
+      ],
+      "limitations": [
+        "A successful run or a stored cutoff is not a convergence study."
+      ],
+      "outcome": "guidance",
+      "sources": [
+        {
+          "title": "VASP: ENCUT",
+          "url": "https://vasp.at/wiki/index.php/ENCUT"
+        }
+      ],
+      "evidence": []
+    },
+    {
+      "id": "magnetic-seeds",
+      "kind": "guidance",
+      "title": "Magnetic seeds",
+      "status": "verified",
+      "topics": [
+        "magnetism"
+      ],
+      "tasks": [],
+      "formulas": [],
+      "methods": [],
+      "summary": "Initial moments affect symmetry and the state reached. Compare plausible seeds and inspect the final site moments; zero total moment can be valid AFM.",
+      "conditions": [
+        "Compare accepted runs with the same cell, method and numerical settings.",
+        "Keep moments in uploaded site order."
+      ],
+      "limitations": [
+        "The lowest energy among tested seeds is not proof of the global ground state.",
+        "PAW-sphere moments do not equal the full-cell moment."
+      ],
+      "outcome": "guidance",
+      "sources": [
+        {
+          "title": "VASP: MAGMOM",
+          "url": "https://vasp.at/wiki/index.php/MAGMOM"
+        }
+      ],
+      "evidence": []
+    },
+    {
+      "id": "dudarev-u",
+      "kind": "guidance",
+      "title": "DFT+U",
+      "status": "verified",
+      "topics": [
+        "hubbard_u"
+      ],
+      "tasks": [],
+      "formulas": [],
+      "methods": [
+        "DFT+U"
+      ],
+      "summary": "This runner uses Dudarev U-J. Ask for the element, orbital, U, J and source. Preserve the required on-site charge information for downstream spectra.",
+      "conditions": [
+        "Keep U and J fixed when ranking total energies.",
+        "Charge reuse needs LMAXMIX=4 for d shells or 6 for f shells."
+      ],
+      "limitations": [
+        "Composition alone does not determine U or J.",
+        "A saved example value is not a recommendation for another material."
+      ],
+      "outcome": "guidance",
+      "sources": [
+        {
+          "title": "VASP: LDAUTYPE",
+          "url": "https://vasp.at/wiki/index.php/LDAUTYPE"
+        }
+      ],
+      "evidence": []
+    },
+    {
+      "id": "soc-basis",
+      "kind": "guidance",
+      "title": "SOC coordinates",
+      "status": "verified",
+      "topics": [
+        "soc",
+        "magnetism"
+      ],
+      "tasks": [],
+      "formulas": [],
+      "methods": [
+        "SOC"
+      ],
+      "summary": "SOC needs vasp_ncl. Specify vector moments in the SAXIS spinor basis and preserve the lattice frame.",
+      "conditions": [
+        "Review symmetry and the moment direction relative to the lattice."
+      ],
+      "limitations": [
+        "SOC workflow success does not establish convergence of small anisotropy energies."
+      ],
+      "outcome": "guidance",
+      "sources": [
+        {
+          "title": "VASP: LSORBIT",
+          "url": "https://vasp.at/wiki/index.php/LSORBIT"
+        },
+        {
+          "title": "VASP: MAGMOM",
+          "url": "https://vasp.at/wiki/index.php/MAGMOM"
+        }
+      ],
+      "evidence": []
+    },
+    {
+      "id": "hybrid-bands",
+      "kind": "guidance",
+      "title": "Hybrid bands",
+      "status": "verified",
+      "topics": [
+        "hybrid"
+      ],
+      "tasks": [
+        "bands"
+      ],
+      "formulas": [],
+      "methods": [
+        "HSE06",
+        "PBE0"
+      ],
+      "summary": "Use a regular weighted mesh with a zero-weight band path and solve self-consistently. Do not use ICHARG=11 for hybrid bands.",
+      "conditions": [
+        "This runner requires VASP 6 with LFOCKACE support.",
+        "Check convergence of the zero-weight path states separately."
+      ],
+      "limitations": [
+        "Total-energy convergence alone does not prove path-state convergence.",
+        "The bundled examples are not band-gap benchmarks."
+      ],
+      "outcome": "guidance",
+      "sources": [
+        {
+          "title": "VASP: Band-structure calculation using hybrid functionals",
+          "url": "https://vasp.at/wiki/index.php/Band-structure_calculation_using_hybrid_functionals"
+        }
+      ],
+      "evidence": []
+    },
+    {
+      "id": "pbe-charge",
+      "kind": "guidance",
+      "title": "PBE spectra",
+      "status": "verified",
+      "topics": [
+        "pbe_spectra"
+      ],
+      "tasks": [
+        "bands",
+        "dos"
+      ],
+      "formulas": [],
+      "methods": [
+        "PBE"
+      ],
+      "summary": "PBE bands and DOS reuse a converged SCF CHGCAR in this runner. Keep the structure, site order and method consistent.",
+      "conditions": [
+        "Obtain the charge density on a mesh covering the Brillouin zone before ICHARG=11."
+      ],
+      "limitations": [
+        "Fixed-charge spectra are not the hybrid workflow.",
+        "DFT+U also needs sufficient LMAXMIX in the upstream calculation."
+      ],
+      "outcome": "guidance",
+      "sources": [
+        {
+          "title": "VASP: ICHARG",
+          "url": "https://vasp.at/wiki/index.php/ICHARG"
+        }
+      ],
+      "evidence": []
+    },
+    {
+      "id": "occupations",
+      "kind": "guidance",
+      "title": "Occupations",
+      "status": "verified",
+      "topics": [
+        "smearing"
+      ],
+      "tasks": [
+        "scf",
+        "bands",
+        "dos"
+      ],
+      "formulas": [],
+      "methods": [],
+      "summary": "Choose occupations for the electronic state. Positive ISMEAR can give unphysical occupations in insulators.",
+      "conditions": [
+        "Tetrahedron integration needs an appropriate Gamma-centered mesh."
+      ],
+      "limitations": [
+        "A line path does not replace a Brillouin-zone integration mesh."
+      ],
+      "outcome": "guidance",
+      "sources": [
+        {
+          "title": "VASP: ISMEAR",
+          "url": "https://vasp.at/wiki/index.php/ISMEAR"
+        }
+      ],
+      "evidence": []
+    },
+    {
+      "id": "vacuum",
+      "kind": "guidance",
+      "title": "Vacuum and surfaces",
+      "status": "verified",
+      "topics": [
+        "structure"
+      ],
+      "tasks": [
+        "relax",
+        "scf"
+      ],
+      "formulas": [],
+      "methods": [],
+      "summary": "For slabs and molecules, review vacuum, cell constraints and any dipole correction before running.",
+      "conditions": [
+        "Confirm the intended geometry; a long cell is only a hint of vacuum."
+      ],
+      "limitations": [
+        "Charged slabs require a separate electrostatic treatment.",
+        "These notes do not provide converged surface or defect formation energies."
+      ],
+      "outcome": "guidance",
+      "sources": [
+        {
+          "title": "VASP: Electrostatic corrections",
+          "url": "https://vasp.at/wiki/index.php/Electrostatic_corrections"
+        }
+      ],
+      "evidence": []
+    },
+    {
+      "id": "si-pbe",
+      "kind": "case",
+      "title": "Si workflow",
+      "status": "verified",
+      "topics": [
+        "pbe_spectra",
+        "structure"
+      ],
+      "tasks": [
+        "relax",
+        "scf",
+        "bands",
+        "dos"
+      ],
+      "formulas": [
+        "Si"
+      ],
+      "methods": [
+        "PBE",
+        "nonmagnetic"
+      ],
+      "summary": "Silicon passed relaxation, SCF, bands and DOS with the same PBE method and checked structure handoffs.",
+      "conditions": [
+        "Two-atom Si cell; nonmagnetic PBE; no SOC or U."
+      ],
+      "limitations": [
+        "This is a functional example, not a material-accuracy or convergence benchmark.",
+        "The coarse validation mesh is a starting example, not a converged setting."
+      ],
+      "outcome": "succeeded",
+      "sources": [
+        {
+          "title": "DFT Agent v0.3.0 cluster validation",
+          "url": "https://github.com/cuiqirui99/dft-agent/blob/v0.3.0/validation/results/cluster-0.3.0.json"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "evidence/si-pbe/receipt.json",
+          "sha256": "8f5574764a51cf2fb7a24bf7e92d520376379ab2d9818058611d067447de08e1",
+          "description": "Published acceptance and preserved output hashes"
+        },
+        {
+          "path": "evidence/si-pbe/01_relax/INCAR",
+          "sha256": "a5fbb415e74f41b3217a3fe05259a14579ba9b1abc998678df6e7fac08fbb189",
+          "description": "01_relax: executed INCAR"
+        },
+        {
+          "path": "evidence/si-pbe/01_relax/KPOINTS",
+          "sha256": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49",
+          "description": "01_relax: executed KPOINTS"
+        },
+        {
+          "path": "evidence/si-pbe/01_relax/POSCAR",
+          "sha256": "0af1bd6005cfe9527c7e40a38ae389b4fbdedb1fc0953ee5c36f29b6bb940cce",
+          "description": "01_relax: executed POSCAR"
+        },
+        {
+          "path": "evidence/si-pbe/02_scf/INCAR",
+          "sha256": "c4afcd866bb67735b6d5c2c352067e36ebd23fc3407ebc8c3b915fd341d148e5",
+          "description": "02_scf: executed INCAR"
+        },
+        {
+          "path": "evidence/si-pbe/02_scf/KPOINTS",
+          "sha256": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49",
+          "description": "02_scf: executed KPOINTS"
+        },
+        {
+          "path": "evidence/si-pbe/02_scf/POSCAR",
+          "sha256": "7ff2750c75c9e651f5acfb830cc0a4abf95eff91821e7bf7266f797bb740930a",
+          "description": "02_scf: executed POSCAR"
+        },
+        {
+          "path": "evidence/si-pbe/03_bands/INCAR",
+          "sha256": "01d1ccace6f5d208805fa9411802da5685159c6c44a9d291baf652996de3e6bf",
+          "description": "03_bands: executed INCAR"
+        },
+        {
+          "path": "evidence/si-pbe/03_bands/KPOINTS",
+          "sha256": "8a22166e17fbc48917578e9eca24af36f85fcdd0333cc3d2a8d9d0047ab94386",
+          "description": "03_bands: executed KPOINTS"
+        },
+        {
+          "path": "evidence/si-pbe/03_bands/POSCAR",
+          "sha256": "7ff2750c75c9e651f5acfb830cc0a4abf95eff91821e7bf7266f797bb740930a",
+          "description": "03_bands: executed POSCAR"
+        },
+        {
+          "path": "evidence/si-pbe/04_dos/INCAR",
+          "sha256": "de69b0a23be291879fe1b3d3b4de772998a711105cf057ad95a901370fa2a0ef",
+          "description": "04_dos: executed INCAR"
+        },
+        {
+          "path": "evidence/si-pbe/04_dos/KPOINTS",
+          "sha256": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49",
+          "description": "04_dos: executed KPOINTS"
+        },
+        {
+          "path": "evidence/si-pbe/04_dos/POSCAR",
+          "sha256": "7ff2750c75c9e651f5acfb830cc0a4abf95eff91821e7bf7266f797bb740930a",
+          "description": "04_dos: executed POSCAR"
+        }
+      ]
+    },
+    {
+      "id": "fe-collinear",
+      "kind": "case",
+      "title": "Fe magnetism",
+      "status": "verified",
+      "topics": [
+        "magnetism"
+      ],
+      "tasks": [
+        "scf"
+      ],
+      "formulas": [
+        "Fe"
+      ],
+      "methods": [
+        "PBE",
+        "collinear"
+      ],
+      "summary": "The collinear Fe SCF run converged and retained finite local moments.",
+      "conditions": [
+        "Two Fe sites, initial moments +3 and +3 muB; PBE without SOC or U."
+      ],
+      "limitations": [
+        "This is a functional example, not a material-accuracy or convergence benchmark.",
+        "This run alone does not select the magnetic ground state."
+      ],
+      "outcome": "succeeded",
+      "sources": [
+        {
+          "title": "DFT Agent v0.3.0 cluster validation",
+          "url": "https://github.com/cuiqirui99/dft-agent/blob/v0.3.0/validation/results/cluster-0.3.0.json"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "evidence/fe-collinear/receipt.json",
+          "sha256": "3be1d7dc66077b40f49b13807e575dce94e8449f7185fb08c1df723b97c30a45",
+          "description": "Published acceptance and preserved output hashes"
+        },
+        {
+          "path": "evidence/fe-collinear/02_scf/INCAR",
+          "sha256": "527c17f2e1cf44ad38ac5b5c114cd35f2e266dec5b7110cefca61fb49b5e0650",
+          "description": "02_scf: executed INCAR"
+        },
+        {
+          "path": "evidence/fe-collinear/02_scf/KPOINTS",
+          "sha256": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734",
+          "description": "02_scf: executed KPOINTS"
+        },
+        {
+          "path": "evidence/fe-collinear/02_scf/POSCAR",
+          "sha256": "d9e504eddb938b32919f8b8b5ceb48c8db1be135b23e522c24e8d6905a34451d",
+          "description": "02_scf: executed POSCAR"
+        }
+      ]
+    },
+    {
+      "id": "fe-soc",
+      "kind": "case",
+      "title": "Fe with SOC",
+      "status": "verified",
+      "topics": [
+        "soc",
+        "magnetism"
+      ],
+      "tasks": [
+        "scf"
+      ],
+      "formulas": [
+        "Fe"
+      ],
+      "methods": [
+        "PBE",
+        "SOC",
+        "noncollinear"
+      ],
+      "summary": "The Fe SOC run converged with a nondefault SAXIS and checked vector moments.",
+      "conditions": [
+        "Two Fe sites; PBE with SOC; no U.",
+        "SAXIS is parallel to [1,1,1]; input vectors use that spinor basis."
+      ],
+      "limitations": [
+        "This is a functional example, not a material-accuracy or convergence benchmark.",
+        "The result is not a magnetic-anisotropy benchmark."
+      ],
+      "outcome": "succeeded",
+      "sources": [
+        {
+          "title": "DFT Agent v0.3.0 cluster validation",
+          "url": "https://github.com/cuiqirui99/dft-agent/blob/v0.3.0/validation/results/cluster-0.3.0.json"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "evidence/fe-soc/receipt.json",
+          "sha256": "50717a19dfead70dcc39326652ef30610cba013045e9e8fd6693391ee25e5492",
+          "description": "Published acceptance and preserved output hashes"
+        },
+        {
+          "path": "evidence/fe-soc/02_scf/INCAR",
+          "sha256": "ec1a71556923d9996a9f3723d0ae73ba3a238bff96ca536a474f5588b92abd3b",
+          "description": "02_scf: executed INCAR"
+        },
+        {
+          "path": "evidence/fe-soc/02_scf/KPOINTS",
+          "sha256": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49",
+          "description": "02_scf: executed KPOINTS"
+        },
+        {
+          "path": "evidence/fe-soc/02_scf/POSCAR",
+          "sha256": "d9e504eddb938b32919f8b8b5ceb48c8db1be135b23e522c24e8d6905a34451d",
+          "description": "02_scf: executed POSCAR"
+        }
+      ]
+    },
+    {
+      "id": "nio-u",
+      "kind": "case",
+      "title": "NiO with U",
+      "status": "verified",
+      "topics": [
+        "hubbard_u",
+        "magnetism"
+      ],
+      "tasks": [
+        "scf"
+      ],
+      "formulas": [
+        "NiO"
+      ],
+      "methods": [
+        "PBE",
+        "DFT+U",
+        "collinear"
+      ],
+      "summary": "The collinear NiO SCF run passed with opposite Ni seeds and explicit Dudarev U and J.",
+      "conditions": [
+        "Four-site NiO cell; PBE; Ni d-shell U=5 eV, J=0 eV; no SOC.",
+        "Ni seeds are +2 and -2 muB; O seeds are zero."
+      ],
+      "limitations": [
+        "This is a functional example, not a material-accuracy or convergence benchmark.",
+        "U=5 eV is the validation choice, not an inferred material default."
+      ],
+      "outcome": "succeeded",
+      "sources": [
+        {
+          "title": "DFT Agent v0.3.0 cluster validation",
+          "url": "https://github.com/cuiqirui99/dft-agent/blob/v0.3.0/validation/results/cluster-0.3.0.json"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "evidence/nio-u/receipt.json",
+          "sha256": "013611563dfc7298e5422fa952f611d454f561b98e0f17207156e86cfba6b6c2",
+          "description": "Published acceptance and preserved output hashes"
+        },
+        {
+          "path": "evidence/nio-u/02_scf/INCAR",
+          "sha256": "973167fd53e022bd551c70ffccaaab0b3b1af254e778eb1709f85a2094102018",
+          "description": "02_scf: executed INCAR"
+        },
+        {
+          "path": "evidence/nio-u/02_scf/KPOINTS",
+          "sha256": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49",
+          "description": "02_scf: executed KPOINTS"
+        },
+        {
+          "path": "evidence/nio-u/02_scf/POSCAR",
+          "sha256": "4ffdda2818e8f3b6c105d64478a70fa1bd7c66ceafe924c40e45521d57f89b9c",
+          "description": "02_scf: executed POSCAR"
+        }
+      ]
+    },
+    {
+      "id": "si-hse06",
+      "kind": "case",
+      "title": "Si HSE06 bands",
+      "status": "verified",
+      "topics": [
+        "hybrid"
+      ],
+      "tasks": [
+        "bands"
+      ],
+      "formulas": [
+        "Si"
+      ],
+      "methods": [
+        "HSE06",
+        "nonmagnetic"
+      ],
+      "summary": "Silicon HSE06 bands passed the parser and independent spectrum checks on VASP 6.2.1.",
+      "conditions": [
+        "Nonmagnetic Si, no SOC or U; a weighted mesh and zero-weight path are solved together."
+      ],
+      "limitations": [
+        "This is a functional example, not a material-accuracy or convergence benchmark.",
+        "Path-state and k-mesh convergence still need checking for a scientific band gap."
+      ],
+      "outcome": "succeeded",
+      "sources": [
+        {
+          "title": "DFT Agent v0.3.0 cluster validation",
+          "url": "https://github.com/cuiqirui99/dft-agent/blob/v0.3.0/validation/results/cluster-0.3.0.json"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "evidence/si-hse06/receipt.json",
+          "sha256": "65f298725d9c15e7a3beececfecea48be2bececbd9c2e987fda7ed3e314b1dfc",
+          "description": "Published acceptance and preserved output hashes"
+        },
+        {
+          "path": "evidence/si-hse06/03_bands/INCAR",
+          "sha256": "1d9fe55fdc14d28ee8fda78ddd9ef80e3350f4a2f94dcbb99061efe73460b847",
+          "description": "03_bands: executed INCAR"
+        },
+        {
+          "path": "evidence/si-hse06/03_bands/KPOINTS",
+          "sha256": "ff6b258652e0fe23d5c977d17c2caf9462c19525476a9914699de6ee2d8bf02e",
+          "description": "03_bands: executed KPOINTS"
+        },
+        {
+          "path": "evidence/si-hse06/03_bands/POSCAR",
+          "sha256": "31f32fd743c79576c8b2cb974a236a6b0fd0a774894e23654eab70a1acf7a1c4",
+          "description": "03_bands: executed POSCAR"
+        }
+      ]
+    },
+    {
+      "id": "si-pbe0",
+      "kind": "case",
+      "title": "Si PBE0 bands",
+      "status": "verified",
+      "topics": [
+        "hybrid"
+      ],
+      "tasks": [
+        "bands"
+      ],
+      "formulas": [
+        "Si"
+      ],
+      "methods": [
+        "PBE0",
+        "nonmagnetic"
+      ],
+      "summary": "Silicon PBE0 bands passed the parser and independent spectrum checks on VASP 6.2.1.",
+      "conditions": [
+        "Nonmagnetic Si, no SOC or U; VASP 6 with LFOCKACE support."
+      ],
+      "limitations": [
+        "This is a functional example, not a material-accuracy or convergence benchmark.",
+        "Success with PBE0 does not make a VASP 5 hybrid-band run valid."
+      ],
+      "outcome": "succeeded",
+      "sources": [
+        {
+          "title": "DFT Agent v0.3.0 cluster validation",
+          "url": "https://github.com/cuiqirui99/dft-agent/blob/v0.3.0/validation/results/cluster-0.3.0.json"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "evidence/si-pbe0/receipt.json",
+          "sha256": "ee549d4daed78b778bf6cb877a07abb8a4864aa09df0c0e7f253db1e93854d02",
+          "description": "Published acceptance and preserved output hashes"
+        },
+        {
+          "path": "evidence/si-pbe0/03_bands/INCAR",
+          "sha256": "2762a0369e6692c34e9d5d5a64b783f270a69a62f48a77a95d1f2d0768772e02",
+          "description": "03_bands: executed INCAR"
+        },
+        {
+          "path": "evidence/si-pbe0/03_bands/KPOINTS",
+          "sha256": "ff6b258652e0fe23d5c977d17c2caf9462c19525476a9914699de6ee2d8bf02e",
+          "description": "03_bands: executed KPOINTS"
+        },
+        {
+          "path": "evidence/si-pbe0/03_bands/POSCAR",
+          "sha256": "31f32fd743c79576c8b2cb974a236a6b0fd0a774894e23654eab70a1acf7a1c4",
+          "description": "03_bands: executed POSCAR"
+        }
+      ]
+    },
+    {
+      "id": "nio-hse06-u-soc",
+      "kind": "case",
+      "title": "NiO HSE06, U and SOC",
+      "status": "verified",
+      "topics": [
+        "hybrid",
+        "hubbard_u",
+        "soc",
+        "magnetism"
+      ],
+      "tasks": [
+        "scf"
+      ],
+      "formulas": [
+        "NiO"
+      ],
+      "methods": [
+        "HSE06",
+        "DFT+U",
+        "SOC",
+        "noncollinear"
+      ],
+      "summary": "The combined HSE06, Dudarev U and SOC SCF probe passed with checked method tags.",
+      "conditions": [
+        "Four-site NiO cell; Ni d-shell U=5 eV, J=0 eV; opposite Ni vector seeds.",
+        "Default SAXIS; VASP 6.2.1."
+      ],
+      "limitations": [
+        "This is a functional example, not a material-accuracy or convergence benchmark.",
+        "This checks method propagation; it does not justify combining hybrid exchange and U for a new material."
+      ],
+      "outcome": "succeeded",
+      "sources": [
+        {
+          "title": "DFT Agent v0.3.0 cluster validation",
+          "url": "https://github.com/cuiqirui99/dft-agent/blob/v0.3.0/validation/results/cluster-0.3.0.json"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "evidence/nio-hse06-u-soc/receipt.json",
+          "sha256": "dba5f172300d5d60357ce09ad9eb821d509ca0831f5730636f0efb0748bae442",
+          "description": "Published acceptance and preserved output hashes"
+        },
+        {
+          "path": "evidence/nio-hse06-u-soc/01_scf/INCAR",
+          "sha256": "a654f040e7aeca1070f81c41ef3930c17433c44e05a12122333dadb135121d60",
+          "description": "01_scf: executed INCAR"
+        },
+        {
+          "path": "evidence/nio-hse06-u-soc/01_scf/KPOINTS",
+          "sha256": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49",
+          "description": "01_scf: executed KPOINTS"
+        },
+        {
+          "path": "evidence/nio-hse06-u-soc/01_scf/POSCAR",
+          "sha256": "0f3e76d070a7c64889ec1a1a81861e026aa7738baee0630846ff01ef6d120657",
+          "description": "01_scf: executed POSCAR"
+        }
+      ]
+    },
+    {
+      "id": "repair-electronic",
+      "kind": "repair",
+      "title": "Electronic step limit",
+      "status": "verified",
+      "topics": [
+        "recovery",
+        "electronic"
+      ],
+      "tasks": [
+        "scf"
+      ],
+      "formulas": [],
+      "methods": [],
+      "summary": "The NELM=1 Si control failed electronic convergence. A reviewed increase to 120 converged with all other inputs unchanged.",
+      "conditions": [
+        "Current VASP output confirms electronic nonconvergence with a finite NELM; missing output or unknown solver errors are outside this repair.",
+        "Extra steps are a bounded trial; a repeated or oscillating SCF failure needs separate diagnosis."
+      ],
+      "limitations": [
+        "A proposal still needs review; this record does not authorize submission or a wider repair.",
+        "Verified on one PBE Si control; extra steps do not resolve every SCF failure."
+      ],
+      "outcome": "succeeded",
+      "sources": [
+        {
+          "title": "DFT Agent v0.3.0 cluster validation",
+          "url": "https://github.com/cuiqirui99/dft-agent/blob/v0.3.0/validation/results/cluster-0.3.0.json"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "evidence/repair-electronic/receipt.json",
+          "sha256": "12a74dc1a22e4abe8fdb227aab7c1e663c7196723f0e4b62d76674845c39469d",
+          "description": "Original failure, reviewed change and accepted repair"
+        },
+        {
+          "path": "evidence/repair-electronic/before/INCAR",
+          "sha256": "845c1a88f840e6fa673c6ff1adba27cd8e9163302924588a47aa63b181d48ab2",
+          "description": "before: executed INCAR"
+        },
+        {
+          "path": "evidence/repair-electronic/before/KPOINTS",
+          "sha256": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49",
+          "description": "before: executed KPOINTS"
+        },
+        {
+          "path": "evidence/repair-electronic/before/POSCAR",
+          "sha256": "2942e884c6a7feb5a81a19d1c86a53a8d24b7399939435eff0c6b302e121b303",
+          "description": "before: executed POSCAR"
+        },
+        {
+          "path": "evidence/repair-electronic/after/INCAR",
+          "sha256": "753d9af988c58545663492c7f0abb5167b63d49d36fade7a11cf90e0b720eee8",
+          "description": "after: executed INCAR"
+        },
+        {
+          "path": "evidence/repair-electronic/after/KPOINTS",
+          "sha256": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49",
+          "description": "after: executed KPOINTS"
+        },
+        {
+          "path": "evidence/repair-electronic/after/POSCAR",
+          "sha256": "2942e884c6a7feb5a81a19d1c86a53a8d24b7399939435eff0c6b302e121b303",
+          "description": "after: executed POSCAR"
+        }
+      ]
+    },
+    {
+      "id": "repair-ionic",
+      "kind": "repair",
+      "title": "Ionic step limit",
+      "status": "verified",
+      "topics": [
+        "recovery",
+        "ionic"
+      ],
+      "tasks": [
+        "relax"
+      ],
+      "formulas": [],
+      "methods": [],
+      "summary": "The displaced Si control stopped after one ionic step above its force target. A reviewed increase to NSW=100 reached the unchanged target.",
+      "conditions": [
+        "Electronic iterations are usable but the force target is not reached.",
+        "Keep the method, force threshold and initial structure unchanged for this repair."
+      ],
+      "limitations": [
+        "A proposal still needs review; this record does not authorize submission or a wider repair.",
+        "Verified on one displaced PBE Si control; this does not prove a stable structure or recover every failed relaxation."
+      ],
+      "outcome": "succeeded",
+      "sources": [
+        {
+          "title": "DFT Agent v0.3.0 cluster validation",
+          "url": "https://github.com/cuiqirui99/dft-agent/blob/v0.3.0/validation/results/cluster-0.3.0.json"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "evidence/repair-ionic/receipt.json",
+          "sha256": "886953f0a75192283cd7a3a7ce0cad43d03ce2a8a52af641697a5446409dbdb2",
+          "description": "Original failure, reviewed change and accepted repair"
+        },
+        {
+          "path": "evidence/repair-ionic/before/INCAR",
+          "sha256": "b38590aca65ca67e184da48e9b3be53d49f514f81403ea4a0fae92e6267edc40",
+          "description": "before: executed INCAR"
+        },
+        {
+          "path": "evidence/repair-ionic/before/KPOINTS",
+          "sha256": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49",
+          "description": "before: executed KPOINTS"
+        },
+        {
+          "path": "evidence/repair-ionic/before/POSCAR",
+          "sha256": "0af1bd6005cfe9527c7e40a38ae389b4fbdedb1fc0953ee5c36f29b6bb940cce",
+          "description": "before: executed POSCAR"
+        },
+        {
+          "path": "evidence/repair-ionic/after/INCAR",
+          "sha256": "06452b2770b411c4fabd40880d94472f1bf97aaf779b7c8c1340fba21028a60b",
+          "description": "after: executed INCAR"
+        },
+        {
+          "path": "evidence/repair-ionic/after/KPOINTS",
+          "sha256": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49",
+          "description": "after: executed KPOINTS"
+        },
+        {
+          "path": "evidence/repair-ionic/after/POSCAR",
+          "sha256": "0af1bd6005cfe9527c7e40a38ae389b4fbdedb1fc0953ee5c36f29b6bb940cce",
+          "description": "after: executed POSCAR"
+        }
+      ]
+    },
+    {
+      "id": "repair-walltime",
+      "kind": "repair",
+      "title": "Time limit",
+      "status": "verified",
+      "topics": [
+        "recovery",
+        "walltime"
+      ],
+      "tasks": [
+        "scf"
+      ],
+      "formulas": [],
+      "methods": [],
+      "summary": "A delayed Si job timed out after one minute. A reviewed two-minute limit completed the same calculation.",
+      "conditions": [
+        "The scheduler confirms TIMEOUT and the original calculation inputs are intact.",
+        "Check the existing job identity and status before proposing another run."
+      ],
+      "limitations": [
+        "A proposal still needs review; this record does not authorize submission or a wider repair.",
+        "This control injected a 75-second startup delay; two minutes is not a production runtime estimate."
+      ],
+      "outcome": "succeeded",
+      "sources": [
+        {
+          "title": "DFT Agent v0.3.0 cluster validation",
+          "url": "https://github.com/cuiqirui99/dft-agent/blob/v0.3.0/validation/results/cluster-0.3.0.json"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "evidence/repair-walltime/receipt.json",
+          "sha256": "3a21b3d8a5d596870da90c95c36a91d6d13422ad8f35a6eeac384a54252491ef",
+          "description": "Original failure, reviewed change and accepted repair"
+        },
+        {
+          "path": "evidence/repair-walltime/before/INCAR",
+          "sha256": "753d9af988c58545663492c7f0abb5167b63d49d36fade7a11cf90e0b720eee8",
+          "description": "before: executed INCAR"
+        },
+        {
+          "path": "evidence/repair-walltime/before/KPOINTS",
+          "sha256": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49",
+          "description": "before: executed KPOINTS"
+        },
+        {
+          "path": "evidence/repair-walltime/before/POSCAR",
+          "sha256": "2942e884c6a7feb5a81a19d1c86a53a8d24b7399939435eff0c6b302e121b303",
+          "description": "before: executed POSCAR"
+        },
+        {
+          "path": "evidence/repair-walltime/after/INCAR",
+          "sha256": "753d9af988c58545663492c7f0abb5167b63d49d36fade7a11cf90e0b720eee8",
+          "description": "after: executed INCAR"
+        },
+        {
+          "path": "evidence/repair-walltime/after/KPOINTS",
+          "sha256": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49",
+          "description": "after: executed KPOINTS"
+        },
+        {
+          "path": "evidence/repair-walltime/after/POSCAR",
+          "sha256": "2942e884c6a7feb5a81a19d1c86a53a8d24b7399939435eff0c6b302e121b303",
+          "description": "after: executed POSCAR"
+        }
+      ]
+    },
+    {
+      "id": "vasp5-hybrid-bands",
+      "kind": "case",
+      "title": "VASP 5 hybrid bands",
+      "status": "verified",
+      "topics": [
+        "hybrid",
+        "soc"
+      ],
+      "tasks": [
+        "bands"
+      ],
+      "formulas": [
+        "Si"
+      ],
+      "methods": [
+        "PBE0",
+        "SOC",
+        "noncollinear"
+      ],
+      "summary": "A Si PBE0+SOC band run was rejected because this recipe requires VASP 6 with LFOCKACE. The following DOS stage was not submitted.",
+      "conditions": [
+        "VASP 5.4.4; this runner uses the VASP 6 hybrid-band recipe."
+      ],
+      "limitations": [
+        "A completed scheduler job is not an accepted scientific result.",
+        "This does not mean all hybrid calculations require VASP 6."
+      ],
+      "outcome": "failed",
+      "sources": [
+        {
+          "title": "DFT Agent v0.3.0 cluster validation",
+          "url": "https://github.com/cuiqirui99/dft-agent/blob/v0.3.0/validation/results/cluster-0.3.0.json"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "evidence/vasp5-hybrid-bands/receipt.json",
+          "sha256": "19a70836f17395a5f24a4522e033544807981fcc3e2e8e17561b4fa1fabaa415",
+          "description": "Published compatibility refusal and output hashes"
+        },
+        {
+          "path": "evidence/vasp5-hybrid-bands/03_bands/INCAR",
+          "sha256": "4ed94a20167e97eaec8a67d68d2a6e3941714e14df1ba85654d5ce1ea4ef07b3",
+          "description": "03_bands: executed INCAR"
+        },
+        {
+          "path": "evidence/vasp5-hybrid-bands/03_bands/KPOINTS",
+          "sha256": "ff6b258652e0fe23d5c977d17c2caf9462c19525476a9914699de6ee2d8bf02e",
+          "description": "03_bands: executed KPOINTS"
+        },
+        {
+          "path": "evidence/vasp5-hybrid-bands/03_bands/POSCAR",
+          "sha256": "31f32fd743c79576c8b2cb974a236a6b0fd0a774894e23654eab70a1acf7a1c4",
+          "description": "03_bands: executed POSCAR"
+        }
+      ]
+    },
+    {
+      "id": "missing-output",
+      "kind": "case",
+      "title": "Missing solver output",
+      "status": "verified",
+      "topics": [
+        "recovery",
+        "missing_output"
+      ],
+      "tasks": [
+        "scf"
+      ],
+      "formulas": [],
+      "methods": [],
+      "summary": "A completed job with no solver output was rejected. The repair planner requested evidence and did not submit another job.",
+      "conditions": [
+        "Complete VASP output is absent even though the scheduler job ended."
+      ],
+      "limitations": [
+        "No scientific result or solver convergence is claimed.",
+        "Recover logs and confirm the executed command before deciding on a repair."
+      ],
+      "outcome": "failed",
+      "sources": [
+        {
+          "title": "DFT Agent v0.3.0 cluster validation",
+          "url": "https://github.com/cuiqirui99/dft-agent/blob/v0.3.0/validation/results/cluster-0.3.0.json"
+        }
+      ],
+      "evidence": [
+        {
+          "path": "evidence/missing-output/receipt.json",
+          "sha256": "cf9c636f2993926a1fc92be795a546ce9c71116afb29e367c1fdb57fc83e8992",
+          "description": "Missing-output control and no-resubmission outcome"
+        },
+        {
+          "path": "evidence/missing-output/01_scf/INCAR",
+          "sha256": "753d9af988c58545663492c7f0abb5167b63d49d36fade7a11cf90e0b720eee8",
+          "description": "01_scf: executed INCAR"
+        },
+        {
+          "path": "evidence/missing-output/01_scf/KPOINTS",
+          "sha256": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49",
+          "description": "01_scf: executed KPOINTS"
+        },
+        {
+          "path": "evidence/missing-output/01_scf/POSCAR",
+          "sha256": "2942e884c6a7feb5a81a19d1c86a53a8d24b7399939435eff0c6b302e121b303",
+          "description": "01_scf: executed POSCAR"
+        }
+      ]
+    },
+    {
+      "id": "legacy-energy-references",
+      "kind": "guidance",
+      "title": "Energy references",
+      "status": "shadow_verified",
+      "topics": [
+        "convergence"
+      ],
+      "tasks": [],
+      "formulas": [],
+      "methods": [],
+      "summary": "The old combined workflow kept solver energy references and sample conditions separate. Its shadow check is retained without promotion to a current workflow.",
+      "conditions": [
+        "Applies only to the historical scope recorded in the local source."
+      ],
+      "limitations": [
+        "Not used as planner or repair advice.",
+        "Original private evidence and any scientific claims have not been independently rechecked for this release."
+      ],
+      "outcome": "not_evaluated",
+      "sources": [],
+      "evidence": [
+        {
+          "path": "evidence/legacy-inventory.json",
+          "sha256": "68cb573a32f91f78b6d5d0997ad3c7520fb8953ed9ec98595c19c7b298a34fd8",
+          "description": "Legacy identity and original status; no promotion"
+        }
+      ],
+      "legacy_id": "combination.keep_solver_energy_references_and_sample_conditions_separate"
+    },
+    {
+      "id": "legacy-al-elastic",
+      "kind": "guidance",
+      "title": "Al elastic candidate",
+      "status": "candidate",
+      "topics": [
+        "elastic"
+      ],
+      "tasks": [],
+      "formulas": [
+        "Al"
+      ],
+      "methods": [
+        "PBE"
+      ],
+      "summary": "The historical Al EOS and elastic campaign remained a candidate. No current elastic workflow or portable validation is claimed.",
+      "conditions": [
+        "Historical Al calculation with PBE.54 PAW datasets and VASP 6.2.1."
+      ],
+      "limitations": [
+        "Not used as planner or repair advice.",
+        "Original private evidence and any scientific claims have not been independently rechecked for this release."
+      ],
+      "outcome": "not_evaluated",
+      "sources": [],
+      "evidence": [
+        {
+          "path": "evidence/legacy-inventory.json",
+          "sha256": "68cb573a32f91f78b6d5d0997ad3c7520fb8953ed9ec98595c19c7b298a34fd8",
+          "description": "Legacy identity and original status; no promotion"
+        }
+      ],
+      "legacy_id": "dft.al_fcc.pbe54.eos_elastic_repaired_validated_candidate"
+    },
+    {
+      "id": "legacy-al-k16",
+      "kind": "guidance",
+      "title": "Al mesh claim",
+      "status": "rejected",
+      "topics": [
+        "convergence"
+      ],
+      "tasks": [
+        "scf"
+      ],
+      "formulas": [
+        "Al"
+      ],
+      "methods": [
+        "PBE"
+      ],
+      "summary": "The historical Al mesh claim was rejected at its numerical gate. It must not become a default.",
+      "conditions": [
+        "Historical Al calculation with PBE.54 PAW datasets and VASP 6.2.1."
+      ],
+      "limitations": [
+        "Rejected describes the historical tested claim, not a recommendation to repeat it.",
+        "Not used as planner or repair advice.",
+        "Original private evidence and any scientific claims have not been independently rechecked for this release."
+      ],
+      "outcome": "not_evaluated",
+      "sources": [],
+      "evidence": [
+        {
+          "path": "evidence/legacy-inventory.json",
+          "sha256": "68cb573a32f91f78b6d5d0997ad3c7520fb8953ed9ec98595c19c7b298a34fd8",
+          "description": "Legacy identity and original status; no promotion"
+        }
+      ],
+      "legacy_id": "dft.al_fcc.pbe54.reject_16_gamma_for_1mev_static_energy"
+    },
+    {
+      "id": "legacy-al-surface-failure",
+      "kind": "guidance",
+      "title": "Al surface and vacancy claim",
+      "status": "rejected",
+      "topics": [
+        "structure"
+      ],
+      "tasks": [],
+      "formulas": [
+        "Al"
+      ],
+      "methods": [
+        "PBE"
+      ],
+      "summary": "The historical Al surface and vacancy campaign failed its gates. Keep the failure separate from later candidate revisions.",
+      "conditions": [
+        "Historical Al calculation with PBE.54 PAW datasets and VASP 6.2.1."
+      ],
+      "limitations": [
+        "Rejected describes the historical tested claim, not a recommendation to repeat it.",
+        "Not used as planner or repair advice.",
+        "Original private evidence and any scientific claims have not been independently rechecked for this release."
+      ],
+      "outcome": "not_evaluated",
+      "sources": [],
+      "evidence": [
+        {
+          "path": "evidence/legacy-inventory.json",
+          "sha256": "68cb573a32f91f78b6d5d0997ad3c7520fb8953ed9ec98595c19c7b298a34fd8",
+          "description": "Legacy identity and original status; no promotion"
+        }
+      ],
+      "legacy_id": "dft.al_fcc.pbe54.reject_v2_vacancy_surface_integration"
+    },
+    {
+      "id": "legacy-al-k28",
+      "kind": "guidance",
+      "title": "Al static candidate",
+      "status": "candidate",
+      "topics": [
+        "convergence"
+      ],
+      "tasks": [
+        "scf"
+      ],
+      "formulas": [
+        "Al"
+      ],
+      "methods": [
+        "PBE"
+      ],
+      "summary": "The historical Al static settings remained a scoped candidate. They are not a general cutoff or mesh recommendation.",
+      "conditions": [
+        "Historical Al calculation with PBE.54 PAW datasets and VASP 6.2.1."
+      ],
+      "limitations": [
+        "Not used as planner or repair advice.",
+        "Original private evidence and any scientific claims have not been independently rechecked for this release."
+      ],
+      "outcome": "not_evaluated",
+      "sources": [],
+      "evidence": [
+        {
+          "path": "evidence/legacy-inventory.json",
+          "sha256": "68cb573a32f91f78b6d5d0997ad3c7520fb8953ed9ec98595c19c7b298a34fd8",
+          "description": "Legacy identity and original status; no promotion"
+        }
+      ],
+      "legacy_id": "dft.al_fcc.pbe54.static_tetra_k28_validated_candidate"
+    },
+    {
+      "id": "legacy-al-surface-candidate",
+      "kind": "guidance",
+      "title": "Al surface and vacancy candidate",
+      "status": "candidate",
+      "topics": [
+        "structure"
+      ],
+      "tasks": [],
+      "formulas": [
+        "Al"
+      ],
+      "methods": [
+        "PBE"
+      ],
+      "summary": "A later Al surface and vacancy calculation remained a scoped candidate. It is not an approved default for new systems.",
+      "conditions": [
+        "Historical Al calculation with PBE.54 PAW datasets and VASP 6.2.1."
+      ],
+      "limitations": [
+        "Not used as planner or repair advice.",
+        "Original private evidence and any scientific claims have not been independently rechecked for this release."
+      ],
+      "outcome": "not_evaluated",
+      "sources": [],
+      "evidence": [
+        {
+          "path": "evidence/legacy-inventory.json",
+          "sha256": "68cb573a32f91f78b6d5d0997ad3c7520fb8953ed9ec98595c19c7b298a34fd8",
+          "description": "Legacy identity and original status; no promotion"
+        }
+      ],
+      "legacy_id": "dft.al_fcc.pbe54.vacancy_al111_final_static_validated_candidate"
+    },
+    {
+      "id": "legacy-api-error",
+      "kind": "repair",
+      "title": "API status parsing",
+      "status": "candidate",
+      "topics": [
+        "transport"
+      ],
+      "tasks": [],
+      "formulas": [],
+      "methods": [],
+      "summary": "The old API could lose useful diagnostics after an IndexError. The proposed fix has not been verified in this runner.",
+      "conditions": [
+        "Applies only to the historical scope recorded in the local source."
+      ],
+      "limitations": [
+        "Not used as planner or repair advice.",
+        "Original private evidence and any scientific claims have not been independently rechecked for this release."
+      ],
+      "outcome": "not_evaluated",
+      "sources": [],
+      "evidence": [
+        {
+          "path": "evidence/legacy-inventory.json",
+          "sha256": "68cb573a32f91f78b6d5d0997ad3c7520fb8953ed9ec98595c19c7b298a34fd8",
+          "description": "Legacy identity and original status; no promotion"
+        }
+      ],
+      "legacy_id": "dft.failure.agent_api_index_error"
+    },
+    {
+      "id": "legacy-report-memory",
+      "kind": "repair",
+      "title": "Failure report generation",
+      "status": "candidate",
+      "topics": [
+        "reporting"
+      ],
+      "tasks": [],
+      "formulas": [],
+      "methods": [],
+      "summary": "A missing helper affected the old failure report. Its proposed fix remains an inactive legacy candidate.",
+      "conditions": [
+        "Applies only to the historical scope recorded in the local source."
+      ],
+      "limitations": [
+        "Not used as planner or repair advice.",
+        "Original private evidence and any scientific claims have not been independently rechecked for this release."
+      ],
+      "outcome": "not_evaluated",
+      "sources": [],
+      "evidence": [
+        {
+          "path": "evidence/legacy-inventory.json",
+          "sha256": "68cb573a32f91f78b6d5d0997ad3c7520fb8953ed9ec98595c19c7b298a34fd8",
+          "description": "Legacy identity and original status; no promotion"
+        }
+      ],
+      "legacy_id": "dft.failure.benchmark_reporting_canonical_failure_memory_name_error"
+    },
+    {
+      "id": "legacy-report-repair",
+      "kind": "repair",
+      "title": "Repair report generation",
+      "status": "candidate",
+      "topics": [
+        "reporting"
+      ],
+      "tasks": [],
+      "formulas": [],
+      "methods": [],
+      "summary": "A missing helper affected the old repair report. Its proposed fix remains an inactive legacy candidate.",
+      "conditions": [
+        "Applies only to the historical scope recorded in the local source."
+      ],
+      "limitations": [
+        "Not used as planner or repair advice.",
+        "Original private evidence and any scientific claims have not been independently rechecked for this release."
+      ],
+      "outcome": "not_evaluated",
+      "sources": [],
+      "evidence": [
+        {
+          "path": "evidence/legacy-inventory.json",
+          "sha256": "68cb573a32f91f78b6d5d0997ad3c7520fb8953ed9ec98595c19c7b298a34fd8",
+          "description": "Legacy identity and original status; no promotion"
+        }
+      ],
+      "legacy_id": "dft.failure.benchmark_reporting_repair_application_contract_summary_name_error"
+    },
+    {
+      "id": "legacy-report-catalog",
+      "kind": "repair",
+      "title": "Repair catalogue generation",
+      "status": "candidate",
+      "topics": [
+        "reporting"
+      ],
+      "tasks": [],
+      "formulas": [],
+      "methods": [],
+      "summary": "A missing helper affected the old repair catalogue. Its proposed fix remains an inactive legacy candidate.",
+      "conditions": [
+        "Applies only to the historical scope recorded in the local source."
+      ],
+      "limitations": [
+        "Not used as planner or repair advice.",
+        "Original private evidence and any scientific claims have not been independently rechecked for this release."
+      ],
+      "outcome": "not_evaluated",
+      "sources": [],
+      "evidence": [
+        {
+          "path": "evidence/legacy-inventory.json",
+          "sha256": "68cb573a32f91f78b6d5d0997ad3c7520fb8953ed9ec98595c19c7b298a34fd8",
+          "description": "Legacy identity and original status; no promotion"
+        }
+      ],
+      "legacy_id": "dft.failure.benchmark_reporting_repair_rules_catalog_name_error"
+    },
+    {
+      "id": "legacy-executable",
+      "kind": "repair",
+      "title": "Missing executable",
+      "status": "candidate",
+      "topics": [
+        "transport"
+      ],
+      "tasks": [],
+      "formulas": [],
+      "methods": [],
+      "summary": "The old runner recorded a missing executable. No transferable repair was verified from this entry.",
+      "conditions": [
+        "Applies only to the historical scope recorded in the local source."
+      ],
+      "limitations": [
+        "Not used as planner or repair advice.",
+        "Original private evidence and any scientific claims have not been independently rechecked for this release."
+      ],
+      "outcome": "not_evaluated",
+      "sources": [],
+      "evidence": [
+        {
+          "path": "evidence/legacy-inventory.json",
+          "sha256": "68cb573a32f91f78b6d5d0997ad3c7520fb8953ed9ec98595c19c7b298a34fd8",
+          "description": "Legacy identity and original status; no promotion"
+        }
+      ],
+      "legacy_id": "dft.failure.executable_not_found"
+    },
+    {
+      "id": "legacy-stage-paths",
+      "kind": "repair",
+      "title": "Stage paths",
+      "status": "candidate",
+      "topics": [
+        "transport"
+      ],
+      "tasks": [],
+      "formulas": [],
+      "methods": [],
+      "summary": "The old job script used relative paths after changing directories. Its repair belongs to the old executor and remains unverified here.",
+      "conditions": [
+        "Applies only to the historical scope recorded in the local source."
+      ],
+      "limitations": [
+        "Not used as planner or repair advice.",
+        "Original private evidence and any scientific claims have not been independently rechecked for this release."
+      ],
+      "outcome": "not_evaluated",
+      "sources": [],
+      "evidence": [
+        {
+          "path": "evidence/legacy-inventory.json",
+          "sha256": "68cb573a32f91f78b6d5d0997ad3c7520fb8953ed9ec98595c19c7b298a34fd8",
+          "description": "Legacy identity and original status; no promotion"
+        }
+      ],
+      "legacy_id": "dft.failure.production_script_relative_path_after_cd"
+    },
+    {
+      "id": "legacy-staging",
+      "kind": "repair",
+      "title": "Remote staging",
+      "status": "candidate",
+      "topics": [
+        "transport"
+      ],
+      "tasks": [],
+      "formulas": [],
+      "methods": [],
+      "summary": "The old runner recorded a staging failure. Upload and directory checks need review against the current executor before reuse.",
+      "conditions": [
+        "Applies only to the historical scope recorded in the local source."
+      ],
+      "limitations": [
+        "Not used as planner or repair advice.",
+        "Original private evidence and any scientific claims have not been independently rechecked for this release."
+      ],
+      "outcome": "not_evaluated",
+      "sources": [],
+      "evidence": [
+        {
+          "path": "evidence/legacy-inventory.json",
+          "sha256": "68cb573a32f91f78b6d5d0997ad3c7520fb8953ed9ec98595c19c7b298a34fd8",
+          "description": "Legacy identity and original status; no promotion"
+        }
+      ],
+      "legacy_id": "dft.failure.remote_workspace_failed"
+    },
+    {
+      "id": "legacy-repair-receipt",
+      "kind": "repair",
+      "title": "Repair receipts",
+      "status": "candidate",
+      "topics": [
+        "recovery"
+      ],
+      "tasks": [],
+      "formulas": [],
+      "methods": [],
+      "summary": "The old retry path could omit its repair record. Its proposed reporting contract has not been verified in this runner.",
+      "conditions": [
+        "Applies only to the historical scope recorded in the local source."
+      ],
+      "limitations": [
+        "Not used as planner or repair advice.",
+        "Original private evidence and any scientific claims have not been independently rechecked for this release."
+      ],
+      "outcome": "not_evaluated",
+      "sources": [],
+      "evidence": [
+        {
+          "path": "evidence/legacy-inventory.json",
+          "sha256": "68cb573a32f91f78b6d5d0997ad3c7520fb8953ed9ec98595c19c7b298a34fd8",
+          "description": "Legacy identity and original status; no promotion"
+        }
+      ],
+      "legacy_id": "dft.failure.repair_application_output_contract_missing"
+    },
+    {
+      "id": "legacy-job-state",
+      "kind": "repair",
+      "title": "Lost job state",
+      "status": "candidate",
+      "topics": [
+        "transport"
+      ],
+      "tasks": [],
+      "formulas": [],
+      "methods": [],
+      "summary": "The old runner recorded a lost scheduler state. This entry does not authorize a new job or changes to solver settings.",
+      "conditions": [
+        "Applies only to the historical scope recorded in the local source."
+      ],
+      "limitations": [
+        "Not used as planner or repair advice.",
+        "Original private evidence and any scientific claims have not been independently rechecked for this release."
+      ],
+      "outcome": "not_evaluated",
+      "sources": [],
+      "evidence": [
+        {
+          "path": "evidence/legacy-inventory.json",
+          "sha256": "68cb573a32f91f78b6d5d0997ad3c7520fb8953ed9ec98595c19c7b298a34fd8",
+          "description": "Legacy identity and original status; no promotion"
+        }
+      ],
+      "legacy_id": "dft.failure.scheduler_job_state_lost"
+    },
+    {
+      "id": "legacy-gw-abort",
+      "kind": "repair",
+      "title": "GW startup failure",
+      "status": "candidate",
+      "topics": [
+        "gw"
+      ],
+      "tasks": [],
+      "formulas": [],
+      "methods": [],
+      "summary": "The old GW failure suggested checking upstream artifacts. The proposed cause and repair remain unverified here.",
+      "conditions": [
+        "Applies only to the historical scope recorded in the local source."
+      ],
+      "limitations": [
+        "Not used as planner or repair advice.",
+        "Original private evidence and any scientific claims have not been independently rechecked for this release."
+      ],
+      "outcome": "not_evaluated",
+      "sources": [],
+      "evidence": [
+        {
+          "path": "evidence/legacy-inventory.json",
+          "sha256": "68cb573a32f91f78b6d5d0997ad3c7520fb8953ed9ec98595c19c7b298a34fd8",
+          "description": "Legacy identity and original status; no promotion"
+        }
+      ],
+      "legacy_id": "dft.failure.vasp_gw_after_setup_fock_abort"
+    },
+    {
+      "id": "legacy-gw-diagnostics",
+      "kind": "repair",
+      "title": "GW and BSE diagnostics",
+      "status": "candidate",
+      "topics": [
+        "gw",
+        "bse"
+      ],
+      "tasks": [],
+      "formulas": [],
+      "methods": [],
+      "summary": "The old GW/BSE failure lacked sufficient diagnostics. The current release does not implement these workflows.",
+      "conditions": [
+        "Applies only to the historical scope recorded in the local source."
+      ],
+      "limitations": [
+        "Not used as planner or repair advice.",
+        "Original private evidence and any scientific claims have not been independently rechecked for this release."
+      ],
+      "outcome": "not_evaluated",
+      "sources": [],
+      "evidence": [
+        {
+          "path": "evidence/legacy-inventory.json",
+          "sha256": "68cb573a32f91f78b6d5d0997ad3c7520fb8953ed9ec98595c19c7b298a34fd8",
+          "description": "Legacy identity and original status; no promotion"
+        }
+      ],
+      "legacy_id": "dft.failure.vasp_gw_bse_opaque_failure_needs_diagnostics"
+    },
+    {
+      "id": "legacy-missing-charge",
+      "kind": "repair",
+      "title": "Missing CHGCAR",
+      "status": "candidate",
+      "topics": [
+        "pbe_spectra"
+      ],
+      "tasks": [
+        "bands",
+        "dos"
+      ],
+      "formulas": [],
+      "methods": [],
+      "summary": "The old downstream calculation lacked its SCF charge file. This candidate is retained separately from the current source-checked PBE spectra guidance.",
+      "conditions": [
+        "Applies only to the historical scope recorded in the local source."
+      ],
+      "limitations": [
+        "Not used as planner or repair advice.",
+        "Original private evidence and any scientific claims have not been independently rechecked for this release."
+      ],
+      "outcome": "not_evaluated",
+      "sources": [],
+      "evidence": [
+        {
+          "path": "evidence/legacy-inventory.json",
+          "sha256": "68cb573a32f91f78b6d5d0997ad3c7520fb8953ed9ec98595c19c7b298a34fd8",
+          "description": "Legacy identity and original status; no promotion"
+        }
+      ],
+      "legacy_id": "dft.failure.vasp_missing_chgcar_for_icharg_gt_10"
+    },
+    {
+      "id": "legacy-missing-waveder",
+      "kind": "repair",
+      "title": "Missing WAVEDER",
+      "status": "candidate",
+      "topics": [
+        "gw",
+        "bse"
+      ],
+      "tasks": [],
+      "formulas": [],
+      "methods": [],
+      "summary": "The old GW/BSE workflow proposed checking its optical precursor. This workflow is outside the current release.",
+      "conditions": [
+        "Applies only to the historical scope recorded in the local source."
+      ],
+      "limitations": [
+        "Not used as planner or repair advice.",
+        "Original private evidence and any scientific claims have not been independently rechecked for this release."
+      ],
+      "outcome": "not_evaluated",
+      "sources": [],
+      "evidence": [
+        {
+          "path": "evidence/legacy-inventory.json",
+          "sha256": "68cb573a32f91f78b6d5d0997ad3c7520fb8953ed9ec98595c19c7b298a34fd8",
+          "description": "Legacy identity and original status; no promotion"
+        }
+      ],
+      "legacy_id": "dft.failure.vasp_missing_waveder_for_gw_bse"
+    },
+    {
+      "id": "legacy-shell-modules",
+      "kind": "guidance",
+      "title": "Shell modules",
+      "status": "shadow_verified",
+      "topics": [
+        "transport"
+      ],
+      "tasks": [],
+      "formulas": [],
+      "methods": [],
+      "summary": "The old executor passed a shadow check after loading cluster modules before strict unset-variable handling. Cluster-specific behavior has not been rechecked here.",
+      "conditions": [
+        "Applies only to the historical scope recorded in the local source."
+      ],
+      "limitations": [
+        "Not used as planner or repair advice.",
+        "Original private evidence and any scientific claims have not been independently rechecked for this release."
+      ],
+      "outcome": "not_evaluated",
+      "sources": [],
+      "evidence": [
+        {
+          "path": "evidence/legacy-inventory.json",
+          "sha256": "68cb573a32f91f78b6d5d0997ad3c7520fb8953ed9ec98595c19c7b298a34fd8",
+          "description": "Legacy identity and original status; no promotion"
+        }
+      ],
+      "legacy_id": "dft.hpc.source_modules_before_enabling_shell_nounset"
+    },
+    {
+      "id": "legacy-mgo-static",
+      "kind": "guidance",
+      "title": "MgO parameter claim",
+      "status": "rejected",
+      "topics": [
+        "convergence"
+      ],
+      "tasks": [
+        "scf"
+      ],
+      "formulas": [
+        "MgO"
+      ],
+      "methods": [
+        "PBE"
+      ],
+      "summary": "The historical MgO parameter comparison failed its fixed acceptance gate. The proposed settings remain rejected.",
+      "conditions": [
+        "Historical MgO calculation with PBE.54 PAW datasets and VASP 6.2.1."
+      ],
+      "limitations": [
+        "Rejected describes the historical tested claim, not a recommendation to repeat it.",
+        "Not used as planner or repair advice.",
+        "Original private evidence and any scientific claims have not been independently rechecked for this release."
+      ],
+      "outcome": "not_evaluated",
+      "sources": [],
+      "evidence": [
+        {
+          "path": "evidence/legacy-inventory.json",
+          "sha256": "68cb573a32f91f78b6d5d0997ad3c7520fb8953ed9ec98595c19c7b298a34fd8",
+          "description": "Legacy identity and original status; no promotion"
+        }
+      ],
+      "legacy_id": "scientific-parameters:mgo_rocksalt_static:PBE"
+    }
+  ]
+}

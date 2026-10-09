@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "public_source": {
+    "title": "DFT Agent v0.3.0 cluster validation",
+    "url": "https://github.com/cuiqirui99/dft-agent/blob/v0.3.0/validation/results/cluster-0.3.0.json",
+    "sha256": "521919038f580cce5065ddb6c2ed117f710939c182b90936b36db42cfa3918f7"
+  },
+  "case": "nio-u-chain",
+  "stages": [
+    {
+      "stage": "02_scf",
+      "input_sha256": {
+        "INCAR": "973167fd53e022bd551c70ffccaaab0b3b1af254e778eb1709f85a2094102018",
+        "KPOINTS": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49",
+        "POSCAR": "4ffdda2818e8f3b6c105d64478a70fa1bd7c66ceafe924c40e45521d57f89b9c"
+      },
+      "original_output_sha256": {
+        "vasprun.xml": "dba17f056c2fd575f1d69afaa8c29ad9b347ef8a0b37307c46d0822edd4cb8f9",
+        "OUTCAR": "d2a3b2de249d3823a3b0795bd3366e3ea6009f090dcf15267bad1ff62e7b8def",
+        "OSZICAR": "ae839ab06220659e97132a674a968dcbcf81e36fea85b47300a1c304ee23bad8",
+        "CONTCAR": "2a97d593b1ec4db23f5944d8f79a6acf5cb6f2fc105736488dec0f4672abdc6d",
+        "result.json": "35646b36b4caa235ef3ebf553835f338e9dc138aee3a9a7f393452398c9d6b43"
+      },
+      "original_outputs_bundled": false,
+      "result": {
+        "task": "scf",
+        "success": true,
+        "converged_electronic": true,
+        "converged_ionic": true,
+        "valid_structure": true,
+        "final_energy_ev": -20.36448241,
+        "final_max_force_ev_angstrom": 8.474628782430531e-05,
+        "vasp_version": "6.2.1",
+        "forces_available": true,
+        "fermi_energy_ev": 7.04717244,
+        "final_energy_ev_per_atom": -5.0911206025,
+        "reason": "The calculation finished and its output passed the checks for this task.",
+        "scientific_accuracy_validated": false,
+        "method": {
+          "spin": "collinear",
+          "magmom": [
+            2.0,
+            -2.0,
+            0.0,
+            0.0
+          ],
+          "soc": false,
+          "saxis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "functional": "PBE",
+          "hubbard_u": {
+            "Ni": {
+              "l": 2,
+              "u": 5.0,
+              "j": 0.0
+            }
+          }
+        },
+        "input_identity_verified": true,
+        "scheduler_state": "COMPLETED"
+      },
+      "independent_audit": {
+        "case": "nio-u-chain",
+        "stage": "02_scf",
+        "task": "scf",
+        "reported_status": "succeeded",
+        "reported_success": true,
+        "xml_complete": true,
+        "vasp_version": "6.2.1",
+        "atoms": 4,
+        "ionic_steps": 1,
+        "electronic_steps_last": 15,
+        "outcar_ediff_reached": true,
+        "energy_ev": -20.36448241,
+        "energy_ev_per_atom": -5.0911206025,
+        "site_moments_mu_B": [
+          1.635,
+          -1.635,
+          0.0,
+          0.0
+        ],
+        "total_moment_mu_B": -0.0,
+        "moment_basis": "collinear spin axis",
+        "input_hashes_verified": {
+          "POSCAR": true,
+          "INCAR": true,
+          "KPOINTS": true
+        },
+        "method": {
+          "spin": "collinear",
+          "magmom": [
+            2.0,
+            -2.0,
+            0.0,
+            0.0
+          ],
+          "soc": false,
+          "saxis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "functional": "PBE",
+          "hubbard_u": {
+            "Ni": {
+              "l": 2,
+              "u": 5.0,
+              "j": 0.0
+            }
+          }
+        },
+        "poscar_sha256": "4ffdda2818e8f3b6c105d64478a70fa1bd7c66ceafe924c40e45521d57f89b9c",
+        "potcar_sha256": "60ec710f18c352287c942db876f4bb1e8b5823282f4549f93261c9111f39d6bb",
+        "xml_sha256": "dba17f056c2fd575f1d69afaa8c29ad9b347ef8a0b37307c46d0822edd4cb8f9",
+        "outcar_sha256": "d2a3b2de249d3823a3b0795bd3366e3ea6009f090dcf15267bad1ff62e7b8def",
+        "forces_finite": true,
+        "spectral_force_exception": false,
+        "errors": [],
+        "audit_passed": true
+      }
+    }
+  ],
+  "scope": "This is a functional example, not a material-accuracy or convergence benchmark.",
+  "rechecked_on": "2026-10-09"
+}

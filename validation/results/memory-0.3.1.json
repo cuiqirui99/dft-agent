@@ -1,0 +1,186 @@
+{
+  "schema_version": 1,
+  "version": "0.3.1",
+  "checked_date": "2026-10-09",
+  "scope": "Memory retrieval, import, integrity and packaging; no new VASP calculation or material-accuracy claim.",
+  "offline_tests": {
+    "tests": "523",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0"
+  },
+  "catalog": {
+    "total": 41,
+    "verified": 20,
+    "candidate": 16,
+    "shadow_verified": 2,
+    "rejected": 3,
+    "sha256": "4669fb4c9561ea30c5ae4772ce6f4124301a40849811a664441580f1aec19bfb"
+  },
+  "legacy_preview": {
+    "experience_records": 68,
+    "failure_records": 4,
+    "lessons": 50,
+    "statuses": {
+      "candidate": 18,
+      "shadow_verified": 11,
+      "rejected": 21
+    },
+    "source_files_unchanged": true,
+    "legacy_promotions": 0
+  },
+  "installed_package": {
+    "version": "0.3.1",
+    "outside_checkout": true,
+    "installed_module_hashes_match": true,
+    "package_files_checked": 117,
+    "records": 41,
+    "states": {
+      "verified": 20,
+      "shadow_verified": 2,
+      "candidate": 16,
+      "rejected": 3
+    },
+    "all_evidence_hashes_valid": true,
+    "hybrid_retrieval_passed": true,
+    "private_files_absent": true
+  },
+  "live_final": {
+    "version": "0.3.1",
+    "date": "2026-10-09",
+    "actual_model_calls": 2,
+    "provider": "codex",
+    "jobs_submitted": 0,
+    "passed": true,
+    "requests": [
+      {
+        "name": "dft_plan",
+        "knowledge_ids": [
+          "si-hse06",
+          "hybrid-bands",
+          "occupations",
+          "cutoff"
+        ],
+        "all_verified": true,
+        "payload_sha256": "e3e66090ef1989f9c8a835f3fa7de12d1edcd799993ca0f481d38db38bf85bb9"
+      },
+      {
+        "name": "dft_repair",
+        "knowledge_ids": [
+          "si-pbe",
+          "repair-electronic",
+          "cutoff"
+        ],
+        "all_verified": true,
+        "payload_sha256": "f4fb317bc23ad0732cddb82cb48de3a22079d9b582b283b6b8e7797ba3bc7109"
+      }
+    ],
+    "plan_constraints_preserved": true,
+    "repair_action_bound_preserved": true,
+    "original_run_unchanged": true,
+    "model_usage": [
+      {
+        "input_tokens": 14598,
+        "output_tokens": 475,
+        "cached_input_tokens": 0,
+        "reasoning_tokens": 0,
+        "total_tokens": 15073,
+        "token_counts_source": "provider",
+        "call_id": "b34bdba7574d4c4087d3370ef71453c2",
+        "provider": "codex",
+        "model": "gpt-6-astra",
+        "latency_seconds": 13.103137,
+        "input_characters": 5576,
+        "instruction_characters": 3829,
+        "schema_characters": 3218,
+        "output_characters": 1576,
+        "max_output_tokens": null
+      },
+      {
+        "input_tokens": 14973,
+        "output_tokens": 85,
+        "cached_input_tokens": 0,
+        "reasoning_tokens": 0,
+        "total_tokens": 15058,
+        "token_counts_source": "provider",
+        "call_id": "057df635594b4065a1c205d48bccf698",
+        "provider": "codex",
+        "model": "gpt-6-astra",
+        "latency_seconds": 6.364863,
+        "input_characters": 10218,
+        "instruction_characters": 610,
+        "schema_characters": 264,
+        "output_characters": 363,
+        "max_output_tokens": null
+      }
+    ],
+    "scope": "Two live model checks of retrieval and existing action bounds; no new VASP run or scientific accuracy claim."
+  },
+  "live_initial": {
+    "model_calls": 2,
+    "planning_passed": true,
+    "repair_status": "needs_input",
+    "issue": "The model asked for SCF history that the new advice required but the repair payload did not include.",
+    "resolution": "Aligned the case conditions with the supported nonconvergence check and supplied the current reparsed result checks to the model.",
+    "model_usage": [
+      {
+        "input_tokens": 14602,
+        "output_tokens": 451,
+        "cached_input_tokens": 0,
+        "reasoning_tokens": 0,
+        "total_tokens": 15053,
+        "token_counts_source": "provider",
+        "call_id": "ead4d006f0f0491ab382cf7aa50f08c6",
+        "provider": "codex",
+        "model": "gpt-6-astra",
+        "latency_seconds": 13.709287,
+        "input_characters": 5576,
+        "instruction_characters": 3829,
+        "schema_characters": 3218,
+        "output_characters": 1500,
+        "max_output_tokens": null
+      },
+      {
+        "input_tokens": 14960,
+        "output_tokens": 138,
+        "cached_input_tokens": 0,
+        "reasoning_tokens": 40,
+        "total_tokens": 15098,
+        "token_counts_source": "provider",
+        "call_id": "dd1afc7d3aa2445ca5d435ce5324951a",
+        "provider": "codex",
+        "model": "gpt-6-astra",
+        "latency_seconds": 7.667105,
+        "input_characters": 10208,
+        "instruction_characters": 610,
+        "schema_characters": 264,
+        "output_characters": 452,
+        "max_output_tokens": null
+      }
+    ]
+  },
+  "actual_model_calls_total": 4,
+  "new_hpc_jobs": 0,
+  "source_modules_sha256": {
+    "config.py": "f8f3c0ede1f7418c9e4b56efbb187260a73b739d2f4b32581dbed60357256a78",
+    "prompt_context.py": "0c33906b56dd724bd38069849dd0ae5a8144f1503bff26ff037eb45d410786e2",
+    "recovery.py": "5b35729c0ad9e84e9a4e9c424a51c97ca768b0e31674a3706d1c3ca1e6d258df",
+    "methods.py": "39c574e7f0c149cdd1d671683db31ea22c7293efdcc4612a3f0a344269545856",
+    "transport.py": "1c0b27513d136cecaf14c221ca7cfdc844f8dbf36dfaa64a25307a1a7d4a4006",
+    "dispatch.py": "9c9a5a98b26a2fc8846b2ed2ab804a9a44e28383bfb3c2ea455bbadc47830aba",
+    "experience.py": "18213697fdc4e51504dbe4b4b1f478429cc15753bc82acdb0a24ee491cc63e27",
+    "__init__.py": "dcacaa91a0e39b2573ecf2ae199b83573db0335a2727cf1d50aa34a19bf6107a",
+    "structure_agent.py": "931ea253d4d88813773ac64416dfc6b7519d38b7066e384fa482fda715e8e87a",
+    "model_usage.py": "8c9597a1f039f636d7f0be6aad5b90812c84914ae0a63ab8b12eabf62a8027aa",
+    "explanation.py": "74f94be04a32839201705cf84bf83ce96bca29c9d3f4adcf74c7cead41f28469",
+    "cli.py": "06b9fb4c7674eb95a219a60bc8ba5e5ce4784b50767ba2df44635bdfff5fad79",
+    "magnetic.py": "f44d748f5e50bd7ba27317236cb48f64dd9dc7a902812fd54d1ae499423477b8",
+    "agent.py": "45e34f8cf35399a06854e6397795a818634e703cb23a25eda15be4163fe1c388",
+    "app.py": "5b8fd8618e6682f0bfaa6afceef4e49d81d482e33cd323e2121006d6003a89f4",
+    "structures.py": "ab10e83be378272a3dbbfdb834251bd08618d6b9999c1732088680e1534d9c1e",
+    "workflow.py": "cb808d0b1a87bcae5d116c6e6f8ff1c69d87f01d52d41ed4981a38157522a3d3",
+    "guidance.py": "183c1494f76007496fa499470d72777f3014bb554f82cfd973d6d1fbf6afb32a",
+    "knowledge.py": "4e83ee8e8f7ad7eba55e009f9a511580143ae50dde4af84de1edb81fdf6d7d6b",
+    "vasp.py": "de260713cab09b9036b06df37bb6f0502844811216a1b2d7b9b78a4b63432800"
+  }
+}

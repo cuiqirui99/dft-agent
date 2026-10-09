@@ -1,0 +1,149 @@
+{
+  "schema_version": 1,
+  "public_source": {
+    "title": "DFT Agent v0.3.0 cluster validation",
+    "url": "https://github.com/cuiqirui99/dft-agent/blob/v0.3.0/validation/results/cluster-0.3.0.json",
+    "sha256": "521919038f580cce5065ddb6c2ed117f710939c182b90936b36db42cfa3918f7"
+  },
+  "control": {
+    "control": "walltime",
+    "workload": "VASP repair control with injected startup delay",
+    "original_status": "needs_attention",
+    "original_scheduler": "TIMEOUT",
+    "repair_status": "succeeded",
+    "changes": [
+      {
+        "scope": "config",
+        "key": "walltime",
+        "before": "00:01:00",
+        "after": "00:02:00"
+      }
+    ],
+    "changed_incar_tags": [],
+    "same_structure_and_kpoints": true,
+    "original_files_unchanged": true,
+    "passed": true
+  },
+  "stages": [
+    {
+      "stage": "before",
+      "input_sha256": {
+        "INCAR": "753d9af988c58545663492c7f0abb5167b63d49d36fade7a11cf90e0b720eee8",
+        "KPOINTS": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49",
+        "POSCAR": "2942e884c6a7feb5a81a19d1c86a53a8d24b7399939435eff0c6b302e121b303"
+      },
+      "original_output_sha256": {
+        "result.json": "3bee09f01a34c31071c5edad91695987b68dd68d131ef5574b683a4d754f48a0"
+      },
+      "original_outputs_bundled": false,
+      "result": {
+        "task": "scf",
+        "success": false,
+        "converged_electronic": false,
+        "converged_ionic": false,
+        "valid_structure": false,
+        "final_energy_ev": null,
+        "final_max_force_ev_angstrom": null,
+        "vasp_version": null,
+        "forces_available": false,
+        "fermi_energy_ev": null,
+        "final_energy_ev_per_atom": null,
+        "reason": "The job reached its time limit. ValueError: vasprun.xml is missing or empty. The job may have ended before VASP finished. Slurm ended in TIMEOUT; any structure is partial",
+        "scientific_accuracy_validated": false,
+        "input_identity_verified": true,
+        "scheduler_state": "TIMEOUT",
+        "failure_code": "TIME_LIMIT"
+      }
+    },
+    {
+      "stage": "after",
+      "input_sha256": {
+        "INCAR": "753d9af988c58545663492c7f0abb5167b63d49d36fade7a11cf90e0b720eee8",
+        "KPOINTS": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49",
+        "POSCAR": "2942e884c6a7feb5a81a19d1c86a53a8d24b7399939435eff0c6b302e121b303"
+      },
+      "original_output_sha256": {
+        "vasprun.xml": "5ffc1d3e972fa6f4a46820ffce46c2ef9b74be21bde38dd526a793e64bcb7fa8",
+        "OUTCAR": "d0ff6ac18dac269afd8044cbb7cbac7609037a4396bef75325fb37cdd12080c4",
+        "OSZICAR": "88406426a1e0c2bcac3c4b1a02b97be7998d1d6c08f110fad6cf751d46075119",
+        "CONTCAR": "0068dc94f1985073cc5fac66c744a7ecd83f6a785d5d85ca90e2fcd13fa31e0f",
+        "result.json": "1bd61ef2e8e30dfaa54e8dd8f9d569354854624736cc91161ec8c59e8ecefe18"
+      },
+      "original_outputs_bundled": false,
+      "result": {
+        "task": "scf",
+        "success": true,
+        "converged_electronic": true,
+        "converged_ionic": true,
+        "valid_structure": true,
+        "final_energy_ev": -8.29123386,
+        "final_max_force_ev_angstrom": 0.0,
+        "vasp_version": "5.4.4.18apr17-6-g9f103f2a35",
+        "forces_available": true,
+        "fermi_energy_ev": 6.37691894,
+        "final_energy_ev_per_atom": -4.14561693,
+        "reason": "The calculation finished and its output passed the checks for this task.",
+        "scientific_accuracy_validated": false,
+        "method": {
+          "spin": "none",
+          "magmom": null,
+          "soc": false,
+          "saxis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "functional": "PBE",
+          "hubbard_u": {}
+        },
+        "input_identity_verified": true,
+        "scheduler_state": "COMPLETED"
+      },
+      "independent_audit": {
+        "case": "walltime-repair",
+        "stage": "01_scf",
+        "task": "scf",
+        "reported_status": "succeeded",
+        "reported_success": true,
+        "xml_complete": true,
+        "vasp_version": "5.4.4.18Apr17-6-g9f103f2a35",
+        "atoms": 2,
+        "ionic_steps": 1,
+        "electronic_steps_last": 11,
+        "outcar_ediff_reached": true,
+        "energy_ev": -8.29123386,
+        "energy_ev_per_atom": -4.14561693,
+        "site_moments_mu_B": null,
+        "total_moment_mu_B": null,
+        "moment_basis": "collinear spin axis",
+        "input_hashes_verified": {
+          "POSCAR": true,
+          "INCAR": true,
+          "KPOINTS": true
+        },
+        "method": {
+          "spin": "none",
+          "magmom": null,
+          "soc": false,
+          "saxis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "functional": "PBE",
+          "hubbard_u": {}
+        },
+        "poscar_sha256": "2942e884c6a7feb5a81a19d1c86a53a8d24b7399939435eff0c6b302e121b303",
+        "potcar_sha256": "79d9987ad8750f624c4d6acb2a16d13abf6a777132adc04dc6c8399be72b42bb",
+        "xml_sha256": "5ffc1d3e972fa6f4a46820ffce46c2ef9b74be21bde38dd526a793e64bcb7fa8",
+        "outcar_sha256": "d0ff6ac18dac269afd8044cbb7cbac7609037a4396bef75325fb37cdd12080c4",
+        "forces_finite": true,
+        "spectral_force_exception": false,
+        "errors": [],
+        "audit_passed": true
+      }
+    }
+  ],
+  "scope": "This is a functional example, not a material-accuracy or convergence benchmark.",
+  "rechecked_on": "2026-10-09"
+}

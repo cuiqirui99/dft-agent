@@ -13,6 +13,7 @@ dist/
 .streamlit/secrets.toml
 cluster.json
 runs/
+.dft-agent-memory/
 *.zip
 POTCAR
 POTCAR.*

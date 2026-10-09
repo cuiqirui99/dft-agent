@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "public_source": {
+    "title": "DFT Agent v0.3.0 cluster validation",
+    "url": "https://github.com/cuiqirui99/dft-agent/blob/v0.3.0/validation/results/cluster-0.3.0.json",
+    "sha256": "521919038f580cce5065ddb6c2ed117f710939c182b90936b36db42cfa3918f7"
+  },
+  "control": {
+    "control": "electronic",
+    "workload": "VASP repair control",
+    "original_status": "needs_attention",
+    "original_scheduler": "COMPLETED",
+    "repair_status": "succeeded",
+    "changes": [
+      {
+        "scope": "parameters",
+        "key": "nelm",
+        "before": 1,
+        "after": 120
+      }
+    ],
+    "changed_incar_tags": [
+      "NELM"
+    ],
+    "same_structure_and_kpoints": true,
+    "original_files_unchanged": true,
+    "passed": true
+  },
+  "stages": [
+    {
+      "stage": "before",
+      "input_sha256": {
+        "INCAR": "845c1a88f840e6fa673c6ff1adba27cd8e9163302924588a47aa63b181d48ab2",
+        "KPOINTS": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49",
+        "POSCAR": "2942e884c6a7feb5a81a19d1c86a53a8d24b7399939435eff0c6b302e121b303"
+      },
+      "original_output_sha256": {
+        "vasprun.xml": "11888a4b411badd275e208b5a1f32140261c02d6fcbd7c9bfb78bece81b8da28",
+        "OUTCAR": "1f05ca0921597ec7739c0e8b10e2c7c86492694065e02b4d9584035eed25fd81",
+        "OSZICAR": "219de30247031d0454e5f505a67f757d86029ebc16134cf0fed438b53b9b193e",
+        "CONTCAR": "078a5601c0dea6405a8f410c7cdd4160437fd641030be2601cb3184548a57679",
+        "result.json": "39a16a6045155bd7b3dd9e74a7a9c71d71614e00efc2b399ca3042a04403a4e8"
+      },
+      "original_outputs_bundled": false,
+      "result": {
+        "task": "scf",
+        "success": false,
+        "converged_electronic": false,
+        "converged_ionic": true,
+        "valid_structure": true,
+        "final_energy_ev": 7.69305828,
+        "final_max_force_ev_angstrom": 0.0,
+        "vasp_version": "6.2.1",
+        "forces_available": true,
+        "fermi_energy_ev": 8.97989285,
+        "final_energy_ev_per_atom": 3.84652914,
+        "reason": "ValueError: Electronic convergence was not reached.",
+        "scientific_accuracy_validated": false,
+        "method": {
+          "spin": "none",
+          "magmom": null,
+          "soc": false,
+          "saxis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "functional": "PBE",
+          "hubbard_u": {}
+        },
+        "input_identity_verified": true,
+        "scheduler_state": "COMPLETED",
+        "failure_code": "RESULT_REJECTED"
+      }
+    },
+    {
+      "stage": "after",
+      "input_sha256": {
+        "INCAR": "753d9af988c58545663492c7f0abb5167b63d49d36fade7a11cf90e0b720eee8",
+        "KPOINTS": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49",
+        "POSCAR": "2942e884c6a7feb5a81a19d1c86a53a8d24b7399939435eff0c6b302e121b303"
+      },
+      "original_output_sha256": {
+        "vasprun.xml": "267668b58083dc33e40139cb6478c4f048e4f18f278f51292883a7d9768e21e0",
+        "OUTCAR": "45ff1897c22b564f3fca03b9baf0e3f58b1a7b4fcceee74d8dd7897a7e4ffdda",
+        "OSZICAR": "3d4df6e6debc2e0fda7a2c771339b9ffd57d03078451c9e0210fc38974dadcc2",
+        "CONTCAR": "078a5601c0dea6405a8f410c7cdd4160437fd641030be2601cb3184548a57679",
+        "result.json": "6214d780738e391ec5d0a5c5c152dde2b4293508c726ef09bfacbb4b51438af4"
+      },
+      "original_outputs_bundled": false,
+      "result": {
+        "task": "scf",
+        "success": true,
+        "converged_electronic": true,
+        "converged_ionic": true,
+        "valid_structure": true,
+        "final_energy_ev": -8.29123386,
+        "final_max_force_ev_angstrom": 0.0,
+        "vasp_version": "6.2.1",
+        "forces_available": true,
+        "fermi_energy_ev": 6.37691894,
+        "final_energy_ev_per_atom": -4.14561693,
+        "reason": "The calculation finished and its output passed the checks for this task.",
+        "scientific_accuracy_validated": false,
+        "method": {
+          "spin": "none",
+          "magmom": null,
+          "soc": false,
+          "saxis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "functional": "PBE",
+          "hubbard_u": {}
+        },
+        "input_identity_verified": true,
+        "scheduler_state": "COMPLETED"
+      },
+      "independent_audit": {
+        "case": "electronic-repair",
+        "stage": "01_scf",
+        "task": "scf",
+        "reported_status": "succeeded",
+        "reported_success": true,
+        "xml_complete": true,
+        "vasp_version": "6.2.1",
+        "atoms": 2,
+        "ionic_steps": 1,
+        "electronic_steps_last": 11,
+        "outcar_ediff_reached": true,
+        "energy_ev": -8.29123386,
+        "energy_ev_per_atom": -4.14561693,
+        "site_moments_mu_B": null,
+        "total_moment_mu_B": null,
+        "moment_basis": "collinear spin axis",
+        "input_hashes_verified": {
+          "POSCAR": true,
+          "INCAR": true,
+          "KPOINTS": true
+        },
+        "method": {
+          "spin": "none",
+          "magmom": null,
+          "soc": false,
+          "saxis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "functional": "PBE",
+          "hubbard_u": {}
+        },
+        "poscar_sha256": "2942e884c6a7feb5a81a19d1c86a53a8d24b7399939435eff0c6b302e121b303",
+        "potcar_sha256": "2a6df1c19701e5d97aaa59e5470b14653ddbd76935b76dacdd8792eb2eba252c",
+        "xml_sha256": "267668b58083dc33e40139cb6478c4f048e4f18f278f51292883a7d9768e21e0",
+        "outcar_sha256": "45ff1897c22b564f3fca03b9baf0e3f58b1a7b4fcceee74d8dd7897a7e4ffdda",
+        "forces_finite": true,
+        "spectral_force_exception": false,
+        "errors": [],
+        "audit_passed": true
+      }
+    }
+  ],
+  "scope": "This is a functional example, not a material-accuracy or convergence benchmark.",
+  "rechecked_on": "2026-10-09"
+}

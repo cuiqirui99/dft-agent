@@ -1,0 +1,180 @@
+{
+  "schema_version": 1,
+  "public_source": {
+    "title": "DFT Agent v0.3.0 cluster validation",
+    "url": "https://github.com/cuiqirui99/dft-agent/blob/v0.3.0/validation/results/cluster-0.3.0.json",
+    "sha256": "521919038f580cce5065ddb6c2ed117f710939c182b90936b36db42cfa3918f7"
+  },
+  "case": "nio-hse06-u-soc-probe",
+  "stages": [
+    {
+      "stage": "01_scf",
+      "input_sha256": {
+        "INCAR": "a654f040e7aeca1070f81c41ef3930c17433c44e05a12122333dadb135121d60",
+        "KPOINTS": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49",
+        "POSCAR": "0f3e76d070a7c64889ec1a1a81861e026aa7738baee0630846ff01ef6d120657"
+      },
+      "original_output_sha256": {
+        "vasprun.xml": "85ba7f32650308924edfd7fcc6670938836adb170cbca50911cd11691ccecc4b",
+        "OUTCAR": "507fa556ddbdbdd7cf09e701a3004a729e5d86250d51a09254756094ebb56b5a",
+        "OSZICAR": "2c1156a11d68ba42d92121545e6af8dc4f230b2166b27c371f5a389c1618b0c5",
+        "CONTCAR": "2a97d593b1ec4db23f5944d8f79a6acf5cb6f2fc105736488dec0f4672abdc6d",
+        "result.json": "329dac6a34cfc27f810e294c00b0cf32664c8a757950fddfde65fca969aeee11"
+      },
+      "original_outputs_bundled": false,
+      "result": {
+        "task": "scf",
+        "success": true,
+        "converged_electronic": true,
+        "converged_ionic": true,
+        "valid_structure": true,
+        "final_energy_ev": -43.6401458,
+        "final_max_force_ev_angstrom": 0.0012430928390912725,
+        "vasp_version": "6.2.1",
+        "forces_available": true,
+        "fermi_energy_ev": 4.92302101,
+        "final_energy_ev_per_atom": -10.91003645,
+        "reason": "The calculation finished and its output passed the checks for this task.",
+        "scientific_accuracy_validated": false,
+        "method": {
+          "spin": "noncollinear",
+          "magmom": [
+            [
+              0.0,
+              0.0,
+              2.0
+            ],
+            [
+              0.0,
+              0.0,
+              -2.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "soc": true,
+          "saxis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "functional": "HSE06",
+          "hubbard_u": {
+            "Ni": {
+              "l": 2,
+              "u": 5.0,
+              "j": 0.0
+            }
+          }
+        },
+        "input_identity_verified": true,
+        "scheduler_state": "COMPLETED"
+      },
+      "independent_audit": {
+        "case": "nio-hse06-u-soc-probe",
+        "stage": "01_scf",
+        "task": "scf",
+        "reported_status": "succeeded",
+        "reported_success": true,
+        "xml_complete": true,
+        "vasp_version": "6.2.1",
+        "atoms": 4,
+        "ionic_steps": 1,
+        "electronic_steps_last": 62,
+        "outcar_ediff_reached": true,
+        "energy_ev": -43.6401458,
+        "energy_ev_per_atom": -10.91003645,
+        "site_moments_mu_B": [
+          [
+            -0.004,
+            -0.001,
+            1.799
+          ],
+          [
+            0.002,
+            0.001,
+            -1.799
+          ],
+          [
+            -0.0,
+            0.0,
+            0.0
+          ],
+          [
+            -0.0,
+            0.0,
+            0.0
+          ]
+        ],
+        "total_moment_mu_B": [
+          -0.0016472,
+          0.0001871,
+          1.7e-06
+        ],
+        "moment_basis": "SAXIS spinor",
+        "input_hashes_verified": {
+          "POSCAR": true,
+          "INCAR": true,
+          "KPOINTS": true
+        },
+        "method": {
+          "spin": "noncollinear",
+          "magmom": [
+            [
+              0.0,
+              0.0,
+              2.0
+            ],
+            [
+              0.0,
+              0.0,
+              -2.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "soc": true,
+          "saxis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "functional": "HSE06",
+          "hubbard_u": {
+            "Ni": {
+              "l": 2,
+              "u": 5.0,
+              "j": 0.0
+            }
+          }
+        },
+        "poscar_sha256": "0f3e76d070a7c64889ec1a1a81861e026aa7738baee0630846ff01ef6d120657",
+        "potcar_sha256": "60ec710f18c352287c942db876f4bb1e8b5823282f4549f93261c9111f39d6bb",
+        "xml_sha256": "85ba7f32650308924edfd7fcc6670938836adb170cbca50911cd11691ccecc4b",
+        "outcar_sha256": "507fa556ddbdbdd7cf09e701a3004a729e5d86250d51a09254756094ebb56b5a",
+        "forces_finite": true,
+        "spectral_force_exception": false,
+        "errors": [],
+        "audit_passed": true
+      }
+    }
+  ],
+  "scope": "This is a functional example, not a material-accuracy or convergence benchmark.",
+  "rechecked_on": "2026-10-09"
+}

@@ -3,6 +3,7 @@ recursive-include docs *.md
 recursive-include docs/assets *.png *.svg
 recursive-include examples *.cif *.vasp *.json
 recursive-include src/vasp_slurm_agent/examples *.cif *.vasp *.json
+recursive-include src/vasp_slurm_agent/knowledge *
 include validation/protocol.v1.json
 include validation/methods-0.3.0.json
 include validation/resource-adjustments.v1.json

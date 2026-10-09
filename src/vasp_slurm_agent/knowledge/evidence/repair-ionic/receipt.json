@@ -1,0 +1,169 @@
+{
+  "schema_version": 1,
+  "public_source": {
+    "title": "DFT Agent v0.3.0 cluster validation",
+    "url": "https://github.com/cuiqirui99/dft-agent/blob/v0.3.0/validation/results/cluster-0.3.0.json",
+    "sha256": "521919038f580cce5065ddb6c2ed117f710939c182b90936b36db42cfa3918f7"
+  },
+  "control": {
+    "control": "ionic",
+    "workload": "VASP repair control",
+    "original_status": "needs_attention",
+    "original_scheduler": "COMPLETED",
+    "repair_status": "succeeded",
+    "changes": [
+      {
+        "scope": "parameters",
+        "key": "nsw",
+        "before": 1,
+        "after": 100
+      }
+    ],
+    "changed_incar_tags": [
+      "NSW"
+    ],
+    "same_structure_and_kpoints": true,
+    "original_files_unchanged": true,
+    "passed": true
+  },
+  "stages": [
+    {
+      "stage": "before",
+      "input_sha256": {
+        "INCAR": "b38590aca65ca67e184da48e9b3be53d49f514f81403ea4a0fae92e6267edc40",
+        "KPOINTS": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49",
+        "POSCAR": "0af1bd6005cfe9527c7e40a38ae389b4fbdedb1fc0953ee5c36f29b6bb940cce"
+      },
+      "original_output_sha256": {
+        "vasprun.xml": "1952c14514b5534b67aaca88f3028b52144f989dc8432a3cc536c493b9bb61a2",
+        "OUTCAR": "b2a4e3f4ce3945b0934ad4a27b236b048f3ae5c79f7a56e6cf75125001964a9d",
+        "OSZICAR": "fe5f8cac2316ac7b660243920028c49aafe62274fb4b3e1e4af08c3a2d2bf4aa",
+        "CONTCAR": "521f07ff29ab8e1710ebb12c4a19ae836795c354e13950b75661373d7963d237",
+        "result.json": "9b6d24bacdf628121f3ab3e8856baf5683775de7a6607885d9b70388620aa533"
+      },
+      "original_outputs_bundled": false,
+      "result": {
+        "task": "relax",
+        "success": false,
+        "converged_electronic": true,
+        "converged_ionic": true,
+        "valid_structure": true,
+        "final_energy_ev": -8.23060905,
+        "final_max_force_ev_angstrom": 0.995575317838595,
+        "vasp_version": "6.2.1",
+        "forces_available": true,
+        "fermi_energy_ev": null,
+        "final_energy_ev_per_atom": -4.115304525,
+        "reason": "ValueError: Final atomic force exceeds the requested negative EDIFFG criterion.",
+        "scientific_accuracy_validated": false,
+        "method": {
+          "spin": "none",
+          "magmom": null,
+          "soc": false,
+          "saxis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "functional": "PBE",
+          "hubbard_u": {}
+        },
+        "input_identity_verified": true,
+        "scheduler_state": "COMPLETED",
+        "failure_code": "RESULT_REJECTED"
+      }
+    },
+    {
+      "stage": "after",
+      "input_sha256": {
+        "INCAR": "06452b2770b411c4fabd40880d94472f1bf97aaf779b7c8c1340fba21028a60b",
+        "KPOINTS": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49",
+        "POSCAR": "0af1bd6005cfe9527c7e40a38ae389b4fbdedb1fc0953ee5c36f29b6bb940cce"
+      },
+      "original_output_sha256": {
+        "vasprun.xml": "d14ad5a315dc4f310b2f064457a78c855a94b4fff9cde824ef8c498e4d046cfd",
+        "OUTCAR": "f87d3584f730bb7568cce5a694c31fcd13d958c6fb22f7737e07476ec863ba47",
+        "OSZICAR": "424699e296f4352c98586f7e4afe1a9f4f177336a4f8afa0479ff46ac9e77b74",
+        "CONTCAR": "9bd52b49d90ad73e248d1f8b01c6a7b491fb4bb8d6e2cd2248e7d7efd96a3456",
+        "result.json": "075b46d22c44da70a1531b3cd82705530b90b9dcfca4bcaafb6867f22b6ab99e"
+      },
+      "original_outputs_bundled": false,
+      "result": {
+        "task": "relax",
+        "success": true,
+        "converged_electronic": true,
+        "converged_ionic": true,
+        "valid_structure": true,
+        "final_energy_ev": -8.29122472,
+        "final_max_force_ev_angstrom": 0.016807652119808406,
+        "vasp_version": "6.2.1",
+        "forces_available": true,
+        "fermi_energy_ev": null,
+        "final_energy_ev_per_atom": -4.14561236,
+        "reason": "The calculation finished and its output passed the checks for this task.",
+        "scientific_accuracy_validated": false,
+        "method": {
+          "spin": "none",
+          "magmom": null,
+          "soc": false,
+          "saxis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "functional": "PBE",
+          "hubbard_u": {}
+        },
+        "input_identity_verified": true,
+        "scheduler_state": "COMPLETED"
+      },
+      "independent_audit": {
+        "case": "ionic-repair",
+        "stage": "01_relax",
+        "task": "relax",
+        "reported_status": "succeeded",
+        "reported_success": true,
+        "xml_complete": true,
+        "vasp_version": "6.2.1",
+        "atoms": 2,
+        "ionic_steps": 7,
+        "electronic_steps_last": 3,
+        "outcar_ediff_reached": true,
+        "energy_ev": -8.29122472,
+        "energy_ev_per_atom": -4.14561236,
+        "site_moments_mu_B": null,
+        "total_moment_mu_B": null,
+        "moment_basis": "collinear spin axis",
+        "input_hashes_verified": {
+          "POSCAR": true,
+          "INCAR": true,
+          "KPOINTS": true
+        },
+        "method": {
+          "spin": "none",
+          "magmom": null,
+          "soc": false,
+          "saxis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "functional": "PBE",
+          "hubbard_u": {}
+        },
+        "poscar_sha256": "0af1bd6005cfe9527c7e40a38ae389b4fbdedb1fc0953ee5c36f29b6bb940cce",
+        "potcar_sha256": "2a6df1c19701e5d97aaa59e5470b14653ddbd76935b76dacdd8792eb2eba252c",
+        "xml_sha256": "d14ad5a315dc4f310b2f064457a78c855a94b4fff9cde824ef8c498e4d046cfd",
+        "outcar_sha256": "f87d3584f730bb7568cce5a694c31fcd13d958c6fb22f7737e07476ec863ba47",
+        "forces_finite": true,
+        "spectral_force_exception": false,
+        "errors": [],
+        "audit_passed": true,
+        "max_force_ev_angstrom": 0.016807652119808406,
+        "force_limit_ev_angstrom": 0.03
+      }
+    }
+  ],
+  "scope": "This is a functional example, not a material-accuracy or convergence benchmark.",
+  "rechecked_on": "2026-10-09"
+}

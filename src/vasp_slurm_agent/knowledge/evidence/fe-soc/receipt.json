@@ -1,0 +1,138 @@
+{
+  "schema_version": 1,
+  "public_source": {
+    "title": "DFT Agent v0.3.0 cluster validation",
+    "url": "https://github.com/cuiqirui99/dft-agent/blob/v0.3.0/validation/results/cluster-0.3.0.json",
+    "sha256": "521919038f580cce5065ddb6c2ed117f710939c182b90936b36db42cfa3918f7"
+  },
+  "case": "fe-soc-chain",
+  "stages": [
+    {
+      "stage": "02_scf",
+      "input_sha256": {
+        "INCAR": "ec1a71556923d9996a9f3723d0ae73ba3a238bff96ca536a474f5588b92abd3b",
+        "KPOINTS": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49",
+        "POSCAR": "d9e504eddb938b32919f8b8b5ceb48c8db1be135b23e522c24e8d6905a34451d"
+      },
+      "original_output_sha256": {
+        "vasprun.xml": "315b774c121e15d837ede73db05ff91e9cb78b9afb9885e3bf0f0ea1ef3b8c24",
+        "OUTCAR": "b19ec5c96d5cdc4529915a857386fbf416af59c485bcb31f18c3b6cca0c8a01c",
+        "OSZICAR": "8de3696be75c5f138e0761bdf9b47d8d7d07c8533df156ba6bd84ec84a97e72f",
+        "CONTCAR": "dc4566b2b15ebb053c0bebad491ce7eb7eb53d2086f1392ad9062ec2ce3f1655",
+        "result.json": "c51196428dfac85b0ea72dddeca7e6dfc0025d5880fa3bbe31e5333ba20710c2"
+      },
+      "original_outputs_bundled": false,
+      "result": {
+        "task": "scf",
+        "success": true,
+        "converged_electronic": true,
+        "converged_ionic": true,
+        "valid_structure": true,
+        "final_energy_ev": -15.33171878,
+        "final_max_force_ev_angstrom": 4.4144648599802e-06,
+        "vasp_version": "6.2.1",
+        "forces_available": true,
+        "fermi_energy_ev": 5.8802801,
+        "final_energy_ev_per_atom": -7.66585939,
+        "reason": "The calculation finished and its output passed the checks for this task.",
+        "scientific_accuracy_validated": false,
+        "method": {
+          "spin": "noncollinear",
+          "magmom": [
+            [
+              0.0,
+              0.0,
+              3.0
+            ],
+            [
+              0.0,
+              0.0,
+              3.0
+            ]
+          ],
+          "soc": true,
+          "saxis": [
+            0.5773502691896258,
+            0.5773502691896258,
+            0.5773502691896258
+          ],
+          "functional": "PBE",
+          "hubbard_u": {}
+        },
+        "input_identity_verified": true,
+        "scheduler_state": "COMPLETED"
+      },
+      "independent_audit": {
+        "case": "fe-soc-chain",
+        "stage": "02_scf",
+        "task": "scf",
+        "reported_status": "succeeded",
+        "reported_success": true,
+        "xml_complete": true,
+        "vasp_version": "6.2.1",
+        "atoms": 2,
+        "ionic_steps": 1,
+        "electronic_steps_last": 20,
+        "outcar_ediff_reached": true,
+        "energy_ev": -15.33171878,
+        "energy_ev_per_atom": -7.66585939,
+        "site_moments_mu_B": [
+          [
+            -0.02,
+            0.035,
+            2.835
+          ],
+          [
+            -0.02,
+            0.035,
+            2.834
+          ]
+        ],
+        "total_moment_mu_B": [
+          -0.0411439,
+          0.0737075,
+          5.9793026
+        ],
+        "moment_basis": "SAXIS spinor",
+        "input_hashes_verified": {
+          "POSCAR": true,
+          "INCAR": true,
+          "KPOINTS": true
+        },
+        "method": {
+          "spin": "noncollinear",
+          "magmom": [
+            [
+              0.0,
+              0.0,
+              3.0
+            ],
+            [
+              0.0,
+              0.0,
+              3.0
+            ]
+          ],
+          "soc": true,
+          "saxis": [
+            0.5773502691896258,
+            0.5773502691896258,
+            0.5773502691896258
+          ],
+          "functional": "PBE",
+          "hubbard_u": {}
+        },
+        "poscar_sha256": "d9e504eddb938b32919f8b8b5ceb48c8db1be135b23e522c24e8d6905a34451d",
+        "potcar_sha256": "519ad496e3627c9885028da91cc038103aabe65859ad2bde1964f223ccb49c0f",
+        "xml_sha256": "315b774c121e15d837ede73db05ff91e9cb78b9afb9885e3bf0f0ea1ef3b8c24",
+        "outcar_sha256": "b19ec5c96d5cdc4529915a857386fbf416af59c485bcb31f18c3b6cca0c8a01c",
+        "forces_finite": true,
+        "spectral_force_exception": false,
+        "errors": [],
+        "audit_passed": true
+      }
+    }
+  ],
+  "scope": "This is a functional example, not a material-accuracy or convergence benchmark.",
+  "rechecked_on": "2026-10-09"
+}

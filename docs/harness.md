@@ -4,6 +4,12 @@ Plans use local VASP notes, structure hints and relevant saved runs. Open
 **Scientific guidance** to see method choices, checks and sources. The report
 is saved with the plan. Past runs supply advice, never automatic parameter changes.
 
+Bundled memory adds checked guidance, success and failure cases, and repair
+examples. Plans and repairs retrieve matching entries and save their references.
+Open **Memory** to search records, inspect evidence or import selected local
+records. Rejected, retired and unverified lessons are excluded from advice.
+[Memory](memory.md).
+
 History comes from the selected **Run folder**. Results are rechecked before use;
 changed or rejected outputs cannot supply successful examples. Magnetic moments
 and spin axes require compatible methods and site geometry.
@@ -36,5 +42,5 @@ The v0.3.0 checks include 488 passing offline tests and real Codex calls for
 revisions, method choices and missing inputs. On Slurm, reviewed electronic,
 ionic and time-limit repairs succeeded with unchanged structures, k-points,
 methods and thresholds.
-See the [current validation](validation-0.3.0.md) and
+See the [memory checks](validation-0.3.1.md), [calculation validation](validation-0.3.0.md) and
 [earlier harness record](../validation/results/harness.json).

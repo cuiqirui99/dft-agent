@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "public_source": {
+    "title": "DFT Agent v0.3.0 cluster validation",
+    "url": "https://github.com/cuiqirui99/dft-agent/blob/v0.3.0/validation/results/cluster-0.3.0.json",
+    "sha256": "521919038f580cce5065ddb6c2ed117f710939c182b90936b36db42cfa3918f7"
+  },
+  "case": "si-pbe0-chain",
+  "stages": [
+    {
+      "stage": "03_bands",
+      "input_sha256": {
+        "INCAR": "2762a0369e6692c34e9d5d5a64b783f270a69a62f48a77a95d1f2d0768772e02",
+        "KPOINTS": "ff6b258652e0fe23d5c977d17c2caf9462c19525476a9914699de6ee2d8bf02e",
+        "POSCAR": "31f32fd743c79576c8b2cb974a236a6b0fd0a774894e23654eab70a1acf7a1c4"
+      },
+      "original_output_sha256": {
+        "vasprun.xml": "5310092e774d432a290385834c58d08fb017d9211c216f1a5517e2af5e4bbf00",
+        "OUTCAR": "9a8201dfdfddc61276d38fde6fe635924a4123f758a9f0dffb7f9055c993ec93",
+        "OSZICAR": "4674ae62b0ad4fd29b74c16f34e8627237a5d71a0f3679aae698c3023731fd25",
+        "CONTCAR": "e90dd4f3242ac64a755c5709a7170a9b728e4a5d0147e624bf177fd1ea4e43b6",
+        "result.json": "e3997b3660fd0e54b3e6e1cf22f644117518802f6134fa1e41176a4f1f11d195"
+      },
+      "original_outputs_bundled": false,
+      "result": {
+        "task": "bands",
+        "success": true,
+        "converged_electronic": true,
+        "converged_ionic": true,
+        "valid_structure": true,
+        "final_energy_ev": -11.15158603,
+        "final_max_force_ev_angstrom": null,
+        "vasp_version": "6.2.1",
+        "forces_available": false,
+        "fermi_energy_ev": 5.62327665,
+        "final_energy_ev_per_atom": -5.575793015,
+        "reason": "The calculation finished and its output passed the checks for this task.",
+        "scientific_accuracy_validated": false,
+        "method": {
+          "spin": "none",
+          "magmom": null,
+          "soc": false,
+          "saxis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "functional": "PBE0",
+          "hubbard_u": {}
+        },
+        "input_identity_verified": true,
+        "scheduler_state": "COMPLETED"
+      },
+      "independent_audit": {
+        "case": "si-pbe0-chain",
+        "stage": "03_bands",
+        "task": "bands",
+        "reported_status": "succeeded",
+        "reported_success": true,
+        "xml_complete": true,
+        "vasp_version": "6.2.1",
+        "atoms": 2,
+        "ionic_steps": 1,
+        "electronic_steps_last": 31,
+        "outcar_ediff_reached": true,
+        "energy_ev": -11.15158603,
+        "energy_ev_per_atom": -5.575793015,
+        "site_moments_mu_B": null,
+        "total_moment_mu_B": null,
+        "moment_basis": "collinear spin axis",
+        "input_hashes_verified": {
+          "POSCAR": true,
+          "INCAR": true,
+          "KPOINTS": true
+        },
+        "method": {
+          "spin": "none",
+          "magmom": null,
+          "soc": false,
+          "saxis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "functional": "PBE0",
+          "hubbard_u": {}
+        },
+        "poscar_sha256": "31f32fd743c79576c8b2cb974a236a6b0fd0a774894e23654eab70a1acf7a1c4",
+        "potcar_sha256": "2a6df1c19701e5d97aaa59e5470b14653ddbd76935b76dacdd8792eb2eba252c",
+        "xml_sha256": "5310092e774d432a290385834c58d08fb017d9211c216f1a5517e2af5e4bbf00",
+        "outcar_sha256": "9a8201dfdfddc61276d38fde6fe635924a4123f758a9f0dffb7f9055c993ec93",
+        "forces_finite": false,
+        "spectral_force_exception": true,
+        "errors": [],
+        "audit_passed": true
+      }
+    }
+  ],
+  "scope": "This is a functional example, not a material-accuracy or convergence benchmark.",
+  "rechecked_on": "2026-10-09"
+}

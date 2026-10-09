@@ -76,6 +76,19 @@ def main():
     structure_plan.add_argument("--model", default=os.environ.get("DFT_AGENT_MODEL", ""))
     structure_plan.add_argument("--base-url", default=os.environ.get("DFT_AGENT_BASE_URL", ""))
     structure_plan.add_argument("--output", type=Path, default=Path("structure-plan.json"))
+    memory = commands.add_parser("memory", help="Browse or import memory")
+    memory_commands = memory.add_subparsers(dest="memory_command", required=True)
+    memory_list = memory_commands.add_parser("list", help="Search records")
+    memory_list.add_argument("--query", default="")
+    memory_list.add_argument("--status", choices=("verified", "candidate", "shadow_verified", "rejected", "deprecated"))
+    memory_list.add_argument("--runs", type=Path)
+    memory_show = memory_commands.add_parser("show", help="Read a record")
+    memory_show.add_argument("id")
+    memory_show.add_argument("--runs", type=Path)
+    memory_import = memory_commands.add_parser("import", help="Preview or import selected local records")
+    memory_import.add_argument("source", type=Path)
+    memory_import.add_argument("--ids", nargs="+", help="Import only these IDs; omit to preview")
+    memory_import.add_argument("--runs", type=Path, required=True)
     structure_prep = commands.add_parser("prepare-structure", help="Apply reviewed structure edits")
     structure_prep.add_argument("structure", type=Path)
     structure_prep.add_argument("output_dir", type=Path)
@@ -143,6 +156,25 @@ def main():
             result = doctor(ClusterConfig.load(args.config))
             print(json.dumps(result, indent=2))
             return 0 if result["ok"] else 1
+        if args.command == "memory":
+            from .knowledge import load_catalog, preview_import, import_selected
+            if args.memory_command == "import":
+                result = (import_selected(args.source.expanduser(), args.ids, args.runs)
+                          if args.ids else preview_import(args.source.expanduser()))
+            else:
+                records = load_catalog(args.runs)
+                if args.memory_command == "show":
+                    result = next((item for item in records if item["id"] == args.id), None)
+                    if result is None:
+                        raise ValueError("Record not found.")
+                else:
+                    query = args.query.lower().strip()
+                    result = [{key: item[key] for key in ("id", "title", "kind", "status", "origin", "evidence_valid")}
+                              for item in records if (not args.status or item["status"] == args.status)
+                              and (not query or query in " ".join([item["title"], item["summary"],
+                                   *item.get("topics", []), *item.get("formulas", []), *item.get("methods", [])]).lower())]
+            print(json.dumps(result, indent=2, ensure_ascii=False))
+            return 0
         if args.command == "plan":
             from .agent import ModelSettings, draft_plan
             goal, history = args.goal, []

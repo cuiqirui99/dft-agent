@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "checked_on": "2026-10-09",
+  "checks": [
+    {
+      "case": "si-pbe",
+      "stage": "01_relax",
+      "executed_inputs_match": true,
+      "public_output_hashes_match": true
+    },
+    {
+      "case": "si-pbe",
+      "stage": "02_scf",
+      "executed_inputs_match": true,
+      "public_output_hashes_match": true
+    },
+    {
+      "case": "si-pbe",
+      "stage": "03_bands",
+      "executed_inputs_match": true,
+      "public_output_hashes_match": true
+    },
+    {
+      "case": "si-pbe",
+      "stage": "04_dos",
+      "executed_inputs_match": true,
+      "public_output_hashes_match": true
+    },
+    {
+      "case": "fe-collinear",
+      "stage": "02_scf",
+      "executed_inputs_match": true,
+      "public_output_hashes_match": true
+    },
+    {
+      "case": "fe-soc",
+      "stage": "02_scf",
+      "executed_inputs_match": true,
+      "public_output_hashes_match": true
+    },
+    {
+      "case": "nio-u",
+      "stage": "02_scf",
+      "executed_inputs_match": true,
+      "public_output_hashes_match": true
+    },
+    {
+      "case": "si-hse06",
+      "stage": "03_bands",
+      "executed_inputs_match": true,
+      "public_output_hashes_match": true
+    },
+    {
+      "case": "si-pbe0",
+      "stage": "03_bands",
+      "executed_inputs_match": true,
+      "public_output_hashes_match": true
+    },
+    {
+      "case": "nio-hse06-u-soc",
+      "stage": "01_scf",
+      "executed_inputs_match": true,
+      "public_output_hashes_match": true
+    },
+    {
+      "case": "repair-electronic",
+      "stage": "before",
+      "executed_inputs_match": true,
+      "public_output_hashes_match": false
+    },
+    {
+      "case": "repair-electronic",
+      "stage": "after",
+      "executed_inputs_match": true,
+      "public_output_hashes_match": true
+    },
+    {
+      "case": "repair-ionic",
+      "stage": "before",
+      "executed_inputs_match": true,
+      "public_output_hashes_match": false
+    },
+    {
+      "case": "repair-ionic",
+      "stage": "after",
+      "executed_inputs_match": true,
+      "public_output_hashes_match": true
+    },
+    {
+      "case": "repair-walltime",
+      "stage": "before",
+      "executed_inputs_match": true,
+      "public_output_hashes_match": false
+    },
+    {
+      "case": "repair-walltime",
+      "stage": "after",
+      "executed_inputs_match": true,
+      "public_output_hashes_match": true
+    },
+    {
+      "case": "vasp5-hybrid-bands",
+      "stage": "03_bands",
+      "executed_inputs_match": true,
+      "public_output_hashes_match": false
+    },
+    {
+      "case": "missing-output",
+      "stage": "01_scf",
+      "executed_inputs_match": true,
+      "public_output_hashes_match": false
+    }
+  ],
+  "method": "Compared each distributed input byte for byte with the executed copy. Compared available accepted XML and OUTCAR hashes with the public v0.3.0 receipt. Original outputs stay local.",
+  "new_calculations": false
+}

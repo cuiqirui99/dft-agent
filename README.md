@@ -2,7 +2,7 @@
 
 ![DFT Agent](docs/assets/dft-agent-logo.png)
 
-Version `0.3.0`.
+Version `0.3.1`.
 
 [Qirui Cui](https://www.kth.se/profile/qiruic?l=en) · KTH Royal Institute of Technology · [ORCID](https://orcid.org/0009-0005-6165-3237)
 
@@ -40,6 +40,10 @@ After an interruption, select the original run and use **Resume monitoring**. Fo
 Plans include scientific guidance and relevant past runs. For a failed calculation,
 use **Repair** to review a proposed fix and prepare a new run. [Details](docs/harness.md).
 
+**Memory** includes checked guidance and calculation cases. Search their evidence
+or import selected local records. Rejected and unverified lessons stay out of
+recommendations. [Memory](docs/memory.md).
+
 Try: “Relax this structure, then calculate its bands with SOC.” Plans can be revised before submission. Missing settings, such as U and J, trigger a question.
 
 Supports OpenAI, compatible APIs and a logged-in Codex CLI. Planning shares your goal and structure; explanations share verified results and dialogue. Manual mode needs no model account; install with `pip install .`.
@@ -50,6 +54,8 @@ Use ordered periodic structures. Check the starting parameters for your material
 
 ## Citation
 
-Cui, Q. (2026). *DFT Agent* (v0.3.0). Zenodo. [10.5281/zenodo.23260917](https://doi.org/10.5281/zenodo.23260917).
+Cui, Q. (2026). *DFT Agent* (v0.3.1). [GitHub](https://github.com/cuiqirui99/dft-agent/releases/tag/v0.3.1).
 
-[Quickstart](docs/quickstart.md) · [Methods](docs/methods.md) · [CLI examples](docs/examples.md) · [Validation](docs/validation-0.3.0.md) · [MIT license](LICENSE) · [Notices](NOTICE.md) · [Citation](CITATION.cff)
+[Archived v0.3.0](https://doi.org/10.5281/zenodo.23260917).
+
+[Quickstart](docs/quickstart.md) · [Methods](docs/methods.md) · [CLI examples](docs/examples.md) · [Validation](docs/validation-0.3.1.md) · [MIT license](LICENSE) · [Notices](NOTICE.md) · [Citation](CITATION.cff)

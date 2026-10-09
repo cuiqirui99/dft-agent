@@ -37,6 +37,7 @@ jobs:
           /tmp/dft-agent-wheel/bin/dft-agent structure-plan --help
           /tmp/dft-agent-wheel/bin/dft-agent prepare-structure --help
           /tmp/dft-agent-wheel/bin/dft-agent convert --help
+          /tmp/dft-agent-wheel/bin/dft-agent memory list --query SOC
           /tmp/dft-agent-wheel/bin/vasp-agent --help
           /tmp/dft-agent-wheel/bin/python -c "from vasp_slurm_agent import app, guidance, experience, recovery, structures, structure_agent"
           /tmp/dft-agent-wheel/bin/python - <<'PY'
@@ -46,6 +47,14 @@ jobs:
           import subprocess
           import tempfile
           from vasp_slurm_agent.config import ClusterConfig
+          from vasp_slurm_agent.knowledge import load_catalog, retrieve_knowledge
+
+          memory = load_catalog()
+          assert any(item["status"] == "rejected" for item in memory)
+          verified = [item for item in memory if item["status"] == "verified"]
+          assert verified and all(item["evidence_valid"] for item in verified)
+          assert {"succeeded", "failed"} <= {item["outcome"] for item in verified}
+          assert retrieve_knowledge("SOC calculation", None)
 
           examples = files("vasp_slurm_agent").joinpath("examples")
           assert len({item.name.rsplit('.', 1)[0] for item in examples.iterdir()

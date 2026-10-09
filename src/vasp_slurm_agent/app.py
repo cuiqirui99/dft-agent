@@ -469,6 +469,83 @@ def _science_details(report):
             st.markdown(f"[{title}]({url})")
         if report.get("experience"):
             st.caption(f"Matched past runs: {len(report['experience'])}. Suggestions only; settings are unchanged.")
+        for item in report.get("knowledge", []):
+            st.write(f"**{item['title']}** — {item['summary']}")
+            for condition in item.get("conditions", []):
+                st.caption(condition)
+            for limit in item.get("limitations", []):
+                st.caption(limit)
+            st.caption(f"Reference: {item['id']}. See Memory for evidence.")
+
+
+def _memory_panel(runs_root):
+    from vasp_slurm_agent.knowledge import load_catalog, preview_import, import_selected
+
+    st.subheader("Memory")
+    st.caption("Built-in guidance and cases. Only verified entries supply advice; settings still need review.")
+    with st.expander("Import local records"):
+        source = st.text_input("Local file or run folder", key="memory_source",
+                               help="Choose an old records.jsonl, platform.db, or a saved DFT Agent run.")
+        stamp = (source.strip(), str(runs_root))
+        if st.session_state.get("memory_import_stamp") != stamp:
+            st.session_state["memory_import_stamp"] = stamp
+            st.session_state.pop("memory_preview", None)
+            st.session_state.pop("memory_selection", None)
+        st.caption("Only selected records are imported. Legacy lessons stay local and need review. Saved runs are rechecked before use.")
+        if st.button("Preview import", disabled=not source.strip()):
+            st.session_state.pop("memory_preview", None)
+            st.session_state.pop("memory_selection", None)
+            try:
+                st.session_state["memory_preview"] = preview_import(Path(source.strip()).expanduser())
+            except (ValueError, OSError, RuntimeError) as exc:
+                st.error(str(exc))
+        preview = st.session_state.get("memory_preview")
+        if preview is not None:
+            if preview:
+                choices = {item["id"]: item for item in preview}
+                selected = st.multiselect("Records", list(choices), key="memory_selection",
+                                          format_func=lambda key: f"{choices[key]['title']} · {choices[key]['status']}")
+                if st.button("Import selected", disabled=not selected):
+                    try:
+                        result = import_selected(Path(source.strip()).expanduser(), selected, runs_root)
+                        st.success(f"Imported {result['imported']}; already saved {result['skipped']}.")
+                    except (ValueError, OSError, RuntimeError) as exc:
+                        st.error(str(exc))
+            else:
+                st.info("No importable records found.")
+    try:
+        records = load_catalog(runs_root)
+    except (ValueError, OSError, RuntimeError) as exc:
+        st.error(str(exc))
+        return
+    search = st.text_input("Search memory", placeholder="SOC, convergence, NiO…").strip().lower()
+    status = st.selectbox("Status", ["All", "verified", "candidate", "shadow_verified", "rejected", "deprecated"])
+    matches = [item for item in records
+               if (status == "All" or item["status"] == status)
+               and (not search or search in " ".join([item["title"], item["summary"],
+                    *item.get("topics", []), *item.get("formulas", []), *item.get("methods", [])]).lower())]
+    if not matches:
+        st.info("No matching records.")
+        return
+    st.dataframe([{"Title": item["title"], "Status": "Rechecked on use" if item.get("import_type") == "run" else item["status"], "Source": item["origin"],
+                   "Evidence": "Checked" if item.get("evidence_valid") else "Needs review"}
+                  for item in matches], hide_index=True)
+    item = matches[st.selectbox("View record", range(len(matches)),
+                               format_func=lambda index: matches[index]["title"])]
+    st.write(item["summary"])
+    if item.get("import_type") == "run" and item.get("evidence_valid"):
+        st.caption("The original inputs and outputs are rechecked for each plan.")
+    elif item["status"] != "verified" or not item.get("evidence_valid"):
+        st.info("This record is not used as verified advice.")
+    for text in item.get("conditions", []):
+        st.write("• " + text)
+    for text in item.get("limitations", []):
+        st.caption(text)
+    for source in item.get("sources", []):
+        st.markdown(f"[{source['title']}]({source['url']})")
+    with st.expander("Evidence"):
+        st.json({"id": item["id"], "status": item["status"], "outcome": item["outcome"],
+                 "evidence": item.get("evidence", [])})
 
 
 def _agent_plan(upload, structure, config, runs_root, settings):
@@ -858,11 +935,13 @@ def main() -> None:
         st.caption("Requires a Slurm account and VASP license.")
         model_settings = _model_editor()
     config = _load_config(config_path)
-    task_tab, history_tab, config_tab = st.tabs(["New calculation", "Runs", "Cluster setup"])
+    task_tab, history_tab, config_tab, memory_tab = st.tabs(["New calculation", "Runs", "Cluster setup", "Memory"])
     with config_tab:
         _config_editor(config_path, config)
     with task_tab:
         _new_run(config, runs_root, model_settings)
+    with memory_tab:
+        _memory_panel(runs_root)
     with history_tab:
         available = sorted(runs_root.glob("*/run.json"), reverse=True) if runs_root.is_dir() else []
         selected = st.selectbox("Select a run", [str(path.parent) for path in available], index=None,

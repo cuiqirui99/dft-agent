@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "public_source": {
+    "title": "DFT Agent v0.3.0 cluster validation",
+    "url": "https://github.com/cuiqirui99/dft-agent/blob/v0.3.0/validation/results/cluster-0.3.0.json",
+    "sha256": "521919038f580cce5065ddb6c2ed117f710939c182b90936b36db42cfa3918f7"
+  },
+  "stage": {
+    "stage": "01_scf",
+    "input_sha256": {
+      "INCAR": "753d9af988c58545663492c7f0abb5167b63d49d36fade7a11cf90e0b720eee8",
+      "KPOINTS": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49",
+      "POSCAR": "2942e884c6a7feb5a81a19d1c86a53a8d24b7399939435eff0c6b302e121b303"
+    },
+    "original_output_sha256": {
+      "result.json": "117038b1c6b32dd7d29a68d530d94a3d881358355391af034cb908443e8a94f5"
+    },
+    "original_outputs_bundled": false,
+    "result": {
+      "task": "scf",
+      "success": false,
+      "converged_electronic": false,
+      "converged_ionic": false,
+      "valid_structure": false,
+      "final_energy_ev": null,
+      "final_max_force_ev_angstrom": null,
+      "vasp_version": null,
+      "forces_available": false,
+      "fermi_energy_ev": null,
+      "final_energy_ev_per_atom": null,
+      "reason": "ValueError: vasprun.xml is missing or empty. The job may have ended before VASP finished.",
+      "scientific_accuracy_validated": false,
+      "input_identity_verified": true,
+      "scheduler_state": "COMPLETED",
+      "failure_code": "RESULT_REJECTED"
+    }
+  },
+  "control": {
+    "passed": true,
+    "no_new_submission": true,
+    "repair_action": "none",
+    "diagnosis": "Complete solver output is unavailable."
+  },
+  "scope": "Missing-output refusal control; no accepted VASP result."
+}
