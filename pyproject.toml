@@ -9,7 +9,7 @@ description = "Run VASP on Slurm."
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE", "NOTICE.md"]
-authors = [{name = "cuiqirui99"}]
+authors = [{name = "Qirui Cui", email = "qiruic@kth.se"}]
 requires-python = ">=3.11"
 dependencies = [
     "pymatgen>=2024.11.13,<2027",

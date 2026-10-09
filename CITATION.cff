@@ -3,8 +3,11 @@ message: "Please cite this software and report your version and settings."
 title: "DFT Agent"
 type: software
 authors:
-  - family-names: "cuiqirui99"
-    website: "https://github.com/cuiqirui99"
+  - family-names: "Cui"
+    given-names: "Qirui"
+    affiliation: "KTH Royal Institute of Technology"
+    orcid: "https://orcid.org/0009-0005-6165-3237"
+    website: "https://www.kth.se/profile/qiruic?l=en"
 version: "0.3.0"
 license: MIT
 repository-code: "https://github.com/cuiqirui99/dft-agent"
