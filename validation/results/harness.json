@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "checked_at": "2026-10-09T07:50:43.516599+00:00",
+  "checked_at": "2026-10-09T07:56:53.571813+00:00",
   "scope": "Scientific harness candidate; not a new release or material-accuracy benchmark.",
   "source_sha256": {
-    "src/vasp_slurm_agent/agent.py": "abc773570585bf51601bcefb82ac3a10d66f490cf43e098a1de844dd8104360e",
+    "src/vasp_slurm_agent/agent.py": "2f218c7a9283b0caf49fe3ce29e9103af064d350bcffa12ab1ec9d0fa56bf38d",
     "src/vasp_slurm_agent/app.py": "80a4eda7566fd119d2f98bb1ad495d82f62074a2a7eb80f4b1e3fa8db963ad51",
     "src/vasp_slurm_agent/cli.py": "5fe3ad7628431ed540e1a041d3e55775ae6d6a79c3fdeec4501dbe2a8708c234",
     "src/vasp_slurm_agent/workflow.py": "9ec34e9b4403784a6c074c5282f22e83100d83c7b148c17e7607ecd6df7ac825",
@@ -12,10 +12,9 @@
     "src/vasp_slurm_agent/recovery.py": "ccc38b3015f985caf8ad73699cc6f154c120120b78ccd940901f567d9a86d942"
   },
   "offline_tests": {
-    "passed": 355,
+    "passed": 357,
     "failed": 0,
-    "errors": 0,
-    "latest_recovery_ui_integration_subset_passed": 63
+    "errors": 0
   },
   "model_checks": {
     "checked_at": "2026-10-09T07:42:22.288657+00:00",

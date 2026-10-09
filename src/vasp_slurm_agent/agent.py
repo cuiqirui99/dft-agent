@@ -447,9 +447,10 @@ def draft_plan(goal: str, structure_path: str | Path | None, settings: ModelSett
         result["scientific_report"] = report
         result["source_sha256"] = source_sha256
         result["goal"] = _redact(goal, secrets)
+        dialogue_plan = {key: value for key, value in result.items() if key != "scientific_report"}
         result["dialogue"] = [
             {**item, "content": _redact(item["content"], secrets)} for item in history
-        ] + [{"role": "assistant", "content": json.dumps(result, ensure_ascii=False)}]
+        ] + [{"role": "assistant", "content": json.dumps(dialogue_plan, ensure_ascii=False)}]
         return result
     except AgentError:
         raise

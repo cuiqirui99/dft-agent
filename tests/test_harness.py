@@ -53,6 +53,40 @@ def test_cli_saves_guidance_in_the_reviewed_proposal(local_cli, monkeypatch, cap
     assert state["status"] == "planned" and all(s["job_id"] is None for s in state["stages"])
 
 
+def test_large_history_report_does_not_block_clarification(local_cli, monkeypatch):
+    source, _, root, _ = local_cli
+    moments = [[1.234567, -0.123456, 2.345678] for _ in range(128)]
+    cases = [{"case_id": str(index), "applicability": "context_only", "stages": [
+        {"task": task, "accepted": True, "method": {"spin": "noncollinear", "magmom": moments},
+         "evidence": [{"id": "stage_1.site_moments", "value": moments, "unit": "mu_B"}]}
+        for task in ("relax", "scf")]}
+        for index in range(4)]
+    monkeypatch.setattr(experience, "retrieve_experience", Mock(return_value=cases))
+    requests = []
+
+    def provider(payload, schema, settings):
+        requests.append(json.loads(payload))
+        reply = model_response(["scf"], missing_moments=True)
+        if len(requests) == 2:
+            reply["parameters"]["magmom"] = [1, -1]
+        return json.dumps(reply)
+
+    monkeypatch.setattr(agent, "_request_plan", provider)
+    goal = "Spin-polarized SCF only. Keep relaxation off."
+    first = agent.draft_plan(goal, source, ModelSettings("codex"), runs_root=root.parent)
+    assert first["status"] == "needs_input" and first["questions"]
+    assert len(json.dumps(first["scientific_report"])) > 20000
+    history = first["dialogue"] + [{"role": "user", "content": "Use moments [1, -1] in uploaded site order."}]
+    second = agent.draft_plan(goal, source, ModelSettings("codex"), history, runs_root=root.parent)
+    assert second["status"] == "ready" and second["parameters"]["magmom"] == [1, -1]
+    assert second["scientific_report"]["experience"] == cases
+    assert requests[1]["scientific_context"]["experience"] == cases
+    previous = json.loads(requests[1]["history"][0]["content"])
+    assert previous["questions"] == first["questions"] and previous["tasks"] == ["scf"]
+    assert "scientific_report" not in previous
+    assert len(first["dialogue"][-1]["content"]) <= 20000
+
+
 from test_recovery import failed_run
 
 
