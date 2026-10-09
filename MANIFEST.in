@@ -1,14 +1,17 @@
 include LICENSE NOTICE.md CHANGELOG.md CITATION.cff
 recursive-include docs *.md
-recursive-include examples *.cif
-recursive-include src/vasp_slurm_agent/examples *.cif
+recursive-include examples *.cif *.vasp *.json
+recursive-include src/vasp_slurm_agent/examples *.cif *.vasp *.json
 include validation/protocol.v1.json
+include validation/methods-0.3.0.json
 include validation/resource-adjustments.v1.json
 include validation/resource-adjustments.v2.json
 include validation/resource-adjustment-outcomes.v1.json
 include validation/legacy-scope.json
 recursive-include validation/results *.json
 recursive-include validation/methods-0.2.0 *.vasp *.py
+recursive-include validation/methods-0.3.0 *.vasp
+recursive-include validation/token-use *.json *.vasp *.py *.md *.txt POSCAR
 include validation/reference/README.md
 include validation/reference/*.py
 include validation/reference/*.json

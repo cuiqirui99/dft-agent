@@ -34,8 +34,11 @@ jobs:
           /tmp/dft-agent-wheel/bin/dft-agent --help
           /tmp/dft-agent-wheel/bin/dft-agent repair --help
           /tmp/dft-agent-wheel/bin/dft-agent prepare-repair --help
+          /tmp/dft-agent-wheel/bin/dft-agent structure-plan --help
+          /tmp/dft-agent-wheel/bin/dft-agent prepare-structure --help
+          /tmp/dft-agent-wheel/bin/dft-agent convert --help
           /tmp/dft-agent-wheel/bin/vasp-agent --help
-          /tmp/dft-agent-wheel/bin/python -c "from vasp_slurm_agent import app, guidance, experience, recovery"
+          /tmp/dft-agent-wheel/bin/python -c "from vasp_slurm_agent import app, guidance, experience, recovery, structures, structure_agent"
           /tmp/dft-agent-wheel/bin/python - <<'PY'
           from importlib.resources import files
           import json
@@ -44,6 +47,11 @@ jobs:
           import tempfile
           from vasp_slurm_agent.config import ClusterConfig
 
+          examples = files("vasp_slurm_agent").joinpath("examples")
+          assert len({item.name.rsplit('.', 1)[0] for item in examples.iterdir()
+                      if item.name.endswith(('.cif', '.vasp'))}) == 17
+          assert len([item for item in examples.iterdir() if item.name.endswith('.vasp')]) == 9
+          assert examples.joinpath("sources.json").is_file()
           with tempfile.TemporaryDirectory() as directory:
               root = Path(directory)
               source = root / "Si.cif"
@@ -57,4 +65,8 @@ jobs:
               state = json.loads((root / "run" / "run.json").read_text())
               assert state["status"] == "planned" and state["stages"][0]["job_id"] is None
               assert (root / "run" / "01_relax" / "inputs" / "POSCAR").is_file()
+              subprocess.run(["/tmp/dft-agent-wheel/bin/dft-agent", "convert", str(source),
+                  str(root / "converted"), "--format", "both"], check=True)
+              assert (root / "converted" / "POSCAR").is_file()
+              assert (root / "converted" / "edited.cif").is_file()
           PY

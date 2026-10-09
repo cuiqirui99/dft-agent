@@ -22,8 +22,16 @@ class ClusterConfig:
     connect_timeout: int = 15
     potcar_symbols: dict[str, str] = field(default_factory=dict)
     vasp_ncl_command: str = ""
+    ssh_control_path: str = ""
 
     def __post_init__(self):
+        if not isinstance(self.ssh_control_path, str) or any(c in self.ssh_control_path for c in "\n\r\x00"):
+            raise ValueError("Use an absolute SSH control socket path without line breaks.")
+        if self.ssh_control_path:
+            path = Path(self.ssh_control_path).expanduser()
+            if not path.is_absolute():
+                raise ValueError("Use an absolute SSH control socket path.")
+            object.__setattr__(self, "ssh_control_path", str(path))
         for key in ("host", "user"):
             value = getattr(self, key)
             if not value or value.startswith("-") or re.search(r"[\s\x00-\x1f]", value):

@@ -1,0 +1,24 @@
+{
+  "purpose": "Current real retrieved NiO advisory cases only. Small site vectors remain complete; this case does not exercise large-vector pruning.",
+  "source_sha256": "a46bdfc3f0e31dd3316c0dd3a1c211b20804b032e0a2858e5c41e93d45783eda",
+  "number_of_sites": 4,
+  "payload_bytes": {
+    "baseline": 8950,
+    "optimized": 8597
+  },
+  "advisory_case_ids": [
+    "25c23c64d7ec0ccc",
+    "07ee3321bfd074a5",
+    "0356db4313a0a1f4"
+  ],
+  "controls": [
+    "same model",
+    "same instructions",
+    "same schema",
+    "same complete geometry",
+    "same explicit user goal",
+    "same verified saved cases"
+  ],
+  "limitations": "Payload bytes are not tokens. No DFT result or general token saving is established by this fixture.",
+  "both_under_96000_bytes": true
+}

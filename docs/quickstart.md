@@ -36,21 +36,29 @@ Use SSH keys or **SSH password (optional)**. Passwords stay in memory;
 until exit. Add `--password` to CLI `watch`, `resume`, `doctor` or `cancel`. Keep
 credentials out of saved files. Interactive MFA requires your site's setup.
 
+For an existing authenticated SSH master, set **SSH control socket (optional)**
+to its absolute socket path. The app reuses it and leaves it open when finished.
+If that session expires, authenticate again before reconnecting.
+
 Set **Configuration file** and **Run folder** in the sidebar. Each run saves
 its own configuration.
 
 ## 3. Prepare and submit
 
-In **New calculation**, upload a CIF or POSCAR. Try `examples/Si.cif`.
-To extract it from an installed package:
+In **New calculation**, upload a CIF or POSCAR, or choose **Example**.
+All [17 examples](structures.md) are included in the installed package.
+Select a material to preview it; **Download input** saves its structure for
+command-line use.
 
-```bash
-python - <<'PY'
-from importlib.resources import files
-from pathlib import Path
-Path("Si.cif").write_bytes(files("vasp_slurm_agent").joinpath("examples", "Si.cif").read_bytes())
-PY
-```
+In **Edit structure**, describe a change and click **Plan structure**. Answer any
+questions in **Follow-up**, then **Preview structure**. Check the cell and site
+order before clicking **Use structure**. Each revision starts from the original
+input. Applying an edit clears the calculation plan and site moments.
+
+For format conversion, choose **Convert to** and click **Convert**. Download the
+CIF or POSCAR, or use it for a calculation. Edits and conversion run locally;
+they need no cluster connection. Conversion needs no model. Calculations use the
+edited POSCAR to preserve site order and the Cartesian frame.
 
 In **Model**, choose OpenAI, a compatible API, or a logged-in Codex CLI.
 For an API, set its model name and key. A compatible API also needs its base
@@ -102,9 +110,32 @@ dft-agent watch --help
 See the [CLI examples](examples.md). `prepare` is local; `watch` submits.
 `status` reads saved progress, and `resume` reconnects.
 
+## Updates
+
+For a cloned install, activate its environment and run:
+
+```bash
+git pull --ff-only
+python -m pip install '.[agent]'
+```
+
+This updates the checked-out branch. New features reach `main` after review;
+a new release then provides versioned installation files on
+[GitHub](https://github.com/cuiqirui99/dft-agent/releases).
+`main` is the maintained version; temporary development branches are removed
+after merging. Release tags identify earlier versions without extra branches.
+If you installed a release wheel, download the new wheel and install it in the
+same environment with `python -m pip install --upgrade 'PATH_TO_WHEEL[agent]'`.
+Updating does not restart saved calculations.
+
+The app is available to researchers with their own cluster and VASP access.
+Model features also need a model account; compatible APIs must support the chosen
+Responses or Chat Completions endpoint and structured JSON output.
+
 ## Scope
 
 Ordered, fully occupied periodic structures, with PBE, magnetism, SOC,
 Dudarev DFT+U, HSE06 and PBE0. See [Methods](methods.md) for settings and limits.
-Defects, phonons, NEB and molecular dynamics are not yet exposed in this package.
+The structure editor can prepare substitutions, vacancies and slabs from an input
+crystal. Phonons, NEB and molecular dynamics are not implemented.
 Failed or unconverged calculations stop without automatic parameter changes.

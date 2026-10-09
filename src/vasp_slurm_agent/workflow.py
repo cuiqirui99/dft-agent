@@ -675,6 +675,10 @@ def bundle_run(run_dir):
             archive.write(root / "explanations.json", "explanations.json")
         if (root / "repair.json").is_file():
             archive.write(root / "repair.json", "repair.json")
+        if (root / "structure_edit").is_dir():
+            for file in sorted((root / "structure_edit").iterdir()):
+                if file.is_file() and not file.is_symlink() and file.name in {"source.cif", "source.vasp", "edited.cif", "POSCAR", "structure.json"}:
+                    archive.write(file, str(file.relative_to(root)))
         if (root / "plan.json").is_file():
             archive.write(root / "plan.json", "plan.json")
             for source in sorted((root / "source").rglob("*")):

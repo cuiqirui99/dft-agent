@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dft-agent"
-version = "0.2.1"
+version = "0.3.0"
 description = "Run VASP on Slurm."
 readme = "README.md"
 license = "MIT"
@@ -51,7 +51,7 @@ package-dir = {"" = "src"}
 where = ["src"]
 
 [tool.setuptools.package-data]
-vasp_slurm_agent = ["examples/*.cif"]
+vasp_slurm_agent = ["examples/*.cif", "examples/*.vasp", "examples/*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

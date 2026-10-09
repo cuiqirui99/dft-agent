@@ -242,6 +242,7 @@ def draft_repair(run_dir, settings: ModelSettings, *, max_attempts: int = MAX_AT
     """Ask the model to choose among evidence-supported, bounded changes."""
     snapshot = _snapshot(run_dir)
     proposal = _base(snapshot, max_attempts)
+    proposal["model_usage"] = None
     action, changes, reason = _allowed(snapshot)
     if proposal["attempt"] > proposal["max_attempts"]:
         reason, action, changes = "The repair attempt limit has been reached.", "none", []
@@ -266,22 +267,32 @@ def draft_repair(run_dir, settings: ModelSettings, *, max_attempts: int = MAX_AT
     context = build_context("Repair " + snapshot["stage"]["name"] + ": " + reason + " " + json.dumps(payload["method"]), summary)
     experience = retrieve_experience(snapshot["root"].parent, summary,
                                      parameters=actual_parameters, tasks=[snapshot["stage"]["name"]])
-    payload.update(scientific_context=context, experience=experience)
+    from .prompt_context import compact_scientific_context
+    compact = compact_scientific_context({**context, "experience": experience})
+    payload.update(scientific_context={key: value for key, value in compact.items() if key != "experience"},
+                   experience=compact["experience"])
     schema = agent._object({"action": {"type": "string", "enum": [action, "none"]},
                             "diagnosis": {"type": "string"},
                             "questions": {"type": "array", "items": {"type": "string"}, "maxItems": 3}})
+    raw = None
     try:
         request = agent._redact(json.dumps(payload), agent._secrets(settings))
-        answer = json.loads(agent._request_structured(request, schema, settings, instructions=_INSTRUCTIONS, name="dft_repair"))
+        raw = agent._request_structured(request, schema, settings, instructions=_INSTRUCTIONS, name="dft_repair")
+        answer = json.loads(raw)
         agent._check_schema(answer, schema)
         if not answer["diagnosis"].strip() or agent._contains_secret(answer, agent._secrets(settings)):
             raise ValueError()
+    except AgentError as exc:
+        if raw is not None:
+            exc.model_usage = agent.response_usage(raw, settings)
+        raise
     except (ValueError, TypeError):
-        raise AgentError("The model returned an invalid repair. Try again.") from None
+        raise AgentError("The model returned an invalid repair. Try again.",
+                         model_usage=agent.response_usage(raw, settings) if raw is not None else None) from None
     proposal.update(diagnosis=explanation._safe_text(answer["diagnosis"])[:2000],
                     questions=[explanation._safe_text(text)[:500] for text in answer["questions"]],
                     model={"provider": settings.provider, "model": settings.model},
-                    guidance=context, experience=experience)
+                    guidance=context, experience=experience, model_usage=agent.response_usage(raw, settings))
     if answer["action"] == action and not answer["questions"]:
         proposal.update(status="ready", action=action, changes=changes)
     return proposal

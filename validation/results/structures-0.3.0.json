@@ -1,0 +1,471 @@
+{
+  "schema_version": 1,
+  "provider": "codex",
+  "model": "gpt-6-astra",
+  "scope": "Actual model calls with deterministic local preview/export checks. No HPC jobs in this geometry check.",
+  "acceptance": {
+    "checks": [
+      {
+        "check": "initial supercell has 16 atoms",
+        "passed": true
+      },
+      {
+        "check": "revised supercell has 6 atoms, no cumulative doubling",
+        "passed": true
+      },
+      {
+        "check": "revised lattice is 3x1x1 of original",
+        "passed": true
+      },
+      {
+        "check": "substitution asks for site instead of guessing",
+        "passed": true
+      },
+      {
+        "check": "only clarified site 1 becomes Ge",
+        "passed": true
+      },
+      {
+        "check": "substitution preserves positions and cell",
+        "passed": true
+      },
+      {
+        "check": "vacancy revision retains seven atoms",
+        "passed": true
+      },
+      {
+        "check": "vacancy revision removes 1 instead of 0",
+        "passed": true
+      },
+      {
+        "check": "slab asks for missing geometry",
+        "passed": true
+      },
+      {
+        "check": "slab termination ambiguity is not guessed",
+        "passed": true
+      },
+      {
+        "check": "clarified slab uses exact dimensions and termination",
+        "passed": true
+      },
+      {
+        "check": "slab remains an unrelaxed geometric model",
+        "passed": true
+      },
+      {
+        "check": "coordinate edits are applied",
+        "passed": true
+      },
+      {
+        "check": "coordinate revision preserves other atom and cell",
+        "passed": true
+      },
+      {
+        "check": "format conversion has no geometry operations",
+        "passed": true
+      },
+      {
+        "check": "format conversion preserves geometry and site order",
+        "passed": true
+      },
+      {
+        "check": "missing source is not fabricated",
+        "passed": true
+      },
+      {
+        "check": "unsupported lattice edit is not silently approximated",
+        "passed": true
+      },
+      {
+        "check": "all ready results retain verified geometry digest",
+        "passed": true
+      }
+    ],
+    "passed": 19,
+    "total": 19,
+    "model_turns": 14,
+    "ready_exports": 9,
+    "hpc_jobs_submitted": 0,
+    "provider_seconds": 90.58117929310538
+  },
+  "cases": {
+    "mode": "actual Codex model, local structure previews and exports",
+    "hpc_jobs_submitted": 0,
+    "source_hashes": {
+      "structure_agent.py": "e2a3d9100c0349a6a81a71ccef3880337108302fad897a2a4ff5903928da0e75",
+      "structures.py": "84e472bb4dfb12f2814f0badc189ce5a3a224b684445cefb1f798b8a8d4342b5"
+    },
+    "cases": [
+      {
+        "case": "supercell_revision",
+        "input_sha256": "ec3459fca57e82b0776a417039b1f7ba34f677186f0990cc0555fa5499302a24",
+        "turns": [
+          {
+            "turn": 1,
+            "status": "ready",
+            "operations": [
+              {
+                "type": "supercell",
+                "matrix": [
+                  [
+                    2,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    2,
+                    0
+                  ],
+                  [
+                    0,
+                    0,
+                    2
+                  ]
+                ]
+              }
+            ],
+            "format": "both",
+            "questions": [],
+            "output": {
+              "formula": "Si",
+              "number_of_sites": 16
+            },
+            "exported": true
+          },
+          {
+            "turn": 2,
+            "status": "ready",
+            "operations": [
+              {
+                "type": "supercell",
+                "matrix": [
+                  [
+                    3,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    1,
+                    0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ]
+              }
+            ],
+            "format": "both",
+            "questions": [],
+            "output": {
+              "formula": "Si",
+              "number_of_sites": 6
+            },
+            "exported": true
+          }
+        ]
+      },
+      {
+        "case": "substitution_clarification",
+        "input_sha256": "ec3459fca57e82b0776a417039b1f7ba34f677186f0990cc0555fa5499302a24",
+        "turns": [
+          {
+            "turn": 1,
+            "status": "needs_input",
+            "operations": [
+              {
+                "type": "replace_sites",
+                "indices": null,
+                "species": "Ge"
+              }
+            ],
+            "format": "cif",
+            "questions": [
+              "Which original Si site should become Ge: 0 at (0, 0, 0) or 1 at (0.25, 0.25, 0.25), in fractional coordinates?",
+              "Specify indices for replace_sites."
+            ]
+          },
+          {
+            "turn": 2,
+            "status": "ready",
+            "operations": [
+              {
+                "type": "replace_sites",
+                "indices": [
+                  1
+                ],
+                "species": "Ge"
+              }
+            ],
+            "format": "cif",
+            "questions": [],
+            "output": {
+              "formula": "SiGe",
+              "number_of_sites": 2
+            },
+            "exported": true
+          }
+        ]
+      },
+      {
+        "case": "vacancy_revision",
+        "input_sha256": "ec3459fca57e82b0776a417039b1f7ba34f677186f0990cc0555fa5499302a24",
+        "turns": [
+          {
+            "turn": 1,
+            "status": "ready",
+            "operations": [
+              {
+                "type": "supercell",
+                "matrix": [
+                  [
+                    2,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    2,
+                    0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ]
+              },
+              {
+                "type": "remove_sites",
+                "indices": [
+                  0
+                ]
+              }
+            ],
+            "format": "poscar",
+            "questions": [],
+            "output": {
+              "formula": "Si",
+              "number_of_sites": 7
+            },
+            "exported": true
+          },
+          {
+            "turn": 2,
+            "status": "ready",
+            "operations": [
+              {
+                "type": "supercell",
+                "matrix": [
+                  [
+                    2,
+                    0,
+                    0
+                  ],
+                  [
+                    0,
+                    2,
+                    0
+                  ],
+                  [
+                    0,
+                    0,
+                    1
+                  ]
+                ]
+              },
+              {
+                "type": "remove_sites",
+                "indices": [
+                  1
+                ]
+              }
+            ],
+            "format": "poscar",
+            "questions": [],
+            "output": {
+              "formula": "Si",
+              "number_of_sites": 7
+            },
+            "exported": true
+          }
+        ]
+      },
+      {
+        "case": "slab_clarification",
+        "input_sha256": "ec3459fca57e82b0776a417039b1f7ba34f677186f0990cc0555fa5499302a24",
+        "turns": [
+          {
+            "turn": 1,
+            "status": "needs_input",
+            "operations": [
+              {
+                "type": "slab",
+                "miller_index": null,
+                "min_slab_size": null,
+                "min_vacuum_size": null,
+                "termination": null
+              }
+            ],
+            "format": "both",
+            "questions": [
+              "What Miller index (h, k, l), minimum slab thickness (\u00c5), and minimum vacuum thickness (\u00c5) should be used?",
+              "Specify miller_index, min_slab_size, min_vacuum_size for slab."
+            ]
+          },
+          {
+            "turn": 2,
+            "status": "needs_input",
+            "operations": [
+              {
+                "type": "slab",
+                "miller_index": [
+                  1,
+                  1,
+                  1
+                ],
+                "min_slab_size": 10,
+                "min_vacuum_size": 15,
+                "termination": null
+              }
+            ],
+            "format": "both",
+            "questions": [
+              "Which slab termination should be used? Choose its zero-based index."
+            ]
+          },
+          {
+            "turn": 3,
+            "status": "ready",
+            "operations": [
+              {
+                "type": "slab",
+                "miller_index": [
+                  1,
+                  1,
+                  1
+                ],
+                "min_slab_size": 10.0,
+                "min_vacuum_size": 15.0,
+                "termination": 0
+              }
+            ],
+            "format": "both",
+            "questions": [],
+            "output": {
+              "formula": "Si",
+              "number_of_sites": 8
+            },
+            "exported": true
+          }
+        ]
+      },
+      {
+        "case": "coordinate_revision",
+        "input_sha256": "ec3459fca57e82b0776a417039b1f7ba34f677186f0990cc0555fa5499302a24",
+        "turns": [
+          {
+            "turn": 1,
+            "status": "ready",
+            "operations": [
+              {
+                "type": "set_site",
+                "index": 1,
+                "fractional_coordinates": [
+                  0.3,
+                  0.25,
+                  0.25
+                ]
+              }
+            ],
+            "format": "both",
+            "questions": [],
+            "output": {
+              "formula": "Si",
+              "number_of_sites": 2
+            },
+            "exported": true
+          },
+          {
+            "turn": 2,
+            "status": "ready",
+            "operations": [
+              {
+                "type": "set_site",
+                "index": 1,
+                "fractional_coordinates": [
+                  0.28,
+                  0.25,
+                  0.25
+                ]
+              }
+            ],
+            "format": "both",
+            "questions": [],
+            "output": {
+              "formula": "Si",
+              "number_of_sites": 2
+            },
+            "exported": true
+          }
+        ]
+      },
+      {
+        "case": "format_only",
+        "input_sha256": "ec3459fca57e82b0776a417039b1f7ba34f677186f0990cc0555fa5499302a24",
+        "turns": [
+          {
+            "turn": 1,
+            "status": "ready",
+            "operations": [],
+            "format": "poscar",
+            "questions": [],
+            "output": {
+              "formula": "Si",
+              "number_of_sites": 2
+            },
+            "exported": true
+          }
+        ]
+      },
+      {
+        "case": "source_required",
+        "input_sha256": null,
+        "turns": [
+          {
+            "turn": 1,
+            "status": "unsupported",
+            "operations": [],
+            "format": "both",
+            "questions": [
+              "Please upload an actual silicon crystal structure as the source.",
+              "Upload a CIF or POSCAR to edit."
+            ]
+          }
+        ]
+      },
+      {
+        "case": "unsupported_lattice",
+        "input_sha256": "ec3459fca57e82b0776a417039b1f7ba34f677186f0990cc0555fa5499302a24",
+        "turns": [
+          {
+            "turn": 1,
+            "status": "unsupported",
+            "operations": [],
+            "format": "both",
+            "questions": []
+          }
+        ]
+      }
+    ]
+  },
+  "source_note": "Measured before the later token-context compaction and duplicate-question cleanup; the geometry engine is unchanged. Current-source installation and regression checks are recorded separately.",
+  "source_receipts": {
+    "summary.json": "1063af70c4d9389a7806a486874bcff4b0e3a6281a2918f37f3c7a7eb5d8231f",
+    "acceptance.json": "792da1240279f21d2626fb533da34f87fb5b23d8d918a5ba471ec5d2c82fd9e7"
+  }
+}

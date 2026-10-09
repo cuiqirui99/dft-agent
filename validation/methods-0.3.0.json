@@ -1,0 +1,869 @@
+{
+  "schema_version": 1,
+  "head": "f16fc003cdc46c673b6366cbf8303d4da6643159",
+  "purpose": "Representative current functional acceptance, not a numerical convergence study or every parameter Cartesian product.",
+  "default_resources": {
+    "ntasks": 8,
+    "walltime": "01:00:00",
+    "reuse_reviewed_cluster_config": true
+  },
+  "parameters_note": "ediffg is the negative VASP force threshold (-0.03 eV/angstrom). Only the UI force widget uses a positive magnitude. Site moments follow each source file exactly.",
+  "cases": [
+    {
+      "case_id": "si-pbe-chain",
+      "tasks": [
+        "relax",
+        "scf",
+        "bands",
+        "dos"
+      ],
+      "parameters": {
+        "encut": 400,
+        "mesh": [
+          2,
+          2,
+          2
+        ],
+        "ediff": 1e-05,
+        "ediffg": -0.03,
+        "nelm": 160,
+        "nsw": 100,
+        "ismear": 0,
+        "sigma": 0.1,
+        "line_density": 1,
+        "nedos": 301,
+        "cell_relax": false
+      },
+      "structure_transform": {
+        "type": "cartesian_displacement",
+        "site": 0,
+        "vector_angstrom": [
+          0.08,
+          0.03,
+          0.0
+        ]
+      },
+      "scf_capability_gate_first": false,
+      "notes": "Fresh baseline for every task, relaxed-structure handoff, DOS and downloads.",
+      "source_structure": "examples/Si.cif",
+      "source_sha256": "ec3459fca57e82b0776a417039b1f7ba34f677186f0990cc0555fa5499302a24"
+    },
+    {
+      "case_id": "mgo-cell-relax",
+      "tasks": [
+        "relax"
+      ],
+      "parameters": {
+        "encut": 400,
+        "mesh": [
+          2,
+          2,
+          2
+        ],
+        "ediff": 1e-05,
+        "ediffg": -0.03,
+        "nelm": 160,
+        "nsw": 100,
+        "ismear": 0,
+        "sigma": 0.1,
+        "line_density": 1,
+        "nedos": 301,
+        "cell_relax": true
+      },
+      "structure_transform": {
+        "type": "isotropic_scale",
+        "lattice_factor": 1.03
+      },
+      "scf_capability_gate_first": false,
+      "notes": "Exercise ISIF=3 and verify nontrivial cell change.",
+      "source_structure": "examples/MgO.cif",
+      "source_sha256": "b759ec1f55b421ab8b5bf7cd14cd7f25fdbad17fad68a6624f37dd7ac786e146"
+    },
+    {
+      "case_id": "fe-collinear-chain",
+      "tasks": [
+        "relax",
+        "scf",
+        "bands",
+        "dos"
+      ],
+      "parameters": {
+        "encut": 400,
+        "mesh": [
+          4,
+          4,
+          4
+        ],
+        "ediff": 1e-05,
+        "ediffg": -0.03,
+        "nelm": 160,
+        "nsw": 100,
+        "ismear": 0,
+        "sigma": 0.1,
+        "line_density": 1,
+        "nedos": 301,
+        "cell_relax": false,
+        "spin": "collinear",
+        "magmom": [
+          3,
+          3
+        ]
+      },
+      "structure_transform": null,
+      "scf_capability_gate_first": false,
+      "notes": "Ferromagnetic seed; validate actual moments without claiming the ground state.",
+      "source_structure": "validation/methods-0.3.0/Fe2.vasp",
+      "source_sha256": "d9e504eddb938b32919f8b8b5ceb48c8db1be135b23e522c24e8d6905a34451d"
+    },
+    {
+      "case_id": "fe-noncollinear-chain",
+      "tasks": [
+        "relax",
+        "scf",
+        "bands",
+        "dos"
+      ],
+      "parameters": {
+        "encut": 400,
+        "mesh": [
+          2,
+          2,
+          2
+        ],
+        "ediff": 1e-05,
+        "ediffg": -0.03,
+        "nelm": 160,
+        "nsw": 100,
+        "ismear": 0,
+        "sigma": 0.1,
+        "line_density": 1,
+        "nedos": 301,
+        "cell_relax": false,
+        "spin": "noncollinear",
+        "magmom": [
+          [
+            0,
+            0,
+            3
+          ],
+          [
+            3,
+            0,
+            0
+          ]
+        ],
+        "saxis": [
+          0,
+          0,
+          1
+        ]
+      },
+      "structure_transform": null,
+      "scf_capability_gate_first": false,
+      "notes": "Nonparallel initial vectors without SOC. A converged state may become collinear.",
+      "source_structure": "validation/methods-0.3.0/Fe2.vasp",
+      "source_sha256": "d9e504eddb938b32919f8b8b5ceb48c8db1be135b23e522c24e8d6905a34451d"
+    },
+    {
+      "case_id": "fe-soc-chain",
+      "tasks": [
+        "relax",
+        "scf",
+        "bands",
+        "dos"
+      ],
+      "parameters": {
+        "encut": 400,
+        "mesh": [
+          2,
+          2,
+          2
+        ],
+        "ediff": 1e-05,
+        "ediffg": -0.03,
+        "nelm": 160,
+        "nsw": 100,
+        "ismear": 0,
+        "sigma": 0.1,
+        "line_density": 1,
+        "nedos": 301,
+        "cell_relax": false,
+        "spin": "noncollinear",
+        "soc": true,
+        "magmom": [
+          [
+            0,
+            0,
+            3
+          ],
+          [
+            0,
+            0,
+            3
+          ]
+        ],
+        "saxis": [
+          1,
+          1,
+          1
+        ]
+      },
+      "structure_transform": null,
+      "scf_capability_gate_first": false,
+      "notes": "Nondefault spinor basis, frame preservation and SOC DOS.",
+      "source_structure": "validation/methods-0.3.0/Fe2.vasp",
+      "source_sha256": "d9e504eddb938b32919f8b8b5ceb48c8db1be135b23e522c24e8d6905a34451d"
+    },
+    {
+      "case_id": "si-zero-seed-soc-chain",
+      "tasks": [
+        "relax",
+        "scf",
+        "bands",
+        "dos"
+      ],
+      "parameters": {
+        "encut": 400,
+        "mesh": [
+          2,
+          2,
+          2
+        ],
+        "ediff": 1e-05,
+        "ediffg": -0.03,
+        "nelm": 160,
+        "nsw": 100,
+        "ismear": 0,
+        "sigma": 0.1,
+        "line_density": 1,
+        "nedos": 301,
+        "cell_relax": false,
+        "spin": "none",
+        "soc": true,
+        "saxis": [
+          0,
+          0,
+          1
+        ]
+      },
+      "structure_transform": null,
+      "scf_capability_gate_first": false,
+      "notes": "Tests the explicit zero-vector seed path; does not constrain final magnetization.",
+      "source_structure": "examples/Si.cif",
+      "source_sha256": "ec3459fca57e82b0776a417039b1f7ba34f677186f0990cc0555fa5499302a24"
+    },
+    {
+      "case_id": "nio-u-chain",
+      "tasks": [
+        "relax",
+        "scf",
+        "bands",
+        "dos"
+      ],
+      "parameters": {
+        "encut": 400,
+        "mesh": [
+          2,
+          2,
+          2
+        ],
+        "ediff": 1e-05,
+        "ediffg": -0.03,
+        "nelm": 160,
+        "nsw": 100,
+        "ismear": 0,
+        "sigma": 0.1,
+        "line_density": 1,
+        "nedos": 301,
+        "cell_relax": false,
+        "spin": "collinear",
+        "magmom": [
+          2,
+          0,
+          -2,
+          0
+        ],
+        "hubbard_u": {
+          "Ni": {
+            "l": 2,
+            "u": 5.0,
+            "j": 0.0
+          }
+        }
+      },
+      "structure_transform": null,
+      "scf_capability_gate_first": false,
+      "notes": "AFM test seed with explicit illustrative Ni U/J; not a U calibration.",
+      "source_structure": "validation/methods-0.2.0/NiO.vasp",
+      "source_sha256": "a46bdfc3f0e31dd3316c0dd3a1c211b20804b032e0a2858e5c41e93d45783eda"
+    },
+    {
+      "case_id": "nio-u-noncollinear-scf",
+      "tasks": [
+        "scf"
+      ],
+      "parameters": {
+        "encut": 400,
+        "mesh": [
+          2,
+          2,
+          2
+        ],
+        "ediff": 1e-05,
+        "ediffg": -0.03,
+        "nelm": 160,
+        "nsw": 100,
+        "ismear": 0,
+        "sigma": 0.1,
+        "line_density": 1,
+        "nedos": 301,
+        "cell_relax": false,
+        "spin": "noncollinear",
+        "magmom": [
+          [
+            0,
+            0,
+            2
+          ],
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            2,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "hubbard_u": {
+          "Ni": {
+            "l": 2,
+            "u": 5.0,
+            "j": 0.0
+          }
+        },
+        "saxis": [
+          0,
+          0,
+          1
+        ]
+      },
+      "structure_transform": null,
+      "scf_capability_gate_first": false,
+      "notes": "",
+      "source_structure": "validation/methods-0.2.0/NiO.vasp",
+      "source_sha256": "a46bdfc3f0e31dd3316c0dd3a1c211b20804b032e0a2858e5c41e93d45783eda"
+    },
+    {
+      "case_id": "nio-u-soc-chain",
+      "tasks": [
+        "relax",
+        "scf",
+        "bands",
+        "dos"
+      ],
+      "parameters": {
+        "encut": 400,
+        "mesh": [
+          2,
+          2,
+          2
+        ],
+        "ediff": 1e-05,
+        "ediffg": -0.03,
+        "nelm": 160,
+        "nsw": 100,
+        "ismear": 0,
+        "sigma": 0.1,
+        "line_density": 1,
+        "nedos": 301,
+        "cell_relax": false,
+        "spin": "noncollinear",
+        "soc": true,
+        "magmom": [
+          [
+            0,
+            0,
+            2
+          ],
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            -2
+          ],
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "hubbard_u": {
+          "Ni": {
+            "l": 2,
+            "u": 5.0,
+            "j": 0.0
+          }
+        },
+        "saxis": [
+          0,
+          0,
+          1
+        ]
+      },
+      "structure_transform": null,
+      "scf_capability_gate_first": false,
+      "notes": "Combined SOC and +U; retain site/POTCAR mapping.",
+      "source_structure": "validation/methods-0.2.0/NiO.vasp",
+      "source_sha256": "a46bdfc3f0e31dd3316c0dd3a1c211b20804b032e0a2858e5c41e93d45783eda"
+    },
+    {
+      "case_id": "si-hse06-chain",
+      "tasks": [
+        "relax",
+        "scf",
+        "bands",
+        "dos"
+      ],
+      "parameters": {
+        "encut": 400,
+        "mesh": [
+          2,
+          2,
+          2
+        ],
+        "ediff": 1e-05,
+        "ediffg": -0.03,
+        "nelm": 160,
+        "nsw": 100,
+        "ismear": 0,
+        "sigma": 0.1,
+        "line_density": 1,
+        "nedos": 301,
+        "cell_relax": false,
+        "functional": "HSE06"
+      },
+      "structure_transform": null,
+      "scf_capability_gate_first": false,
+      "notes": "Every hybrid task, including previously untested relaxation/PBE0 spectra.",
+      "source_structure": "examples/Si.cif",
+      "source_sha256": "ec3459fca57e82b0776a417039b1f7ba34f677186f0990cc0555fa5499302a24"
+    },
+    {
+      "case_id": "nio-hse06-magnetic-chain",
+      "tasks": [
+        "relax",
+        "scf",
+        "bands",
+        "dos"
+      ],
+      "parameters": {
+        "encut": 400,
+        "mesh": [
+          2,
+          2,
+          2
+        ],
+        "ediff": 1e-05,
+        "ediffg": -0.03,
+        "nelm": 160,
+        "nsw": 100,
+        "ismear": 0,
+        "sigma": 0.1,
+        "line_density": 1,
+        "nedos": 301,
+        "cell_relax": false,
+        "functional": "HSE06",
+        "spin": "collinear",
+        "magmom": [
+          2,
+          0,
+          -2,
+          0
+        ]
+      },
+      "structure_transform": null,
+      "scf_capability_gate_first": false,
+      "notes": "Magnetic hybrid regime. Keep AFM local moments and hybrid orbital checks explicit.",
+      "source_structure": "validation/methods-0.2.0/NiO.vasp",
+      "source_sha256": "a46bdfc3f0e31dd3316c0dd3a1c211b20804b032e0a2858e5c41e93d45783eda"
+    },
+    {
+      "case_id": "si-hse06-soc-probe",
+      "tasks": [
+        "relax",
+        "scf",
+        "bands",
+        "dos"
+      ],
+      "parameters": {
+        "encut": 400,
+        "mesh": [
+          2,
+          2,
+          2
+        ],
+        "ediff": 1e-05,
+        "ediffg": -0.03,
+        "nelm": 160,
+        "nsw": 100,
+        "ismear": 0,
+        "sigma": 0.1,
+        "line_density": 1,
+        "nedos": 301,
+        "cell_relax": false,
+        "functional": "HSE06",
+        "spin": "none",
+        "soc": true,
+        "saxis": [
+          0,
+          0,
+          1
+        ]
+      },
+      "structure_transform": null,
+      "scf_capability_gate_first": true,
+      "notes": "Run SCF first on installed VASP 6.2.1. If unsupported, document exact solver error and correct product support; do not silently exclude.",
+      "source_structure": "examples/Si.cif",
+      "source_sha256": "ec3459fca57e82b0776a417039b1f7ba34f677186f0990cc0555fa5499302a24"
+    },
+    {
+      "case_id": "nio-hse06-u-soc-probe",
+      "tasks": [
+        "scf"
+      ],
+      "parameters": {
+        "encut": 400,
+        "mesh": [
+          2,
+          2,
+          2
+        ],
+        "ediff": 1e-05,
+        "ediffg": -0.03,
+        "nelm": 160,
+        "nsw": 100,
+        "ismear": 0,
+        "sigma": 0.1,
+        "line_density": 1,
+        "nedos": 301,
+        "cell_relax": false,
+        "functional": "HSE06",
+        "spin": "noncollinear",
+        "soc": true,
+        "magmom": [
+          [
+            0,
+            0,
+            2
+          ],
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            -2
+          ],
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "hubbard_u": {
+          "Ni": {
+            "l": 2,
+            "u": 5.0,
+            "j": 0.0
+          }
+        },
+        "saxis": [
+          0,
+          0,
+          1
+        ]
+      },
+      "structure_transform": null,
+      "scf_capability_gate_first": true,
+      "notes": "Currently accepted combined settings; a technical support probe, not a recommended calibrated method. If full combination fails, isolate hybrid+U and hybrid+SOC independently.",
+      "source_structure": "validation/methods-0.2.0/NiO.vasp",
+      "source_sha256": "a46bdfc3f0e31dd3316c0dd3a1c211b20804b032e0a2858e5c41e93d45783eda"
+    },
+    {
+      "case_id": "si-pbe0-chain",
+      "tasks": [
+        "relax",
+        "scf",
+        "bands",
+        "dos"
+      ],
+      "parameters": {
+        "encut": 400,
+        "mesh": [
+          2,
+          2,
+          2
+        ],
+        "ediff": 1e-05,
+        "ediffg": -0.03,
+        "nelm": 160,
+        "nsw": 100,
+        "ismear": 0,
+        "sigma": 0.1,
+        "line_density": 1,
+        "nedos": 301,
+        "cell_relax": false,
+        "functional": "PBE0"
+      },
+      "structure_transform": null,
+      "scf_capability_gate_first": false,
+      "notes": "Every hybrid task, including previously untested relaxation/PBE0 spectra.",
+      "source_structure": "examples/Si.cif",
+      "source_sha256": "ec3459fca57e82b0776a417039b1f7ba34f677186f0990cc0555fa5499302a24"
+    },
+    {
+      "case_id": "nio-pbe0-magnetic-chain",
+      "tasks": [
+        "relax",
+        "scf",
+        "bands",
+        "dos"
+      ],
+      "parameters": {
+        "encut": 400,
+        "mesh": [
+          2,
+          2,
+          2
+        ],
+        "ediff": 1e-05,
+        "ediffg": -0.03,
+        "nelm": 160,
+        "nsw": 100,
+        "ismear": 0,
+        "sigma": 0.1,
+        "line_density": 1,
+        "nedos": 301,
+        "cell_relax": false,
+        "functional": "PBE0",
+        "spin": "collinear",
+        "magmom": [
+          2,
+          0,
+          -2,
+          0
+        ]
+      },
+      "structure_transform": null,
+      "scf_capability_gate_first": false,
+      "notes": "Magnetic hybrid regime. Keep AFM local moments and hybrid orbital checks explicit.",
+      "source_structure": "validation/methods-0.2.0/NiO.vasp",
+      "source_sha256": "a46bdfc3f0e31dd3316c0dd3a1c211b20804b032e0a2858e5c41e93d45783eda"
+    },
+    {
+      "case_id": "si-pbe0-soc-probe",
+      "tasks": [
+        "relax",
+        "scf",
+        "bands",
+        "dos"
+      ],
+      "parameters": {
+        "encut": 400,
+        "mesh": [
+          2,
+          2,
+          2
+        ],
+        "ediff": 1e-05,
+        "ediffg": -0.03,
+        "nelm": 160,
+        "nsw": 100,
+        "ismear": 0,
+        "sigma": 0.1,
+        "line_density": 1,
+        "nedos": 301,
+        "cell_relax": false,
+        "functional": "PBE0",
+        "spin": "none",
+        "soc": true,
+        "saxis": [
+          0,
+          0,
+          1
+        ]
+      },
+      "structure_transform": null,
+      "scf_capability_gate_first": true,
+      "notes": "Run SCF first on installed VASP 6.2.1. If unsupported, document exact solver error and correct product support; do not silently exclude.",
+      "source_structure": "examples/Si.cif",
+      "source_sha256": "ec3459fca57e82b0776a417039b1f7ba34f677186f0990cc0555fa5499302a24"
+    },
+    {
+      "case_id": "nio-pbe0-u-soc-probe",
+      "tasks": [
+        "scf"
+      ],
+      "parameters": {
+        "encut": 400,
+        "mesh": [
+          2,
+          2,
+          2
+        ],
+        "ediff": 1e-05,
+        "ediffg": -0.03,
+        "nelm": 160,
+        "nsw": 100,
+        "ismear": 0,
+        "sigma": 0.1,
+        "line_density": 1,
+        "nedos": 301,
+        "cell_relax": false,
+        "functional": "PBE0",
+        "spin": "noncollinear",
+        "soc": true,
+        "magmom": [
+          [
+            0,
+            0,
+            2
+          ],
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            -2
+          ],
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "hubbard_u": {
+          "Ni": {
+            "l": 2,
+            "u": 5.0,
+            "j": 0.0
+          }
+        },
+        "saxis": [
+          0,
+          0,
+          1
+        ]
+      },
+      "structure_transform": null,
+      "scf_capability_gate_first": true,
+      "notes": "Currently accepted combined settings; a technical support probe, not a recommended calibrated method. If full combination fails, isolate hybrid+U and hybrid+SOC independently.",
+      "source_structure": "validation/methods-0.2.0/NiO.vasp",
+      "source_sha256": "a46bdfc3f0e31dd3316c0dd3a1c211b20804b032e0a2858e5c41e93d45783eda"
+    },
+    {
+      "case_id": "fe-seed-comparison",
+      "tasks": [
+        "scf"
+      ],
+      "parameters": {
+        "encut": 400,
+        "mesh": [
+          4,
+          4,
+          4
+        ],
+        "ediff": 1e-05,
+        "ediffg": -0.03,
+        "nelm": 160,
+        "nsw": 100,
+        "ismear": 0,
+        "sigma": 0.1,
+        "line_density": 1,
+        "nedos": 301,
+        "cell_relax": false
+      },
+      "structure_transform": null,
+      "scf_capability_gate_first": false,
+      "notes": "NM/FM/AFM common-cell comparison; source is one Fe, so shared AFM supercell generation is exercised.",
+      "magnetic_states": [
+        "NM",
+        "FM",
+        "AFM"
+      ],
+      "initial_moment": 3.0,
+      "source_structure": "validation/methods-0.2.0/Fe.vasp",
+      "source_sha256": "b908cea5c93260ced3cd1f521703929bfe06a335cd32daefe2ef396817bce6c7"
+    }
+  ],
+  "recovery_cases": [
+    {
+      "id": "electronic-repair",
+      "base_case": "si-pbe-chain",
+      "tasks": [
+        "scf"
+      ],
+      "override": {
+        "nelm": 1
+      },
+      "expected": "COMPLETED but rejected electronic convergence; model repair changes only NELM; submit child and accept."
+    },
+    {
+      "id": "ionic-repair",
+      "base_case": "si-pbe-chain",
+      "tasks": [
+        "relax"
+      ],
+      "override": {
+        "nsw": 1
+      },
+      "expected": "Displaced geometry and NSW=1 produce an ionic limit; repair changes only NSW, not EDIFFG; accept new run."
+    },
+    {
+      "id": "walltime-repair",
+      "base_case": "si-pbe-chain",
+      "tasks": [
+        "scf"
+      ],
+      "walltime": "00:01:00",
+      "expected": "A 75-second pre-solver delay exceeds the initial 1-minute Slurm limit. The recorded repair increases only walltime, retaining the same delayed command and inputs.",
+      "injected_delay_seconds": 75,
+      "protocol_change": "Use a controlled scheduler timeout instead of relying on material-dependent solver runtime. This does not measure VASP performance."
+    },
+    {
+      "id": "resume-cancel",
+      "tasks": [
+        "scf"
+      ],
+      "expected": "Use a dedicated, authorized test job; stop local monitoring only, resume same job, then cancel and confirm sacct. Never cancel unrelated jobs."
+    },
+    {
+      "id": "unknown-failure-refusal",
+      "expected": "Retained missing-output/unknown failure produces needs_input, with no new submission."
+    }
+  ],
+  "coverage_note": "HSE/PBE0+SOC compatibility is deliberately tested, not assumed. Combined-regime failures need isolated probes or an explicit supported-scope correction. Other noncollinear/+U/hybrid permutations remain unproven unless recorded separately.",
+  "acceptance": [
+    "Record source/module/config/input hashes and actual solver version.",
+    "Require scheduler COMPLETED plus parser acceptance; distinguish failure from test omission.",
+    "Check real method tags, geometry/site propagation, local magnetic moments, U/J order, hybrid path consistency and generated exports.",
+    "Use the installed wheel outside the source checkout for at least one full model-to-results case.",
+    "Do not mutate original jobs/results; repairs create new runs."
+  ]
+}

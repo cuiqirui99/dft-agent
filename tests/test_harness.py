@@ -80,7 +80,10 @@ def test_large_history_report_does_not_block_clarification(local_cli, monkeypatc
     second = agent.draft_plan(goal, source, ModelSettings("codex"), history, runs_root=root.parent)
     assert second["status"] == "ready" and second["parameters"]["magmom"] == [1, -1]
     assert second["scientific_report"]["experience"] == cases
-    assert requests[1]["scientific_context"]["experience"] == cases
+    advisory = requests[1]["scientific_context"]["experience"]
+    assert len(advisory) == 4 and all(len(case["stages"]) == 2 for case in advisory)
+    assert advisory[0]["stages"][0]["method"]["magmom_ref"]["items"] == 128
+    assert "magmom" not in advisory[0]["stages"][0]["method"]
     previous = json.loads(requests[1]["history"][0]["content"])
     assert previous["questions"] == first["questions"] and previous["tasks"] == ["scf"]
     assert "scientific_report" not in previous

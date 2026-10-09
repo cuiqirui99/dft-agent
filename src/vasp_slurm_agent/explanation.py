@@ -56,7 +56,7 @@ def _safe_text(value: Any) -> str:
     text = re.sub(r"(?:https?|ssh)://\S+|(?<![\w])/(?:[^\s,;]+)", "[private location]", text)
     text = re.sub(r"\b\S+@\S+", "[private connection]", text)
     text = re.sub(r"(?i)\b(?:api[_ -]?key|password|token|secret)\s*[:=]\s*\S+", "[redacted credential]", text)
-    return text[:20000]
+    return text
 
 
 def _safe_parameters(value: Any) -> dict[str, Any]:
@@ -160,7 +160,7 @@ def load_run_context(run_dir: str | Path) -> dict[str, Any]:
     goal = _safe_text(proposal.get("goal")) if proposal_matches else ""
     dialogue = [{"role": item["role"], "content": _safe_text(item.get("content"))}
                 for item in (proposal.get("dialogue", []) if proposal_matches else [])
-                if isinstance(item, dict) and item.get("role") in {"user", "assistant"}][-30:]
+                if isinstance(item, dict) and item.get("role") in {"user", "assistant"}]
     if not goal:
         limits.append("The original user goal is unavailable or is not linked to this frozen plan.")
     facts: dict[str, dict[str, Any]] = {}
@@ -325,14 +325,15 @@ def explain_run(run_dir: str | Path, settings: ModelSettings, question: str = "E
     if not isinstance(question, str) or not question.strip() or len(question) > 10000:
         raise AgentError("Ask a result question in 1–10,000 characters.")
     history = history or []
-    if len(history) > 30 or any(not isinstance(item, dict) or item.get("role") not in {"user", "assistant"}
-                              or not isinstance(item.get("content"), str) for item in history):
+    if not isinstance(history, list) or any(not isinstance(item, dict) or item.get("role") not in {"user", "assistant"}
+                              or not isinstance(item.get("content"), str) or len(item["content"]) > 20000 for item in history):
         raise AgentError("The result conversation is invalid or too long.")
     context = load_run_context(run_dir)
     strings = {"type": "array", "items": {"type": "string"}}
     schema = agent._object({"answer": {"type": "string"}, "evidence": strings, "limits": strings, "next_steps": strings})
-    payload = {"context": context, "question": _safe_text(question),
-               "history": [{"role": item["role"], "content": _safe_text(item["content"])} for item in history]}
+    from .prompt_context import compact_explanation_context, compact_history
+    payload = {"context": compact_explanation_context(context), "question": _safe_text(question),
+               "history": compact_history([{"role": item["role"], "content": _safe_text(item["content"])} for item in history])}
     secrets = agent._secrets(settings)
     def redact(value):
         if isinstance(value, str):
@@ -343,6 +344,7 @@ def explain_run(run_dir: str | Path, settings: ModelSettings, question: str = "E
             return {key: redact(item) for key, item in value.items()}
         return value
     request = json.dumps(redact(payload), ensure_ascii=False)
+    raw = None
     try:
         raw = agent._request_structured(request, schema, settings, instructions=_INSTRUCTIONS, name="dft_explanation")
         answer = json.loads(raw)
@@ -392,8 +394,12 @@ def explain_run(run_dir: str | Path, settings: ModelSettings, question: str = "E
         answer["limits"] = list(dict.fromkeys([*answer["limits"], *mandatory]))
         answer["context_sha256"] = context["context_sha256"]
         answer["provenance"] = {"provider": settings.provider, "model": settings.model or "Codex CLI default"}
+        answer["model_usage"] = agent.response_usage(raw, settings)
         return answer
-    except AgentError:
+    except AgentError as exc:
+        if raw is not None:
+            exc.model_usage = agent.response_usage(raw, settings)
         raise
     except Exception:
-        raise AgentError("The model explanation could not be verified against the saved results. Try again.") from None
+        raise AgentError("The model explanation could not be verified against the saved results. Try again.",
+                         model_usage=agent.response_usage(raw, settings) if raw is not None else None) from None

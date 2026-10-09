@@ -46,5 +46,5 @@ Plans can chain relaxation, SCF, bands and DOS. PBE spectra reuse an SCF charge
 density; hybrid spectra solve self-consistently. Magnetic comparisons currently
 support SCF only. The same method settings apply throughout a chain.
 
-Unsupported requests are returned for review. Phonons, defects, NEB and MD
-remain outside this release.
+The structure editor supports substitutions, vacancies and slabs. Defect formation
+energies, phonons, NEB and MD remain outside this release.

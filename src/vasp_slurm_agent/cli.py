@@ -62,11 +62,28 @@ def main():
     plan = commands.add_parser("plan", help="Plan from a goal")
     plan.add_argument("structure", type=Path)
     plan.add_argument("goal")
+    plan.add_argument("--previous", type=Path, help="Revise a saved calculation plan")
     plan.add_argument("--provider", choices=("responses", "chat_completions", "codex"), default="responses")
     plan.add_argument("--model", default=os.environ.get("DFT_AGENT_MODEL", ""))
     plan.add_argument("--base-url", default=os.environ.get("DFT_AGENT_BASE_URL", ""))
     plan.add_argument("--output", type=Path, default=Path("plan.json"))
     plan.add_argument("--runs", type=Path, help="Past runs for method guidance")
+    structure_plan = commands.add_parser("structure-plan", help="Plan structure edits")
+    structure_plan.add_argument("structure", type=Path)
+    structure_plan.add_argument("goal")
+    structure_plan.add_argument("--previous", type=Path, help="Revise a saved structure plan")
+    structure_plan.add_argument("--provider", choices=("responses", "chat_completions", "codex"), default="responses")
+    structure_plan.add_argument("--model", default=os.environ.get("DFT_AGENT_MODEL", ""))
+    structure_plan.add_argument("--base-url", default=os.environ.get("DFT_AGENT_BASE_URL", ""))
+    structure_plan.add_argument("--output", type=Path, default=Path("structure-plan.json"))
+    structure_prep = commands.add_parser("prepare-structure", help="Apply reviewed structure edits")
+    structure_prep.add_argument("structure", type=Path)
+    structure_prep.add_argument("output_dir", type=Path)
+    structure_prep.add_argument("--plan", type=Path, required=True)
+    convert = commands.add_parser("convert", help="Convert CIF or POSCAR")
+    convert.add_argument("structure", type=Path)
+    convert.add_argument("output_dir", type=Path)
+    convert.add_argument("--format", choices=("cif", "poscar", "both"), default="both")
     explain = commands.add_parser("explain", help="Explain saved results")
     explain.add_argument("run_dir", type=Path)
     explain.add_argument("--question", default="Explain the results.")
@@ -128,11 +145,43 @@ def main():
             return 0 if result["ok"] else 1
         if args.command == "plan":
             from .agent import ModelSettings, draft_plan
+            goal, history = args.goal, []
+            if args.previous:
+                previous = json.loads(args.previous.read_text())
+                if previous.get("source_sha256") != hashlib.sha256(args.structure.read_bytes()).hexdigest():
+                    raise ValueError("The source changed. Start a new calculation plan.")
+                if not isinstance(previous.get("goal"), str) or not isinstance(previous.get("dialogue"), list):
+                    raise ValueError("This plan has no conversation. Start a new calculation plan.")
+                goal = previous["goal"]
+                history = previous["dialogue"] + [{"role": "user", "content": args.goal}]
             settings = ModelSettings(provider=args.provider, model=args.model, base_url=args.base_url or None)
-            result = draft_plan(args.goal, args.structure, settings, runs_root=args.runs)
+            result = draft_plan(goal, args.structure, settings, history=history, runs_root=args.runs)
             args.output.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n")
             print(json.dumps(result, indent=2, ensure_ascii=False))
             return 0 if result["status"] == "ready" else 1
+        if args.command == "structure-plan":
+            from .agent import ModelSettings
+            from .structure_agent import draft_structure
+            goal, history = args.goal, []
+            if args.previous:
+                previous = json.loads(args.previous.read_text())
+                if previous.get("source_sha256") != hashlib.sha256(args.structure.read_bytes()).hexdigest():
+                    raise ValueError("The source changed. Start a new structure plan.")
+                goal = previous["goal"]
+                history = previous["dialogue"] + [{"role": "user", "content": args.goal}]
+            settings = ModelSettings(provider=args.provider, model=args.model, base_url=args.base_url or None)
+            result = draft_structure(goal, args.structure, settings, history=history)
+            args.output.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n")
+            print(json.dumps(result, indent=2, ensure_ascii=False))
+            return 0 if result["status"] == "ready" else 1
+        if args.command in {"prepare-structure", "convert"}:
+            from .structures import apply_structure_plan
+            proposal = json.loads(args.plan.read_text()) if args.command == "prepare-structure" else {
+                "schema_version": 1, "status": "ready", "operations": [], "output_format": args.format,
+                "source_sha256": hashlib.sha256(args.structure.read_bytes()).hexdigest()}
+            result = apply_structure_plan(args.structure, args.output_dir, proposal)
+            print(json.dumps(result, indent=2, ensure_ascii=False))
+            return 0
         if args.command == "explain":
             from .agent import ModelSettings
             from .explanation import explain_run

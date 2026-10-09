@@ -1,0 +1,521 @@
+{
+  "schema_version": 1,
+  "measured_date": "2026-10-09",
+  "verified_utc": "2026-10-09T08:37:01.696596+00:00",
+  "provider": "codex",
+  "model": "gpt-6-astra",
+  "calls": 6,
+  "repetitions_per_input": 1,
+  "hpc_jobs_submitted": 0,
+  "new_solver_calculations": 0,
+  "measurement_scope": "Three controlled before/after prompt pairs; not an estimate of typical savings or latency.",
+  "limits": [
+    "Provider input counts include the full model request, not only the JSON payload.",
+    "Cached input and reasoning tokens are subsets of input and output tokens respectively.",
+    "The long revision dialogue is a constructed fixture; advisory numerical facts come from verified saved runs.",
+    "Real advisory vectors are small and remain complete; large-vector pruning is tested separately offline.",
+    "One response per input is not enough to establish average output-token savings or latency."
+  ],
+  "source_hashes_at_measurement": {
+    "src/vasp_slurm_agent/agent.py": "9eba7d32f47b72b64a95173da362f7eeff269e44d310588339cb71325a0b8587",
+    "src/vasp_slurm_agent/model_usage.py": "8c9597a1f039f636d7f0be6aad5b90812c84914ae0a63ab8b12eabf62a8027aa",
+    "src/vasp_slurm_agent/prompt_context.py": "0c33906b56dd724bd38069849dd0ae5a8144f1503bff26ff037eb45d410786e2"
+  },
+  "verification": {
+    "public_fixture_files_byte_identical_to_measured_inputs": true,
+    "request_payload_serialization_byte_identical": true,
+    "current_source_hashes_match_measurement": true,
+    "public_responses_revalidated_against_schema_and_expected_semantics": true,
+    "normalized_usage_matches_retained_provider_events": true
+  },
+  "cases": [
+    {
+      "case": "long-revision",
+      "fixtures": {
+        "baseline.payload.json": {
+          "path": "validation/token-use/long-revision/baseline.payload.json",
+          "sha256": "e363ecab818f04f53d54b0b5b11984c649a59f755bcc949e4df9aa1bbbb052b5",
+          "bytes": 23154
+        },
+        "optimized.payload.json": {
+          "path": "validation/token-use/long-revision/optimized.payload.json",
+          "sha256": "75d23145c99075d7d73742e4c5f87612a5550aabfa491065cca2c322f5a1b4f2",
+          "bytes": 17754
+        },
+        "instructions.txt": {
+          "path": "validation/token-use/long-revision/instructions.txt",
+          "sha256": "eb5641a3c70410304e5a26f2318114a9472938727a792f7e11d17fa614db3434",
+          "bytes": 3666
+        },
+        "schema.json": {
+          "path": "validation/token-use/long-revision/schema.json",
+          "sha256": "75b3db534dc45cccfacb84d94db3865343d6e3fa28780e7774eb8e858ecf399b",
+          "bytes": 10387
+        },
+        "expected.json": {
+          "path": "validation/token-use/long-revision/expected.json",
+          "sha256": "23d8efb5e2583391d3b944031a9dd5382371ed3f406fcce421387f5e1ca358ab",
+          "bytes": 1068
+        },
+        "pair-spec.json": {
+          "path": "validation/token-use/long-revision/pair-spec.json",
+          "sha256": "455cb5ec904b54a76b23b4aaa8bc0bf367ca469f4d4bf2502aa4dc7b3a5bfbd7",
+          "bytes": 1077
+        },
+        "POSCAR": {
+          "path": "validation/token-use/long-revision/POSCAR",
+          "sha256": "5c73cafd723d45359953370b5b6221f88da967c8df260587c0e65dc2f619b506",
+          "bytes": 2428
+        }
+      },
+      "variants": [
+        {
+          "variant": "baseline",
+          "model_usage": {
+            "input_tokens": 21827,
+            "output_tokens": 669,
+            "cached_input_tokens": 0,
+            "reasoning_tokens": 0,
+            "total_tokens": 22496,
+            "token_counts_source": "provider",
+            "call_id": "c8f512870d194e558a605da9dd7a632f",
+            "provider": "codex",
+            "model": "gpt-6-astra",
+            "latency_seconds": 18.28882,
+            "input_characters": 23138,
+            "instruction_characters": 3666,
+            "schema_characters": 3509,
+            "output_characters": 1719,
+            "max_output_tokens": null
+          },
+          "checks": {
+            "status": true,
+            "tasks": true,
+            "magnetic_states": true,
+            "parameters.functional": true,
+            "parameters.spin": true,
+            "parameters.soc": true,
+            "parameters.saxis": true,
+            "parameters.magmom": true,
+            "parameters.encut": true,
+            "parameters.mesh": true,
+            "parameters.ediff": true,
+            "parameters.line_density": true,
+            "parameters.ismear": true,
+            "parameters.sigma": true,
+            "parameters.nedos": true,
+            "parameters.hubbard_u": true,
+            "intent.forbidden_tasks_contains": true,
+            "intent.functional": true,
+            "intent.soc": true,
+            "intent.hubbard_u": true,
+            "intent.spin": true,
+            "intent.unsupported": true
+          },
+          "passed": true,
+          "request_payload_sha256": "e363ecab818f04f53d54b0b5b11984c649a59f755bcc949e4df9aa1bbbb052b5",
+          "codex_stdin_sha256": "ee1277bd97c4af1fc965ebc38dd4324cb4f258e9a239c8922a2900c1145456e8",
+          "serialized_schema_sha256": "bb0d5d7c6cf354f5c0311f3b65ea4b1785473c1fc01d8c06eff0d5d0fd942241",
+          "fixture_payload": "validation/token-use/long-revision/baseline.payload.json",
+          "payload_bytes": 23154,
+          "fixture_byte_match": true,
+          "retained_files": {
+            "response.json": {
+              "path": "validation/token-use/long-revision/baseline.response.json",
+              "sha256": "80e0dd6496cdc426d8ec5c30c0d5d8145b72e27329dac566dc450db34ab8a9cf"
+            },
+            "codex-usage-events.json": {
+              "path": "validation/token-use/long-revision/baseline.usage-events.json",
+              "sha256": "2acbd16e4d85e172a1cd96aa6dbf701b861d694fdde098cd83c5e5531ac7bb62"
+            }
+          }
+        },
+        {
+          "variant": "optimized",
+          "model_usage": {
+            "input_tokens": 19900,
+            "output_tokens": 602,
+            "cached_input_tokens": 0,
+            "reasoning_tokens": 0,
+            "total_tokens": 20502,
+            "token_counts_source": "provider",
+            "call_id": "b3fe6c472a4a4fd2bf3c4a04ae4ec3a9",
+            "provider": "codex",
+            "model": "gpt-6-astra",
+            "latency_seconds": 17.158802,
+            "input_characters": 17738,
+            "instruction_characters": 3666,
+            "schema_characters": 3509,
+            "output_characters": 1670,
+            "max_output_tokens": null
+          },
+          "checks": {
+            "status": true,
+            "tasks": true,
+            "magnetic_states": true,
+            "parameters.functional": true,
+            "parameters.spin": true,
+            "parameters.soc": true,
+            "parameters.saxis": true,
+            "parameters.magmom": true,
+            "parameters.encut": true,
+            "parameters.mesh": true,
+            "parameters.ediff": true,
+            "parameters.line_density": true,
+            "parameters.ismear": true,
+            "parameters.sigma": true,
+            "parameters.nedos": true,
+            "parameters.hubbard_u": true,
+            "intent.forbidden_tasks_contains": true,
+            "intent.functional": true,
+            "intent.soc": true,
+            "intent.hubbard_u": true,
+            "intent.spin": true,
+            "intent.unsupported": true
+          },
+          "passed": true,
+          "request_payload_sha256": "75d23145c99075d7d73742e4c5f87612a5550aabfa491065cca2c322f5a1b4f2",
+          "codex_stdin_sha256": "56ffbd9177e2a52e7285b93be498948f3f73bb61bdfe1e5c16ad8e9c0112d6c6",
+          "serialized_schema_sha256": "bb0d5d7c6cf354f5c0311f3b65ea4b1785473c1fc01d8c06eff0d5d0fd942241",
+          "fixture_payload": "validation/token-use/long-revision/optimized.payload.json",
+          "payload_bytes": 17754,
+          "fixture_byte_match": true,
+          "retained_files": {
+            "response.json": {
+              "path": "validation/token-use/long-revision/optimized.response.json",
+              "sha256": "6fd5a1667da54635ffaa08552b67e2dc2af047b6be9ec064f532b0065f85eade"
+            },
+            "codex-usage-events.json": {
+              "path": "validation/token-use/long-revision/optimized.usage-events.json",
+              "sha256": "14057d850e81c28d9e3469efe606c875ed3b8bcad3556ab4eef4594453f7d7a4"
+            }
+          }
+        }
+      ],
+      "input_tokens_saved": 1927,
+      "input_token_reduction_percent": 8.8285
+    },
+    {
+      "case": "large-geometry",
+      "fixtures": {
+        "baseline.payload.json": {
+          "path": "validation/token-use/large-geometry/baseline.payload.json",
+          "sha256": "d2197b6cdc97af158668dd37edd744456700dd1c077a1cec77ebee232114e507",
+          "bytes": 23598
+        },
+        "optimized.payload.json": {
+          "path": "validation/token-use/large-geometry/optimized.payload.json",
+          "sha256": "ab9acb441d27a5648666ab74e3531d7d1c61a21c44eb5f1929acd67186aaa002",
+          "bytes": 12598
+        },
+        "instructions.txt": {
+          "path": "validation/token-use/large-geometry/instructions.txt",
+          "sha256": "eb5641a3c70410304e5a26f2318114a9472938727a792f7e11d17fa614db3434",
+          "bytes": 3666
+        },
+        "schema.json": {
+          "path": "validation/token-use/large-geometry/schema.json",
+          "sha256": "ba2529c816625ac09e83b0ec68174656da4dca16f6acf432a9ee0c0c75d8c48a",
+          "bytes": 10386
+        },
+        "expected.json": {
+          "path": "validation/token-use/large-geometry/expected.json",
+          "sha256": "8bd15ee37ae0a1a39b04a3e4830676948af575fe027918e9a82036b3226076e9",
+          "bytes": 470
+        },
+        "pair-spec.json": {
+          "path": "validation/token-use/large-geometry/pair-spec.json",
+          "sha256": "0cd910ad4ee990f8564ad3ec3299010cf648bb4c5f2aaa509c0d8701c1b12cb0",
+          "bytes": 674
+        },
+        "POSCAR": {
+          "path": "validation/token-use/large-geometry/POSCAR",
+          "sha256": "3970e6de5f14f120645c0beb61b7d5fc801076a1b58875f6b6df18cd163cd298",
+          "bytes": 17778
+        }
+      },
+      "variants": [
+        {
+          "variant": "baseline",
+          "model_usage": {
+            "input_tokens": 21528,
+            "output_tokens": 458,
+            "cached_input_tokens": 0,
+            "reasoning_tokens": 53,
+            "total_tokens": 21986,
+            "token_counts_source": "provider",
+            "call_id": "9aa0dfca787d4994bf7767ca0e3318f9",
+            "provider": "codex",
+            "model": "gpt-6-astra",
+            "latency_seconds": 10.797763,
+            "input_characters": 23598,
+            "instruction_characters": 3666,
+            "schema_characters": 3509,
+            "output_characters": 1241,
+            "max_output_tokens": null
+          },
+          "checks": {
+            "status": true,
+            "tasks": true,
+            "magnetic_states": true,
+            "parameters.functional": true,
+            "parameters.spin": true,
+            "parameters.soc": true,
+            "parameters.magmom": true,
+            "parameters.hubbard_u": true,
+            "parameters.encut": true,
+            "parameters.ediff": true,
+            "parameters.mesh": true,
+            "intent.forbidden_tasks_contains": true,
+            "intent.functional": true,
+            "intent.spin": true,
+            "intent.soc": true,
+            "intent.hubbard_u": true,
+            "intent.unsupported": true
+          },
+          "passed": true,
+          "request_payload_sha256": "d2197b6cdc97af158668dd37edd744456700dd1c077a1cec77ebee232114e507",
+          "codex_stdin_sha256": "b109e314fe8816a06610d419e7c74ac53c3dadafe7ec542ff3edf5dd349ec2df",
+          "serialized_schema_sha256": "bb0d5d7c6cf354f5c0311f3b65ea4b1785473c1fc01d8c06eff0d5d0fd942241",
+          "fixture_payload": "validation/token-use/large-geometry/baseline.payload.json",
+          "payload_bytes": 23598,
+          "fixture_byte_match": true,
+          "retained_files": {
+            "response.json": {
+              "path": "validation/token-use/large-geometry/baseline.response.json",
+              "sha256": "84016406256aef5d3f6edfb587f9511ba2622c4571138bbb7a42e54d31303078"
+            },
+            "codex-usage-events.json": {
+              "path": "validation/token-use/large-geometry/baseline.usage-events.json",
+              "sha256": "ece0b22233bf8f024cf2cb1884a8a265327c336f1741403aadd3c9d672fd20f9"
+            }
+          }
+        },
+        {
+          "variant": "optimized",
+          "model_usage": {
+            "input_tokens": 19472,
+            "output_tokens": 390,
+            "cached_input_tokens": 0,
+            "reasoning_tokens": 0,
+            "total_tokens": 19862,
+            "token_counts_source": "provider",
+            "call_id": "37a33138c9224ad7a044f8485a5dc993",
+            "provider": "codex",
+            "model": "gpt-6-astra",
+            "latency_seconds": 11.963852,
+            "input_characters": 12598,
+            "instruction_characters": 3666,
+            "schema_characters": 3509,
+            "output_characters": 1166,
+            "max_output_tokens": null
+          },
+          "checks": {
+            "status": true,
+            "tasks": true,
+            "magnetic_states": true,
+            "parameters.functional": true,
+            "parameters.spin": true,
+            "parameters.soc": true,
+            "parameters.magmom": true,
+            "parameters.hubbard_u": true,
+            "parameters.encut": true,
+            "parameters.ediff": true,
+            "parameters.mesh": true,
+            "intent.forbidden_tasks_contains": true,
+            "intent.functional": true,
+            "intent.spin": true,
+            "intent.soc": true,
+            "intent.hubbard_u": true,
+            "intent.unsupported": true
+          },
+          "passed": true,
+          "request_payload_sha256": "ab9acb441d27a5648666ab74e3531d7d1c61a21c44eb5f1929acd67186aaa002",
+          "codex_stdin_sha256": "9f01d46f9ce6aa18ec622df946b7cf44bed8eca28661a540d3d119d8a88a549d",
+          "serialized_schema_sha256": "bb0d5d7c6cf354f5c0311f3b65ea4b1785473c1fc01d8c06eff0d5d0fd942241",
+          "fixture_payload": "validation/token-use/large-geometry/optimized.payload.json",
+          "payload_bytes": 12598,
+          "fixture_byte_match": true,
+          "retained_files": {
+            "response.json": {
+              "path": "validation/token-use/large-geometry/optimized.response.json",
+              "sha256": "6398e82ade313def312f8cc6ee371872d1d5086387c916f5f50c95436e995e4b"
+            },
+            "codex-usage-events.json": {
+              "path": "validation/token-use/large-geometry/optimized.usage-events.json",
+              "sha256": "5f240d7618b3a6e68597269b5cea89b79d096e18e3b4ec39350e51e77c26fb45"
+            }
+          }
+        }
+      ],
+      "input_tokens_saved": 2056,
+      "input_token_reduction_percent": 9.5504
+    },
+    {
+      "case": "retrieved-advisory",
+      "fixtures": {
+        "baseline.payload.json": {
+          "path": "validation/token-use/retrieved-advisory/baseline.payload.json",
+          "sha256": "b0b33b514b5857cfc1a259c4f9dcf6fd04a57fc5074d9038d035fea996941f87",
+          "bytes": 8950
+        },
+        "optimized.payload.json": {
+          "path": "validation/token-use/retrieved-advisory/optimized.payload.json",
+          "sha256": "6f9f94932303bce566a87089f1e7e042f6cf0cc14bbc6767d2e6b644030d8d49",
+          "bytes": 8597
+        },
+        "instructions.txt": {
+          "path": "validation/token-use/retrieved-advisory/instructions.txt",
+          "sha256": "eb5641a3c70410304e5a26f2318114a9472938727a792f7e11d17fa614db3434",
+          "bytes": 3666
+        },
+        "schema.json": {
+          "path": "validation/token-use/retrieved-advisory/schema.json",
+          "sha256": "ba2529c816625ac09e83b0ec68174656da4dca16f6acf432a9ee0c0c75d8c48a",
+          "bytes": 10386
+        },
+        "expected.json": {
+          "path": "validation/token-use/retrieved-advisory/expected.json",
+          "sha256": "d455e80774c938473d8ff86808b2e41d68fcb889a849f0234deb025ad5d753f8",
+          "bytes": 644
+        },
+        "pair-spec.json": {
+          "path": "validation/token-use/retrieved-advisory/pair-spec.json",
+          "sha256": "deac79ec640c940749e20abad6df9e3536d0c2defe074c939a25cc89e20fe815",
+          "bytes": 765
+        },
+        "POSCAR": {
+          "path": "validation/token-use/retrieved-advisory/POSCAR",
+          "sha256": "a46bdfc3f0e31dd3316c0dd3a1c211b20804b032e0a2858e5c41e93d45783eda",
+          "bytes": 508
+        }
+      },
+      "variants": [
+        {
+          "variant": "baseline",
+          "model_usage": {
+            "input_tokens": 16325,
+            "output_tokens": 538,
+            "cached_input_tokens": 0,
+            "reasoning_tokens": 0,
+            "total_tokens": 16863,
+            "token_counts_source": "provider",
+            "call_id": "98e919eb1e8b473cb72e3ee2b7e7f619",
+            "provider": "codex",
+            "model": "gpt-6-astra",
+            "latency_seconds": 17.212427,
+            "input_characters": 8934,
+            "instruction_characters": 3666,
+            "schema_characters": 3509,
+            "output_characters": 1606,
+            "max_output_tokens": null
+          },
+          "checks": {
+            "status": true,
+            "tasks": true,
+            "magnetic_states": true,
+            "parameters.functional": true,
+            "parameters.spin": true,
+            "parameters.soc": true,
+            "parameters.saxis": true,
+            "parameters.magmom": true,
+            "parameters.hubbard_u": true,
+            "parameters.encut": true,
+            "parameters.ediff": true,
+            "parameters.mesh": true,
+            "intent.forbidden_tasks_contains": true,
+            "intent.functional": true,
+            "intent.spin": true,
+            "intent.soc": true,
+            "intent.hubbard_u": true,
+            "intent.unsupported": true
+          },
+          "passed": true,
+          "request_payload_sha256": "b0b33b514b5857cfc1a259c4f9dcf6fd04a57fc5074d9038d035fea996941f87",
+          "codex_stdin_sha256": "1fe9f8ce3985bc696b5f6461b3a938602ef21a8f892c281a4d0f050e5885b4d8",
+          "serialized_schema_sha256": "bb0d5d7c6cf354f5c0311f3b65ea4b1785473c1fc01d8c06eff0d5d0fd942241",
+          "fixture_payload": "validation/token-use/retrieved-advisory/baseline.payload.json",
+          "payload_bytes": 8950,
+          "fixture_byte_match": true,
+          "retained_files": {
+            "response.json": {
+              "path": "validation/token-use/retrieved-advisory/baseline.response.json",
+              "sha256": "18a942b2c2ea9df81e34686dadd5930f3578c7179e5bdaf2fa564c187b289cee"
+            },
+            "codex-usage-events.json": {
+              "path": "validation/token-use/retrieved-advisory/baseline.usage-events.json",
+              "sha256": "ea110e08640359bcdc52fe6dbc7f7e4a08cdb9165720e7d9e69e2c206a5a46b7"
+            }
+          }
+        },
+        {
+          "variant": "optimized",
+          "model_usage": {
+            "input_tokens": 16180,
+            "output_tokens": 567,
+            "cached_input_tokens": 0,
+            "reasoning_tokens": 46,
+            "total_tokens": 16747,
+            "token_counts_source": "provider",
+            "call_id": "62d63b69a88c4f6688a2098ab2484686",
+            "provider": "codex",
+            "model": "gpt-6-astra",
+            "latency_seconds": 16.146326,
+            "input_characters": 8581,
+            "instruction_characters": 3666,
+            "schema_characters": 3509,
+            "output_characters": 1497,
+            "max_output_tokens": null
+          },
+          "checks": {
+            "status": true,
+            "tasks": true,
+            "magnetic_states": true,
+            "parameters.functional": true,
+            "parameters.spin": true,
+            "parameters.soc": true,
+            "parameters.saxis": true,
+            "parameters.magmom": true,
+            "parameters.hubbard_u": true,
+            "parameters.encut": true,
+            "parameters.ediff": true,
+            "parameters.mesh": true,
+            "intent.forbidden_tasks_contains": true,
+            "intent.functional": true,
+            "intent.spin": true,
+            "intent.soc": true,
+            "intent.hubbard_u": true,
+            "intent.unsupported": true
+          },
+          "passed": true,
+          "request_payload_sha256": "6f9f94932303bce566a87089f1e7e042f6cf0cc14bbc6767d2e6b644030d8d49",
+          "codex_stdin_sha256": "0ed29472cc37bca65f25facaf6f4b18109fd4e845a3128f4bffbe3cba4df4cdd",
+          "serialized_schema_sha256": "bb0d5d7c6cf354f5c0311f3b65ea4b1785473c1fc01d8c06eff0d5d0fd942241",
+          "fixture_payload": "validation/token-use/retrieved-advisory/optimized.payload.json",
+          "payload_bytes": 8597,
+          "fixture_byte_match": true,
+          "retained_files": {
+            "response.json": {
+              "path": "validation/token-use/retrieved-advisory/optimized.response.json",
+              "sha256": "bd1585d13076786e6848d13b73ba8bd361bfec5971e09e5b403e4d7a327dbc3e"
+            },
+            "codex-usage-events.json": {
+              "path": "validation/token-use/retrieved-advisory/optimized.usage-events.json",
+              "sha256": "99cb4078c97a6794a2b25a5864ce6f5fae76978e6dc5a0873742f8612e17b4bd"
+            }
+          }
+        }
+      ],
+      "input_tokens_saved": 145,
+      "input_token_reduction_percent": 0.8882
+    }
+  ],
+  "all_semantics_passed": true,
+  "aggregate_counts_for_these_six_calls": {
+    "input_tokens": 115232,
+    "output_tokens": 3224,
+    "cached_input_tokens": 0,
+    "reasoning_tokens": 99,
+    "total_tokens": 118456
+  }
+}

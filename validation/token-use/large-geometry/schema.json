@@ -1,0 +1,492 @@
+{
+  "type": "object",
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": [
+        "ready",
+        "needs_input",
+        "unsupported"
+      ]
+    },
+    "summary": {
+      "type": "string"
+    },
+    "tasks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "spin": {
+          "type": "string",
+          "enum": [
+            "none",
+            "collinear",
+            "noncollinear"
+          ]
+        },
+        "soc": {
+          "type": "boolean"
+        },
+        "saxis": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 3,
+              "maxItems": 3
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "magmom": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "minItems": 3,
+                "maxItems": 3
+              }
+            }
+          ]
+        },
+        "functional": {
+          "type": "string",
+          "enum": [
+            "PBE",
+            "HSE06",
+            "PBE0"
+          ]
+        },
+        "hubbard_u": {
+          "type": "object",
+          "properties": {
+            "Ni": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "l": {
+                      "anyOf": [
+                        {
+                          "type": "integer",
+                          "enum": [
+                            0,
+                            1,
+                            2,
+                            3
+                          ]
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "u": {
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "j": {
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "l",
+                    "u",
+                    "j"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "O": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "l": {
+                      "anyOf": [
+                        {
+                          "type": "integer",
+                          "enum": [
+                            0,
+                            1,
+                            2,
+                            3
+                          ]
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "u": {
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "j": {
+                      "anyOf": [
+                        {
+                          "type": "number"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "l",
+                    "u",
+                    "j"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "Ni",
+            "O"
+          ],
+          "additionalProperties": false
+        },
+        "encut": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ediff": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ediffg": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nsw": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "mesh": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "minItems": 3,
+              "maxItems": 3
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ismear": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "enum": [
+                -5,
+                -1,
+                0,
+                1,
+                2
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sigma": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cell_relax": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nelm": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "line_density": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nedos": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 2
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "spin",
+        "soc",
+        "saxis",
+        "magmom",
+        "functional",
+        "hubbard_u",
+        "encut",
+        "ediff",
+        "ediffg",
+        "nsw",
+        "mesh",
+        "ismear",
+        "sigma",
+        "cell_relax",
+        "nelm",
+        "line_density",
+        "nedos"
+      ],
+      "additionalProperties": false
+    },
+    "magnetic_states": {
+      "description": "Empty for a single state; at least two states only for an explicit comparison.",
+      "anyOf": [
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 0
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "NM",
+              "FM",
+              "AFM"
+            ]
+          },
+          "minItems": 2,
+          "maxItems": 3
+        }
+      ]
+    },
+    "initial_moment": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "questions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "intent": {
+      "type": "object",
+      "properties": {
+        "requested_tasks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "forbidden_tasks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "spin": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "none",
+                "collinear",
+                "noncollinear"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "soc": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "functional": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "PBE",
+                "HSE06",
+                "PBE0"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "hubbard_u": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "unsupported": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "requested_tasks",
+        "forbidden_tasks",
+        "spin",
+        "soc",
+        "functional",
+        "hubbard_u",
+        "unsupported"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "status",
+    "summary",
+    "tasks",
+    "parameters",
+    "magnetic_states",
+    "initial_moment",
+    "questions",
+    "notes",
+    "intent"
+  ],
+  "additionalProperties": false
+}

@@ -86,8 +86,8 @@ def _evidence(ids: list[str]) -> list[dict]:
 
 def _signals(goal: str, history: list | None) -> dict[str, bool]:
     """Select context, not executable intent. Later user mentions take precedence."""
-    turns = [str(goal)[:20000]] + [str(item.get("content", ""))[:20000]
-        for item in (history or [])[-12:] if isinstance(item, dict) and item.get("role") == "user"]
+    turns = [str(goal)] + [str(item.get("content", ""))
+        for item in (history or []) if isinstance(item, dict) and item.get("role") == "user"]
     state: dict[str, bool] = {}
     for text in turns:
         for clause in re.split(r"[.!?;\n。；！？]|\bbut\b|但是|但", text, flags=re.I):

@@ -1,0 +1,45 @@
+{
+  "status": "ready",
+  "summary": "Draft SCF-only nonmagnetic PBE calculation, preserving the input cell and all 256 sites in their original order.",
+  "tasks": ["scf"],
+  "parameters": {
+    "spin": "none",
+    "soc": false,
+    "saxis": [0, 0, 1],
+    "magmom": null,
+    "functional": "PBE",
+    "hubbard_u": {
+      "Ni": null,
+      "O": null
+    },
+    "encut": 500,
+    "ediff": 1e-6,
+    "ediffg": null,
+    "nsw": null,
+    "mesh": [1, 1, 1],
+    "ismear": 0,
+    "sigma": 0.05,
+    "cell_relax": null,
+    "nelm": 120,
+    "line_density": null,
+    "nedos": null
+  },
+  "magnetic_states": [],
+  "initial_moment": null,
+  "questions": [],
+  "notes": [
+    "No magnetism, SOC, +U, hybrid functional or relaxation.",
+    "Supplied defaults: Gaussian smearing with SIGMA=0.05 eV and NELM=120; inactive settings are null.",
+    "Requested numerical settings are preserved; convergence remains unverified. ENCUT guidance: https://www.vasp.at/wiki/index.php/ENCUT",
+    "Draft for review only; no calculation submitted."
+  ],
+  "intent": {
+    "requested_tasks": ["scf"],
+    "forbidden_tasks": ["relax", "bands", "dos"],
+    "spin": "none",
+    "soc": false,
+    "functional": "PBE",
+    "hubbard_u": false,
+    "unsupported": []
+  }
+}

@@ -1,6 +1,10 @@
 # CLI examples
 
 Follow the [quickstart](quickstart.md), then work in the repository directory.
+For a wheel install, select **Example** in the app and use **Download input**;
+replace each `examples/NAME.cif` below with the downloaded file's path.
+More inputs, including layered and magnetic materials, are listed in
+[Structures](structures.md). Both CIF and POSCAR are accepted.
 Create `cluster.json` with `dft-agent init --config cluster.json` and review
 its VASP, POTCAR and Slurm settings. The PBE defaults are starting points.
 
@@ -20,6 +24,26 @@ dft-agent prepare examples/Si.cif runs/si-plan --config cluster.json \
 For an API, use `--provider responses --model MODEL` and set `OPENAI_API_KEY`.
 For a compatible service, use `--provider chat_completions --base-url URL`.
 Inspect the proposal before preparing it. A plan is bound to its source file.
+
+Revise it before preparation:
+
+```bash
+dft-agent plan examples/Si.cif "Use a 6x6x6 mesh" \
+  --previous proposal.json --provider codex --output revised.json
+```
+
+**Edit a structure**
+
+```bash
+dft-agent structure-plan examples/Si.cif "Make a 2x2x1 supercell" \
+  --provider codex --output edit.json
+dft-agent structure-plan examples/Si.cif "Use 3x2x1 instead" \
+  --previous edit.json --provider codex --output revised-edit.json
+dft-agent prepare-structure examples/Si.cif edited --plan revised-edit.json
+```
+
+Review the plan before applying it. Use `edited/POSCAR` for the calculation.
+For conversion without a model: `dft-agent convert examples/Si.cif converted`.
 
 **Si: HSE06 bands**
 

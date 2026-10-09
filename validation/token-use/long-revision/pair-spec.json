@@ -1,0 +1,29 @@
+{
+  "purpose": "One controlled multi-turn calculation-planning comparison; not a general savings estimate.",
+  "dialogue_origin": "Constructed deterministic test fixture; not an archived model conversation.",
+  "advisory_origin": "Verified saved runs retrieved through the current production retriever.",
+  "material": "32-site NiO supercell from the retained four-site validation input.",
+  "source_sha256": "5c73cafd723d45359953370b5b6221f88da967c8df260587c0e65dc2f619b506",
+  "history_messages": 16,
+  "user_messages": 8,
+  "advisory_case_ids": [
+    "25c23c64d7ec0ccc",
+    "07ee3321bfd074a5",
+    "0356db4313a0a1f4"
+  ],
+  "payload_bytes": {
+    "baseline": 23154,
+    "optimized": 17754
+  },
+  "both_under_96000_bytes": true,
+  "controls": [
+    "same instructions",
+    "same schema",
+    "same model",
+    "same user constraints",
+    "same full geometry",
+    "same verified advisory cases",
+    "no tools or job submission"
+  ],
+  "report": "Use provider-reported input/output tokens, latency, cached tokens if known, and semantic pass/fail. Bytes are not tokens."
+}
