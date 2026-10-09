@@ -6,8 +6,6 @@ Version `0.4.1`.
 
 [Qirui Cui](https://www.kth.se/profile/qiruic?l=en) · KTH Royal Institute of Technology 
 
-[Anna Delin](https://www.kth.se/profile/annadel) · KTH Royal Institute of Technology 
-
 The DFT agent automates first-principles calculations on HPC clusters, requiring only a simple natural language description of the desired calculation.
 
 Describe a task, review the plan, and run VASP on your Slurm cluster. Combine structure edits, relaxation, SCF, bands and DOS with magnetism, SOC, DFT+U, HSE06 or PBE0. Choose methods by stage and compare magnetic orders, U values or strains.
