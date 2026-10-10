@@ -222,9 +222,9 @@ def prepare_inputs(
         kpoints = Kpoints.gamma_automatic(tuple(settings["mesh"]))
     destination = Path(destination)
     destination.mkdir(parents=True, exist_ok=True)
-    poscar.write_file(destination / "POSCAR")
-    Incar(incar_data).write_file(destination / "INCAR")
-    kpoints.write_file(destination / "KPOINTS")
+    (destination / "POSCAR").write_text(poscar.get_str(), encoding="utf-8", newline="\n")
+    (destination / "INCAR").write_text(str(Incar(incar_data)), encoding="utf-8", newline="\n")
+    (destination / "KPOINTS").write_text(str(kpoints), encoding="utf-8", newline="\n")
     metadata["input_sha256"] = {name: _sha256(destination / name) for name in ("POSCAR", "INCAR", "KPOINTS")}
     _write_json(destination / "metadata.json", metadata)
     return metadata

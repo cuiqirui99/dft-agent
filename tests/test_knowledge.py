@@ -5,6 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import sqlite3
+import sys
 
 import pytest
 
@@ -182,7 +183,11 @@ def test_jsonl_preview_and_selective_idempotent_import(tmp_path, catalogue):
     assert not retrieve(runs_root=runs_root)
     evidence = Path(result["catalog_path"]).parent / records[0]["evidence"][0]["path"]
     assert json.loads(evidence.read_text())["workflow_root"] == "/private/work"
-    assert evidence.stat().st_mode & 0o077 == 0
+    if sys.platform == "win32":
+        with evidence.open("r+") as stream:
+            assert json.load(stream)["workflow_root"] == "/private/work"
+    else:
+        assert evidence.stat().st_mode & 0o077 == 0
     assert knowledge.import_selected(source, [preview[0]["id"]], runs_root)["skipped"] == 1
     assert digest(source) == before
 

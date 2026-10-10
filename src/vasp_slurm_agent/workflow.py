@@ -485,7 +485,7 @@ def _script(config, stage, previous):
         raise ValueError("This spectrum requires an accepted SCF charge density.")
     if needs_charge:
         dependency = f"test -s {shlex.quote(previous + '/CHGCAR')}\ncp {shlex.quote(previous + '/CHGCAR')} CHGCAR\n"
-    setup = "\n".join(config.setup_commands)
+    setup = "\n".join(config.setup_commands).replace("\r\n", "\n")
     resources = "\n".join(config.sbatch_resource_lines())
     launch = command
     if stage["metadata"].get("warm_start"):
@@ -567,7 +567,7 @@ def _submit(root, state, config, transport):
         checks += ["test -s " + shlex.quote(config.potcar_root.rstrip("/") + "/" + label + "/POTCAR") for label in labels]
         _command(transport, " && ".join(checks))
         _command(transport, "mkdir -p " + shlex.quote(remote))
-        (inputs / "submit.sh").write_text(_script(config, stage, previous))
+        (inputs / "submit.sh").write_text(_script(config, stage, previous), encoding="utf-8", newline="\n")
         files = [inputs / name for name in ("POSCAR", "INCAR", "KPOINTS", "submit.sh")]
         if stage["metadata"].get("warm_start"):
             from .restart import sha256

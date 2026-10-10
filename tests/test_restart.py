@@ -178,6 +178,7 @@ def test_helper_is_standalone_stdlib_and_failure_is_recorded(warm):
     assert json.loads((inputs / "warm_start.json").read_text())["seed_exit_code"] == 3
 
 
+@pytest.mark.skipif(sys.platform == "win32", reason="Executes a Linux job script with local Bash and POSIX paths")
 def test_seed_failure_records_job_exit_and_does_not_launch_hybrid(warm, tmp_path):
     from dataclasses import replace
     inputs, _, state, config = warm
@@ -190,7 +191,7 @@ def test_seed_failure_records_job_exit_and_does_not_launch_hybrid(warm, tmp_path
     (inputs / "restart.py").write_bytes(Path(restart.__file__).read_bytes())
     config = replace(config, potcar_root=str(potential.parent), vasp_command="echo launched >> ../launches; false")
     script = inputs / "submit.sh"
-    script.write_text(workflow._script(config, state["stages"][0], None))
+    script.write_text(workflow._script(config, state["stages"][0], None), encoding="utf-8", newline="\n")
     process = subprocess.run(["bash", str(script)], cwd=inputs, capture_output=True, text=True)
     assert process.returncode != 0
     receipt = json.loads((inputs / "execution.json").read_text())

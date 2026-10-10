@@ -28,7 +28,7 @@ def sha256(path):
 
 
 def _write(path, data):
-    Path(path).write_text(json.dumps(data, sort_keys=True, indent=2, allow_nan=False) + "\n")
+    Path(path).write_text(json.dumps(data, sort_keys=True, indent=2, allow_nan=False) + "\n", encoding="utf-8", newline="\n")
 
 
 def prepare_warm_inputs(source, destination, task, parameters, potcar_symbols=None):
@@ -42,7 +42,7 @@ def prepare_warm_inputs(source, destination, task, parameters, potcar_symbols=No
         raise ValueError("A PBE wavefunction seed is only needed for a hybrid target.")
     target = Incar.from_file(destination / "INCAR")
     target.update(ISTART=1, ICHARG=0, LWAVE=False)
-    target.write_file(destination / "INCAR")
+    (destination / "INCAR").write_text(str(target), encoding="utf-8", newline="\n")
     metadata["method_incar_expected"].update(ISTART=1, ICHARG=0, LWAVE=False)
     metadata["input_sha256"]["INCAR"] = sha256(destination / "INCAR")
     recipe = {**metadata["parameters"], "functional": "PBE"}
@@ -55,7 +55,7 @@ def prepare_warm_inputs(source, destination, task, parameters, potcar_symbols=No
         seed.update(ISYM=target["ISYM"], LWAVE=True, LCHARG=False, ISTART=0, ICHARG=2)
         if task == "bands":
             seed["NELMIN"] = target.get("NELMIN", 10)
-        seed.write_file(destination / "seed.INCAR")
+        (destination / "seed.INCAR").write_text(str(seed), encoding="utf-8", newline="\n")
         seed_metadata["method_incar_expected"].update(ISYM=seed["ISYM"], LWAVE=True, ISTART=0, ICHARG=2)
         seed_metadata["input_sha256"] = {"INCAR": sha256(destination / "seed.INCAR"),
                                          "POSCAR": metadata["input_sha256"]["POSCAR"],

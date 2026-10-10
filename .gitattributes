@@ -1,4 +1,9 @@
-# Keep evidence hashes and executed inputs unchanged.
-src/vasp_slurm_agent/knowledge/evidence/** -text -whitespace
-src/vasp_slurm_agent/knowledge/catalog.json -text
+# Linux job scripts and sources must keep LF on Windows checkouts.
+* text=auto eol=lf
+
+# Keep frozen evidence and example hashes byte-for-byte unchanged.
+src/vasp_slurm_agent/samples/** -text -whitespace
+src/vasp_slurm_agent/knowledge/** -text -whitespace
+src/vasp_slurm_agent/examples/** -text
+examples/** -text
 validation/input-defaults-0.4.1/** -text -whitespace

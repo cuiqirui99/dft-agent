@@ -192,7 +192,7 @@ class SSHTransport:
             arguments = [sys.executable, "--askpass"] if getattr(sys, "frozen", False) else [sys.executable, "-c", code]
             self._askpass_path.write_text(
                 "#!/bin/sh\nexec " + shlex.join(arguments) + "\n",
-                encoding="utf-8",
+                encoding="utf-8", newline="\n",
             )
             self._askpass_path.chmod(0o700)
 
