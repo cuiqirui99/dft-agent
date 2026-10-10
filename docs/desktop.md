@@ -1,7 +1,7 @@
 # Desktop builds
 
 `0.4.2` is an unpublished local preview. The packaging targets are Apple
-Silicon macOS and Windows x64. Python and the scientific/model SDKs are
+Silicon Macs running macOS 14 or later and Windows x64. Python and the scientific/model SDKs are
 bundled; VASP, POTCAR files, cluster time, API credentials and model credits
 are not. This page describes how to build and check a package, not a claim
 that every platform or external service has passed acceptance.

@@ -20,7 +20,7 @@ Actual calculations require your own Slurm account and licensed VASP/POTCAR file
 Version `0.4.2` is currently a local desktop preview. Once published,
 download the installer for your computer from its [GitHub Release](https://github.com/cuiqirui99/dft-agent/releases):
 
-- **Mac, Apple Silicon:** open the `.dmg`, copy **DFT Agent** to Applications, then open it.
+- **Mac, Apple Silicon, macOS 14+:** open the `.dmg`, copy **DFT Agent** to Applications, then open it.
 - **Windows x64:** run the `.exe` installer, then open **DFT Agent** from the Start menu.
 
 No separate Python installation is needed. PyPI installation is not yet available

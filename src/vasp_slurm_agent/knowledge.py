@@ -8,7 +8,7 @@ import hashlib
 from importlib.resources import files
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath, PureWindowsPath
 import re
 import sqlite3
 import tempfile
@@ -99,8 +99,9 @@ def _url(value):
 def _relative(value):
     if not isinstance(value, str) or "\\" in value or len(value) > 250:
         return False
-    path = Path(value)
-    return bool(value and not path.is_absolute() and all(part not in {".", ".."} for part in value.split("/")))
+    path = PurePosixPath(value)
+    return bool(value and not path.is_absolute() and not PureWindowsPath(value).drive
+                and all(part not in {".", ".."} for part in value.split("/")))
 
 
 def validate_record(value):

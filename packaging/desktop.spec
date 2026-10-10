@@ -35,4 +35,4 @@ if sys.platform == "darwin":
     app = BUNDLE(collection, name="DFT Agent.app", bundle_identifier="se.kth.qiruic.dftagent",
                  version=__version__, info_plist={"NSHighResolutionCapable": True,
                  "CFBundleDisplayName": "DFT Agent", "NSHumanReadableCopyright": "Qirui Cui",
-                 "LSMinimumSystemVersion": "12.0"})
+                 "LSMinimumSystemVersion": "14.0"})

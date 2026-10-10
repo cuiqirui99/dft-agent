@@ -3,7 +3,7 @@
 from copy import deepcopy
 import hashlib
 import json
-from pathlib import Path
+from pathlib import Path, PurePosixPath, PureWindowsPath
 import sqlite3
 import sys
 
@@ -43,7 +43,7 @@ def catalogue(tmp_path, monkeypatch):
         for value in records:
             proof = root / "evidence" / (value["id"] + ".json")
             write(proof, {"checked": True})
-            value["evidence"] = [{"path": str(proof.relative_to(root)), "sha256": digest(proof),
+            value["evidence"] = [{"path": proof.relative_to(root).as_posix(), "sha256": digest(proof),
                                   "description": "Checked result receipt."}]
         write(root / "catalog.json", {"schema_version": 1, "records": records})
         return root
@@ -91,10 +91,20 @@ def test_changed_missing_and_escaping_evidence_are_rejected(catalogue):
     assert retrieve() == []
 
 
-@pytest.mark.parametrize("path", ["../secret", "/private/secret", "a/../../secret", "a\\..\\secret"])
-def test_unsafe_evidence_paths_are_invalid(path):
+@pytest.mark.parametrize("path_type", [PurePosixPath, PureWindowsPath])
+@pytest.mark.parametrize("path", ["../secret", "/private/secret", "a/../../secret", "a\\..\\secret",
+                                  "C:/secret", "C:secret", "C:\\secret", "//server/share/secret", "\\secret"])
+def test_unsafe_evidence_paths_are_invalid(path, path_type, monkeypatch):
+    monkeypatch.setattr(knowledge, "Path", path_type)
     with pytest.raises(ValueError, match="evidence"):
         knowledge.validate_record(record(evidence=[{"path": path, "sha256": "a" * 64}]))
+
+
+@pytest.mark.parametrize("path_type", [PurePosixPath, PureWindowsPath])
+def test_portable_evidence_path_is_valid(path_type, monkeypatch):
+    monkeypatch.setattr(knowledge, "Path", path_type)
+    reference = {"path": "evidence/result.json", "sha256": "a" * 64}
+    assert knowledge.validate_record(record(evidence=[reference]))["evidence"][0]["path"] == reference["path"]
 
 
 def test_material_and_method_scope_are_hard_filters(catalogue):

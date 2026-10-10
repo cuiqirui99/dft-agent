@@ -126,7 +126,7 @@ def prepare_batch(structure_path, batch_dir, config, tasks, variants, parameters
                             "plan_sha256": child["plan_sha256"]})
         plan = {"schema_version": 1, "tasks": list(tasks), "parameters": deepcopy(parameters or {}),
                 "stage_parameters": deepcopy(stage_parameters), "variants": deepcopy(variants),
-                "source": str(frozen.relative_to(temporary)), "source_sha256": workflow._digest(frozen),
+                "source": frozen.relative_to(temporary).as_posix(), "source_sha256": workflow._digest(frozen),
                 "config_sha256": workflow._digest(temporary / "config.json") if config is not None else None,
                 "runs": members}
         workflow._write(temporary / "batch-plan.json", plan)

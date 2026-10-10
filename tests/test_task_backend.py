@@ -57,7 +57,9 @@ def test_complete_variants_ignore_unused_incomplete_base_and_bind_each_child(set
     state = task_agent.prepare_task(source, root, config, plan)
     saved = read(root / "proposal.json")
     assert saved["execution"]["plan_sha256"] == state["plan_sha256"]
-    assert saved["execution"]["source_path"] == "source/POSCAR"
+    frozen = read(root / "batch-plan.json")
+    assert saved["execution"]["source_path"] == frozen["source"] == "source/POSCAR"
+    assert saved["execution"]["source_sha256"] == frozen["source_sha256"] == hashlib.sha256((root / frozen["source"]).read_bytes()).hexdigest()
     assert len(saved["variants"]) == 2
     for member, variant in zip(state["runs"], plan["variants"]):
         child = root / member["folder"]

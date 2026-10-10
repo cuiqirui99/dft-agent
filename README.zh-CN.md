@@ -19,7 +19,7 @@ DFT Agent 根据自然语言目标或手动参数，准备并在你的 HPC 集�
 
 `0.4.2` 安装包目前仅为本地预览。正式发布后，从对应的 [GitHub Release](https://github.com/cuiqirui99/dft-agent/releases) 下载：
 
-- **Apple Silicon Mac：**打开 `.dmg`，把 **DFT Agent** 拖入“应用程序”，再打开应用。
+- **Apple Silicon Mac，macOS 14+：**打开 `.dmg`，把 **DFT Agent** 拖入“应用程序”，再打开应用。
 - **Windows x64：**运行 `.exe` 安装程序，然后从开始菜单打开 **DFT Agent**。
 
 当前预览尚未在 PyPI 发布。源码安装见[安装指南](docs/install.md)，打包与验收范围见[桌面版说明](docs/desktop.md)。

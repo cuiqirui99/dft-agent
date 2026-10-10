@@ -7,7 +7,7 @@ checkout for now; after publication, download the installer from the
 
 ## Desktop app
 
-- **Apple Silicon Mac:** open the `.dmg`, copy **DFT Agent** to Applications,
+- **Apple Silicon Mac, macOS 14+:** open the `.dmg`, copy **DFT Agent** to Applications,
   then open it.
 - **Windows x64:** run the `.exe` installer, then open **DFT Agent** from the
   Start menu. If Microsoft WebView2 is missing, installation needs an internet
