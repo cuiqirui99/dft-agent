@@ -56,16 +56,6 @@ def structure_figure(structure: Structure):
         positions = np.asarray([site.coords for site in shown if site.specie.symbol == name])
         axis.scatter(*positions.T, s=100, color=color, edgecolor="white", linewidth=0.5,
                      label=name, depthshade=True)
-    # Lines follow near-neighbour distances, like the interactive ball-and-stick view.
-    from pymatgen.analysis.molecule_structure_comparator import CovalentRadius
-    from scipy.spatial import cKDTree
-
-    positions = shown.cart_coords
-    radii = [CovalentRadius.radius.get(site.specie.symbol, 1.3) for site in shown]
-    for i, j in cKDTree(positions).query_pairs(2.3 * max(radii)):
-        distance = np.linalg.norm(positions[i] - positions[j])
-        if 0.2 < distance <= 1.15 * (radii[i] + radii[j]):
-            axis.plot(*positions[[i, j]].T, color="#a8b4be", linewidth=1.5, alpha=0.7)
     bounds = np.concatenate([cell_edges(shown).reshape(-1, 3), shown.cart_coords])
     center = (bounds.min(axis=0) + bounds.max(axis=0)) / 2
     widths = np.maximum(np.ptp(bounds, axis=0) * 1.08, 0.1)
@@ -149,7 +139,7 @@ button.active{{background:#eaf1f7;border-color:#7c9bb4;color:#254c6c;}}
     viewer.removeAllModels(); viewer.removeAllShapes();
     viewer.addModel(models[index].poscar, "vasp");
     Object.keys(colors).forEach(function(element) {{
-      viewer.setStyle({{elem:element}}, {{sphere:{{scale:0.25,color:colors[element]}}, stick:{{radius:0.09,color:colors[element]}}}});
+      viewer.setStyle({{elem:element}}, {{sphere:{{scale:0.25,color:colors[element]}}}});
     }});
     models[index].edges.forEach(function(edge) {{
       viewer.addLine({{start:{{x:edge[0][0],y:edge[0][1],z:edge[0][2]}},end:{{x:edge[1][0],y:edge[1][1],z:edge[1][2]}},color:"#a8b4be",linewidth:1}});
