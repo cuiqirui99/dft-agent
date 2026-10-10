@@ -29,7 +29,6 @@ for this preview. See [Install](docs/install.md) for source installation and
 
 ## Try it without a cluster
 
-![Sample runs](docs/assets/screenshot-runs.png)
 ![Band structure of a sample run](docs/assets/screenshot-results.png)
 
 - Open **Runs** and click **Load sample runs**. Four real runs are included:
@@ -81,8 +80,7 @@ Include structure changes in your **Goal**, or use **Edit structure** for geomet
 Structure edits, stage methods, comparisons and follow-up runs are covered in
 [Workflows](docs/workflows.md).
 
-Download CSV data beside each plot and VASP outputs under **Raw data and files**. **More files and VASPKIT** provides
-[VASPKIT](docs/vaspkit.md) when it is installed on your cluster.
+Download CSV data beside each plot and VASP outputs under **Raw data and files**.
 
 A desktop notification arrives when a run finishes; add a webhook under
 **Preferences** for Slack, Discord or WeChat Work. Reopening the app resumes

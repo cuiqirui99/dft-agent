@@ -62,6 +62,21 @@ then click **Check cluster connection**. Neither action submits a calculation.
 Leave optional mappings and extra options unchanged unless your site requires
 them. A preset does not grant cluster access or a VASP licence.
 
+### POTCAR
+
+1. Click **Detect from cluster** to look for your licensed library.
+2. Check **Remote POTCAR folder**. Enter the parent of the element folders:
+   for `/path/to/potpaw_PBE/Si/POTCAR`, use `/path/to/potpaw_PBE`.
+   If detection finds nothing, ask your VASP administrator for this path.
+3. Leave **POTCAR element mapping** as `{}` to use the recommended potentials.
+   Override it only when your library uses different variants, such as `{"Ti": "Ti_pv"}`.
+4. Click **Save cluster settings**, then **Check cluster connection**.
+
+The saved path is reused. Before submission, the app checks that the required
+files exist and are nonempty, then joins them in POSCAR element order on the
+cluster. The connection check alone does not validate every potential.
+Local folder and archive import is not supported yet.
+
 ## Python installation from source
 
 For Linux users and developers, use Python 3.11 or newer. On macOS/Linux:
