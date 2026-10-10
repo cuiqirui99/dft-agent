@@ -10,7 +10,6 @@
 - Correct VASP XML ionic energies in relaxation plots and CSV files; refresh older plots from saved outputs.
 - Add CSV downloads beside plots and show raw files directly.
 - Return projected DOS, forces, stress, convergence tables and selected cluster files.
-- Run cluster VASPKIT for band and DOS tables, with checked inputs and outputs.
 - Detect partitions, accounts, VASP modules and POTCAR folders from the cluster, with presets for known clusters.
 - Remember API keys in the system keychain on request; `dft-agent key` manages them.
 - Open the browser automatically and hide the Streamlit toolbar.

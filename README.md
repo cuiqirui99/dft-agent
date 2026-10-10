@@ -63,9 +63,6 @@ Claude API call was made. Bundling the SDK does not change that [validation boun
 
 ## Use
 
-![New calculation](docs/assets/screenshot-new-calculation.png)
-![Cluster setup](docs/assets/screenshot-cluster-setup.png)
-
 1. In **Cluster setup**, enter your SSH host and user, click **Detect from cluster**
    to fill partitions, accounts, VASP modules and POTCAR folders, review and save.
    Presets for Dardel, Tetralith and BSCC give a head start.
