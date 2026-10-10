@@ -1,5 +1,7 @@
 # Release policy
 
+- Keep GitHub's default branch on the newest version that has passed acceptance. Update it whenever a newer version is ready.
+- Mark each newly published stable release as Latest. Keep unpublished versions labelled as previews.
 - Publish each new version with an increasing version number, a new Git tag, and a separate GitHub Release.
 - Keep all previously published tags, release records, and assets unchanged. Never move an existing tag, delete an old release, or replace its files.
 - Ship corrections in the next version. Do not reuse a published version number or overwrite an existing package on any registry.
