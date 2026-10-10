@@ -60,7 +60,7 @@ jobs:
 
           examples = files("vasp_slurm_agent").joinpath("examples")
           assert len({item.name.rsplit('.', 1)[0] for item in examples.iterdir()
-                      if item.name.endswith(('.cif', '.vasp'))}) == 17
+                      if item.name.endswith(('.cif', '.vasp'))}) == 18
           assert len([item for item in examples.iterdir() if item.name.endswith('.vasp')]) == 9
           assert examples.joinpath("sources.json").is_file()
           with tempfile.TemporaryDirectory() as directory:
