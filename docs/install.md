@@ -1,9 +1,6 @@
 # Install
 
-Version `0.4.2` is a local desktop preview. Its installers and PyPI package
-have not yet been published. Use a supplied preview installer or a source
-checkout for now; after publication, download the installer from the
-[corresponding GitHub Release](https://github.com/cuiqirui99/dft-agent/releases).
+Download the macOS or Windows installer from [v0.4.2](https://github.com/cuiqirui99/DFT-AGENT/releases/tag/v0.4.2).
 
 ## Desktop app
 
@@ -17,7 +14,7 @@ Python, scientific libraries and model SDKs are included. You do not need
 Python, pip or a terminal to use the desktop app. Windows connects natively;
 WSL is optional.
 
-These preview installers are unsigned; the Mac app is not notarized. For a
+The installers do not have a publisher certificate; the Mac app is not notarized. For a
 trusted Mac download, try opening it, then use **System Settings → Privacy &
 Security → Open Anyway** if offered. [Apple's instructions](https://support.apple.com/102445).
 Windows may also block an unsigned app; a managed PC may need approval from
@@ -82,7 +79,7 @@ Local folder and archive import is not supported yet.
 For Linux users and developers, use Python 3.11 or newer. On macOS/Linux:
 
 ```bash
-git clone --branch desktop-0.4.2 https://github.com/cuiqirui99/dft-agent.git
+git clone --branch v0.4.2 https://github.com/cuiqirui99/DFT-AGENT.git dft-agent
 cd dft-agent
 python3 -m venv .venv
 source .venv/bin/activate
@@ -90,15 +87,13 @@ python -m pip install '.[agent]'
 dft-agent ui
 ```
 
-These commands install the `0.4.2` preview from its test branch.
+These commands install version `0.4.2`.
 The Python interface opens in a local browser at
 `http://127.0.0.1:8501`; `--no-browser` skips opening it and `--port` selects
 another port. OpenSSH is required for macOS/Linux cluster connections.
 
 `[agent]` adds model SDKs and keychain support; omitting it still allows
 manual preparation and calculation. `[dev]` adds test and build tools.
-PyPI, uv and pipx installation by package name will be documented once the
-package is published; they are not installation paths for this preview.
 
 ## Files and updates
 

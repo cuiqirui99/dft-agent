@@ -2,7 +2,7 @@
 
 ![DFT Agent](docs/assets/dft-agent-logo.png)
 
-版本 `0.4.2`，当前为本地桌面预览，尚未发布。[English](README.md)
+版本 `0.4.2`。[English](README.md)
 
 [Qirui Cui](https://www.kth.se/profile/qiruic?l=en) · KTH 皇家理工学院 · [ORCID](https://orcid.org/0009-0005-6165-3237)
 
@@ -15,12 +15,12 @@ DFT Agent 根据自然语言目标或手动参数，准备并在你的 HPC 集�
 
 ## 安装并打开
 
-`0.4.2` 安装包目前仅为本地预览。正式发布后，从对应的 [GitHub Release](https://github.com/cuiqirui99/dft-agent/releases) 下载：
+从 [v0.4.2](https://github.com/cuiqirui99/DFT-AGENT/releases/tag/v0.4.2) 下载对应安装包：
 
 - **Apple Silicon Mac，macOS 14+：**打开 `.dmg`，把 **DFT Agent** 拖入“应用程序”，再打开应用。
 - **Windows x64：**运行 `.exe` 安装程序，然后从开始菜单打开 **DFT Agent**。
 
-当前预览尚未在 PyPI 发布。源码安装见[安装指南](docs/install.md)，打包与验收范围见[桌面版说明](docs/desktop.md)。
+源码安装见[安装指南](docs/install.md)，打包与验收范围见[桌面版说明](docs/desktop.md)。
 
 ## 没有集群也能试用
 
@@ -66,7 +66,7 @@ DFT Agent 根据自然语言目标或手动参数，准备并在你的 HPC 集�
 
 ## 引用
 
-Cui, Q. (2026). *DFT Agent* (v0.4.2，本地预览). [源码](https://github.com/cuiqirui99/dft-agent).
+Cui, Q. (2026). *DFT Agent* (v0.4.2). [源码](https://github.com/cuiqirui99/DFT-AGENT).
 
 [v0.3.0 存档](https://doi.org/10.5281/zenodo.23260917)。
 

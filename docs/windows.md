@@ -1,14 +1,12 @@
 # Windows
 
-This unreleased 0.4.2 preview adds a native Windows desktop app. The installer
+Version 0.4.2 includes a native Windows desktop app. The installer
 includes Python and the SSH/SFTP component; WSL and a separate OpenSSH
-installation are not required. Native Windows CI verification is still
-required before release.
+installation are not required.
 
 ## Install and connect
 
-1. Open the Windows preview installer supplied with this build. Published
-   installers will be attached to the project's GitHub release.
+1. Download and open the Windows installer from [v0.4.2](https://github.com/cuiqirui99/DFT-AGENT/releases/tag/v0.4.2).
 2. Launch **DFT Agent** from the Start menu.
 3. Under **Cluster setup**, enter the cluster's full login hostname, username
    and SSH port, then the Slurm and VASP settings supplied by your institution.
@@ -49,8 +47,8 @@ inspect or back up these folders. `DFT_AGENT_HOME`, `DFT_AGENT_CONFIG` and
 
 ## Python installation
 
-This preview is not published on PyPI. Developers can install into Python
-3.11 or newer from PowerShell, starting in the preview source folder:
+Developers can install into Python 3.11 or newer from PowerShell, starting
+in the source folder:
 
 ```powershell
 py -m venv .venv

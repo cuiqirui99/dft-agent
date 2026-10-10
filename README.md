@@ -2,7 +2,7 @@
 
 ![DFT Agent](docs/assets/dft-agent-logo.png)
 
-Version `0.4.2` — local desktop preview, not yet released. [中文说明](README.zh-CN.md)
+Version `0.4.2`. [中文说明](README.zh-CN.md)
 
 [Qirui Cui](https://www.kth.se/profile/qiruic?l=en) · KTH Royal Institute of Technology
 
@@ -17,14 +17,12 @@ Actual calculations require your own Slurm account and licensed VASP/POTCAR file
 
 ## Install and open
 
-Version `0.4.2` is currently a local desktop preview. Once published,
-download the installer for your computer from its [GitHub Release](https://github.com/cuiqirui99/dft-agent/releases):
+Download the installer for your computer from [v0.4.2](https://github.com/cuiqirui99/DFT-AGENT/releases/tag/v0.4.2):
 
 - **Mac, Apple Silicon, macOS 14+:** open the `.dmg`, copy **DFT Agent** to Applications, then open it.
 - **Windows x64:** run the `.exe` installer, then open **DFT Agent** from the Start menu.
 
-No separate Python installation is needed. PyPI installation is not yet available
-for this preview. See [Install](docs/install.md) for source installation and
+No separate Python installation is needed. See [Install](docs/install.md) for source installation and
 [Desktop builds](docs/desktop.md) for the current verification scope.
 
 ## Try it without a cluster
@@ -98,7 +96,7 @@ Use ordered periodic structures. Check the starting parameters for your material
 
 ## Citation
 
-Cui, Q. (2026). *DFT Agent* (v0.4.2, local preview). [Source](https://github.com/cuiqirui99/dft-agent).
+Cui, Q. (2026). *DFT Agent* (v0.4.2). [Source](https://github.com/cuiqirui99/DFT-AGENT).
 
 [Archived v0.3.0](https://doi.org/10.5281/zenodo.23260917).
 

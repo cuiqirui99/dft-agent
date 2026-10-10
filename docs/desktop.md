@@ -1,10 +1,9 @@
 # Desktop builds
 
-`0.4.2` is an unpublished local preview. The packaging targets are Apple
-Silicon Macs running macOS 14 or later and Windows x64. Python and the scientific/model SDKs are
+Version `0.4.2` provides installers for Apple Silicon Macs running macOS 14
+or later and Windows x64. Python and the scientific/model SDKs are
 bundled; VASP, POTCAR files, cluster time, API credentials and model credits
-are not. This page describes how to build and check a package, not a claim
-that every platform or external service has passed acceptance.
+are not. Download the installers from [v0.4.2](https://github.com/cuiqirui99/DFT-AGENT/releases/tag/v0.4.2).
 
 ## Build from a checkout
 
@@ -19,10 +18,10 @@ On macOS, this produces `dist/DFT Agent.app`. Create a disk image after the
 app has passed its checks:
 
 ```bash
-mkdir -p dist/dmg-preview
-cp -R 'dist/DFT Agent.app' dist/dmg-preview/
-ln -s /Applications dist/dmg-preview/Applications
-hdiutil create -volname 'DFT Agent' -srcfolder dist/dmg-preview -ov -format UDZO dist/DFT-Agent-0.4.2-macOS-arm64.dmg
+mkdir -p dist/dmg
+cp -R 'dist/DFT Agent.app' dist/dmg/
+ln -s /Applications dist/dmg/Applications
+hdiutil create -volname 'DFT Agent' -srcfolder dist/dmg -ov -format UDZO dist/DFT-Agent-0.4.2-macOS-arm64.dmg
 ```
 
 On Windows, the app folder is `dist/DFT Agent`. The
@@ -59,5 +58,4 @@ notarization, Windows installer execution and interactive checks should only
 be marked complete when their own records exist.
 
 Publish each completed version under a new tag and GitHub Release. Keep
-previous release records and assets unchanged; local preview artifacts do
-not establish that a release has been published.
+previous release records and assets unchanged.

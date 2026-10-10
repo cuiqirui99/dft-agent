@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.4.2 — unreleased desktop preview
+## 0.4.2 — 2026-10-10
 
 - Add desktop packaging for Apple Silicon Macs (`.dmg`) and Windows x64 (`.exe`), including Python and model SDKs. Installation and platform acceptance are tracked separately from publication.
 - Prepare and review inputs without a cluster; attach cluster settings at submission.
@@ -23,7 +23,7 @@
 - Connect from native Windows with bundled SSH/SFTP support; WSL remains optional.
 - Preserve cluster configurations and unfinished input fields when switching configuration files or interface language.
 - Preserve launch commands and environment prerequisites during cluster detection, verify keychain deletion, and send Discord-compatible notifications.
-- Document desktop and source installation; PyPI publication is still pending. Existing release tags and assets remain unchanged.
+- Document desktop and source installation.
 
 ## 0.4.1 — 2026-10-09
 
