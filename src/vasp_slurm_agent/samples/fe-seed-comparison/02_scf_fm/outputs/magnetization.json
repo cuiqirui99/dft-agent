@@ -1,0 +1,17 @@
+{
+  "available": true,
+  "unit": "mu_B",
+  "site_order": "POSCAR",
+  "basis": "collinear spin axis",
+  "saxis": [
+    0.0,
+    0.0,
+    1.0
+  ],
+  "site_moments": [
+    2.027,
+    2.027
+  ],
+  "total_moment": 4.0412158,
+  "note": "Site moments are PAW sphere projections; their sum is not the full cell moment."
+}

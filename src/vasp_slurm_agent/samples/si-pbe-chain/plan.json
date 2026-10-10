@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "tasks": [
+    "relax",
+    "scf",
+    "bands",
+    "dos"
+  ],
+  "parameters": {
+    "encut": 400,
+    "mesh": [
+      2,
+      2,
+      2
+    ],
+    "ediff": 1e-05,
+    "ediffg": -0.03,
+    "nelm": 160,
+    "nsw": 100,
+    "ismear": 0,
+    "sigma": 0.1,
+    "line_density": 1,
+    "nedos": 301,
+    "cell_relax": false
+  },
+  "sources": {
+    "source/input/si-pbe-chain.vasp": "0af1bd6005cfe9527c7e40a38ae389b4fbdedb1fc0953ee5c36f29b6bb940cce"
+  },
+  "magnetic_seeds": null,
+  "stages": [
+    {
+      "name": "relax",
+      "folder": "01_relax",
+      "parameters": {
+        "encut": 400,
+        "mesh": [
+          2,
+          2,
+          2
+        ],
+        "ediff": 1e-05,
+        "ediffg": -0.03,
+        "nelm": 160,
+        "nsw": 100,
+        "ismear": 0,
+        "sigma": 0.1,
+        "line_density": 1,
+        "nedos": 301,
+        "cell_relax": false
+      },
+      "structure_from": null,
+      "charge_from": null,
+      "source_path": "source/input/si-pbe-chain.vasp"
+    },
+    {
+      "name": "scf",
+      "folder": "02_scf",
+      "parameters": {
+        "encut": 400,
+        "mesh": [
+          2,
+          2,
+          2
+        ],
+        "ediff": 1e-05,
+        "ediffg": -0.03,
+        "nelm": 160,
+        "nsw": 100,
+        "ismear": 0,
+        "sigma": 0.1,
+        "line_density": 1,
+        "nedos": 301,
+        "cell_relax": false
+      },
+      "structure_from": 0,
+      "charge_from": null,
+      "source_path": "source/input/si-pbe-chain.vasp"
+    },
+    {
+      "name": "bands",
+      "folder": "03_bands",
+      "parameters": {
+        "encut": 400,
+        "mesh": [
+          2,
+          2,
+          2
+        ],
+        "ediff": 1e-05,
+        "ediffg": -0.03,
+        "nelm": 160,
+        "nsw": 100,
+        "ismear": 0,
+        "sigma": 0.1,
+        "line_density": 1,
+        "nedos": 301,
+        "cell_relax": false
+      },
+      "structure_from": 0,
+      "charge_from": 1,
+      "source_path": "source/input/si-pbe-chain.vasp"
+    },
+    {
+      "name": "dos",
+      "folder": "04_dos",
+      "parameters": {
+        "encut": 400,
+        "mesh": [
+          2,
+          2,
+          2
+        ],
+        "ediff": 1e-05,
+        "ediffg": -0.03,
+        "nelm": 160,
+        "nsw": 100,
+        "ismear": 0,
+        "sigma": 0.1,
+        "line_density": 1,
+        "nedos": 301,
+        "cell_relax": false
+      },
+      "structure_from": 0,
+      "charge_from": 1,
+      "source_path": "source/input/si-pbe-chain.vasp"
+    }
+  ]
+}

@@ -3,7 +3,10 @@ from __future__ import annotations
 from contextlib import contextmanager
 from copy import deepcopy
 from datetime import datetime, timezone
-import fcntl
+try:
+    import fcntl
+except ImportError:  # Windows has no fcntl; msvcrt locks a byte of the lock file instead.
+    fcntl = None
 import hashlib
 import json
 import math
@@ -45,11 +48,40 @@ def _write(path, payload):
     os.replace(temp, path)
 
 
+def _acquire(stream, blocking=True):
+    """Take an exclusive lock on an open file; BlockingIOError when busy and not blocking."""
+    if fcntl is not None:
+        fcntl.flock(stream, fcntl.LOCK_EX | (0 if blocking else fcntl.LOCK_NB))
+        return
+    import msvcrt  # pragma: no cover - Windows only
+    stream.seek(0)
+    while True:
+        try:
+            msvcrt.locking(stream.fileno(), msvcrt.LK_NBLCK, 1)
+            return
+        except OSError:
+            if not blocking:
+                raise BlockingIOError("The lock is held by another process.")
+            time.sleep(0.1)
+
+
+def _release(stream):
+    if fcntl is not None:
+        fcntl.flock(stream, fcntl.LOCK_UN)
+    else:
+        import msvcrt  # pragma: no cover - Windows only
+        stream.seek(0)
+        msvcrt.locking(stream.fileno(), msvcrt.LK_UNLCK, 1)
+
+
 @contextmanager
 def _lock(root):
     with (Path(root) / ".state.lock").open("a") as stream:
-        fcntl.flock(stream, fcntl.LOCK_EX)
-        yield
+        _acquire(stream)
+        try:
+            yield
+        finally:
+            _release(stream)
 
 
 def read_state(run_dir):
@@ -72,7 +104,14 @@ def _digest(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
+def _symbols(config):
+    """POTCAR folder names from the cluster settings; defaults before a cluster is attached."""
+    return dict(config.potcar_symbols) if config is not None else {}
+
+
 def _launch_command(config, metadata):
+    if config is None:
+        return ""
     command = config.vasp_ncl_command if metadata.get("requires_ncl") else config.vasp_command
     if not command.strip():
         raise ValueError("Set vasp_ncl_command before preparing SOC or noncollinear calculations.")
@@ -102,7 +141,11 @@ def _charge_recipe(parameters, input_policy=2):
 
 def prepare_plan(structure_path, run_dir, config, tasks, parameters=None, magnetic_states=None, initial_moment=3.0,
                  stage_parameters=None, *, _input_policy=2):
-    """Freeze an offline plan; prepare post-relaxation inputs only after acceptance."""
+    """Freeze an offline plan; prepare post-relaxation inputs only after acceptance.
+
+    With config=None the inputs are prepared locally for review; attach_config
+    adds the cluster settings before submission.
+    """
     if isinstance(magnetic_states, (list, tuple)) and not magnetic_states:
         magnetic_states = None
     if type(_input_policy) is not int or _input_policy not in {1, 2}:
@@ -186,15 +229,16 @@ def prepare_plan(structure_path, run_dir, config, tasks, parameters=None, magnet
             if stage.get("warm_start"):
                 spec["warm_start"] = True
         _write(temporary / "plan.json", plan)
-        config.save(temporary / "config.json")
+        if config is not None:
+            config.save(temporary / "config.json")
         state = {"schema_version": 2, "input_policy": _input_policy, "run_id": run_id,
                  "task": "magnetic" if magnetic_states is not None else tasks[0] if len(tasks) == 1 else "pipeline",
                  "tasks": tasks, "formula": "", "status": "planned", "parameters": parameters,
                  "current_stage": 0, "stages": stages, "created_at": utc_now(), "history": [],
                  "last_error": None, "cancel_requested": False,
-                 "remote_root": config.remote_root.rstrip("/") + "/" + run_id,
+                 "remote_root": config.remote_root.rstrip("/") + "/" + run_id if config is not None else None,
                  "plan_sha256": _digest(temporary / "plan.json"),
-                 "config_sha256": _digest(temporary / "config.json")}
+                 "config_sha256": _digest(temporary / "config.json") if config is not None else None}
         if magnetic_states is not None:
             state["comparison"] = {"scope": seed_info["scope"], "status": "pending", "ranking": [], "excluded": []}
         for stage in stages:
@@ -206,7 +250,7 @@ def prepare_plan(structure_path, run_dir, config, tasks, parameters=None, magnet
                 preview = temporary / ".recipe-check"
                 build = _input_builder(state, stage)
                 metadata = build(temporary / source_relative, preview, stage["name"],
-                                 stage["parameters"], config.potcar_symbols)
+                                 stage["parameters"], _symbols(config))
                 _launch_command(config, metadata)
                 shutil.rmtree(preview)
         state["formula"] = stages[0]["metadata"].get("formula", "")
@@ -260,7 +304,7 @@ def _materialize_stage(root, state, config, stage):
     temporary = Path(tempfile.mkdtemp(prefix=".inputs-", dir=root))
     try:
         build = _input_builder(state, stage)
-        metadata = build(source, temporary / "inputs", stage["name"], parameters, config.potcar_symbols)
+        metadata = build(source, temporary / "inputs", stage["name"], parameters, _symbols(config))
         _launch_command(config, metadata)
         destination.parent.mkdir(parents=True, exist_ok=True)
         if destination.exists():
@@ -274,6 +318,130 @@ def _materialize_stage(root, state, config, stage):
         stage["source_sha256"] = _digest(source)
     finally:
         shutil.rmtree(temporary)
+
+
+def has_config(run_dir):
+    """True when cluster settings are attached to this run."""
+    return (Path(run_dir).expanduser() / "config.json").is_file()
+
+
+def _prepare_config_attachment(root, config):
+    """Rebuild a private copy; callers commit it only after every check passes."""
+    state = read_state(root)
+    if state["status"] != "planned" or any(stage.get("job_id") or stage.get("staged") for stage in state["stages"]):
+        raise ValueError("Cluster settings can only be attached before the first submission.")
+    _check_config(root, state)
+    config.save(root / "config.json")
+    state["config_sha256"] = _digest(root / "config.json")
+    state["remote_root"] = config.remote_root.rstrip("/") + "/" + state["run_id"]
+    for stage in state["stages"]:
+        if stage.get("materialized"):
+            shutil.rmtree(root / stage["folder"] / "inputs")
+            stage["materialized"] = False
+            stage["metadata"] = {}
+    for stage in state["stages"]:
+        if stage["structure_from"] is None:
+            _materialize_stage(root, state, config, stage)
+        else:
+            # Later inputs still need the accepted relaxed structure, but all
+            # recipes and launch commands must be usable before the first job.
+            with tempfile.TemporaryDirectory(prefix=".recipe-check-", dir=root) as directory:
+                metadata = _input_builder(state, stage)(
+                    root / stage["source_path"], Path(directory) / "inputs", stage["name"],
+                    stage["parameters"], _symbols(config),
+                )
+                _launch_command(config, metadata)
+    state["formula"] = state["stages"][0]["metadata"].get("formula", state.get("formula", ""))
+    return _save(root, state, "Cluster settings attached.")
+
+
+def _config_attachment_files(state):
+    return ["config.json", *(stage["folder"] + "/inputs" for stage in state["stages"]), "run.json"]
+
+
+@contextmanager
+def _config_attachment_lock(root):
+    # Workers load the transport before taking the state lock. Keep them from
+    # observing one cluster configuration and then submitting with another.
+    with (root / ".worker.lock").open("a") as worker:
+        try:
+            _acquire(worker, blocking=False)
+        except BlockingIOError as exc:
+            raise ValueError("Cluster settings cannot be attached while monitoring is running.") from exc
+        try:
+            with _lock(root):
+                yield
+        finally:
+            _release(worker)
+
+
+@contextmanager
+def _config_attachment_workspace(root):
+    temporary = Path(tempfile.mkdtemp(prefix=".dft-attach-", dir=root.parent))
+    try:
+        yield temporary
+    except BaseException:
+        original = temporary / "original"
+        # A filesystem error may also prevent rollback. Never delete the only
+        # remaining copies of original files in that case.
+        if not original.exists() or not any(path.is_file() for path in original.rglob("*")):
+            shutil.rmtree(temporary, ignore_errors=True)
+        raise
+    else:
+        shutil.rmtree(temporary, ignore_errors=True)
+
+
+def _commit_config_attachment(root, prepared, relative_paths, backup):
+    """Replace checked files while retaining originals for rollback on failure.
+
+    Keep the original run directories and lock files in place so another worker
+    cannot acquire a different lock inode during the commit.
+    """
+    backup.mkdir()
+    changed = []
+    try:
+        for relative in relative_paths:
+            source, target = prepared / relative, root / relative
+            saved = backup / relative
+            if not source.exists() and not target.exists():
+                continue
+            if target.exists():
+                saved.parent.mkdir(parents=True, exist_ok=True)
+                os.replace(target, saved)
+            changed.append((source, target, saved))
+            if source.exists():
+                os.replace(source, target)
+    except BaseException:
+        rollback_error = None
+        for source, target, saved in reversed(changed):
+            try:
+                if target.exists():
+                    os.replace(target, source)
+                if saved.exists():
+                    os.replace(saved, target)
+            except OSError as exc:
+                rollback_error = exc
+        if rollback_error is not None:
+            raise OSError(f"Could not fully restore the original run files. Originals are retained at {backup}.") from rollback_error
+        raise
+
+
+def attach_config(run_dir, config):
+    """Add or replace cluster settings on a run that has not been submitted.
+
+    Prepared inputs are rebuilt so POTCAR labels and launch commands follow the
+    attached cluster. The frozen plan and source structure do not change.
+    """
+    if config is None:
+        raise ValueError("Save Cluster setup before attaching it to a run.")
+    root = Path(run_dir).expanduser().resolve()
+    with _config_attachment_lock(root):
+        with _config_attachment_workspace(root) as temporary:
+            prepared = temporary / "run"
+            shutil.copytree(root, prepared, ignore=shutil.ignore_patterns(".state.lock", ".worker.lock"))
+            state = _prepare_config_attachment(prepared, config)
+            _commit_config_attachment(root, prepared, _config_attachment_files(state), temporary / "original")
+            return state
 
 
 def _command(transport, command, timeout=60):
@@ -726,29 +894,47 @@ def cancel(run_dir, transport=None):
 
 def watch(run_dir, interval=20):
     root = Path(run_dir).expanduser().resolve()
+    if not has_config(root):
+        raise ValueError("This run has no cluster settings yet. Save Cluster setup and attach it before submitting.")
     with (root / ".worker.lock").open("a") as lock:
         try:
-            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            _acquire(lock, blocking=False)
         except BlockingIOError:
             return read_state(root)
-        _write(root / "worker.json", {"pid": os.getpid(), "started_at": utc_now()})
-        transport = SSHTransport(ClusterConfig.load(root / "config.json"))
+        transport = None
         try:
+            _write(root / "worker.json", {"pid": os.getpid(), "started_at": utc_now()})
+            transport = SSHTransport(ClusterConfig.load(root / "config.json"))
             while True:
                 state = advance(root, transport)
                 if state["status"] in TERMINAL:
                     bundle_run(root)
+                    _announce(root, state)
                     return state
                 time.sleep(interval)
         finally:
-            transport.close()
+            try:
+                if transport is not None:
+                    transport.close()
+            finally:
+                _release(lock)
+
+
+def _announce(root, state):
+    """Tell the user a run finished. Notification problems never affect the run."""
+    try:
+        from .notify import notify_run
+        notify_run(state, str(root))
+    except Exception:
+        pass
 
 
 def start_worker(run_dir):
+    from .runtime import cli_command
     root = Path(run_dir).expanduser().resolve()
     # Worker lock, rather than an unverified PID file, owns singleton execution.
     with (root / "worker.log").open("ab") as stream:
-        child = subprocess.Popen([sys.executable, "-m", "vasp_slurm_agent.cli", "watch", str(root)], stdin=subprocess.DEVNULL, stdout=stream, stderr=stream, start_new_session=True)
+        child = subprocess.Popen(cli_command("watch", root), stdin=subprocess.DEVNULL, stdout=stream, stderr=stream, start_new_session=True)
     return child.pid
 
 

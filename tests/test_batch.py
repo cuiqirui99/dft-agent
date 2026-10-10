@@ -120,11 +120,10 @@ def test_cancel_before_submit_and_watcher_do_not_submit(setup):
 
 
 def test_batch_worker_uses_existing_singleton_lock(setup):
-    import fcntl
     source, root, config = setup
     batch.prepare_batch(source, root, config, ["scf"], [{"label": "a"}])
     with (root / ".worker.lock").open("a") as lock:
-        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        workflow._acquire(lock, blocking=False)
         assert batch.watch_batch(root)["status"] == "planned"
 
 

@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
+from contextlib import ExitStack
 from copy import deepcopy
 import csv
-import fcntl
 import hashlib
 import json
 import math
@@ -34,7 +34,8 @@ def _children(root, state):
     if workflow._digest(manifest) != state.get("plan_sha256"):
         raise ValueError("The batch plan changed. Prepare a new batch.")
     plan = json.loads(manifest.read_text())
-    if workflow._digest(root / "config.json") != plan["config_sha256"]:
+    config_file = root / "config.json"
+    if (workflow._digest(config_file) if config_file.is_file() else None) != plan["config_sha256"]:
         raise ValueError("The batch cluster configuration changed. Restore the original settings.")
     if len(plan["runs"]) != len(state["runs"]):
         raise ValueError("Batch members differ from the frozen plan.")
@@ -85,7 +86,8 @@ def prepare_batch(structure_path, batch_dir, config, tasks, variants, parameters
         (temporary / "source").mkdir()
         frozen = temporary / "source" / source.name
         shutil.copyfile(source, frozen)
-        config.save(temporary / "config.json")
+        if config is not None:
+            config.save(temporary / "config.json")
         members = []
         for index, item in enumerate(variants):
             slug = re.sub(r"[^a-z0-9]+", "-", item["label"].lower()).strip("-")[:40] or "variant"
@@ -125,7 +127,7 @@ def prepare_batch(structure_path, batch_dir, config, tasks, variants, parameters
         plan = {"schema_version": 1, "tasks": list(tasks), "parameters": deepcopy(parameters or {}),
                 "stage_parameters": deepcopy(stage_parameters), "variants": deepcopy(variants),
                 "source": str(frozen.relative_to(temporary)), "source_sha256": workflow._digest(frozen),
-                "config_sha256": workflow._digest(temporary / "config.json"),
+                "config_sha256": workflow._digest(temporary / "config.json") if config is not None else None,
                 "runs": members}
         workflow._write(temporary / "batch-plan.json", plan)
         state = {"schema_version": 1, "batch_id": "dft-batch-" + uuid.uuid4().hex[:16],
@@ -158,6 +160,38 @@ def _refresh(root, state):
     state["updated_at"] = workflow.utc_now()
     workflow._write(root / "batch.json", state)
     return state
+
+
+def attach_batch_config(batch_dir, config):
+    """Attach cluster settings to a prepared batch and all of its members."""
+    if config is None:
+        raise ValueError("Save Cluster setup before attaching it to a batch.")
+    root = Path(batch_dir).expanduser().resolve()
+    with workflow._config_attachment_lock(root), ExitStack() as locks:
+        state = read_batch(root)
+        if state["status"] != "planned":
+            raise ValueError("Cluster settings can only be attached before the first submission.")
+        for _, path, _ in _children(root, state):
+            locks.enter_context(workflow._config_attachment_lock(path))
+        # A child worker may have changed state while its lock was pending.
+        _children(root, state)
+        with workflow._config_attachment_workspace(root) as temporary:
+            prepared = temporary / "batch"
+            shutil.copytree(root, prepared, ignore=shutil.ignore_patterns(".state.lock", ".worker.lock"))
+            plan = json.loads((prepared / "batch-plan.json").read_text())
+            replacements = []
+            for member in plan["runs"]:
+                child = workflow._prepare_config_attachment(prepared / member["folder"], config)
+                replacements.extend(member["folder"] + "/" + name for name in workflow._config_attachment_files(child))
+            config.save(prepared / "config.json")
+            plan["config_sha256"] = workflow._digest(prepared / "config.json")
+            workflow._write(prepared / "batch-plan.json", plan)
+            state["plan_sha256"] = workflow._digest(prepared / "batch-plan.json")
+            state = _refresh(prepared, state)
+            _summarize_batch(prepared)
+            replacements.extend(("config.json", "batch-plan.json", "batch.json", "summary.json", "summary.csv"))
+            workflow._commit_config_attachment(root, prepared, replacements, temporary / "original")
+            return state
 
 
 def advance_batch(batch_dir, transport=None):
@@ -285,31 +319,38 @@ def _summarize_batch(root):
 
 def watch_batch(batch_dir, interval=20, transport=None):
     root = Path(batch_dir).expanduser().resolve()
+    if not (root / "config.json").is_file():
+        raise ValueError("This batch has no cluster settings yet. Save Cluster setup and attach it before submitting.")
     with (root / ".worker.lock").open("a") as lock:
         try:
-            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            workflow._acquire(lock, blocking=False)
         except BlockingIOError:
             return read_batch(root)
-        _children(root, read_batch(root))
         owned = transport is None
-        transport = transport or SSHTransport(ClusterConfig.load(root / "config.json"))
-        workflow._write(root / "worker.json", {"pid": os.getpid(), "started_at": workflow.utc_now()})
         try:
+            _children(root, read_batch(root))
+            transport = transport or SSHTransport(ClusterConfig.load(root / "config.json"))
+            workflow._write(root / "worker.json", {"pid": os.getpid(), "started_at": workflow.utc_now()})
             while True:
                 state = advance_batch(root, transport)
                 if state["status"] in workflow.TERMINAL:
                     bundle_batch(root)
+                    workflow._announce(root, {"status": state["status"], "formula": "batch", "task": state.get("batch_id", "")})
                     return state
                 time.sleep(interval)
         finally:
-            if owned:
-                transport.close()
+            try:
+                if owned and transport is not None:
+                    transport.close()
+            finally:
+                workflow._release(lock)
 
 
 def start_batch_worker(batch_dir):
+    from .runtime import cli_command
     root = Path(batch_dir).expanduser().resolve()
     with (root / "worker.log").open("ab") as stream:
-        child = subprocess.Popen([sys.executable, "-m", "vasp_slurm_agent.cli", "watch-batch", str(root)],
+        child = subprocess.Popen(cli_command("watch-batch", root),
                                  stdin=subprocess.DEVNULL, stdout=stream, stderr=stream, start_new_session=True)
     return child.pid
 

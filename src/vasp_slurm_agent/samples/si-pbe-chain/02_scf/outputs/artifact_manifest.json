@@ -1,0 +1,62 @@
+{
+  "INCAR": {
+    "sha256": "c4afcd866bb67735b6d5c2c352067e36ebd23fc3407ebc8c3b915fd341d148e5",
+    "size": 243
+  },
+  "KPOINTS": {
+    "sha256": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49",
+    "size": 38
+  },
+  "POSCAR": {
+    "sha256": "7ff2750c75c9e651f5acfb830cc0a4abf95eff91821e7bf7266f797bb740930a",
+    "size": 356
+  },
+  "OUTCAR": {
+    "sha256": "72102c6d1b5911ddfab1138c5ed3805eb3c5e7edfacf7d16eb68e5c718d53152",
+    "size": 50758
+  },
+  "OSZICAR": {
+    "sha256": "9e8a6a6d016c22731e55de2f76680bbc3d3a667acd98a31dc9a6f9ff9c393e20",
+    "size": 1111
+  },
+  "vasprun.xml": {
+    "sha256": "af12b3c87872764c344685eb4d04f117ba8f04480df37563cb0bf446bd7d47f8",
+    "size": 41382
+  },
+  "CONTCAR": {
+    "sha256": "c3cb44bb1efe617798d48e28007288adcaa06290282a2ac0d14bbaabb68d0bae",
+    "size": 512
+  },
+  "EIGENVAL": {
+    "sha256": "a9dfc768435e1145115dd47e1403b9dc6413f8759a0eb4f380977c0512536768",
+    "size": 2155
+  },
+  "DOSCAR": {
+    "sha256": "6ccd36ea7179b9e17322e8c2ee95fde3cdc3624a586da4634d2cdb3ce8a75fed",
+    "size": 11073
+  },
+  "slurm.out": {
+    "sha256": "38abd6ee13f9b253f050fcf4d914d599e57266fd647fde3b0a5575f6d9431569",
+    "size": 3256
+  },
+  "slurm.err": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "size": 0
+  },
+  "execution.json": {
+    "sha256": "3c8d7fa78097525eeecd89852932a8c99b9af4d9aa1c4e1f0426cccb943a6167",
+    "size": 152
+  },
+  "input_hashes.sha256": {
+    "sha256": "03f445e34158965bbfd7cb9fcab72399e6bed8fdb5bede61ae27063eaa0c66fb",
+    "size": 219
+  },
+  "potcar_hash.sha256": {
+    "sha256": "29d407c69d148c9fe21db93fc38e963f1a3c04feb8f267ae50d41b04f34fda7f",
+    "size": 73
+  },
+  "potcar_titles.txt": {
+    "sha256": "a6718781e417cd9dcc6fc18c0d78d3a00a48722f7710e797793fdd46d29885ab",
+    "size": 33
+  }
+}

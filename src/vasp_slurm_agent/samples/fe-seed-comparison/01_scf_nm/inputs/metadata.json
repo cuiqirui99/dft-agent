@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "task": "scf",
+  "formula": "Fe",
+  "number_of_atoms": 2,
+  "parameters": {
+    "encut": 400.0,
+    "ediff": 1e-05,
+    "ediffg": -0.03,
+    "nsw": 100,
+    "mesh": [
+      4,
+      4,
+      4
+    ],
+    "ismear": 0,
+    "sigma": 0.1,
+    "cell_relax": false,
+    "nelm": 160,
+    "line_density": 1,
+    "nedos": 301,
+    "spin": "none"
+  },
+  "source_sha256": "d9e504eddb938b32919f8b8b5ceb48c8db1be135b23e522c24e8d6905a34451d",
+  "potcar_labels": [
+    "Fe"
+  ],
+  "potcar_elements": [
+    "Fe"
+  ],
+  "requires_chgcar": false,
+  "requires_ncl": false,
+  "spectral_charge_mode": "self_consistent",
+  "method": {
+    "spin": "none",
+    "magmom": null,
+    "soc": false,
+    "saxis": [
+      0.0,
+      0.0,
+      1.0
+    ],
+    "functional": "PBE",
+    "hubbard_u": {}
+  },
+  "method_incar_expected": {
+    "ISPIN": 1,
+    "LSORBIT": false,
+    "LNONCOLLINEAR": false,
+    "LDAU": false,
+    "LHFCALC": false,
+    "GGA": "PE"
+  },
+  "method_fingerprint": "0a69c976346f083c5591898c09d5fb9eb6e35cd8ac554d32dbb8dfb93916572b",
+  "method_comparison_fingerprint": "633389fb6ec0d3e2a512d83d482df73365508a3475be2381fbb255940e690b0c",
+  "input_site_order": [
+    0,
+    1
+  ],
+  "scope": "Check convergence and the magnetic state for your material.",
+  "input_sha256": {
+    "POSCAR": "d9e504eddb938b32919f8b8b5ceb48c8db1be135b23e522c24e8d6905a34451d",
+    "INCAR": "825516b89db557c2c753989a85a8d859df752ebf37645a7ff73ceeedd3e57f00",
+    "KPOINTS": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734"
+  }
+}

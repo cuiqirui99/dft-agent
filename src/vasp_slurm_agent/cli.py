@@ -8,11 +8,37 @@ import os
 from pathlib import Path
 import shlex
 import sys
+import threading
+import webbrowser
 
+from . import __version__
 from .config import ClusterConfig
+from .paths import default_config_path, default_runs_root, migrate_legacy_config
 from .providers import PROVIDERS
 
-DEFAULT_CONFIG = Path.home() / ".config" / "vasp-slurm-agent" / "cluster.json"
+DEFAULT_CONFIG = default_config_path()
+CHECK_LABELS = {
+    "python3": "Python 3 on the login node",
+    "sbatch": "Slurm: sbatch",
+    "squeue": "Slurm: squeue",
+    "sacct": "Slurm: sacct",
+    "scancel": "Slurm: scancel",
+    "potcar_root": "POTCAR folder",
+    "remote_parent": "Parent of the remote run folder",
+    "vasp": "VASP command",
+    "vasp_ncl": "SOC / noncollinear command",
+}
+FIX_HINTS = {
+    "python3": "Load a Python 3 module in the environment setup commands.",
+    "sbatch": "Slurm commands are missing from the PATH. Use a login node, or add a module to the setup commands.",
+    "squeue": "Slurm commands are missing from the PATH. Use a login node, or add a module to the setup commands.",
+    "sacct": "Slurm accounting is unavailable. Ask your cluster support; monitoring needs sacct.",
+    "scancel": "Slurm commands are missing from the PATH. Use a login node, or add a module to the setup commands.",
+    "potcar_root": "Check the POTCAR path and your VASP licence, or run Detect from cluster.",
+    "remote_parent": "Create the parent folder on the cluster, or choose another remote run folder.",
+    "vasp": "Add the VASP module to the setup commands, or use the full path to vasp_std in the VASP command.",
+    "vasp_ncl": "Check the noncollinear command, or leave it blank when SOC is not needed.",
+}
 
 
 def doctor(config, transport=None):
@@ -50,16 +76,66 @@ def doctor(config, transport=None):
             remote.close()
 
 
+def doctor_rows(report):
+    """One row per check with a plain label, a pass mark and a fix hint."""
+    rows = []
+    for name, check in (report.get("checks") or {}).items():
+        ok = bool(check.get("ok"))
+        rows.append({"check": CHECK_LABELS.get(name, name), "ok": ok, "detail": str(check.get("detail") or "")[:300],
+                     "hint": "" if ok else FIX_HINTS.get(name, "Review the detail and your cluster settings.")})
+    return rows
+
+
+def _describe(exc):
+    """A readable error line for the terminal."""
+    if isinstance(exc, OSError) and getattr(exc, "filename", None) and exc.strerror and not exc.args[1:2] == (None,):
+        if isinstance(exc, FileNotFoundError):
+            return f"File not found: {exc.filename}"
+        if isinstance(exc, PermissionError):
+            return f"Permission denied: {exc.filename}"
+        return f"{exc.strerror}: {exc.filename}"
+    return str(exc) or type(exc).__name__
+
+
+def _load_optional_config(explicit, default):
+    """The cluster settings when they exist. Missing default settings leave the run unattached."""
+    if explicit is not None:
+        return ClusterConfig.load(explicit)
+    if Path(default).expanduser().is_file():
+        return ClusterConfig.load(default)
+    print(f"No cluster settings at {default}; inputs are prepared for review only. "
+          "Attach a cluster later with: dft-agent attach RUN_DIR --config cluster.json", file=sys.stderr)
+    return None
+
+
+def _open_browser_later(url, delay=1.5):
+    timer = threading.Timer(delay, webbrowser.open, [url])
+    timer.daemon = True
+    timer.start()
+    return timer
+
+
 def main():
+    default_config = default_config_path()
     parser = argparse.ArgumentParser(description="Run VASP on Slurm.")
+    parser.add_argument("--version", action="version", version=f"dft-agent {__version__}")
     commands = parser.add_subparsers(dest="command", required=True)
     ui = commands.add_parser("ui", help="Open app")
     ui.add_argument("--port", type=int, default=8501)
+    ui.add_argument("--no-browser", action="store_true", help="Do not open a browser window")
     init = commands.add_parser("init", help="Set up cluster")
-    init.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
+    init.add_argument("--config", type=Path, default=default_config)
     probe = commands.add_parser("doctor", help="Check cluster and VASP")
-    probe.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
+    probe.add_argument("--config", type=Path, default=default_config)
     probe.add_argument("--password", action="store_true", help="Ask for your SSH password")
+    probe.add_argument("--table", action="store_true", help="Print a checklist instead of JSON")
+    detect = commands.add_parser("detect", help="Find partitions, accounts, VASP and POTCAR on a cluster")
+    detect.add_argument("--host", help="SSH host; defaults to the saved cluster settings")
+    detect.add_argument("--user", help="SSH user")
+    detect.add_argument("--port", type=int, default=None)
+    detect.add_argument("--config", type=Path, default=default_config, help="Saved settings for host, user and port")
+    detect.add_argument("--setup", nargs="*", default=None, help="Environment commands to run first")
+    detect.add_argument("--password", action="store_true", help="Ask for your SSH password")
     plan = commands.add_parser("plan", help="Plan from a goal")
     plan.add_argument("structure", type=Path)
     plan.add_argument("goal")
@@ -99,6 +175,16 @@ def main():
     memory_import.add_argument("source", type=Path)
     memory_import.add_argument("--ids", nargs="+", help="Import only these IDs; omit to preview")
     memory_import.add_argument("--runs", type=Path, required=True)
+    samples = commands.add_parser("samples", help="Copy completed example runs into the run folder")
+    samples.add_argument("--runs", type=Path, default=None, help="Run folder; defaults to the app's run folder")
+    samples.add_argument("--list", action="store_true", help="Describe the bundled samples without copying")
+    key = commands.add_parser("key", help="Remember or forget an API key in the system keychain")
+    key_commands = key.add_subparsers(dest="key_command", required=True)
+    key_set = key_commands.add_parser("set", help="Store a key; it is read from the terminal, not from arguments")
+    key_set.add_argument("provider", choices=tuple(name for name in PROVIDERS if name != "codex"))
+    key_clear = key_commands.add_parser("clear", help="Remove a stored key")
+    key_clear.add_argument("provider", choices=tuple(name for name in PROVIDERS if name != "codex"))
+    key_commands.add_parser("status", help="Show which providers have a stored key")
     structure_prep = commands.add_parser("prepare-structure", help="Apply reviewed structure edits")
     structure_prep.add_argument("structure", type=Path)
     structure_prep.add_argument("output_dir", type=Path)
@@ -123,15 +209,18 @@ def main():
     repair_prep.add_argument("run_dir", type=Path)
     repair_prep.add_argument("new_run_dir", type=Path)
     repair_prep.add_argument("--plan", type=Path, required=True)
-    prep = commands.add_parser("prepare", help="Prepare inputs locally")
+    prep = commands.add_parser("prepare", help="Prepare inputs locally; a cluster is optional until submission")
     prep.add_argument("structure", type=Path)
     prep.add_argument("run_dir", type=Path)
-    prep.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
+    prep.add_argument("--config", type=Path, default=None, help=f"Cluster settings (default: {default_config} when present)")
     source = prep.add_mutually_exclusive_group()
     source.add_argument("--task", choices=("relax", "scf", "bands", "dos"))
     source.add_argument("--plan", type=Path)
     prep.add_argument("--magnetic-states", nargs="+", choices=("NM", "FM", "AFM"))
     prep.add_argument("--parameters", default="{}", help="Calculation settings as a JSON object")
+    attach = commands.add_parser("attach", help="Attach cluster settings to a prepared run or batch")
+    attach.add_argument("run_dir", type=Path)
+    attach.add_argument("--config", type=Path, default=default_config)
     continuation = commands.add_parser("continue", help="Prepare from an accepted stage")
     continuation.add_argument("source_run", type=Path)
     continuation.add_argument("stage", help="Stage folder, for example 01_relax")
@@ -156,13 +245,23 @@ def main():
             sub.add_argument("--interval", type=float, default=20)
     args = parser.parse_args()
     try:
+        migrate_legacy_config()
+    except OSError:
+        pass
+    try:
         if getattr(args, "password", False):
             os.environ["DFT_AGENT_SSH_PASSWORD"] = getpass.getpass("SSH password: ")
         if args.command == "ui":
             if not 1024 <= args.port <= 65535:
                 parser.error("Choose a local port between 1024 and 65535")
             from streamlit.web import cli as streamlit_cli
-            sys.argv = ["streamlit", "run", str(Path(__file__).with_name("app.py")), "--server.address=127.0.0.1", f"--server.port={args.port}", "--server.headless=true", "--browser.gatherUsageStats=false"]
+            url = f"http://127.0.0.1:{args.port}"
+            sys.argv = ["streamlit", "run", str(Path(__file__).with_name("app.py")), "--server.address=127.0.0.1",
+                        f"--server.port={args.port}", "--server.headless=true", "--browser.gatherUsageStats=false",
+                        "--client.toolbarMode=minimal"]
+            print(f"DFT Agent {__version__} · {url} · press Ctrl+C to stop", file=sys.stderr)
+            if not args.no_browser and not os.environ.get("DFT_AGENT_NO_BROWSER"):
+                _open_browser_later(url)
             return streamlit_cli.main()
         if args.command == "init":
             if args.config.expanduser().exists():
@@ -172,8 +271,58 @@ def main():
             return 0
         if args.command == "doctor":
             result = doctor(ClusterConfig.load(args.config))
-            print(json.dumps(result, indent=2))
+            if args.table:
+                for row in doctor_rows(result):
+                    print(f"{'OK  ' if row['ok'] else 'FAIL'} {row['check']}: {row['detail']}" + (f"\n     {row['hint']}" if row["hint"] else ""))
+            else:
+                print(json.dumps(result, indent=2))
             return 0 if result["ok"] else 1
+        if args.command == "detect":
+            from .discovery import probe_cluster, probe_config
+            saved = None
+            if Path(args.config).expanduser().is_file() and not (args.host and args.user):
+                saved = ClusterConfig.load(args.config)
+            host = args.host or (saved.host if saved else "")
+            user = args.user or (saved.user if saved else "")
+            if not host or not user:
+                raise ValueError("Give --host and --user, or save cluster settings first.")
+            port = args.port or (saved.port if saved else 22)
+            setup = args.setup if args.setup is not None else (saved.setup_commands if saved else [])
+            probe = probe_config(host, user, port, connect_timeout=saved.connect_timeout if saved else 15,
+                                 ssh_control_path=saved.ssh_control_path if saved else "", setup_commands=setup)
+            result = probe_cluster(probe)
+            print(json.dumps(result, indent=2, ensure_ascii=False))
+            return 0
+        if args.command == "samples":
+            from .samples import install_samples, list_samples
+            if args.list:
+                print(json.dumps(list_samples(), indent=2, ensure_ascii=False))
+                return 0
+            runs = args.runs or default_runs_root()
+            installed = install_samples(runs)
+            for path in installed:
+                print(path)
+            if not installed:
+                print(f"The sample runs are already in {runs}.", file=sys.stderr)
+            return 0
+        if args.command == "key":
+            from . import credentials
+            if args.key_command == "status":
+                from .settings import load_settings
+                if not load_settings().get("keychain"):
+                    print("No API key is remembered on this computer.")
+                    return 0
+                stored = [name for name in PROVIDERS if name != "codex" and credentials.stored_key(name)]
+                print("Remembered keys: " + (", ".join(PROVIDERS[name]["label"] for name in stored) if stored else "none"))
+                return 0
+            if args.key_command == "set":
+                value = getpass.getpass(f"{PROVIDERS[args.provider]['label']} API key: ")
+                credentials.save_key(args.provider, value)
+                print(f"Stored the {PROVIDERS[args.provider]['label']} key in the system keychain.")
+                return 0
+            credentials.delete_key(args.provider)
+            print(f"Removed the {PROVIDERS[args.provider]['label']} key from the system keychain.")
+            return 0
         if args.command == "memory":
             from .knowledge import load_catalog, preview_import, import_selected
             if args.memory_command == "import":
@@ -254,7 +403,16 @@ def main():
             result = prepare_repair(args.run_dir, args.new_run_dir, json.loads(args.plan.read_text()))
             print(json.dumps(result, indent=2, ensure_ascii=False))
             return 0
-        from .workflow import prepare_run, prepare_plan, read_state, watch, resume, cancel, bundle_run, TERMINAL
+        from .workflow import attach_config, prepare_run, prepare_plan, read_state, watch, resume, cancel, bundle_run, TERMINAL
+        if args.command == "attach":
+            config = ClusterConfig.load(args.config)
+            if (args.run_dir / "batch.json").is_file():
+                from .batch import attach_batch_config
+                result = attach_batch_config(args.run_dir, config)
+            else:
+                result = attach_config(args.run_dir, config)
+            print(json.dumps(result, indent=2))
+            return 0
         if args.command == "continue":
             from .continuation import prepare_continuation
             result = prepare_continuation(args.source_run, args.stage, args.run_dir,
@@ -282,7 +440,7 @@ def main():
         if args.command == "watch-batch":
             raise ValueError("Choose a prepared batch folder.")
         if args.command == "prepare":
-            config = ClusterConfig.load(args.config)
+            config = _load_optional_config(args.config, default_config)
             if args.plan:
                 if args.parameters != "{}" or args.magnetic_states:
                     raise ValueError("Edit the plan before changing its settings.")
@@ -322,7 +480,7 @@ def main():
         print(json.dumps(result, indent=2))
         return 1 if result.get("status") in {"failed", "needs_attention"} else 0
     except (ValueError, OSError, RuntimeError) as exc:
-        print(f"Error: {exc}", file=sys.stderr)
+        print(f"Error: {_describe(exc)}", file=sys.stderr)
         return 1
 
 

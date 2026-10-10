@@ -1,6 +1,6 @@
-"""OpenSSH with full output and verified transfers. Requires remote Python 3.
+"""SSH with full output and verified transfers. Requires remote Python 3.
 
-Supports keys, agent or askpass; passwords never enter files or arguments.
+Uses OpenSSH on Unix and Paramiko on Windows. Passwords never enter files or arguments.
 """
 
 from __future__ import annotations
@@ -9,6 +9,7 @@ import hashlib
 import inspect
 import json
 import os
+import platform
 import shlex
 import signal
 import subprocess
@@ -87,7 +88,8 @@ def _extract_checked_archive(archive_path, folder, expected):
             if source is None:
                 raise ValueError("Archive member is not a regular readable file")
             with source, (folder / name).open("xb") as target:
-                os.fchmod(target.fileno(), 0o600)
+                if hasattr(os, "fchmod"):
+                    os.fchmod(target.fileno(), 0o600)
                 for block in iter(lambda: source.read(1024 * 1024), b""):
                     size += len(block)
                     if size > expected[name]["size"]:
@@ -170,18 +172,26 @@ class SSHTransport:
             raise ValueError("SSH host and user must be valid nonempty names.")
         if not 1 <= int(config.port) <= 65535:
             raise ValueError("SSH port must be between 1 and 65535.")
-        # macOS's normal temporary directory can exceed Unix socket path limits.
-        temp_parent = "/tmp" if Path("/tmp").is_dir() else None
-        self._temporary = tempfile.TemporaryDirectory(prefix="dft-ssh-", dir=temp_parent)
+        self._windows = platform.system() == "Windows"
         external_control = getattr(config, "ssh_control_path", "")
+        if self._windows and external_control:
+            raise TransportError("SSH control sockets are not used on Windows. Clear the SSH control socket setting.")
+        self._native = None
+        if self._windows:
+            from .windows_ssh import WindowsSSH
+            self._native = WindowsSSH(config, self._password)
+        # macOS's normal temporary directory can exceed Unix socket path limits.
+        temp_parent = "/tmp" if not self._windows and Path("/tmp").is_dir() else None
+        self._temporary = tempfile.TemporaryDirectory(prefix="dft-ssh-", dir=temp_parent)
         self._external_control = bool(external_control)
         self._control_path = str(Path(external_control).expanduser()) if external_control else str(Path(self._temporary.name) / "socket")
         self._askpass_path = Path(self._temporary.name) / "askpass"
-        if self._password:
+        if self._password and not self._windows:
             # Use a shell wrapper so Python paths containing spaces also work.
             code = "import os, sys; sys.stdout.write(os.environ['_DFT_AGENT_ASKPASS_PASSWORD'] + '\\n')"
+            arguments = [sys.executable, "--askpass"] if getattr(sys, "frozen", False) else [sys.executable, "-c", code]
             self._askpass_path.write_text(
-                "#!/bin/sh\nexec " + shlex.quote(sys.executable) + " -c " + shlex.quote(code) + "\n",
+                "#!/bin/sh\nexec " + shlex.join(arguments) + "\n",
                 encoding="utf-8",
             )
             self._askpass_path.chmod(0o700)
@@ -253,6 +263,14 @@ class SSHTransport:
 
     def run(self, command: str, timeout: float = 60) -> Result:
         """Run a remote shell command, preserving complete stdout and stderr."""
+        if self._closed:
+            raise TransportError("SSH transport has been closed.")
+        if self._native is not None:
+            try:
+                result = self._native.run("bash -lc " + shlex.quote(command), timeout)
+                return Result(result.returncode, self._redact(result.stdout), self._redact(result.stderr))
+            except TransportError as exc:
+                raise TransportError(self._redact(str(exc))) from None
         return self._execute(
             [*self._ssh(), "--", self._host, "bash -lc " + shlex.quote(command)], timeout
         )
@@ -312,6 +330,18 @@ class SSHTransport:
             timeout=600,
         )
 
+    def _upload_file(self, source: Path, destination: str) -> Result:
+        if self._native is not None:
+            self._native.transfer(str(source), destination, upload=True)
+            return Result(0)
+        return self._scp(str(source), self._remote_operand(destination))
+
+    def _download_file(self, source: str, destination: Path) -> Result:
+        if self._native is not None:
+            self._native.transfer(str(destination), source, upload=False)
+            return Result(0)
+        return self._scp(self._remote_operand(source), str(destination))
+
     def upload(self, local_path: str | Path, remote_path: str) -> dict[str, Any]:
         """Upload to a temporary remote file, verify, then atomically replace."""
         destination = self._remote_path(remote_path)
@@ -324,7 +354,7 @@ class SSHTransport:
             prepared = self._remote_python(f"import os\nos.makedirs({parent!r}, exist_ok=True)\n")
             self._require_success(prepared, "Upload directory preparation")
             transfer_attempted = True
-            copied = self._scp(str(source), self._remote_operand(temporary))
+            copied = self._upload_file(source, temporary)
             self._require_success(copied, "Upload")
             code = (
                 "import hashlib, json, os\n"
@@ -360,7 +390,7 @@ class SSHTransport:
             descriptor, name = tempfile.mkstemp(prefix=f".{destination.name}.", suffix=".part", dir=destination.parent)
             os.close(descriptor)
             temporary = Path(name)
-            copied = self._scp(self._remote_operand(source), str(temporary))
+            copied = self._download_file(source, temporary)
             self._require_success(copied, "Download")
             actual = _local_metadata(temporary)
             if actual != expected:
@@ -442,7 +472,7 @@ class SSHTransport:
                 prepared = self._remote_python(f"import os\nos.makedirs({destination!r}, exist_ok=True)\n")
                 self._require_success(prepared, "Batch upload directory preparation")
                 transfer_attempted = True
-                self._require_success(self._scp(str(archive_path), self._remote_operand(remote_archive)), "Batch upload")
+                self._require_success(self._upload_file(archive_path, remote_archive), "Batch upload")
                 code = (
                     "import json, os, shutil, tempfile\n"
                     + inspect.getsource(_extract_checked_archive)
@@ -510,7 +540,7 @@ class SSHTransport:
             with tempfile.TemporaryDirectory(prefix=".vsa-download-", dir=destination) as temporary:
                 temporary_path = Path(temporary)
                 archive_path = temporary_path / "outputs.tar.gz"
-                self._require_success(self._scp(self._remote_operand(remote_archive), str(archive_path)), "Batch download")
+                self._require_success(self._download_file(remote_archive, archive_path), "Batch download")
                 if _local_metadata(archive_path) != archive_metadata:
                     raise TransportError("Download verification failed (archive size or SHA-256 mismatch). Your existing files were kept.")
                 manifest = _extract_checked_archive(archive_path, temporary_path, expected)
@@ -534,7 +564,9 @@ class SSHTransport:
         if self._closed:
             return
         try:
-            if not self._external_control and Path(self._control_path).exists():
+            if self._native is not None:
+                self._native.close()
+            elif not self._external_control and Path(self._control_path).exists():
                 self._execute([*self._ssh(), "-O", "exit", "--", self._host], timeout=5)
         except TransportError:
             pass

@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.4.2 — unreleased desktop preview
+
+- Add desktop packaging for Apple Silicon Macs (`.dmg`) and Windows x64 (`.exe`), including Python and model SDKs. Installation and platform acceptance are tracked separately from publication.
+- Prepare and review inputs without a cluster; attach cluster settings at submission.
+- Load three completed sample runs to explore results and plots offline; model explanations require the user's model account.
+- Detect partitions, accounts, VASP modules and POTCAR folders from the cluster, with presets for known clusters.
+- Remember API keys in the system keychain on request; `dft-agent key` manages them.
+- Open the browser automatically and hide the Streamlit toolbar.
+- Move settings to `~/.dft-agent/` and runs to `~/dft-agent-runs/`; earlier locations keep working.
+- Show runs as a table, cluster checks as a checklist with fixes, and clearer errors.
+- Add screenshots, a Chinese README, an install guide and a Windows guide.
+- Notice new releases in the app.
+- Interactive 3D structure viewer with a static fallback.
+- Resume monitoring at startup and notify when a run finishes.
+- Switch the interface between English and Chinese.
+- Connect from native Windows with bundled SSH/SFTP support; WSL remains optional.
+- Preserve cluster configurations and unfinished input fields when switching configuration files or interface language.
+- Preserve launch commands and environment prerequisites during cluster detection, verify keychain deletion, and send Discord-compatible notifications.
+- Document desktop and source installation; PyPI publication is still pending. Existing release tags and assets remain unchanged.
+
 ## 0.4.1 — 2026-10-09
 
 - Generate k meshes from cell size and detect vacuum directions.

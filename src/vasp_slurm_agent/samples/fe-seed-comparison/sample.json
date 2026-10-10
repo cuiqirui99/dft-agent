@@ -1,0 +1,8 @@
+{
+  "order": 3,
+  "title": "Fe: compare NM, FM and AFM seeds",
+  "description": "Three self-consistent calculations on the same bcc iron cell started from non-magnetic, ferromagnetic and antiferromagnetic seeds, ranked by energy.",
+  "goal": "Compare magnetic states of bcc Fe.",
+  "source": "VASP 6.2.1 on a Slurm cluster, from the v0.4.1 validation set",
+  "note": "Cluster names, accounts and paths were replaced with placeholders."
+}

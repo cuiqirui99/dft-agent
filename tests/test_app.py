@@ -383,7 +383,9 @@ def test_format_conversion_needs_no_model_or_cluster(workbench, monkeypatch):
     widget(app.button, "Use structure").click().run()
     assert not app.exception
     assert app.session_state["structure_active"]["output"]["number_of_sites"] == 2
-    assert widget(app.button, "Prepare inputs").disabled
+    # Inputs can be prepared without a cluster; nothing is created until the button is used.
+    assert not widget(app.button, "Prepare inputs").disabled
+    assert any("without a cluster" in item.value for item in app.caption)
     assert not runs_root.exists()
     worker.assert_not_called()
 

@@ -1,0 +1,677 @@
+{
+  "schema_version": 2,
+  "run_id": "vsa-e51c48079eb24fc4",
+  "task": "magnetic",
+  "tasks": [
+    "scf"
+  ],
+  "formula": "Fe",
+  "status": "succeeded",
+  "parameters": {
+    "encut": 400,
+    "mesh": [
+      4,
+      4,
+      4
+    ],
+    "ediff": 1e-05,
+    "ediffg": -0.03,
+    "nelm": 160,
+    "nsw": 100,
+    "ismear": 0,
+    "sigma": 0.1,
+    "line_density": 1,
+    "nedos": 301,
+    "cell_relax": false
+  },
+  "current_stage": 2,
+  "stages": [
+    {
+      "name": "scf",
+      "label": "NM",
+      "parameters": {
+        "encut": 400,
+        "mesh": [
+          4,
+          4,
+          4
+        ],
+        "ediff": 1e-05,
+        "ediffg": -0.03,
+        "nelm": 160,
+        "nsw": 100,
+        "ismear": 0,
+        "sigma": 0.1,
+        "line_density": 1,
+        "nedos": 301,
+        "cell_relax": false,
+        "spin": "none"
+      },
+      "folder": "01_scf_nm",
+      "job_name": "vsa-e51c48079eb24fc4-scf_nm",
+      "status": "succeeded",
+      "job_id": "3568969",
+      "metadata": {
+        "schema_version": 1,
+        "task": "scf",
+        "formula": "Fe",
+        "number_of_atoms": 2,
+        "parameters": {
+          "encut": 400.0,
+          "ediff": 1e-05,
+          "ediffg": -0.03,
+          "nsw": 100,
+          "mesh": [
+            4,
+            4,
+            4
+          ],
+          "ismear": 0,
+          "sigma": 0.1,
+          "cell_relax": false,
+          "nelm": 160,
+          "line_density": 1,
+          "nedos": 301,
+          "spin": "none"
+        },
+        "source_sha256": "d9e504eddb938b32919f8b8b5ceb48c8db1be135b23e522c24e8d6905a34451d",
+        "potcar_labels": [
+          "Fe"
+        ],
+        "potcar_elements": [
+          "Fe"
+        ],
+        "requires_chgcar": false,
+        "requires_ncl": false,
+        "spectral_charge_mode": "self_consistent",
+        "method": {
+          "spin": "none",
+          "magmom": null,
+          "soc": false,
+          "saxis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "functional": "PBE",
+          "hubbard_u": {}
+        },
+        "method_incar_expected": {
+          "ISPIN": 1,
+          "LSORBIT": false,
+          "LNONCOLLINEAR": false,
+          "LDAU": false,
+          "LHFCALC": false,
+          "GGA": "PE"
+        },
+        "method_fingerprint": "0a69c976346f083c5591898c09d5fb9eb6e35cd8ac554d32dbb8dfb93916572b",
+        "method_comparison_fingerprint": "633389fb6ec0d3e2a512d83d482df73365508a3475be2381fbb255940e690b0c",
+        "input_site_order": [
+          0,
+          1
+        ],
+        "scope": "Check convergence and the magnetic state for your material.",
+        "input_sha256": {
+          "POSCAR": "d9e504eddb938b32919f8b8b5ceb48c8db1be135b23e522c24e8d6905a34451d",
+          "INCAR": "825516b89db557c2c753989a85a8d859df752ebf37645a7ff73ceeedd3e57f00",
+          "KPOINTS": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734"
+        }
+      },
+      "staged": true,
+      "materialized": true,
+      "result": {
+        "schema_version": 1,
+        "task": "scf",
+        "success": true,
+        "converged_electronic": true,
+        "converged_ionic": true,
+        "valid_structure": true,
+        "final_energy_ev": -15.31903581,
+        "final_max_force_ev_angstrom": 0.0,
+        "vasp_version": "5.4.4.18apr17-6-g9f103f2a35",
+        "forces_available": true,
+        "fermi_energy_ev": 5.51502459,
+        "final_energy_ev_per_atom": -7.659517905,
+        "reason": "The calculation finished and its output passed the checks for this task.",
+        "artifacts": [
+          "final_structure.cif",
+          "final_structure.vasp"
+        ],
+        "scientific_accuracy_validated": false,
+        "vasprun_sha256": "6b4c79b9ccf9a18c5c0fd95c798b6e60926bb0388e3f1b230dc79e3530f90afd",
+        "method": {
+          "spin": "none",
+          "magmom": null,
+          "soc": false,
+          "saxis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "functional": "PBE",
+          "hubbard_u": {}
+        },
+        "method_fingerprint": "0a69c976346f083c5591898c09d5fb9eb6e35cd8ac554d32dbb8dfb93916572b",
+        "method_comparison_fingerprint": "633389fb6ec0d3e2a512d83d482df73365508a3475be2381fbb255940e690b0c",
+        "magnetization": {
+          "available": false,
+          "unit": "mu_B",
+          "site_order": "POSCAR",
+          "basis": "collinear spin axis",
+          "saxis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "site_moments": null,
+          "total_moment": null,
+          "note": "Site moments are PAW sphere projections; their sum is not the full cell moment."
+        },
+        "magnetic_ground_state_validated": false,
+        "final_structure_poscar_sha256": "d9e504eddb938b32919f8b8b5ceb48c8db1be135b23e522c24e8d6905a34451d",
+        "input_identity_verified": true,
+        "scheduler_state": "COMPLETED",
+        "final_structure_sha256": "628b5d70f7103a823ccea4a0e00e9c6d071d1657d8a0ba49ae230937feae71c8"
+      },
+      "structure_from": null,
+      "charge_from": null,
+      "source_path": "source/comparison/POSCAR",
+      "source_sha256": "d9e504eddb938b32919f8b8b5ceb48c8db1be135b23e522c24e8d6905a34451d",
+      "submitted_at": "2026-10-09T08:44:14.319153+00:00",
+      "scheduler_state": "COMPLETED"
+    },
+    {
+      "name": "scf",
+      "label": "FM",
+      "parameters": {
+        "encut": 400,
+        "mesh": [
+          4,
+          4,
+          4
+        ],
+        "ediff": 1e-05,
+        "ediffg": -0.03,
+        "nelm": 160,
+        "nsw": 100,
+        "ismear": 0,
+        "sigma": 0.1,
+        "line_density": 1,
+        "nedos": 301,
+        "cell_relax": false,
+        "spin": "collinear",
+        "magmom": [
+          3.0,
+          3.0
+        ]
+      },
+      "folder": "02_scf_fm",
+      "job_name": "vsa-e51c48079eb24fc4-scf_fm",
+      "status": "succeeded",
+      "job_id": "3568982",
+      "metadata": {
+        "schema_version": 1,
+        "task": "scf",
+        "formula": "Fe",
+        "number_of_atoms": 2,
+        "parameters": {
+          "encut": 400.0,
+          "ediff": 1e-05,
+          "ediffg": -0.03,
+          "nsw": 100,
+          "mesh": [
+            4,
+            4,
+            4
+          ],
+          "ismear": 0,
+          "sigma": 0.1,
+          "cell_relax": false,
+          "nelm": 160,
+          "line_density": 1,
+          "nedos": 301,
+          "spin": "collinear",
+          "magmom": [
+            3.0,
+            3.0
+          ]
+        },
+        "source_sha256": "d9e504eddb938b32919f8b8b5ceb48c8db1be135b23e522c24e8d6905a34451d",
+        "potcar_labels": [
+          "Fe"
+        ],
+        "potcar_elements": [
+          "Fe"
+        ],
+        "requires_chgcar": false,
+        "requires_ncl": false,
+        "spectral_charge_mode": "self_consistent",
+        "method": {
+          "spin": "collinear",
+          "magmom": [
+            3.0,
+            3.0
+          ],
+          "soc": false,
+          "saxis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "functional": "PBE",
+          "hubbard_u": {}
+        },
+        "method_incar_expected": {
+          "ISPIN": 2,
+          "MAGMOM": [
+            3.0,
+            3.0
+          ],
+          "LORBIT": 11,
+          "ISYM": -1,
+          "LSORBIT": false,
+          "LNONCOLLINEAR": false,
+          "LDAU": false,
+          "LHFCALC": false,
+          "GGA": "PE"
+        },
+        "method_fingerprint": "26923e93c34bad4924bf4ed3bdab564bf70ebf4613ee08469cbd0a51af8deddf",
+        "method_comparison_fingerprint": "633389fb6ec0d3e2a512d83d482df73365508a3475be2381fbb255940e690b0c",
+        "input_site_order": [
+          0,
+          1
+        ],
+        "scope": "Check convergence and the magnetic state for your material.",
+        "input_sha256": {
+          "POSCAR": "d9e504eddb938b32919f8b8b5ceb48c8db1be135b23e522c24e8d6905a34451d",
+          "INCAR": "527c17f2e1cf44ad38ac5b5c114cd35f2e266dec5b7110cefca61fb49b5e0650",
+          "KPOINTS": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734"
+        }
+      },
+      "staged": true,
+      "materialized": true,
+      "result": {
+        "schema_version": 1,
+        "task": "scf",
+        "success": true,
+        "converged_electronic": true,
+        "converged_ionic": true,
+        "valid_structure": true,
+        "final_energy_ev": -16.44730506,
+        "final_max_force_ev_angstrom": 3.6949289573684634e-06,
+        "vasp_version": "5.4.4.18apr17-6-g9f103f2a35",
+        "forces_available": true,
+        "fermi_energy_ev": 5.5125948,
+        "final_energy_ev_per_atom": -8.22365253,
+        "reason": "The calculation finished and its output passed the checks for this task.",
+        "artifacts": [
+          "final_structure.cif",
+          "final_structure.vasp",
+          "magnetization.json"
+        ],
+        "scientific_accuracy_validated": false,
+        "vasprun_sha256": "3fc8e5c51b0560ece970588477fcf4b6c6a25b89cac3f149fada788e908a55d2",
+        "method": {
+          "spin": "collinear",
+          "magmom": [
+            3.0,
+            3.0
+          ],
+          "soc": false,
+          "saxis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "functional": "PBE",
+          "hubbard_u": {}
+        },
+        "method_fingerprint": "26923e93c34bad4924bf4ed3bdab564bf70ebf4613ee08469cbd0a51af8deddf",
+        "method_comparison_fingerprint": "633389fb6ec0d3e2a512d83d482df73365508a3475be2381fbb255940e690b0c",
+        "magnetization": {
+          "available": true,
+          "unit": "mu_B",
+          "site_order": "POSCAR",
+          "basis": "collinear spin axis",
+          "saxis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "site_moments": [
+            2.027,
+            2.027
+          ],
+          "total_moment": 4.0412158,
+          "note": "Site moments are PAW sphere projections; their sum is not the full cell moment."
+        },
+        "magnetic_ground_state_validated": false,
+        "final_structure_poscar_sha256": "d9e504eddb938b32919f8b8b5ceb48c8db1be135b23e522c24e8d6905a34451d",
+        "input_identity_verified": true,
+        "scheduler_state": "COMPLETED",
+        "final_structure_sha256": "628b5d70f7103a823ccea4a0e00e9c6d071d1657d8a0ba49ae230937feae71c8"
+      },
+      "structure_from": null,
+      "charge_from": null,
+      "source_path": "source/comparison/POSCAR",
+      "source_sha256": "d9e504eddb938b32919f8b8b5ceb48c8db1be135b23e522c24e8d6905a34451d",
+      "submitted_at": "2026-10-09T08:44:40.596989+00:00",
+      "scheduler_state": "COMPLETED"
+    },
+    {
+      "name": "scf",
+      "label": "AFM",
+      "parameters": {
+        "encut": 400,
+        "mesh": [
+          4,
+          4,
+          4
+        ],
+        "ediff": 1e-05,
+        "ediffg": -0.03,
+        "nelm": 160,
+        "nsw": 100,
+        "ismear": 0,
+        "sigma": 0.1,
+        "line_density": 1,
+        "nedos": 301,
+        "cell_relax": false,
+        "spin": "collinear",
+        "magmom": [
+          3.0,
+          -3.0
+        ]
+      },
+      "folder": "03_scf_afm",
+      "job_name": "vsa-e51c48079eb24fc4-scf_afm",
+      "status": "succeeded",
+      "job_id": "3569006",
+      "metadata": {
+        "schema_version": 1,
+        "task": "scf",
+        "formula": "Fe",
+        "number_of_atoms": 2,
+        "parameters": {
+          "encut": 400.0,
+          "ediff": 1e-05,
+          "ediffg": -0.03,
+          "nsw": 100,
+          "mesh": [
+            4,
+            4,
+            4
+          ],
+          "ismear": 0,
+          "sigma": 0.1,
+          "cell_relax": false,
+          "nelm": 160,
+          "line_density": 1,
+          "nedos": 301,
+          "spin": "collinear",
+          "magmom": [
+            3.0,
+            -3.0
+          ]
+        },
+        "source_sha256": "d9e504eddb938b32919f8b8b5ceb48c8db1be135b23e522c24e8d6905a34451d",
+        "potcar_labels": [
+          "Fe"
+        ],
+        "potcar_elements": [
+          "Fe"
+        ],
+        "requires_chgcar": false,
+        "requires_ncl": false,
+        "spectral_charge_mode": "self_consistent",
+        "method": {
+          "spin": "collinear",
+          "magmom": [
+            3.0,
+            -3.0
+          ],
+          "soc": false,
+          "saxis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "functional": "PBE",
+          "hubbard_u": {}
+        },
+        "method_incar_expected": {
+          "ISPIN": 2,
+          "MAGMOM": [
+            3.0,
+            -3.0
+          ],
+          "LORBIT": 11,
+          "ISYM": -1,
+          "LSORBIT": false,
+          "LNONCOLLINEAR": false,
+          "LDAU": false,
+          "LHFCALC": false,
+          "GGA": "PE"
+        },
+        "method_fingerprint": "f822133b5f80d537c1414255dfc18d05ef763e68f4b8346e9e4bf7686db9ccea",
+        "method_comparison_fingerprint": "633389fb6ec0d3e2a512d83d482df73365508a3475be2381fbb255940e690b0c",
+        "input_site_order": [
+          0,
+          1
+        ],
+        "scope": "Check convergence and the magnetic state for your material.",
+        "input_sha256": {
+          "POSCAR": "d9e504eddb938b32919f8b8b5ceb48c8db1be135b23e522c24e8d6905a34451d",
+          "INCAR": "76a75eecb959cd440c7e0a9a812c60a27d8d7c7179fb9f8957802c8453d6add6",
+          "KPOINTS": "2515b5456f547772c565a3c3fecd5286d2de0eaedc841948edbd763b4681d734"
+        }
+      },
+      "staged": true,
+      "materialized": true,
+      "result": {
+        "schema_version": 1,
+        "task": "scf",
+        "success": true,
+        "converged_electronic": true,
+        "converged_ionic": true,
+        "valid_structure": true,
+        "final_energy_ev": -16.0324255,
+        "final_max_force_ev_angstrom": 3.1937125731662203e-06,
+        "vasp_version": "5.4.4.18apr17-6-g9f103f2a35",
+        "forces_available": true,
+        "fermi_energy_ev": 5.69029796,
+        "final_energy_ev_per_atom": -8.01621275,
+        "reason": "The calculation finished and its output passed the checks for this task.",
+        "artifacts": [
+          "final_structure.cif",
+          "final_structure.vasp",
+          "magnetization.json"
+        ],
+        "scientific_accuracy_validated": false,
+        "vasprun_sha256": "28e1013f8e399541f18a0281774c3b3367bb712f32c9563f49018341fb5b39e0",
+        "method": {
+          "spin": "collinear",
+          "magmom": [
+            3.0,
+            -3.0
+          ],
+          "soc": false,
+          "saxis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "functional": "PBE",
+          "hubbard_u": {}
+        },
+        "method_fingerprint": "f822133b5f80d537c1414255dfc18d05ef763e68f4b8346e9e4bf7686db9ccea",
+        "method_comparison_fingerprint": "633389fb6ec0d3e2a512d83d482df73365508a3475be2381fbb255940e690b0c",
+        "magnetization": {
+          "available": true,
+          "unit": "mu_B",
+          "site_order": "POSCAR",
+          "basis": "collinear spin axis",
+          "saxis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "site_moments": [
+            1.796,
+            -1.796
+          ],
+          "total_moment": 0.0006201,
+          "note": "Site moments are PAW sphere projections; their sum is not the full cell moment."
+        },
+        "magnetic_ground_state_validated": false,
+        "final_structure_poscar_sha256": "d9e504eddb938b32919f8b8b5ceb48c8db1be135b23e522c24e8d6905a34451d",
+        "input_identity_verified": true,
+        "scheduler_state": "COMPLETED",
+        "final_structure_sha256": "628b5d70f7103a823ccea4a0e00e9c6d071d1657d8a0ba49ae230937feae71c8"
+      },
+      "structure_from": null,
+      "charge_from": null,
+      "source_path": "source/comparison/POSCAR",
+      "source_sha256": "d9e504eddb938b32919f8b8b5ceb48c8db1be135b23e522c24e8d6905a34451d",
+      "submitted_at": "2026-10-09T08:45:15.843472+00:00",
+      "scheduler_state": "COMPLETED"
+    }
+  ],
+  "created_at": "2026-10-09T08:44:09.399099+00:00",
+  "history": [
+    {
+      "at": "2026-10-09T08:44:09.409973+00:00",
+      "event": "Plan prepared. Ready to submit."
+    },
+    {
+      "at": "2026-10-09T08:44:09.413900+00:00",
+      "event": "Submitting scf"
+    },
+    {
+      "at": "2026-10-09T08:44:13.470723+00:00",
+      "event": "Uploaded scf inputs"
+    },
+    {
+      "at": "2026-10-09T08:44:14.319163+00:00",
+      "event": "Slurm accepted job 3568969"
+    },
+    {
+      "at": "2026-10-09T08:44:27.682600+00:00",
+      "event": "Collected scf: The calculation finished and its output passed the checks for this task."
+    },
+    {
+      "at": "2026-10-09T08:44:35.690582+00:00",
+      "event": "Submitting scf"
+    },
+    {
+      "at": "2026-10-09T08:44:39.691369+00:00",
+      "event": "Uploaded scf inputs"
+    },
+    {
+      "at": "2026-10-09T08:44:40.597021+00:00",
+      "event": "Slurm accepted job 3568982"
+    },
+    {
+      "at": "2026-10-09T08:45:02.726771+00:00",
+      "event": "Collected scf: The calculation finished and its output passed the checks for this task."
+    },
+    {
+      "at": "2026-10-09T08:45:10.731741+00:00",
+      "event": "Submitting scf"
+    },
+    {
+      "at": "2026-10-09T08:45:14.898479+00:00",
+      "event": "Uploaded scf inputs"
+    },
+    {
+      "at": "2026-10-09T08:45:15.843483+00:00",
+      "event": "Slurm accepted job 3569006"
+    },
+    {
+      "at": "2026-10-09T08:45:39.081189+00:00",
+      "event": "Collected scf: The calculation finished and its output passed the checks for this task."
+    }
+  ],
+  "last_error": null,
+  "cancel_requested": false,
+  "remote_root": "/home/researcher/dft-agent-runs/vsa-e51c48079eb24fc4",
+  "plan_sha256": "5ca09457e80169da3b2a0b1ddb7d2278186e8930bc7b78a6e5e0a9eb4d35e0c6",
+  "config_sha256": "fabc3df9901ad463e02904a00b5739e0b059d619a9dcdf9f1c4aa51357477b9e",
+  "comparison": {
+    "scope": "Trial magnetic seeds, not a global ground-state search.",
+    "status": "complete",
+    "ranking": [
+      {
+        "seed": "FM",
+        "stage": "02_scf_fm",
+        "energy_ev_per_atom": -8.22365253,
+        "magnetization": {
+          "available": true,
+          "unit": "mu_B",
+          "site_order": "POSCAR",
+          "basis": "collinear spin axis",
+          "saxis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "site_moments": [
+            2.027,
+            2.027
+          ],
+          "total_moment": 4.0412158,
+          "note": "Site moments are PAW sphere projections; their sum is not the full cell moment."
+        },
+        "relative_energy_mev_per_atom": 0.0
+      },
+      {
+        "seed": "AFM",
+        "stage": "03_scf_afm",
+        "energy_ev_per_atom": -8.01621275,
+        "magnetization": {
+          "available": true,
+          "unit": "mu_B",
+          "site_order": "POSCAR",
+          "basis": "collinear spin axis",
+          "saxis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "site_moments": [
+            1.796,
+            -1.796
+          ],
+          "total_moment": 0.0006201,
+          "note": "Site moments are PAW sphere projections; their sum is not the full cell moment."
+        },
+        "relative_energy_mev_per_atom": 207.4397800000014
+      },
+      {
+        "seed": "NM",
+        "stage": "01_scf_nm",
+        "energy_ev_per_atom": -7.659517905,
+        "magnetization": {
+          "available": false,
+          "unit": "mu_B",
+          "site_order": "POSCAR",
+          "basis": "collinear spin axis",
+          "saxis": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "site_moments": null,
+          "total_moment": null,
+          "note": "Site moments are PAW sphere projections; their sum is not the full cell moment."
+        },
+        "relative_energy_mev_per_atom": 564.1346250000004
+      }
+    ],
+    "excluded": [],
+    "comparison_available": true,
+    "lowest_energy_seed": "FM"
+  },
+  "updated_at": "2026-10-09T08:45:39.081835+00:00",
+  "remote_failures": 0
+}

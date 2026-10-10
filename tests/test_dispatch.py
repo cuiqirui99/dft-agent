@@ -2,9 +2,13 @@ from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor
 import json
+import os
 import subprocess
 
 import pytest
+
+if os.name != "posix":
+    pytest.skip("The remote dispatcher runs on the POSIX Slurm host.", allow_module_level=True)
 
 from vasp_slurm_agent import dispatch as remote_dispatch
 

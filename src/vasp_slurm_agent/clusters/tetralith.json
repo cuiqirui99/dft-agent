@@ -1,0 +1,23 @@
+{
+  "id": "tetralith",
+  "name": "Tetralith (NSC, Linköping)",
+  "host": "tetralith.nsc.liu.se",
+  "port": 22,
+  "partition": "tetralith",
+  "account": "",
+  "vasp_command": "mpprun vasp_std",
+  "vasp_ncl_command": "mpprun vasp_ncl",
+  "setup_commands": ["module load VASP"],
+  "potcar_root": "",
+  "remote_root": "",
+  "tasks": 32,
+  "nodes": 1,
+  "walltime": "02:00:00",
+  "docs_url": "https://www.nsc.liu.se/software/installed/tetralith/vasp/",
+  "notes": [
+    "Use your NAISS project as the Slurm account.",
+    "NSC launches MPI programs with mpprun instead of srun.",
+    "Run `module avail VASP` on Tetralith and copy the exact module name into the setup commands.",
+    "Licensed POTCAR files are provided by NSC to VASP license holders; ask NSC support for the path."
+  ]
+}

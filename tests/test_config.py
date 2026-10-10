@@ -1,4 +1,5 @@
 from pathlib import Path
+import sys
 
 import pytest
 
@@ -21,7 +22,11 @@ def test_control_socket_expands_and_survives_save(tmp_path):
     assert original.ssh_control_path == str(Path.home() / ".ssh/master.sock")
     path = original.save(tmp_path / "cluster.json")
     assert ClusterConfig.load(path) == original
-    assert path.stat().st_mode & 0o777 == 0o600
+    if sys.platform == "win32":
+        with path.open("r+") as stream:
+            assert stream.read() == path.read_text()
+    else:
+        assert path.stat().st_mode & 0o777 == 0o600
 
 
 def test_legacy_config_keeps_private_transport():

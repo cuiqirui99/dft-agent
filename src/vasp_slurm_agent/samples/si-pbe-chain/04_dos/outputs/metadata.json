@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "task": "dos",
+  "formula": "Si",
+  "number_of_atoms": 2,
+  "parameters": {
+    "encut": 400.0,
+    "ediff": 1e-05,
+    "ediffg": -0.03,
+    "nsw": 100,
+    "mesh": [
+      2,
+      2,
+      2
+    ],
+    "ismear": 0,
+    "sigma": 0.1,
+    "cell_relax": false,
+    "nelm": 160,
+    "line_density": 1,
+    "nedos": 301
+  },
+  "source_sha256": "7ff2750c75c9e651f5acfb830cc0a4abf95eff91821e7bf7266f797bb740930a",
+  "potcar_labels": [
+    "Si"
+  ],
+  "potcar_elements": [
+    "Si"
+  ],
+  "requires_chgcar": true,
+  "requires_ncl": false,
+  "spectral_charge_mode": "fixed_charge",
+  "method": {
+    "spin": "none",
+    "magmom": null,
+    "soc": false,
+    "saxis": [
+      0.0,
+      0.0,
+      1.0
+    ],
+    "functional": "PBE",
+    "hubbard_u": {}
+  },
+  "method_incar_expected": {
+    "ISPIN": 1,
+    "LSORBIT": false,
+    "LNONCOLLINEAR": false,
+    "LDAU": false,
+    "LHFCALC": false,
+    "GGA": "PE"
+  },
+  "method_fingerprint": "760b7adabbe5432c72a1eba636a6db03cc9ad3e8922d13412d36ae13e012d22b",
+  "method_comparison_fingerprint": "7c77f08f4ba52abf7aa25b2bf6bc3afc578658cc0d18a653f5bfa18504d2d7d6",
+  "input_site_order": [
+    0,
+    1
+  ],
+  "scope": "Check convergence and the magnetic state for your material.",
+  "input_sha256": {
+    "POSCAR": "7ff2750c75c9e651f5acfb830cc0a4abf95eff91821e7bf7266f797bb740930a",
+    "INCAR": "de69b0a23be291879fe1b3d3b4de772998a711105cf057ad95a901370fa2a0ef",
+    "KPOINTS": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49"
+  },
+  "scf_fermi_energy_ev": 6.42173037
+}

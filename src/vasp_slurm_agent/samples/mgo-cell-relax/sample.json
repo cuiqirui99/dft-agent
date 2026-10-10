@@ -1,0 +1,8 @@
+{
+  "order": 2,
+  "title": "MgO: relax atoms and cell (PBE)",
+  "description": "A single relaxation that also optimizes the cell of rock-salt MgO, with the energy per ionic step plotted.",
+  "goal": "Relax MgO including the cell.",
+  "source": "VASP 6.2.1 on a Slurm cluster, from the v0.4.1 validation set",
+  "note": "Cluster names, accounts and paths were replaced with placeholders."
+}

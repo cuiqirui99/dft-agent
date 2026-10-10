@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "task": "scf",
+  "success": true,
+  "converged_electronic": true,
+  "converged_ionic": true,
+  "valid_structure": true,
+  "final_energy_ev": -16.44730506,
+  "final_max_force_ev_angstrom": 3.6949289573684634e-06,
+  "vasp_version": "5.4.4.18apr17-6-g9f103f2a35",
+  "forces_available": true,
+  "fermi_energy_ev": 5.5125948,
+  "final_energy_ev_per_atom": -8.22365253,
+  "reason": "The calculation finished and its output passed the checks for this task.",
+  "artifacts": [
+    "final_structure.cif",
+    "final_structure.vasp",
+    "magnetization.json"
+  ],
+  "scientific_accuracy_validated": false,
+  "vasprun_sha256": "3fc8e5c51b0560ece970588477fcf4b6c6a25b89cac3f149fada788e908a55d2",
+  "method": {
+    "spin": "collinear",
+    "magmom": [
+      3.0,
+      3.0
+    ],
+    "soc": false,
+    "saxis": [
+      0.0,
+      0.0,
+      1.0
+    ],
+    "functional": "PBE",
+    "hubbard_u": {}
+  },
+  "method_fingerprint": "26923e93c34bad4924bf4ed3bdab564bf70ebf4613ee08469cbd0a51af8deddf",
+  "method_comparison_fingerprint": "633389fb6ec0d3e2a512d83d482df73365508a3475be2381fbb255940e690b0c",
+  "magnetization": {
+    "available": true,
+    "unit": "mu_B",
+    "site_order": "POSCAR",
+    "basis": "collinear spin axis",
+    "saxis": [
+      0.0,
+      0.0,
+      1.0
+    ],
+    "site_moments": [
+      2.027,
+      2.027
+    ],
+    "total_moment": 4.0412158,
+    "note": "Site moments are PAW sphere projections; their sum is not the full cell moment."
+  },
+  "magnetic_ground_state_validated": false,
+  "final_structure_poscar_sha256": "d9e504eddb938b32919f8b8b5ceb48c8db1be135b23e522c24e8d6905a34451d",
+  "input_identity_verified": true,
+  "scheduler_state": "COMPLETED",
+  "final_structure_sha256": "628b5d70f7103a823ccea4a0e00e9c6d071d1657d8a0ba49ae230937feae71c8"
+}

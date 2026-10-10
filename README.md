@@ -2,27 +2,44 @@
 
 ![DFT Agent](docs/assets/dft-agent-logo.png)
 
-Version `0.4.1`.
+Version `0.4.2` — local desktop preview, not yet released. [中文说明](README.zh-CN.md)
 
 [Qirui Cui](https://www.kth.se/profile/qiruic?l=en) · KTH Royal Institute of Technology · [ORCID](https://orcid.org/0009-0005-6165-3237)
 
-The DFT agent automates first-principles calculations on HPC clusters, requiring only a simple natural language description of the desired calculation.
+DFT Agent prepares and runs first-principles calculations on your HPC cluster from a natural-language goal or manual settings.
 
 Describe a task, review the plan, and run VASP on your Slurm cluster. Combine structure edits, relaxation, SCF, bands and DOS with magnetism, SOC, DFT+U, HSE06 or PBE0. Choose methods by stage and compare magnetic orders, U values or strains.
 
-Requires macOS or Linux, Python 3.11+, SSH, and access to licensed VASP and POTCAR files on your cluster.
-Bring your own cluster and model account. DFT Agent includes no compute time or model tokens.
+![DFT Agent in use](docs/assets/demo.gif)
+
+Desktop packages target Apple Silicon Macs and Windows x64, with Python and the model SDKs included. Windows runs natively; WSL is optional. Linux users can use the Python installation.
+Actual calculations require your own Slurm account and licensed VASP/POTCAR files on the cluster. Model features use your own account and billing; no compute time or model credits are included.
 
 ## Install and open
 
-```bash
-git clone https://github.com/cuiqirui99/dft-agent.git
-cd dft-agent
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install '.[agent]'
-dft-agent ui
-```
+Version `0.4.2` is currently a local desktop preview. Once published,
+download the installer for your computer from its [GitHub Release](https://github.com/cuiqirui99/dft-agent/releases):
+
+- **Mac, Apple Silicon:** open the `.dmg`, copy **DFT Agent** to Applications, then open it.
+- **Windows x64:** run the `.exe` installer, then open **DFT Agent** from the Start menu.
+
+No separate Python installation is needed. PyPI installation is not yet available
+for this preview. See [Install](docs/install.md) for source installation and
+[Desktop builds](docs/desktop.md) for the current verification scope.
+
+## Try it without a cluster
+
+![Sample runs](docs/assets/screenshot-runs.png)
+![Band structure of a sample run](docs/assets/screenshot-results.png)
+
+- Open **Runs** and click **Load sample runs**. Three calculations completed on a
+  real cluster are copied into your run folder: Si relaxation, SCF, bands and
+  DOS; an MgO cell relaxation; and an Fe NM/FM/AFM comparison. Results and plots
+  are available offline. **Explain results** requires a configured model account and network access.
+- Open **New calculation**, pick an example structure, choose **Manual**,
+  and click **Prepare inputs**. INCAR, KPOINTS and POSCAR are generated locally
+  for review; the cluster is attached when you submit.
+- Switch the interface to Chinese in the sidebar.
 
 ## Connect a model
 
@@ -39,12 +56,20 @@ Open **Model** in the sidebar. Choose your provider:
 An **API key** gives the app access to your account. **Tokens** measure how much
 the model reads and generates. You do not paste tokens into the app.
 Consumer chat subscriptions do not automatically include API credits.
+Tick **Remember on this computer** to keep a key in the system keychain.
+The recorded Claude checks used its SDK with simulated HTTP responses; no live
+Claude API call was made. Bundling the SDK does not change that [validation boundary](docs/validation-0.4.1.md).
 
 **[Model setup: get a key, connect and check usage](docs/models.md).**
 
 ## Use
 
-1. Enter your SSH, VASP and Slurm settings in **Cluster setup**.
+![New calculation](docs/assets/screenshot-new-calculation.png)
+![Cluster setup](docs/assets/screenshot-cluster-setup.png)
+
+1. In **Cluster setup**, enter your SSH host and user, click **Detect from cluster**
+   to fill partitions, accounts, VASP modules and POTCAR folders, review and save.
+   Presets for Dardel, Tetralith and BSCC give a head start.
 2. Open **New calculation**. Upload a CIF or POSCAR, or choose **Example**.
 3. Select a provider in **Model**, enter your **Goal**, and click **Plan**. Or use **Manual** without a model.
 4. Review the plan and click **Prepare inputs**.
@@ -56,7 +81,9 @@ Include structure changes in your **Goal**, or use **Edit structure** for geomet
 Structure edits, stage methods, comparisons and follow-up runs are covered in
 [Workflows](docs/workflows.md).
 
-After an interruption, select the original run and use **Resume monitoring**. For `needs_attention`, read the error before using **Reconnect**.
+A desktop notification arrives when a run finishes; add a webhook under
+**Preferences** for Slack, Discord or WeChat Work. Reopening the app resumes
+monitoring of submitted runs. For `needs_attention`, read the error before using **Reconnect**.
 
 Plans include scientific guidance and relevant past runs. For a failed calculation,
 use **Repair** to review a proposed fix and prepare a new run. [Details](docs/harness.md).
@@ -65,7 +92,7 @@ use **Repair** to review a proposed fix and prepare a new run. [Details](docs/ha
 or import selected local records. Rejected and unverified lessons stay out of
 recommendations. [Memory](docs/memory.md).
 
-Supports OpenAI, Claude, Qwen, Grok, GLM, DeepSeek, compatible APIs and a logged-in Codex CLI. Planning shares your goal and structure; explanations share verified results and dialogue. Manual mode needs no model account; install with `pip install .`.
+Supports OpenAI, Claude, Qwen, Grok, GLM, DeepSeek, compatible APIs and a logged-in Codex CLI. Planning shares your goal and structure; explanations share verified results and dialogue. Manual mode needs no model account. Codex CLI is a separate, optional installation.
 
 Model calls use compact context and record reported token counts. [Model use](docs/token-use.md).
 
@@ -73,8 +100,8 @@ Use ordered periodic structures. Check the starting parameters for your material
 
 ## Citation
 
-Cui, Q. (2026). *DFT Agent* (v0.4.1). [GitHub](https://github.com/cuiqirui99/dft-agent/releases/tag/v0.4.1).
+Cui, Q. (2026). *DFT Agent* (v0.4.2, local preview). [Source](https://github.com/cuiqirui99/dft-agent).
 
 [Archived v0.3.0](https://doi.org/10.5281/zenodo.23260917).
 
-[Quickstart](docs/quickstart.md) · [Methods](docs/methods.md) · [Input defaults](docs/input-defaults.md) · [CLI examples](docs/examples.md) · [Validation](docs/validation-0.4.1.md) · [MIT license](LICENSE) · [Notices](NOTICE.md) · [Citation](CITATION.cff)
+[Quickstart](docs/quickstart.md) · [Install](docs/install.md) · [Windows](docs/windows.md) · [Methods](docs/methods.md) · [Input defaults](docs/input-defaults.md) · [CLI examples](docs/examples.md) · [Validation](docs/validation-0.4.1.md) · [MIT license](LICENSE) · [Notices](NOTICE.md) · [Citation](CITATION.cff)

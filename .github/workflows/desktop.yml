@@ -1,0 +1,56 @@
+name: Desktop packages
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ['desktop-*']
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install build dependencies
+        run: python -m pip install '.[desktop,dev]' 'pyinstaller>=6.15,<7' 'ase>=3.23,<4'
+      - name: Test Windows workflows
+        run: python -m pytest -q tests validation/reference/test_reference.py --ignore=tests/test_transport.py
+      - name: Build desktop app
+        run: python -m PyInstaller --noconfirm packaging/desktop.spec
+      - name: Get Microsoft WebView2 installer
+        shell: pwsh
+        run: |
+          Invoke-WebRequest 'https://go.microsoft.com/fwlink/p/?LinkId=2124703' -OutFile dist/MicrosoftEdgeWebview2Setup.exe
+          $sig = Get-AuthenticodeSignature dist/MicrosoftEdgeWebview2Setup.exe
+          if ($sig.Status -ne 'Valid' -or $sig.SignerCertificate.Subject -notmatch 'Microsoft Corporation') { throw 'WebView2 signature check failed' }
+      - name: Build installer
+        shell: pwsh
+        run: |
+          $version = python -c "from vasp_slurm_agent import __version__; print(__version__)"
+          & 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe' "/DAppVersion=$version" packaging/windows.iss
+          if ($LASTEXITCODE -ne 0) { throw 'Installer build failed' }
+      - name: Install into a fresh folder and check
+        shell: pwsh
+        run: |
+          $installer = Get-ChildItem dist/installers/*.exe | Select-Object -First 1
+          $target = Join-Path $env:RUNNER_TEMP 'DFT Agent installed'
+          $result = Start-Process $installer.FullName -ArgumentList '/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', "/DIR=`"$target`"" -Wait -PassThru
+          if ($result.ExitCode -ne 0) { throw 'Fresh installation failed' }
+          python packaging/check_installed.py "$target/DFT Agent.exe" evidence/windows
+          if ($LASTEXITCODE -ne 0) { throw 'Installed bundle checks failed' }
+          Get-FileHash $installer.FullName -Algorithm SHA256 | Format-List | Out-File evidence/windows/installer-sha256.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: windows-desktop
+          path: |
+            dist/installers/*
+            evidence/windows/*
+          if-no-files-found: warn

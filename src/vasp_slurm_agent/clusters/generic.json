@@ -1,0 +1,20 @@
+{
+  "id": "generic",
+  "name": "Generic Slurm cluster",
+  "host": "",
+  "port": 22,
+  "partition": "",
+  "account": "",
+  "vasp_command": "srun vasp_std",
+  "vasp_ncl_command": "srun vasp_ncl",
+  "setup_commands": ["module load vasp"],
+  "potcar_root": "",
+  "remote_root": "",
+  "tasks": 8,
+  "nodes": 1,
+  "walltime": "00:30:00",
+  "docs_url": "",
+  "notes": [
+    "Enter the SSH host and user, then use Detect from cluster to fill the remaining fields."
+  ]
+}

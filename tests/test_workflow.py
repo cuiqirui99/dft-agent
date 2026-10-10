@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import fcntl
 import hashlib
 import json
 from pathlib import Path
@@ -330,7 +329,7 @@ def test_cancelling_unsubmitted_run_never_constructs_transport(prepared):
 
 def test_second_worker_exits_without_touching_remote(prepared):
     with (prepared / ".worker.lock").open("a") as lock:
-        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        workflow._acquire(lock, blocking=False)
         state = workflow.watch(prepared, interval=0)
     assert state["status"] == "planned"
     assert not (prepared / "worker.json").exists()

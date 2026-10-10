@@ -327,9 +327,12 @@ def apply_structure_plan(source_path, output_dir, plan: dict) -> dict:
         (temporary / names["metadata"]).write_text(json.dumps(metadata, indent=2, allow_nan=False) + "\n")
         if source.read_bytes() != data:
             raise StructureReviewError("The source changed while saving. Preview it again.")
-        if target.exists():
-            target.rmdir()
-        os.replace(temporary, target)
+        try:
+            if target.exists():
+                target.rmdir()
+            os.replace(temporary, target)
+        except OSError as exc:
+            raise StructureReviewError(f"Cannot write to {target}: choose a new or empty output folder.") from exc
         return {**preview, "output_format": metadata["output_format"],
                 "files": {key: str(target / name) for key, name in names.items()}}
     finally:

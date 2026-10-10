@@ -1,0 +1,23 @@
+{
+  "id": "dardel",
+  "name": "Dardel (PDC, KTH)",
+  "host": "dardel.pdc.kth.se",
+  "port": 22,
+  "partition": "main",
+  "account": "",
+  "vasp_command": "srun vasp_std",
+  "vasp_ncl_command": "srun vasp_ncl",
+  "setup_commands": ["module load PDC", "module load vasp"],
+  "potcar_root": "",
+  "remote_root": "",
+  "tasks": 128,
+  "nodes": 1,
+  "walltime": "02:00:00",
+  "docs_url": "https://support.pdc.kth.se/doc/",
+  "notes": [
+    "Use your NAISS project as the Slurm account, for example naiss2026-1-123.",
+    "Dardel nodes have 128 cores; the main partition allocates whole nodes.",
+    "Run `ml spider vasp` on Dardel to see the installed VASP modules, then adjust the setup commands.",
+    "Put runs under /cfs/klemming/scratch or your project folder. Detect from cluster fills these in."
+  ]
+}

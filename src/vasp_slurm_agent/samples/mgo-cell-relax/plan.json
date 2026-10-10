@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "tasks": [
+    "relax"
+  ],
+  "parameters": {
+    "encut": 400,
+    "mesh": [
+      2,
+      2,
+      2
+    ],
+    "ediff": 1e-05,
+    "ediffg": -0.03,
+    "nelm": 160,
+    "nsw": 100,
+    "ismear": 0,
+    "sigma": 0.1,
+    "line_density": 1,
+    "nedos": 301,
+    "cell_relax": true
+  },
+  "sources": {
+    "source/input/mgo-cell-relax.vasp": "dc9c0c0055451d764efcc964ec671034180a2ccbcd3521a699b59c51b50dfbef"
+  },
+  "magnetic_seeds": null,
+  "stages": [
+    {
+      "name": "relax",
+      "folder": "01_relax",
+      "parameters": {
+        "encut": 400,
+        "mesh": [
+          2,
+          2,
+          2
+        ],
+        "ediff": 1e-05,
+        "ediffg": -0.03,
+        "nelm": 160,
+        "nsw": 100,
+        "ismear": 0,
+        "sigma": 0.1,
+        "line_density": 1,
+        "nedos": 301,
+        "cell_relax": true
+      },
+      "structure_from": null,
+      "charge_from": null,
+      "source_path": "source/input/mgo-cell-relax.vasp"
+    }
+  ]
+}

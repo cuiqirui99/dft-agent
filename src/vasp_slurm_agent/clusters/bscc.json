@@ -1,0 +1,22 @@
+{
+  "id": "bscc",
+  "name": "BSCC N-series (北京超算)",
+  "host": "",
+  "port": 22,
+  "partition": "amd_256",
+  "account": "",
+  "vasp_command": "srun vasp_std",
+  "vasp_ncl_command": "srun vasp_ncl",
+  "setup_commands": ["source /public1/soft/modules/module.sh", "module load mpi/intel/17.0.7-thc"],
+  "potcar_root": "",
+  "remote_root": "",
+  "tasks": 64,
+  "nodes": 1,
+  "walltime": "02:00:00",
+  "docs_url": "https://www.blsc.cn/",
+  "notes": [
+    "Use the login node address from your BSCC account page as the SSH host.",
+    "VASP is usually compiled in your own home folder; use its full path in the VASP command.",
+    "Partition names such as amd_256 depend on your purchased resources; check with sinfo."
+  ]
+}

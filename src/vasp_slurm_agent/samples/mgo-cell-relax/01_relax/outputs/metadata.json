@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "task": "relax",
+  "formula": "MgO",
+  "number_of_atoms": 2,
+  "parameters": {
+    "encut": 400.0,
+    "ediff": 1e-05,
+    "ediffg": -0.03,
+    "nsw": 100,
+    "mesh": [
+      2,
+      2,
+      2
+    ],
+    "ismear": 0,
+    "sigma": 0.1,
+    "cell_relax": true,
+    "nelm": 160,
+    "line_density": 1,
+    "nedos": 301
+  },
+  "source_sha256": "dc9c0c0055451d764efcc964ec671034180a2ccbcd3521a699b59c51b50dfbef",
+  "potcar_labels": [
+    "Mg",
+    "O"
+  ],
+  "potcar_elements": [
+    "Mg",
+    "O"
+  ],
+  "requires_chgcar": false,
+  "requires_ncl": false,
+  "spectral_charge_mode": "self_consistent",
+  "method": {
+    "spin": "none",
+    "magmom": null,
+    "soc": false,
+    "saxis": [
+      0.0,
+      0.0,
+      1.0
+    ],
+    "functional": "PBE",
+    "hubbard_u": {}
+  },
+  "method_incar_expected": {
+    "ISPIN": 1,
+    "LSORBIT": false,
+    "LNONCOLLINEAR": false,
+    "LDAU": false,
+    "LHFCALC": false,
+    "GGA": "PE"
+  },
+  "method_fingerprint": "1a9d7d6f7888b1b02c9bd5c2b0e5e9e0c59d30c474b163f120ae01d7a9b1a72b",
+  "method_comparison_fingerprint": "30bf9b4c664aa5711d2afd9488b5cac832fb61c0b48161afef56d6d934dd74dd",
+  "input_site_order": [
+    0,
+    1
+  ],
+  "scope": "Check convergence and the magnetic state for your material.",
+  "input_sha256": {
+    "POSCAR": "dc9c0c0055451d764efcc964ec671034180a2ccbcd3521a699b59c51b50dfbef",
+    "INCAR": "d43e73b4ce9bdff3f2275fbacb94d064bcf2d49b1a297bca970deaeeff996e6d",
+    "KPOINTS": "24c7b3aae43ed8aa47b1ce34dbc14ebed630342709daacb5f6bc17d5dbbd2a49"
+  }
+}

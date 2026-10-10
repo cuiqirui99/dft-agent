@@ -3,7 +3,11 @@
 Anyone can install DFT Agent. To run calculations, you need your own Slurm
 account, licensed VASP and POTCAR files. To use the agent, you also need one of
 the model accounts below. The download does not include model credits or cluster
-access. [Install and open the app](quickstart.md#1-install), then choose a route.
+access. [Install and open the app](install.md), then choose a route.
+
+Without a model account, you can still view sample results and prepare inputs
+in **Manual** mode. The desktop app includes the SDKs; no Python installation
+is needed to enter an API key.
 
 An **API key** is a credential for your model account. **Tokens** measure the
 text a model reads and generates. You enter a key, not a number of tokens.
@@ -14,7 +18,8 @@ text a model reads and generates. You enter a key, not a number of tokens.
    or available credits. A chat subscription does not automatically include API use.
 2. In **Model**, select the provider and paste its key into **API key**.
 3. Enter an exact **Model name** available to your account. The examples below
-   are starting points; model availability can change.
+   are starting points; model availability can change. Gray example text in
+   the field is a hint, not a saved model name: enter the ID explicitly.
 4. Leave **API URL** blank for the preset endpoint. Qwen needs your regional URL;
    GLM users on BigModel must replace the Z.AI default.
 
@@ -106,7 +111,11 @@ review usage before larger requests.
 ## Keys and data
 
 The key entered in the app stays in memory and is not saved in calculation
-files. **Clear API key** clears that field. Each provider has separate fields,
+files. Tick **Remember on this computer** to store it in the system keychain
+(macOS Keychain, Windows Credential Manager or a Linux Secret Service) and
+have it filled in at the next start; untick to remove it. The command line
+equivalents are `dft-agent key set PROVIDER`, `dft-agent key status` and
+`dft-agent key clear PROVIDER`. **Clear API key** clears the field. Each provider has separate fields,
 so switching providers does not send a previous provider's key to the new one.
 Keep keys on the computer running the app; they are not needed on the cluster.
 

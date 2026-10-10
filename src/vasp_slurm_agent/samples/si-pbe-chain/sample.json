@@ -1,0 +1,8 @@
+{
+  "order": 1,
+  "title": "Si: relax, SCF, bands and DOS (PBE)",
+  "description": "A four-stage pipeline on the two-atom silicon cell with an automatic k mesh, a band structure along the standard path and a density of states.",
+  "goal": "Relax silicon, then calculate PBE bands and DOS.",
+  "source": "VASP 6.2.1 on a Slurm cluster, from the v0.4.1 validation set",
+  "note": "Cluster names, accounts and paths were replaced with placeholders."
+}

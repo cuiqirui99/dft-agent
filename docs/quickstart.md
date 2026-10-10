@@ -2,18 +2,17 @@
 
 ## 1. Install
 
-Use macOS or Linux with Python 3.11+ and SSH:
+For the local `0.4.2` preview, open the supplied Apple Silicon Mac `.dmg` or
+Windows x64 `.exe` installer. Copy the Mac app to Applications, or run the
+Windows installer, then open **DFT Agent**. Python and model SDKs are included;
+Windows runs natively and does not require WSL. The preview is not yet
+published on GitHub Releases or PyPI. [Install](install.md) also covers source
+installation for Linux and developers.
 
-```bash
-git clone https://github.com/cuiqirui99/dft-agent.git
-cd dft-agent
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install '.[agent]'
-dft-agent ui
-```
+Settings live in `~/.dft-agent/`, runs in `~/dft-agent-runs/`. Settings from
+versions before 0.4.2 are copied over on first start.
 
-Keep the app local on `127.0.0.1`. The cluster needs licensed VASP and POTCAR
+The interface runs locally. The cluster needs licensed VASP and POTCAR
 files, Python 3.8+, Bash, `sha256sum`, and Slurm's `sbatch`, `squeue`, `sacct`
 and `scancel` commands.
 
@@ -37,9 +36,19 @@ Click **Plan**. A plan or a follow-up question confirms the connection.
 **Model usage** shows reported token counts. This uses your model account but
 submits no calculation. To work without a model, choose **Manual**.
 
+No cluster yet? Open **Runs** and click **Load sample runs** to explore three
+completed calculations with their plots; explanations require a model account.
+**Prepare inputs**
+also works without a cluster: the INCAR, KPOINTS and POSCAR are generated for
+review, and the cluster settings are attached when you submit.
+
 ## 3. Connect to your cluster
 
-Check SSH access and the host key first. In **Cluster setup**, enter:
+Check SSH access and the host key first. In **Cluster setup**, pick a preset
+if your cluster is listed, enter the SSH host and user, and click
+**Detect from cluster**. One read-only SSH session lists partitions, accounts,
+VASP modules, POTCAR folders and writable folders, and fills the form.
+Review every value, then **Save cluster settings**. The form holds:
 
 - SSH host, user and port.
 - A writable remote run directory.
@@ -48,6 +57,9 @@ Check SSH access and the host key first. In **Cluster setup**, enter:
 - Slurm partition, account, nodes, total MPI tasks and walltime.
 - **Extra Slurm options** for memory, QoS or other resources, one per line.
 - Required environment commands, one per line.
+
+If you do not know a field, use the [field sources](install.md#your-first-cluster-setup)
+to request it from your cluster support. Saving creates the configuration file.
 
 Start with 8 MPI tasks for small examples, adjusting to your cluster's rules.
 Save and run the environment check; it submits no jobs.
@@ -66,7 +78,8 @@ to its absolute socket path. The app reuses it and leaves it open when finished.
 If that session expires, authenticate again before reconnecting.
 
 Set **Configuration file** and **Run folder** in the sidebar. Each run saves
-its own configuration.
+its own configuration. **Check cluster connection** shows a checklist with a
+suggested fix for each failed item.
 
 ## 4. Prepare and submit
 
@@ -111,9 +124,12 @@ then click **Submit calculation**. Preparation alone submits nothing.
 
 ## 5. Monitor and download
 
-Open **Runs** to follow progress. Closing the browser leaves jobs running.
-Keep your computer awake to monitor and run later stages.
-After a local restart, select the original run and use **Resume monitoring**.
+Open **Runs** to follow progress; the table lists material, task, status and
+date for every run. Closing the browser leaves jobs running.
+Keep your computer awake to monitor and run later stages. A desktop notice
+appears when a run finishes; **Preferences** can add a webhook message.
+Reopening the app resumes monitoring of submitted runs. After an
+interruption you can also select the original run and use **Resume monitoring**.
 Three consecutive connection or collection failures pause monitoring as `needs_attention`;
 read the error, then use **Reconnect**. Both actions keep the same job and settings.
 
@@ -143,6 +159,8 @@ See the [CLI examples](examples.md). `prepare` is local; `watch` submits.
 
 ## Updates
 
+The sidebar shows a note when a newer release exists. Upgrade with
+`pip install --upgrade 'dft-agent[agent]'` or `uv tool upgrade dft-agent`.
 For a cloned install, activate its environment and run:
 
 ```bash
@@ -170,3 +188,8 @@ Dudarev DFT+U, HSE06 and PBE0. See [Methods](methods.md) for settings and limits
 The structure editor can prepare substitutions, vacancies and slabs from an input
 crystal. Phonons, NEB and molecular dynamics are not implemented.
 Failed or unconverged calculations stop without automatic parameter changes.
+
+## Language
+
+The sidebar switches the interface between English and Chinese. The choice is
+saved under `~/.dft-agent/settings.json`; command-line output stays in English.

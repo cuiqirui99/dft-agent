@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "tasks": [
+    "scf"
+  ],
+  "parameters": {
+    "encut": 400,
+    "mesh": [
+      4,
+      4,
+      4
+    ],
+    "ediff": 1e-05,
+    "ediffg": -0.03,
+    "nelm": 160,
+    "nsw": 100,
+    "ismear": 0,
+    "sigma": 0.1,
+    "line_density": 1,
+    "nedos": 301,
+    "cell_relax": false
+  },
+  "sources": {
+    "source/input/fe-seed-comparison.vasp": "b908cea5c93260ced3cd1f521703929bfe06a335cd32daefe2ef396817bce6c7",
+    "source/comparison/POSCAR": "d9e504eddb938b32919f8b8b5ceb48c8db1be135b23e522c24e8d6905a34451d"
+  },
+  "magnetic_seeds": {
+    "states": [
+      "NM",
+      "FM",
+      "AFM"
+    ],
+    "initial_moment": 3.0,
+    "supercell": [
+      2,
+      1,
+      1
+    ],
+    "seed_site_indices": [
+      0,
+      1
+    ],
+    "seed_rule": "Transition/f-block sites, or all sites when none are present; AFM alternates signs.",
+    "scope": "Trial magnetic seeds, not a global ground-state search."
+  },
+  "stages": [
+    {
+      "name": "scf",
+      "folder": "01_scf_nm",
+      "parameters": {
+        "encut": 400,
+        "mesh": [
+          4,
+          4,
+          4
+        ],
+        "ediff": 1e-05,
+        "ediffg": -0.03,
+        "nelm": 160,
+        "nsw": 100,
+        "ismear": 0,
+        "sigma": 0.1,
+        "line_density": 1,
+        "nedos": 301,
+        "cell_relax": false,
+        "spin": "none"
+      },
+      "structure_from": null,
+      "charge_from": null,
+      "source_path": "source/comparison/POSCAR",
+      "label": "NM"
+    },
+    {
+      "name": "scf",
+      "folder": "02_scf_fm",
+      "parameters": {
+        "encut": 400,
+        "mesh": [
+          4,
+          4,
+          4
+        ],
+        "ediff": 1e-05,
+        "ediffg": -0.03,
+        "nelm": 160,
+        "nsw": 100,
+        "ismear": 0,
+        "sigma": 0.1,
+        "line_density": 1,
+        "nedos": 301,
+        "cell_relax": false,
+        "spin": "collinear",
+        "magmom": [
+          3.0,
+          3.0
+        ]
+      },
+      "structure_from": null,
+      "charge_from": null,
+      "source_path": "source/comparison/POSCAR",
+      "label": "FM"
+    },
+    {
+      "name": "scf",
+      "folder": "03_scf_afm",
+      "parameters": {
+        "encut": 400,
+        "mesh": [
+          4,
+          4,
+          4
+        ],
+        "ediff": 1e-05,
+        "ediffg": -0.03,
+        "nelm": 160,
+        "nsw": 100,
+        "ismear": 0,
+        "sigma": 0.1,
+        "line_density": 1,
+        "nedos": 301,
+        "cell_relax": false,
+        "spin": "collinear",
+        "magmom": [
+          3.0,
+          -3.0
+        ]
+      },
+      "structure_from": null,
+      "charge_from": null,
+      "source_path": "source/comparison/POSCAR",
+      "label": "AFM"
+    }
+  ]
+}
