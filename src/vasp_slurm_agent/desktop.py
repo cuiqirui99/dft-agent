@@ -131,6 +131,22 @@ def launch(window_report=None):
     return 0
 
 
+def _check_plot_exports(output):
+    from matplotlib.figure import Figure
+    from .vasp import _save_figure
+
+    output.mkdir(parents=True, exist_ok=True)
+    figure = Figure(figsize=(2, 2))
+    figure.subplots().plot([0, 1], [0, 1])
+    _save_figure(figure, output, "plot-check")
+    contents = {extension: (output / f"plot-check.{extension}").read_bytes()
+                for extension in ("png", "pdf", "svg")}
+    assert all(len(data) > 100 for data in contents.values())
+    assert contents["png"].startswith(b"\x89PNG\r\n\x1a\n")
+    assert contents["pdf"].startswith(b"%PDF-")
+    assert b"<svg" in contents["svg"][:2048]
+
+
 def check_bundle(output):
     """Exercise packaged resources and input preparation without network access."""
     import tempfile
@@ -165,6 +181,7 @@ def check_bundle(output):
             __import__(module)
         if sys.platform == "win32":
             __import__("paramiko")
+        _check_plot_exports(Path(output).resolve().parent / "plot-exports")
         from streamlit.testing.v1 import AppTest
         original = dict(os.environ)
         try:
@@ -189,7 +206,8 @@ def check_bundle(output):
             os.environ.update(original)
         result = {"version": __version__, "platform": sys.platform, "frozen": bool(getattr(sys, "frozen", False)),
                   "input_preparation": True, "cluster_attach": True, "samples": len(installed),
-                  "resources": True, "provider_sdks": True, "first_run_ui": True}
+                  "resources": True, "provider_sdks": True, "first_run_ui": True,
+                  "plot_exports": True}
     Path(output).write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
     return 0
 

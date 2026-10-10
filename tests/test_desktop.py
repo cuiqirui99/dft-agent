@@ -77,3 +77,20 @@ def test_window_check_reports_render_errors(tmp_path):
     desktop.check_window(window, tmp_path / "window.json", errors)
     assert errors == ["webview failed"]
     window.destroy.assert_called_once()
+
+
+def test_bundle_check_renders_plot_exports(tmp_path):
+    desktop._check_plot_exports(tmp_path / "plots")
+    assert {path.suffix for path in (tmp_path / "plots").iterdir()} == {".png", ".pdf", ".svg"}
+
+
+def test_bundle_check_rejects_empty_plot_exports(tmp_path, monkeypatch):
+    from vasp_slurm_agent import vasp
+
+    def empty_exports(figure, output, name):
+        for extension in ("png", "pdf", "svg"):
+            (output / f"{name}.{extension}").write_bytes(b"")
+
+    monkeypatch.setattr(vasp, "_save_figure", empty_exports)
+    with pytest.raises(AssertionError):
+        desktop._check_plot_exports(tmp_path / "plots")

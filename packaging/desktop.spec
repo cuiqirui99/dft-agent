@@ -9,6 +9,7 @@ from vasp_slurm_agent import __version__
 datas = [(str(root / "src/vasp_slurm_agent"), "vasp_slurm_agent"),
          (str(root / "LICENSE"), "."), (str(root / "NOTICE.md"), ".")]
 hiddenimports = collect_submodules("vasp_slurm_agent")
+hiddenimports += ["matplotlib.backends.backend_pdf", "matplotlib.backends.backend_svg"]
 for package in ("streamlit", "pymatgen", "monty", "seekpath", "spglib", "webview"):
     datas += collect_data_files(package)
 for package in ("streamlit", "pymatgen", "pymatgen-core", "monty", "pywebview", "keyring"):
