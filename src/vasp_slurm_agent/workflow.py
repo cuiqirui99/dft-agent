@@ -30,7 +30,7 @@ from .restart import INPUT_FILES as RESTART_INPUTS, OUTPUT_FILES as RESTART_OUTP
 TERMINAL = {"succeeded", "needs_attention", "failed", "cancelled"}
 MAX_REMOTE_FAILURES = 3
 SLURM_TERMINAL = {"COMPLETED", "FAILED", "CANCELLED", "TIMEOUT", "OUT_OF_MEMORY", "NODE_FAIL", "PREEMPTED", "BOOT_FAIL", "DEADLINE", "REVOKED"}
-FILES = ("INCAR", "KPOINTS", "POSCAR", "OUTCAR", "OSZICAR", "vasprun.xml", "CONTCAR", "EIGENVAL", "DOSCAR", "slurm.out", "slurm.err", "execution.json", "input_hashes.sha256", "potcar_hash.sha256", "potcar_titles.txt", *RESTART_INPUTS, *RESTART_OUTPUTS)
+FILES = ("INCAR", "KPOINTS", "POSCAR", "OUTCAR", "OSZICAR", "vasprun.xml", "CONTCAR", "EIGENVAL", "DOSCAR", "PROCAR", "XDATCAR", "REPORT", "slurm.out", "slurm.err", "execution.json", "input_hashes.sha256", "potcar_hash.sha256", "potcar_titles.txt", *RESTART_INPUTS, *RESTART_OUTPUTS)
 
 
 def utc_now():
@@ -753,6 +753,16 @@ def _collect(root, state, transport, stage):
     _write(output / "result.json", result)
     stage["result"] = result
     stage["status"] = "succeeded" if result.get("success") else "needs_attention"
+    bands = next((item for item in state["stages"] if item["name"] == "bands" and item["status"] == "succeeded"), None)
+    dos = next((item for item in state["stages"] if item["name"] == "dos" and item["status"] == "succeeded"), None)
+    if bands and dos and bands.get("charge_from") == dos.get("charge_from"):
+        from .vasp import export_bands_dos
+        try:
+            artifacts = export_bands_dos(root / bands["folder"] / "outputs", root / dos["folder"] / "outputs")
+            bands["result"]["artifacts"] = list(dict.fromkeys([*bands["result"].get("artifacts", []), *artifacts]))
+            _write(root / bands["folder"] / "outputs" / "result.json", bands["result"])
+        except (OSError, ValueError, KeyError) as exc:
+            stage.setdefault("analysis_warnings", []).append("Combined plot unavailable: " + str(exc))
     _update_comparison(state)
     if (result.get("success") or "comparison" in state) and state["current_stage"] + 1 < len(state["stages"]):
         state["current_stage"] += 1
@@ -958,14 +968,17 @@ def bundle_run(run_dir):
         if (root / "plan.json").is_file():
             archive.write(root / "plan.json", "plan.json")
             for source in sorted((root / "source").rglob("*")):
-                if source.is_file():
+                if (source.is_file() and not source.is_symlink()
+                        and not any(parent.is_symlink() for parent in source.parents)):
                     archive.write(source, str(source.relative_to(root)))
         for stage in read_state(root)["stages"]:
             base = root / stage["folder"]
             for folder in (base / "inputs", base / "outputs"):
                 if folder.exists():
-                    for file in sorted(folder.iterdir()):
-                        if file.is_file() and file.name not in {"POTCAR", "CHGCAR", "WAVECAR"}:
-                            archive.write(file, str(file.relative_to(root)))
+                    for file in sorted(folder.rglob("*")):
+                        if (file.is_file() and not file.is_symlink() and file.name != "POTCAR"
+                                and not any(part.startswith(".") for part in file.relative_to(folder).parts)
+                                and not any(parent.is_symlink() for parent in file.parents if parent != root)):
+                            archive.write(file, file.relative_to(root).as_posix())
     os.replace(target.with_suffix(".tmp"), target)
     return target

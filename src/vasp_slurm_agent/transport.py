@@ -43,6 +43,8 @@ DOWNLOAD_ALLOWLIST = frozenset({
     "potcar_hash.sha256", "potcar_titles.txt",
     "seed.INCAR", "seed.metadata.json", "warm_start.spec.json", "seed.vasprun.xml", "seed.OUTCAR",
     "seed.IBZKPT", "seed.stdout", "seed.stderr", "hybrid.stdout", "hybrid.stderr", "warm_start.json", "IBZKPT",
+    "PROCAR", "XDATCAR", "REPORT", "CHGCAR", "CHG", "WAVECAR", "LOCPOT", "ELFCAR",
+    "PARCHG", "AECCAR0", "AECCAR1", "AECCAR2", "vaspout.h5",
 })
 _HASH_CODE = """\
 def metadata(path):

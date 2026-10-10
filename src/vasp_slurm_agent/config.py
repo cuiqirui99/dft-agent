@@ -25,8 +25,11 @@ class ClusterConfig:
     ssh_control_path: str = ""
     nodes: int = 1
     extra_sbatch: list[str] = field(default_factory=list)
+    vaspkit_executable: str = "vaspkit"
 
     def __post_init__(self):
+        if not isinstance(self.vaspkit_executable, str) or not self.vaspkit_executable.strip() or any(c in self.vaspkit_executable for c in "\n\r\x00"):
+            raise ValueError("Enter the VASPKIT executable name or absolute path.")
         if not isinstance(self.ssh_control_path, str) or any(c in self.ssh_control_path for c in "\n\r\x00"):
             raise ValueError("Use an absolute SSH control socket path without line breaks.")
         if self.ssh_control_path:

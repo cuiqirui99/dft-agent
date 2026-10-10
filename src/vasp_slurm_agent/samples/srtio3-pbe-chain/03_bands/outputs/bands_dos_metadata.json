@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "energy_reference_ev": 3.45106126,
+  "energy_reference_source": "preceding_scf",
+  "dos_original_reference_ev": 3.25699118,
+  "dos_energy_shift_ev": -0.19407007999999992,
+  "energy_window_ev": [
+    -8.0,
+    8.0
+  ],
+  "source_sha256": {
+    "bands.csv": "6ad6a053284db6535c12cb1efd6b4cd26498c16e4ecefc66ed2789a93212aedd",
+    "dos.csv": "78ce6f6046fa8e87915ddbe926e431f2919d4de408b3b325c31f34122666c4a6",
+    "bands/plot_metadata.json": "5d505dcab6962993ee2bd49ae3d36f9e98a04b44dd7a2b79757a8945b7b166f1",
+    "dos/plot_metadata.json": "b670fa776cfc33894f3dcdf3bd7291d51b870faa7db3edbb450efa207fe1ab0e",
+    "dos_elements.csv": "5f4a44ec6cb3448526e905ef4bc8f5a9f1cba5e0c414c16940c9336254b0d5cd"
+  },
+  "kpoint_count": 353,
+  "method_fingerprint": "112288ab697a0d3cef88b524c044d207b320228863f113e24e5a57539252d26c",
+  "spin_channels": "summed DOS; separate bands",
+  "interpolation": "none"
+}

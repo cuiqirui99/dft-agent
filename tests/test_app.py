@@ -272,7 +272,7 @@ def test_completed_result_is_visible_without_resubmission(workbench, accepted):
         assert any("Electronic convergence" in item.value for item in app.warning)
         assert not any(button.label == "Download structure (.cif)" for button in app.download_button)
     captions = [image.caption for block in app.get("image") for image in block.proto.imgs]
-    assert ("relax · result.png" in captions) is accepted
+    assert bool(captions) is accepted
     widget(app.button, "Prepare download").click().run()
     assert not app.exception
     assert (run_dir / "results.zip").is_file()
@@ -282,7 +282,7 @@ def test_completed_result_is_visible_without_resubmission(workbench, accepted):
 
 def test_installed_examples_are_readable_crystal_inputs():
     examples = files("vasp_slurm_agent").joinpath("examples")
-    expected = {"Si", "C", "Ge", "Al", "Cu", "MgO", "NaCl", "SiC",
+    expected = {"Si", "C", "Ge", "Al", "Cu", "MgO", "NaCl", "SiC", "SrTiO3",
                 "VSe2", "In2Se3", "V2Te2O", "CrSBr", "CrOCl", "CrCl3", "CrPS4", "GaFe2O4", "CrOCl-MoS2"}
     structures = {sample.name[:-4]: Structure.from_str(sample.read_text(), fmt="cif")
                   for sample in examples.iterdir() if sample.name.endswith(".cif")}
@@ -360,7 +360,7 @@ def test_complex_examples_use_poscar_without_duplicate_choices(workbench):
     app, worker, _ = workbench
     widget(app.radio, "Structure source").set_value("Example").run()
     examples = widget(app.selectbox, "Example")
-    assert len(examples.options) == 17
+    assert len(examples.options) == 18
     examples.select("CrOCl-MoS2.vasp").run()
     assert not app.exception
     assert widget(app.metric, "Atoms").value == "114"
@@ -594,7 +594,9 @@ def test_spectral_results_use_scf_reference_not_ground_state_metrics(workbench, 
     assert [item.value for item in app.metric if item.label == "Final total energy (eV)"] == ["-10.000000"]
     assert [item.value for item in app.metric if item.label == "Maximum atomic force (eV/Å)"] == ["0.002000"]
     references = [item.value for item in app.metric if item.label == "SCF Fermi energy (eV)"]
-    assert references == (["5.250000"] if scf_fermi is not None else [])
+    assert references == (["5.250000"] if task == "bands" and scf_fermi is not None else [])
+    if task == "dos":
+        assert widget(app.metric, "DOS Fermi energy (eV)").value == "8.880000"
     assert any("Fixed-charge spectrum" in item.value for item in app.caption)
     assert state_path.read_bytes() == original
     worker.assert_not_called()
@@ -824,7 +826,8 @@ def test_hybrid_spectrum_uses_own_fermi_reference(workbench, task):
     (root / "run.json").write_text(json.dumps(state))
     app.run()
     assert not app.exception
-    assert [item.value for item in app.metric if item.label == "Fermi energy (eV)"] == ["6.750000"]
+    label = "DOS Fermi energy (eV)" if task == "dos" else "Fermi energy (eV)"
+    assert [item.value for item in app.metric if item.label == label] == ["6.750000"]
     assert not any(item.label == "SCF Fermi energy (eV)" for item in app.metric)
     worker.assert_not_called()
 

@@ -1,0 +1,215 @@
+{
+  "schema_version": 1,
+  "tool": "VASPKIT",
+  "citation": "https://doi.org/10.1016/j.cpc.2021.108033",
+  "documentation": "https://vaspkit.com/tutorials.html",
+  "status": "complete",
+  "tasks": [
+    {
+      "name": "bands",
+      "task_id": 211,
+      "folder": "bands",
+      "status": "complete",
+      "outputs": {
+        "BAND.dat": {
+          "size": 252368,
+          "sha256": "99434752e7411b69875168f374eaa1f637c83070ae8f91f7f8f96908c4a3cf86"
+        },
+        "KLABELS": {
+          "size": 147,
+          "sha256": "5cf6343195b2b6eee00c3303a891c50c3c240890c42f2f17863d0d5a52b4e201"
+        }
+      },
+      "inputs": {
+        "INCAR": {
+          "size": 273,
+          "sha256": "b2cfb7d510fe394514eb2b35886f6f1953d42b602855d401975cc9d2b73be4fc"
+        },
+        "POSCAR": {
+          "size": 576,
+          "sha256": "4dfaba837d71aacdb79b7bb456cb1d3974639ed4407bff209418bf2a28efc7b7"
+        },
+        "KPOINTS": {
+          "size": 18525,
+          "sha256": "9713b34527919be883b8bcb832e1bff1d251b85682bca8084335206502b2e80a"
+        },
+        "EIGENVAL": {
+          "size": 394849,
+          "sha256": "5df7165014b8621ab5b0680b8dd7015be01b912dc3e59e0c28af6e9babefed29"
+        },
+        "DOSCAR": {
+          "size": 192025,
+          "sha256": "f90b98eaf2c6f2bb5131371ab91c8bdbed5eec7bca09e8c185b9de1bf3ddc798"
+        }
+      },
+      "prepared_inputs": {
+        "INCAR": {
+          "size": 273,
+          "sha256": "b2cfb7d510fe394514eb2b35886f6f1953d42b602855d401975cc9d2b73be4fc"
+        },
+        "POSCAR": {
+          "size": 576,
+          "sha256": "4dfaba837d71aacdb79b7bb456cb1d3974639ed4407bff209418bf2a28efc7b7"
+        },
+        "KPOINTS": {
+          "size": 18525,
+          "sha256": "9713b34527919be883b8bcb832e1bff1d251b85682bca8084335206502b2e80a"
+        },
+        "EIGENVAL": {
+          "size": 394849,
+          "sha256": "5df7165014b8621ab5b0680b8dd7015be01b912dc3e59e0c28af6e9babefed29"
+        },
+        "DOSCAR": {
+          "size": 192025,
+          "sha256": "f90b98eaf2c6f2bb5131371ab91c8bdbed5eec7bca09e8c185b9de1bf3ddc798"
+        }
+      },
+      "settings": "VASP5 .TRUE.\nSET_FERMI_ENERGY_ZERO .TRUE.\nPLOT_MATPLOTLIB .FALSE.\nADVANCED_USER .FALSE.\n",
+      "stdin": "211\n0\n",
+      "returncode": 0,
+      "version": "1.5.1",
+      "logs": {
+        "stdin.txt": {
+          "size": 6,
+          "sha256": "fa1a0c7934ded4df8367b41593f4134656f70e22ade3e800c1320a05b5653871"
+        },
+        "stdout.txt": {
+          "size": 23328,
+          "sha256": "0b2297d32395c510e7d537de3fdc7201f0fc6b6723fad1fde223a8bb82b3ffa7"
+        },
+        "stderr.txt": {
+          "size": 90,
+          "sha256": "4542a62457208348ea00db8cd2ae3c12bdd432c831c0b4e734aa5de66f177e53"
+        },
+        "FERMI_ENERGY.in": {
+          "size": 41,
+          "sha256": "65462cce09200c96088fd2fd9f55c14a171f07d39e3194369ca15fdd199835ff"
+        },
+        "kpoint_mapping.json": {
+          "size": 3550,
+          "sha256": "5cfd2968feb5df49aa4fc4288367e88e1acc157a2fa4267c715c1810f6737cc2"
+        },
+        "segments.json": {
+          "size": 4497,
+          "sha256": "82dc3255535eab7d6ceb08812aa3410b72d853b36917c680a4787428458c55e8"
+        }
+      }
+    },
+    {
+      "name": "projected_bands",
+      "task_id": 213,
+      "folder": "projected_bands",
+      "status": "complete",
+      "outputs": {
+        "KLABELS": {
+          "size": 147,
+          "sha256": "5cf6343195b2b6eee00c3303a891c50c3c240890c42f2f17863d0d5a52b4e201"
+        },
+        "PBAND_O.dat": {
+          "size": 937871,
+          "sha256": "ac93ccc2946c562c3b0d5bc76e74e1d7a89e04e75bc0e8be869b0cb88afa0059"
+        },
+        "PBAND_Sr.dat": {
+          "size": 937871,
+          "sha256": "1e729e57f257bc0d7aa9c74523e336276db40b1ffdaa87a1a0236f18b0b57dbe"
+        },
+        "PBAND_Ti.dat": {
+          "size": 937871,
+          "sha256": "c7268aff829b8b687c2fdec7f974049591c6ed99cc353d1542f1e50197154969"
+        }
+      },
+      "inputs": {
+        "INCAR": {
+          "size": 273,
+          "sha256": "b2cfb7d510fe394514eb2b35886f6f1953d42b602855d401975cc9d2b73be4fc"
+        },
+        "POSCAR": {
+          "size": 576,
+          "sha256": "4dfaba837d71aacdb79b7bb456cb1d3974639ed4407bff209418bf2a28efc7b7"
+        },
+        "KPOINTS": {
+          "size": 18525,
+          "sha256": "9713b34527919be883b8bcb832e1bff1d251b85682bca8084335206502b2e80a"
+        },
+        "EIGENVAL": {
+          "size": 394849,
+          "sha256": "5df7165014b8621ab5b0680b8dd7015be01b912dc3e59e0c28af6e9babefed29"
+        },
+        "DOSCAR": {
+          "size": 192025,
+          "sha256": "f90b98eaf2c6f2bb5131371ab91c8bdbed5eec7bca09e8c185b9de1bf3ddc798"
+        },
+        "PROCAR": {
+          "size": 6636137,
+          "sha256": "55ad4b0329b439a870042353ac455e7846eecc4d36c8c4d32b93d01cbb236994"
+        }
+      },
+      "prepared_inputs": {
+        "INCAR": {
+          "size": 273,
+          "sha256": "b2cfb7d510fe394514eb2b35886f6f1953d42b602855d401975cc9d2b73be4fc"
+        },
+        "POSCAR": {
+          "size": 576,
+          "sha256": "4dfaba837d71aacdb79b7bb456cb1d3974639ed4407bff209418bf2a28efc7b7"
+        },
+        "KPOINTS": {
+          "size": 18525,
+          "sha256": "9713b34527919be883b8bcb832e1bff1d251b85682bca8084335206502b2e80a"
+        },
+        "EIGENVAL": {
+          "size": 394849,
+          "sha256": "5df7165014b8621ab5b0680b8dd7015be01b912dc3e59e0c28af6e9babefed29"
+        },
+        "DOSCAR": {
+          "size": 192025,
+          "sha256": "f90b98eaf2c6f2bb5131371ab91c8bdbed5eec7bca09e8c185b9de1bf3ddc798"
+        },
+        "PROCAR": {
+          "size": 6636137,
+          "sha256": "55ad4b0329b439a870042353ac455e7846eecc4d36c8c4d32b93d01cbb236994"
+        }
+      },
+      "settings": "VASP5 .TRUE.\nSET_FERMI_ENERGY_ZERO .TRUE.\nPLOT_MATPLOTLIB .FALSE.\nADVANCED_USER .FALSE.\n",
+      "stdin": "213\n0\n",
+      "returncode": 0,
+      "version": "1.5.1",
+      "logs": {
+        "stdin.txt": {
+          "size": 6,
+          "sha256": "c576bdd2be0658abbdb3a2ec06fcfc68a39f944ab19bb88caff2596707e90c43"
+        },
+        "stdout.txt": {
+          "size": 23388,
+          "sha256": "a069e182c48a3380a4653b65392e196556751a87a8d2f84701529c9994f35269"
+        },
+        "stderr.txt": {
+          "size": 90,
+          "sha256": "4542a62457208348ea00db8cd2ae3c12bdd432c831c0b4e734aa5de66f177e53"
+        },
+        "FERMI_ENERGY.in": {
+          "size": 41,
+          "sha256": "65462cce09200c96088fd2fd9f55c14a171f07d39e3194369ca15fdd199835ff"
+        },
+        "kpoint_mapping.json": {
+          "size": 3550,
+          "sha256": "5cfd2968feb5df49aa4fc4288367e88e1acc157a2fa4267c715c1810f6737cc2"
+        },
+        "segments.json": {
+          "size": 5316,
+          "sha256": "190ca5b910cc3a4973931c61a262b3272243d109811654aa27ccf2a4a243250d"
+        }
+      }
+    }
+  ],
+  "fermi_energy_ev": 3.45106126,
+  "energy_reference": "provided_fermi",
+  "warnings": [],
+  "started_at": "2026-10-10T08:52:01Z",
+  "executable": {
+    "name": "vaspkit",
+    "size": 13756609,
+    "sha256": "744b8a283598bc5567b0a68ca713f624a53c9aca6027b733900fcb38c560ae14"
+  },
+  "finished_at": "2026-10-10T08:52:02Z"
+}

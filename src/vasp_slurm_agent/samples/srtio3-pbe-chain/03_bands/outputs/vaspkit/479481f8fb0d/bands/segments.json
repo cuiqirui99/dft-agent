@@ -1,0 +1,158 @@
+[
+  {
+    "segment": 0,
+    "prepared_inputs": {
+      "INCAR": {
+        "size": 273,
+        "sha256": "b2cfb7d510fe394514eb2b35886f6f1953d42b602855d401975cc9d2b73be4fc"
+      },
+      "POSCAR": {
+        "size": 576,
+        "sha256": "4dfaba837d71aacdb79b7bb456cb1d3974639ed4407bff209418bf2a28efc7b7"
+      },
+      "KPOINTS": {
+        "size": 93,
+        "sha256": "bfa420357a33fd7ecbdc25388d2dbe6b36c1b459ccd605b4a463d7294ef07476"
+      },
+      "EIGENVAL": {
+        "size": 52728,
+        "sha256": "d9ee577c8713dc1347905e1e95f3a9492d777eaefe0674793b6089abb5bd11a8"
+      },
+      "DOSCAR": {
+        "size": 192025,
+        "sha256": "f90b98eaf2c6f2bb5131371ab91c8bdbed5eec7bca09e8c185b9de1bf3ddc798"
+      }
+    },
+    "returncode": 0
+  },
+  {
+    "segment": 1,
+    "prepared_inputs": {
+      "INCAR": {
+        "size": 273,
+        "sha256": "b2cfb7d510fe394514eb2b35886f6f1953d42b602855d401975cc9d2b73be4fc"
+      },
+      "POSCAR": {
+        "size": 576,
+        "sha256": "4dfaba837d71aacdb79b7bb456cb1d3974639ed4407bff209418bf2a28efc7b7"
+      },
+      "KPOINTS": {
+        "size": 93,
+        "sha256": "fd002b5320032267ae1c605a7f38734bd7143c132eb9751ce92d18dfe03507d7"
+      },
+      "EIGENVAL": {
+        "size": 52728,
+        "sha256": "547630430ce8a2890c8742d3dacde203a17cc49e9f2b5c18010a8c8a8789971a"
+      },
+      "DOSCAR": {
+        "size": 192025,
+        "sha256": "f90b98eaf2c6f2bb5131371ab91c8bdbed5eec7bca09e8c185b9de1bf3ddc798"
+      }
+    },
+    "returncode": 0
+  },
+  {
+    "segment": 2,
+    "prepared_inputs": {
+      "INCAR": {
+        "size": 273,
+        "sha256": "b2cfb7d510fe394514eb2b35886f6f1953d42b602855d401975cc9d2b73be4fc"
+      },
+      "POSCAR": {
+        "size": 576,
+        "sha256": "4dfaba837d71aacdb79b7bb456cb1d3974639ed4407bff209418bf2a28efc7b7"
+      },
+      "KPOINTS": {
+        "size": 95,
+        "sha256": "b5fec8a258061839c429b3488f20aac4b4d42313b8100417d104485e23c166c4"
+      },
+      "EIGENVAL": {
+        "size": 75088,
+        "sha256": "95dafaae07766858da674d20aa4d4a5a17be88b24c793a54b048d8db7f040a17"
+      },
+      "DOSCAR": {
+        "size": 192025,
+        "sha256": "f90b98eaf2c6f2bb5131371ab91c8bdbed5eec7bca09e8c185b9de1bf3ddc798"
+      }
+    },
+    "returncode": 0
+  },
+  {
+    "segment": 3,
+    "prepared_inputs": {
+      "INCAR": {
+        "size": 273,
+        "sha256": "b2cfb7d510fe394514eb2b35886f6f1953d42b602855d401975cc9d2b73be4fc"
+      },
+      "POSCAR": {
+        "size": 576,
+        "sha256": "4dfaba837d71aacdb79b7bb456cb1d3974639ed4407bff209418bf2a28efc7b7"
+      },
+      "KPOINTS": {
+        "size": 97,
+        "sha256": "35380185803b90de704aa79c6d778f93339940fd5e122e5aa0cbf2ce6b01e841"
+      },
+      "EIGENVAL": {
+        "size": 91858,
+        "sha256": "4c6fd1d9451107b081badb968c285effd19277c76b2a4c54715efb1a29e76e12"
+      },
+      "DOSCAR": {
+        "size": 192025,
+        "sha256": "f90b98eaf2c6f2bb5131371ab91c8bdbed5eec7bca09e8c185b9de1bf3ddc798"
+      }
+    },
+    "returncode": 0
+  },
+  {
+    "segment": 4,
+    "prepared_inputs": {
+      "INCAR": {
+        "size": 273,
+        "sha256": "b2cfb7d510fe394514eb2b35886f6f1953d42b602855d401975cc9d2b73be4fc"
+      },
+      "POSCAR": {
+        "size": 576,
+        "sha256": "4dfaba837d71aacdb79b7bb456cb1d3974639ed4407bff209418bf2a28efc7b7"
+      },
+      "KPOINTS": {
+        "size": 95,
+        "sha256": "4d57faa45056e5693f2ef23ff1768d3483ad7052ef01846ea38885f342497b2b"
+      },
+      "EIGENVAL": {
+        "size": 75088,
+        "sha256": "9d13623950de18b3769aa7a4a50aa59d0c566f2d2b3036d47d19edf9f1476c26"
+      },
+      "DOSCAR": {
+        "size": 192025,
+        "sha256": "f90b98eaf2c6f2bb5131371ab91c8bdbed5eec7bca09e8c185b9de1bf3ddc798"
+      }
+    },
+    "returncode": 0
+  },
+  {
+    "segment": 5,
+    "prepared_inputs": {
+      "INCAR": {
+        "size": 273,
+        "sha256": "b2cfb7d510fe394514eb2b35886f6f1953d42b602855d401975cc9d2b73be4fc"
+      },
+      "POSCAR": {
+        "size": 576,
+        "sha256": "4dfaba837d71aacdb79b7bb456cb1d3974639ed4407bff209418bf2a28efc7b7"
+      },
+      "KPOINTS": {
+        "size": 97,
+        "sha256": "b642dc9ba38b047c12719834dd7325a2b023d9b389660435164c7ca552ad9bd7"
+      },
+      "EIGENVAL": {
+        "size": 52728,
+        "sha256": "980fd7b53d19f4d9731180e5221f5eab55218566bc236f76ef9f7fb07394035c"
+      },
+      "DOSCAR": {
+        "size": 192025,
+        "sha256": "f90b98eaf2c6f2bb5131371ab91c8bdbed5eec7bca09e8c185b9de1bf3ddc798"
+      }
+    },
+    "returncode": 0
+  }
+]

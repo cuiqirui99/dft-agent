@@ -84,7 +84,7 @@ suggested fix for each failed item.
 ## 4. Prepare and submit
 
 In **New calculation**, upload a CIF or POSCAR, or choose **Example**.
-All [17 examples](structures.md) are included in the installed package.
+All [18 examples](structures.md) are included in the installed package.
 Select a material to preview it; **Download input** saves its structure for
 command-line use.
 

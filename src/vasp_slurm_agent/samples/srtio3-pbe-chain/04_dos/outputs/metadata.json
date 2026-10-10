@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "task": "dos",
+  "formula": "SrTiO3",
+  "number_of_atoms": 5,
+  "parameters": {
+    "encut": 520.0,
+    "ediff": 1e-06,
+    "ediffg": -0.02,
+    "nsw": 60,
+    "mesh": [
+      8,
+      8,
+      8
+    ],
+    "kspacing": 0.2,
+    "ismear": -5,
+    "sigma": 0.05,
+    "electronic_type": "insulator",
+    "cell_relax": true,
+    "nelm": 120,
+    "line_density": 60,
+    "nedos": 2001
+  },
+  "numerical_choices": {
+    "mesh_mode": "reciprocal_spacing",
+    "mesh": [
+      8,
+      8,
+      8
+    ],
+    "kspacing_inv_angstrom": 0.2,
+    "reciprocal_convention": "Physical reciprocal vectors include 2*pi; N_i=ceil(|G_i|/kspacing).",
+    "vacuum_axes": [],
+    "smearing_mode": "material_type",
+    "electronic_type": "insulator",
+    "ismear": -5,
+    "sigma_ev": 0.05,
+    "notes": [],
+    "sources": [
+      "https://vasp.at/wiki/KSPACING",
+      "https://vasp.at/wiki/Smearing_technique"
+    ]
+  },
+  "potential_choices": {
+    "policy": "MPRelaxSet 2026.9.24 with active f shells and W_sv; explicit labels take precedence.",
+    "overrides": {},
+    "sources": [
+      "https://pymatgen.org/pymatgen.io.vasp.html#pymatgen.io.vasp.sets.MPRelaxSet",
+      "https://vasp.at/wiki/Choosing_pseudopotentials"
+    ]
+  },
+  "source_sha256": "4dfaba837d71aacdb79b7bb456cb1d3974639ed4407bff209418bf2a28efc7b7",
+  "potcar_labels": [
+    "Sr_sv",
+    "Ti_pv",
+    "O"
+  ],
+  "potcar_elements": [
+    "Sr",
+    "Ti",
+    "O"
+  ],
+  "requires_chgcar": true,
+  "requires_ncl": false,
+  "spectral_charge_mode": "fixed_charge",
+  "method": {
+    "spin": "none",
+    "magmom": null,
+    "soc": false,
+    "saxis": [
+      0.0,
+      0.0,
+      1.0
+    ],
+    "functional": "PBE",
+    "hubbard_u": {}
+  },
+  "method_incar_expected": {
+    "ISPIN": 1,
+    "ISYM": 2,
+    "LSORBIT": false,
+    "LNONCOLLINEAR": false,
+    "LDAU": false,
+    "LHFCALC": false,
+    "GGA": "PE"
+  },
+  "method_fingerprint": "112288ab697a0d3cef88b524c044d207b320228863f113e24e5a57539252d26c",
+  "method_comparison_fingerprint": "a3d2f2ac57b62272004057b6bd365b0dce17911be8bba8f268d2ca867112a377",
+  "input_site_order": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "scope": "Check convergence and the magnetic state for your material.",
+  "input_sha256": {
+    "POSCAR": "4dfaba837d71aacdb79b7bb456cb1d3974639ed4407bff209418bf2a28efc7b7",
+    "INCAR": "607137386a0923d2dcdcbf3fa126f8df5d9b92a55be680bbaab3b3c1c768c690",
+    "KPOINTS": "2bf9a941f8f7d67ea544165b2f1e211e2222563afb5b43f15586b7d6ab96f145"
+  },
+  "scf_fermi_energy_ev": 3.45106126
+}

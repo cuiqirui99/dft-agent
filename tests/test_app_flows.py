@@ -74,12 +74,12 @@ def test_sample_runs_load_from_the_runs_tab(bench):
     widget(app.button, "Load sample runs").click().run()
     assert not app.exception
     names = sorted(path.name for path in (tmp_path / "runs").iterdir())
-    assert names == ["sample-fe-seed-comparison", "sample-mgo-cell-relax", "sample-si-pbe-chain"]
-    assert app.session_state["active_run"].endswith("sample-si-pbe-chain")
+    assert names == ["sample-fe-seed-comparison", "sample-mgo-cell-relax", "sample-si-pbe-chain", "sample-srtio3-pbe-chain"]
+    assert app.session_state["active_run"].endswith("sample-srtio3-pbe-chain")
     assert any("Sample run" in item.value for item in app.info)
     assert any(metric.label == "Final total energy (eV)" for metric in app.metric)
     choices = widget(app.selectbox, "Select a run")
-    assert len(choices.options) == 3
+    assert len(choices.options) == 4
     widget(app.button, "Load sample runs").click().run()
     assert any("already" in item.value for item in app.info)
     worker.assert_not_called()

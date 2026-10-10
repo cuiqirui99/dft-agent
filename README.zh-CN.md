@@ -26,7 +26,7 @@ DFT Agent 根据自然语言目标或手动参数，准备并在你的 HPC 集�
 
 ## 没有集群也能试用
 
-- 在 **Runs（计算记录）** 页面点击 **Load sample runs（加载示例计算）**，可以离线浏览三个在真实集群上完成的计算：Si 的弛豫、SCF、能带和态密度；MgO 的晶胞弛豫；Fe 的 NM/FM/AFM 磁性对比。**解释结果**需要连接模型，使用你自己的账号额度。
+- 在 **Runs（计算记录）** 点击 **Load sample runs（加载示例计算）**，可离线浏览四个真实计算：SrTiO3 和 Si 工作流、MgO 晶胞弛豫、Fe NM/FM/AFM 磁性对比。建议先看 SrTiO3，包含 353 个实际计算的能带 k 点、投影态密度、图表和原始输出。**解释结果**需要连接模型，使用你自己的账号额度。
 - 在 **New calculation（新建计算）** 页面选择示例结构和 **Manual（手动）** 模式，点击 **Prepare inputs（准备输入文件）**，不需要集群或模型就能看到生成的 INCAR、KPOINTS 和 POSCAR。提交时再关联集群设置。
 - 在侧边栏把语言切换为中文。
 
@@ -54,7 +54,9 @@ DFT Agent 根据自然语言目标或手动参数，准备并在你的 HPC 集�
 5. 检查输入文件，勾选确认框，点击 **Submit calculation（提交计算）**。
 6. 在 **Runs** 中跟踪进度，解释结果，下载结构。
 
-结构修改可以直接写在目标里，也可以用 **Edit structure（编辑结构）** 做几何编辑和格式转换。[17 个示例结构](docs/structures.md)。阶段方法、对比和后续计算见[工作流程](docs/workflows.md)。
+结构修改可以直接写在目标里，也可以用 **Edit structure（编辑结构）** 做几何编辑和格式转换。[18 个示例结构](docs/structures.md)。阶段方法、对比和后续计算见[工作流程](docs/workflows.md)。
+
+在 **Runs** 中下载图表和原始数据。集群已安装 [VASPKIT](docs/vaspkit.md) 时，可在 **Data and files（数据与文件）** 中调用。
 
 计算完成时会发送桌面通知，也可以在偏好设置里填写 Webhook 地址（Slack、Discord、企业微信等）。重新打开应用时会自动恢复已提交计算的监控。
 

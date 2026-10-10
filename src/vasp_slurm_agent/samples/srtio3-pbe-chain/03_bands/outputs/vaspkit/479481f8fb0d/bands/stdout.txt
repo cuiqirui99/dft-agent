@@ -1,0 +1,396 @@
+# segment_001
+            \\\///         
+           / _  _ \         Hey, you must know what you are doing.
+         (| (o)(o) |)       Otherwise you might get wrong results.
+ o-----.OOOo--()--oOOO.------------------------------------------o
+ |         VASPKIT Standard Edition 1.5.1 (27 Jan. 2024)         |
+ |         Lead Developer: Vei WANG (wangvei@icloud.com)         |
+ |      Main Contributors: Gang TANG, Nan XU & Jin-Cheng LIU     |
+ |  Online Tutorials Available on Website: https://vaspkit.com   |
+ o-----.oooO-----------------------------------------------------o
+        (   )   Oooo.                          VASPKIT Made Simple
+         \ (    (   )     
+          \_)    ) /      
+                (_/       
+ ===================== Structural Utilities ======================
+ 01) VASP Input-Files Generator    02) Mechanical Properties      
+ 03) K-Path for Band-Structure     04) Structure Editor           
+ 05) Catalysis-ElectroChem Kit     06) Symmetry Analysis          
+ 07) Materials Databases           08) Advanced Structure Models  
+ ===================== Electronic Utilities ======================
+ 11) Density-of-States             21) Band-Structure             
+ 23) 3D Band-Structure             25) Hybrid-DFT Band-Structure  
+ 26) Fermi-Surface                 28) Band-Structure Unfolding   
+ 31) Charge-Density Analysis       42) Potential Analysis         
+ 44) Piezoelectric Properties      51) Wave-Function Analysis     
+ 62) Magnetic Analysis             65) Spin-Texture               
+ 68) Transport Properties                                         
+ ======================== Misc Utilities =========================
+ 71) Optical Properties            72) Molecular-Dynamics Kit     
+ 74) User Interface                78) VASP2other Interface       
+ 84) ABACUS Interface              91) Semiconductor Kit          
+ 92) 2D-Material Kit               95) Phonon Analysis            
+ 0)  Quit                                                         
+ ------------>>
+ -->> (01) Reading Input Parameters From INCAR File.
+ +---------------------------------------------------------------+
+ |       >>> The Fermi Energy will be set to zero eV <<<         |
+ +---------------------------------------------------------------+
+ -->> (02) Reading Fermi-Level From FERMI_ENERGY.in File.
+ -->> (03) Reading Energy-Levels From EIGENVAL File.
+ -->> (04) Reading K-Path From KPOINTS File.
+ -->> (05) Written KLABELS File.
+ +---------------------------- Tip ------------------------------+
+ |If You Want to Get Fine Band Structrue by Interpolating Method.|   
+ | You CAN set GET_INTERPOLATED_DATA = .TRUE. in ~/.vaspkit file.|   
+ +---------------------------------------------------------------+
+ -->> (06) Written BAND.dat File.
+ -->> (07) Written REFORMATTED_BAND.dat File.
+ -->> (08) Written KLINES.dat File.
+ -->> (09) Written BAND_GAP File.
+ o---------------------------------------------------------------o
+ |                       * ACKNOWLEDGMENTS *                     |
+ | Other Contributors (in no particular order): Peng-Fei LIU,    |
+ | Xue-Fei LIU, Dao-Xiong WU, Zhao-Fu ZHANG, Tian WANG, Qiang LI,|
+ | Ya-Chao LIU, Jiang-Shan ZHAO, Qi-Jing ZHENG, Yue QIU and You! |
+ | Advisors: Wen-Tong GENG, Yoshiyuki KAWAZOE                    |
+ :) Any Suggestions for Improvement are Welcome and Appreciated (:
+ |---------------------------------------------------------------|
+ |                          * CITATIONS *                        |
+ | When using VASPKIT in your research PLEASE cite the paper:    |
+ | [1] V. WANG, N. XU, J.-C. LIU, G. TANG, W.-T. GENG, VASPKIT: A|
+ | User-Friendly Interface Facilitating High-Throughput Computing|
+ | and Analysis Using VASP Code, Computer Physics Communications |
+ | 267, 108033, (2021), DOI: 10.1016/j.cpc.2021.108033           |
+ o---------------------------------------------------------------o
+
+# segment_002
+            \\\///         
+           / _  _ \         Hey, you must know what you are doing.
+         (| (o)(o) |)       Otherwise you might get wrong results.
+ o-----.OOOo--()--oOOO.------------------------------------------o
+ |         VASPKIT Standard Edition 1.5.1 (27 Jan. 2024)         |
+ |         Lead Developer: Vei WANG (wangvei@icloud.com)         |
+ |      Main Contributors: Gang TANG, Nan XU & Jin-Cheng LIU     |
+ |  Online Tutorials Available on Website: https://vaspkit.com   |
+ o-----.oooO-----------------------------------------------------o
+        (   )   Oooo.                          VASPKIT Made Simple
+         \ (    (   )     
+          \_)    ) /      
+                (_/       
+ ===================== Structural Utilities ======================
+ 01) VASP Input-Files Generator    02) Mechanical Properties      
+ 03) K-Path for Band-Structure     04) Structure Editor           
+ 05) Catalysis-ElectroChem Kit     06) Symmetry Analysis          
+ 07) Materials Databases           08) Advanced Structure Models  
+ ===================== Electronic Utilities ======================
+ 11) Density-of-States             21) Band-Structure             
+ 23) 3D Band-Structure             25) Hybrid-DFT Band-Structure  
+ 26) Fermi-Surface                 28) Band-Structure Unfolding   
+ 31) Charge-Density Analysis       42) Potential Analysis         
+ 44) Piezoelectric Properties      51) Wave-Function Analysis     
+ 62) Magnetic Analysis             65) Spin-Texture               
+ 68) Transport Properties                                         
+ ======================== Misc Utilities =========================
+ 71) Optical Properties            72) Molecular-Dynamics Kit     
+ 74) User Interface                78) VASP2other Interface       
+ 84) ABACUS Interface              91) Semiconductor Kit          
+ 92) 2D-Material Kit               95) Phonon Analysis            
+ 0)  Quit                                                         
+ ------------>>
+ -->> (01) Reading Input Parameters From INCAR File.
+ +---------------------------------------------------------------+
+ |       >>> The Fermi Energy will be set to zero eV <<<         |
+ +---------------------------------------------------------------+
+ -->> (02) Reading Fermi-Level From FERMI_ENERGY.in File.
+ -->> (03) Reading Energy-Levels From EIGENVAL File.
+ -->> (04) Reading K-Path From KPOINTS File.
+ -->> (05) Written KLABELS File.
+ +---------------------------- Tip ------------------------------+
+ |If You Want to Get Fine Band Structrue by Interpolating Method.|   
+ | You CAN set GET_INTERPOLATED_DATA = .TRUE. in ~/.vaspkit file.|   
+ +---------------------------------------------------------------+
+ -->> (06) Written BAND.dat File.
+ -->> (07) Written REFORMATTED_BAND.dat File.
+ -->> (08) Written KLINES.dat File.
+ -->> (09) Written BAND_GAP File.
+ o---------------------------------------------------------------o
+ |                       * ACKNOWLEDGMENTS *                     |
+ | Other Contributors (in no particular order): Peng-Fei LIU,    |
+ | Xue-Fei LIU, Dao-Xiong WU, Zhao-Fu ZHANG, Tian WANG, Qiang LI,|
+ | Ya-Chao LIU, Jiang-Shan ZHAO, Qi-Jing ZHENG, Yue QIU and You! |
+ | Advisors: Wen-Tong GENG, Yoshiyuki KAWAZOE                    |
+ :) Any Suggestions for Improvement are Welcome and Appreciated (:
+ |---------------------------------------------------------------|
+ |                          * CITATIONS *                        |
+ | When using VASPKIT in your research PLEASE cite the paper:    |
+ | [1] V. WANG, N. XU, J.-C. LIU, G. TANG, W.-T. GENG, VASPKIT: A|
+ | User-Friendly Interface Facilitating High-Throughput Computing|
+ | and Analysis Using VASP Code, Computer Physics Communications |
+ | 267, 108033, (2021), DOI: 10.1016/j.cpc.2021.108033           |
+ o---------------------------------------------------------------o
+
+# segment_003
+            \\\///         
+           / _  _ \         Hey, you must know what you are doing.
+         (| (o)(o) |)       Otherwise you might get wrong results.
+ o-----.OOOo--()--oOOO.------------------------------------------o
+ |         VASPKIT Standard Edition 1.5.1 (27 Jan. 2024)         |
+ |         Lead Developer: Vei WANG (wangvei@icloud.com)         |
+ |      Main Contributors: Gang TANG, Nan XU & Jin-Cheng LIU     |
+ |  Online Tutorials Available on Website: https://vaspkit.com   |
+ o-----.oooO-----------------------------------------------------o
+        (   )   Oooo.                          VASPKIT Made Simple
+         \ (    (   )     
+          \_)    ) /      
+                (_/       
+ ===================== Structural Utilities ======================
+ 01) VASP Input-Files Generator    02) Mechanical Properties      
+ 03) K-Path for Band-Structure     04) Structure Editor           
+ 05) Catalysis-ElectroChem Kit     06) Symmetry Analysis          
+ 07) Materials Databases           08) Advanced Structure Models  
+ ===================== Electronic Utilities ======================
+ 11) Density-of-States             21) Band-Structure             
+ 23) 3D Band-Structure             25) Hybrid-DFT Band-Structure  
+ 26) Fermi-Surface                 28) Band-Structure Unfolding   
+ 31) Charge-Density Analysis       42) Potential Analysis         
+ 44) Piezoelectric Properties      51) Wave-Function Analysis     
+ 62) Magnetic Analysis             65) Spin-Texture               
+ 68) Transport Properties                                         
+ ======================== Misc Utilities =========================
+ 71) Optical Properties            72) Molecular-Dynamics Kit     
+ 74) User Interface                78) VASP2other Interface       
+ 84) ABACUS Interface              91) Semiconductor Kit          
+ 92) 2D-Material Kit               95) Phonon Analysis            
+ 0)  Quit                                                         
+ ------------>>
+ -->> (01) Reading Input Parameters From INCAR File.
+ +---------------------------------------------------------------+
+ |       >>> The Fermi Energy will be set to zero eV <<<         |
+ +---------------------------------------------------------------+
+ -->> (02) Reading Fermi-Level From FERMI_ENERGY.in File.
+ -->> (03) Reading Energy-Levels From EIGENVAL File.
+ -->> (04) Reading K-Path From KPOINTS File.
+ -->> (05) Written KLABELS File.
+ +---------------------------- Tip ------------------------------+
+ |If You Want to Get Fine Band Structrue by Interpolating Method.|   
+ | You CAN set GET_INTERPOLATED_DATA = .TRUE. in ~/.vaspkit file.|   
+ +---------------------------------------------------------------+
+ -->> (06) Written BAND.dat File.
+ -->> (07) Written REFORMATTED_BAND.dat File.
+ -->> (08) Written KLINES.dat File.
+ -->> (09) Written BAND_GAP File.
+ o---------------------------------------------------------------o
+ |                       * ACKNOWLEDGMENTS *                     |
+ | Other Contributors (in no particular order): Peng-Fei LIU,    |
+ | Xue-Fei LIU, Dao-Xiong WU, Zhao-Fu ZHANG, Tian WANG, Qiang LI,|
+ | Ya-Chao LIU, Jiang-Shan ZHAO, Qi-Jing ZHENG, Yue QIU and You! |
+ | Advisors: Wen-Tong GENG, Yoshiyuki KAWAZOE                    |
+ :) Any Suggestions for Improvement are Welcome and Appreciated (:
+ |---------------------------------------------------------------|
+ |                          * CITATIONS *                        |
+ | When using VASPKIT in your research PLEASE cite the paper:    |
+ | [1] V. WANG, N. XU, J.-C. LIU, G. TANG, W.-T. GENG, VASPKIT: A|
+ | User-Friendly Interface Facilitating High-Throughput Computing|
+ | and Analysis Using VASP Code, Computer Physics Communications |
+ | 267, 108033, (2021), DOI: 10.1016/j.cpc.2021.108033           |
+ o---------------------------------------------------------------o
+
+# segment_004
+            \\\///         
+           / _  _ \         Hey, you must know what you are doing.
+         (| (o)(o) |)       Otherwise you might get wrong results.
+ o-----.OOOo--()--oOOO.------------------------------------------o
+ |         VASPKIT Standard Edition 1.5.1 (27 Jan. 2024)         |
+ |         Lead Developer: Vei WANG (wangvei@icloud.com)         |
+ |      Main Contributors: Gang TANG, Nan XU & Jin-Cheng LIU     |
+ |  Online Tutorials Available on Website: https://vaspkit.com   |
+ o-----.oooO-----------------------------------------------------o
+        (   )   Oooo.                          VASPKIT Made Simple
+         \ (    (   )     
+          \_)    ) /      
+                (_/       
+ ===================== Structural Utilities ======================
+ 01) VASP Input-Files Generator    02) Mechanical Properties      
+ 03) K-Path for Band-Structure     04) Structure Editor           
+ 05) Catalysis-ElectroChem Kit     06) Symmetry Analysis          
+ 07) Materials Databases           08) Advanced Structure Models  
+ ===================== Electronic Utilities ======================
+ 11) Density-of-States             21) Band-Structure             
+ 23) 3D Band-Structure             25) Hybrid-DFT Band-Structure  
+ 26) Fermi-Surface                 28) Band-Structure Unfolding   
+ 31) Charge-Density Analysis       42) Potential Analysis         
+ 44) Piezoelectric Properties      51) Wave-Function Analysis     
+ 62) Magnetic Analysis             65) Spin-Texture               
+ 68) Transport Properties                                         
+ ======================== Misc Utilities =========================
+ 71) Optical Properties            72) Molecular-Dynamics Kit     
+ 74) User Interface                78) VASP2other Interface       
+ 84) ABACUS Interface              91) Semiconductor Kit          
+ 92) 2D-Material Kit               95) Phonon Analysis            
+ 0)  Quit                                                         
+ ------------>>
+ -->> (01) Reading Input Parameters From INCAR File.
+ +---------------------------------------------------------------+
+ |       >>> The Fermi Energy will be set to zero eV <<<         |
+ +---------------------------------------------------------------+
+ -->> (02) Reading Fermi-Level From FERMI_ENERGY.in File.
+ -->> (03) Reading Energy-Levels From EIGENVAL File.
+ -->> (04) Reading K-Path From KPOINTS File.
+ -->> (05) Written KLABELS File.
+ +---------------------------- Tip ------------------------------+
+ |If You Want to Get Fine Band Structrue by Interpolating Method.|   
+ | You CAN set GET_INTERPOLATED_DATA = .TRUE. in ~/.vaspkit file.|   
+ +---------------------------------------------------------------+
+ -->> (06) Written BAND.dat File.
+ -->> (07) Written REFORMATTED_BAND.dat File.
+ -->> (08) Written KLINES.dat File.
+ -->> (09) Written BAND_GAP File.
+ o---------------------------------------------------------------o
+ |                       * ACKNOWLEDGMENTS *                     |
+ | Other Contributors (in no particular order): Peng-Fei LIU,    |
+ | Xue-Fei LIU, Dao-Xiong WU, Zhao-Fu ZHANG, Tian WANG, Qiang LI,|
+ | Ya-Chao LIU, Jiang-Shan ZHAO, Qi-Jing ZHENG, Yue QIU and You! |
+ | Advisors: Wen-Tong GENG, Yoshiyuki KAWAZOE                    |
+ :) Any Suggestions for Improvement are Welcome and Appreciated (:
+ |---------------------------------------------------------------|
+ |                          * CITATIONS *                        |
+ | When using VASPKIT in your research PLEASE cite the paper:    |
+ | [1] V. WANG, N. XU, J.-C. LIU, G. TANG, W.-T. GENG, VASPKIT: A|
+ | User-Friendly Interface Facilitating High-Throughput Computing|
+ | and Analysis Using VASP Code, Computer Physics Communications |
+ | 267, 108033, (2021), DOI: 10.1016/j.cpc.2021.108033           |
+ o---------------------------------------------------------------o
+
+# segment_005
+            \\\///         
+           / _  _ \         Hey, you must know what you are doing.
+         (| (o)(o) |)       Otherwise you might get wrong results.
+ o-----.OOOo--()--oOOO.------------------------------------------o
+ |         VASPKIT Standard Edition 1.5.1 (27 Jan. 2024)         |
+ |         Lead Developer: Vei WANG (wangvei@icloud.com)         |
+ |      Main Contributors: Gang TANG, Nan XU & Jin-Cheng LIU     |
+ |  Online Tutorials Available on Website: https://vaspkit.com   |
+ o-----.oooO-----------------------------------------------------o
+        (   )   Oooo.                          VASPKIT Made Simple
+         \ (    (   )     
+          \_)    ) /      
+                (_/       
+ ===================== Structural Utilities ======================
+ 01) VASP Input-Files Generator    02) Mechanical Properties      
+ 03) K-Path for Band-Structure     04) Structure Editor           
+ 05) Catalysis-ElectroChem Kit     06) Symmetry Analysis          
+ 07) Materials Databases           08) Advanced Structure Models  
+ ===================== Electronic Utilities ======================
+ 11) Density-of-States             21) Band-Structure             
+ 23) 3D Band-Structure             25) Hybrid-DFT Band-Structure  
+ 26) Fermi-Surface                 28) Band-Structure Unfolding   
+ 31) Charge-Density Analysis       42) Potential Analysis         
+ 44) Piezoelectric Properties      51) Wave-Function Analysis     
+ 62) Magnetic Analysis             65) Spin-Texture               
+ 68) Transport Properties                                         
+ ======================== Misc Utilities =========================
+ 71) Optical Properties            72) Molecular-Dynamics Kit     
+ 74) User Interface                78) VASP2other Interface       
+ 84) ABACUS Interface              91) Semiconductor Kit          
+ 92) 2D-Material Kit               95) Phonon Analysis            
+ 0)  Quit                                                         
+ ------------>>
+ -->> (01) Reading Input Parameters From INCAR File.
+ +---------------------------------------------------------------+
+ |       >>> The Fermi Energy will be set to zero eV <<<         |
+ +---------------------------------------------------------------+
+ -->> (02) Reading Fermi-Level From FERMI_ENERGY.in File.
+ -->> (03) Reading Energy-Levels From EIGENVAL File.
+ -->> (04) Reading K-Path From KPOINTS File.
+ -->> (05) Written KLABELS File.
+ +---------------------------- Tip ------------------------------+
+ |If You Want to Get Fine Band Structrue by Interpolating Method.|   
+ | You CAN set GET_INTERPOLATED_DATA = .TRUE. in ~/.vaspkit file.|   
+ +---------------------------------------------------------------+
+ -->> (06) Written BAND.dat File.
+ -->> (07) Written REFORMATTED_BAND.dat File.
+ -->> (08) Written KLINES.dat File.
+ -->> (09) Written BAND_GAP File.
+ o---------------------------------------------------------------o
+ |                       * ACKNOWLEDGMENTS *                     |
+ | Other Contributors (in no particular order): Peng-Fei LIU,    |
+ | Xue-Fei LIU, Dao-Xiong WU, Zhao-Fu ZHANG, Tian WANG, Qiang LI,|
+ | Ya-Chao LIU, Jiang-Shan ZHAO, Qi-Jing ZHENG, Yue QIU and You! |
+ | Advisors: Wen-Tong GENG, Yoshiyuki KAWAZOE                    |
+ :) Any Suggestions for Improvement are Welcome and Appreciated (:
+ |---------------------------------------------------------------|
+ |                          * CITATIONS *                        |
+ | When using VASPKIT in your research PLEASE cite the paper:    |
+ | [1] V. WANG, N. XU, J.-C. LIU, G. TANG, W.-T. GENG, VASPKIT: A|
+ | User-Friendly Interface Facilitating High-Throughput Computing|
+ | and Analysis Using VASP Code, Computer Physics Communications |
+ | 267, 108033, (2021), DOI: 10.1016/j.cpc.2021.108033           |
+ o---------------------------------------------------------------o
+
+# segment_006
+            \\\///         
+           / _  _ \         Hey, you must know what you are doing.
+         (| (o)(o) |)       Otherwise you might get wrong results.
+ o-----.OOOo--()--oOOO.------------------------------------------o
+ |         VASPKIT Standard Edition 1.5.1 (27 Jan. 2024)         |
+ |         Lead Developer: Vei WANG (wangvei@icloud.com)         |
+ |      Main Contributors: Gang TANG, Nan XU & Jin-Cheng LIU     |
+ |  Online Tutorials Available on Website: https://vaspkit.com   |
+ o-----.oooO-----------------------------------------------------o
+        (   )   Oooo.                          VASPKIT Made Simple
+         \ (    (   )     
+          \_)    ) /      
+                (_/       
+ ===================== Structural Utilities ======================
+ 01) VASP Input-Files Generator    02) Mechanical Properties      
+ 03) K-Path for Band-Structure     04) Structure Editor           
+ 05) Catalysis-ElectroChem Kit     06) Symmetry Analysis          
+ 07) Materials Databases           08) Advanced Structure Models  
+ ===================== Electronic Utilities ======================
+ 11) Density-of-States             21) Band-Structure             
+ 23) 3D Band-Structure             25) Hybrid-DFT Band-Structure  
+ 26) Fermi-Surface                 28) Band-Structure Unfolding   
+ 31) Charge-Density Analysis       42) Potential Analysis         
+ 44) Piezoelectric Properties      51) Wave-Function Analysis     
+ 62) Magnetic Analysis             65) Spin-Texture               
+ 68) Transport Properties                                         
+ ======================== Misc Utilities =========================
+ 71) Optical Properties            72) Molecular-Dynamics Kit     
+ 74) User Interface                78) VASP2other Interface       
+ 84) ABACUS Interface              91) Semiconductor Kit          
+ 92) 2D-Material Kit               95) Phonon Analysis            
+ 0)  Quit                                                         
+ ------------>>
+ -->> (01) Reading Input Parameters From INCAR File.
+ +---------------------------------------------------------------+
+ |       >>> The Fermi Energy will be set to zero eV <<<         |
+ +---------------------------------------------------------------+
+ -->> (02) Reading Fermi-Level From FERMI_ENERGY.in File.
+ -->> (03) Reading Energy-Levels From EIGENVAL File.
+ -->> (04) Reading K-Path From KPOINTS File.
+ -->> (05) Written KLABELS File.
+ +---------------------------- Tip ------------------------------+
+ |If You Want to Get Fine Band Structrue by Interpolating Method.|   
+ | You CAN set GET_INTERPOLATED_DATA = .TRUE. in ~/.vaspkit file.|   
+ +---------------------------------------------------------------+
+ -->> (06) Written BAND.dat File.
+ -->> (07) Written REFORMATTED_BAND.dat File.
+ -->> (08) Written KLINES.dat File.
+ -->> (09) Written BAND_GAP File.
+ o---------------------------------------------------------------o
+ |                       * ACKNOWLEDGMENTS *                     |
+ | Other Contributors (in no particular order): Peng-Fei LIU,    |
+ | Xue-Fei LIU, Dao-Xiong WU, Zhao-Fu ZHANG, Tian WANG, Qiang LI,|
+ | Ya-Chao LIU, Jiang-Shan ZHAO, Qi-Jing ZHENG, Yue QIU and You! |
+ | Advisors: Wen-Tong GENG, Yoshiyuki KAWAZOE                    |
+ :) Any Suggestions for Improvement are Welcome and Appreciated (:
+ |---------------------------------------------------------------|
+ |                          * CITATIONS *                        |
+ | When using VASPKIT in your research PLEASE cite the paper:    |
+ | [1] V. WANG, N. XU, J.-C. LIU, G. TANG, W.-T. GENG, VASPKIT: A|
+ | User-Friendly Interface Facilitating High-Throughput Computing|
+ | and Analysis Using VASP Code, Computer Physics Communications |
+ | 267, 108033, (2021), DOI: 10.1016/j.cpc.2021.108033           |
+ o---------------------------------------------------------------o
+

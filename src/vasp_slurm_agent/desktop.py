@@ -155,7 +155,7 @@ def check_bundle(output):
         assert state["stages"][0]["metadata"]["requires_ncl"]
         assert (run / "01_scf/inputs/INCAR").is_file()
         installed = install_samples(root / "samples")
-        assert len(installed) == 3
+        assert len(installed) == 4
         assert load_catalog()
         import inspect
         assert inspect.getsource(transport._extract_checked_archive)

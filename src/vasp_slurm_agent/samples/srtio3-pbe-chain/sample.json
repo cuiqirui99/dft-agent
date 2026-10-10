@@ -1,0 +1,8 @@
+{
+  "order": 0,
+  "title": "SrTiO3: relax, bands and DOS",
+  "description": "A five-atom perovskite with a relaxed cell, 353-point band path and element-resolved DOS.",
+  "goal": "Relax SrTiO3, then calculate PBE bands and DOS.",
+  "source": "VASP 5.4.4 on Slurm, 10 October 2026. PBE, 520 eV and an 8x8x8 SCF mesh.",
+  "note": "Cluster labels and paths use placeholders. Inputs and numerical results are unchanged. This is not a convergence benchmark."
+}

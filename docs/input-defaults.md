@@ -26,6 +26,9 @@ Or choose the divisions directly:
 {"mesh": [8, 8, 1]}
 ```
 
+Band paths use `line_density: 60` (about 0.017 Å⁻¹ between points). The total
+depends on the path length. Increase this value for a finer path.
+
 ## Smearing
 
 `electronic_type` describes what you already know. The program does not infer

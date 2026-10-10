@@ -10,7 +10,7 @@ DFT Agent prepares and runs first-principles calculations on your HPC cluster fr
 
 Describe a task, review the plan, and run VASP on your Slurm cluster. Combine structure edits, relaxation, SCF, bands and DOS with magnetism, SOC, DFT+U, HSE06 or PBE0. Choose methods by stage and compare magnetic orders, U values or strains.
 
-![DFT Agent in use](docs/assets/demo.gif)
+![SrTiO3 crystal](docs/assets/crystal.png)
 
 Desktop packages target Apple Silicon Macs and Windows x64, with Python and the model SDKs included. Windows runs natively; WSL is optional. Linux users can use the Python installation.
 Actual calculations require your own Slurm account and licensed VASP/POTCAR files on the cluster. Model features use your own account and billing; no compute time or model credits are included.
@@ -32,10 +32,10 @@ for this preview. See [Install](docs/install.md) for source installation and
 ![Sample runs](docs/assets/screenshot-runs.png)
 ![Band structure of a sample run](docs/assets/screenshot-results.png)
 
-- Open **Runs** and click **Load sample runs**. Three calculations completed on a
-  real cluster are copied into your run folder: Si relaxation, SCF, bands and
-  DOS; an MgO cell relaxation; and an Fe NM/FM/AFM comparison. Results and plots
-  are available offline. **Explain results** requires a configured model account and network access.
+- Open **Runs** and click **Load sample runs**. Four real runs are included:
+  SrTiO3 and Si workflows, MgO cell relaxation, and Fe NM/FM/AFM comparison.
+  Start with SrTiO3: 353 calculated band k-points, projected DOS, plots and raw outputs.
+  Results are available offline. **Explain results** requires a model account and network access.
 - Open **New calculation**, pick an example structure, choose **Manual**,
   and click **Prepare inputs**. INCAR, KPOINTS and POSCAR are generated locally
   for review; the cluster is attached when you submit.
@@ -77,9 +77,12 @@ Claude API call was made. Bundling the SDK does not change that [validation boun
 6. Follow progress in **Runs**, explain the results, and download the structure.
 
 Include structure changes in your **Goal**, or use **Edit structure** for geometry and file conversion.
-[Browse the 17 examples](docs/structures.md).
+[Browse the 18 examples](docs/structures.md).
 Structure edits, stage methods, comparisons and follow-up runs are covered in
 [Workflows](docs/workflows.md).
+
+Download plots and raw data from **Runs**. **Data and files** also provides
+[VASPKIT](docs/vaspkit.md) when it is installed on your cluster.
 
 A desktop notification arrives when a run finishes; add a webhook under
 **Preferences** for Slack, Discord or WeChat Work. Reopening the app resumes

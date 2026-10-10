@@ -23,7 +23,7 @@ from .numerical_defaults import potcar_choices, resolve_numerics
 
 
 TASKS = frozenset({"relax", "scf", "bands", "dos"})
-PLOT_ENERGY_WINDOW_EV = (-15.0, 10.0)
+PLOT_ENERGY_WINDOW_EV = (-8.0, 8.0)
 HYBRID_KPOINT_TOLERANCE_EV = 0.05
 DEFAULTS = {
     "encut": 520.0,
@@ -37,7 +37,7 @@ DEFAULTS = {
     "electronic_type": "auto",
     "cell_relax": False,
     "nelm": 120,
-    "line_density": 20,
+    "line_density": 60,
     "nedos": 2001,
 }
 
@@ -157,7 +157,7 @@ def prepare_inputs(
     if task == "dos":
         incar_data.update(NEDOS=settings["nedos"], LORBIT=11)
     if task == "bands":
-        incar_data["ISYM"] = 0
+        incar_data.update(ISYM=0, LORBIT=11)
     incar_data.update(method_incar(method, poscar.site_symbols, task))
     expected_method = {key: incar_data[key] for key in method_incar(method, poscar.site_symbols, task)}
     expected_method.update({key: incar_data.get(key, False) for key in ("LSORBIT", "LNONCOLLINEAR", "LDAU", "LHFCALC")})
@@ -332,13 +332,143 @@ def _hybrid_kpoint_consistency(run: Vasprun) -> dict[str, Any]:
     return check
 
 
+def _save_figure(fig, output: Path, name: str) -> list[str]:
+    from matplotlib import rc_context
+
+    if len(fig.axes) == 1:
+        fig.tight_layout(pad=1.2)
+    with rc_context({"pdf.fonttype": 42, "svg.fonttype": "none"}):
+        for extension in ("png", "pdf", "svg"):
+            fig.savefig(output / f"{name}.{extension}", dpi=240, facecolor="white", bbox_inches="tight")
+    return [f"{name}.{extension}" for extension in ("png", "pdf", "svg")]
+
+
+def _style_axes(ax) -> None:
+    ax.set_facecolor("white")
+    ax.tick_params(direction="out", length=4, width=0.8, labelsize=11, colors="#253247")
+    for spine in ax.spines.values():
+        spine.set_color("#8792a2")
+        spine.set_linewidth(0.8)
+    ax.xaxis.label.set_size(12)
+    ax.yaxis.label.set_size(12)
+    ax.grid(axis="y", color="#e9edf2", linewidth=0.5, zorder=0)
+
+
+def _projected_dos(run: Vasprun, output: Path, reference: float) -> list[str]:
+    """Export PAW projections only when VASP actually returned them."""
+    from matplotlib import pyplot as plt
+
+    dos = run.complete_dos
+    if not getattr(dos, "pdos", None):
+        return []
+    artifacts = []
+    palette = ("#2366a8", "#c26a24", "#238878", "#8651a2", "#bb456b", "#788238")
+    for name, groups in (("dos_elements", dos.get_element_dos()), ("dos_orbitals", dos.get_spd_dos())):
+        fig, ax = plt.subplots(figsize=(7.2, 4.8))
+        try:
+            _style_axes(ax)
+            rows = []
+            for index, (label, projected) in enumerate(groups.items()):
+                energy = np.asarray(projected.energies, dtype=float) - reference
+                if not np.isfinite(energy).all():
+                    raise ValueError("Nonfinite projected DOS energies.")
+                channels = sorted(projected.densities.items(), key=lambda item: -int(item[0]))
+                for spin, density in channels:
+                    density = np.asarray(density, dtype=float)
+                    if density.shape != energy.shape or not np.isfinite(density).all():
+                        raise ValueError("Nonfinite or inconsistent projected DOS.")
+                    rows.extend([float(e), str(label), int(spin), float(value)] for e, value in zip(energy, density))
+                    signed = -density if int(spin) == -1 else density
+                    channel_label = str(label) if len(channels) == 1 else f"{label} {'↑' if int(spin) == 1 else '↓'}"
+                    ax.plot(energy, signed, color=palette[index % len(palette)],
+                            linestyle="--" if int(spin) == -1 else "-", linewidth=1.5, label=channel_label)
+            _write_csv(output / f"{name}.csv", ["energy_minus_fermi_ev", "projection", "spin", "dos_states_per_ev"], rows)
+            ax.set(xlabel=r"$E - E_\mathrm{F}$ (eV)", ylabel="Projected DOS (states/eV)", xlim=PLOT_ENERGY_WINDOW_EV)
+            ax.axvline(0, color="#687588", linewidth=0.8, linestyle="--")
+            ax.axhline(0, color="#687588", linewidth=0.5)
+            # Rescale from the visible interval, without clipping the CSV.
+            visible = [value * (-1 if spin == -1 else 1) for e, _, spin, value in rows
+                       if PLOT_ENERGY_WINDOW_EV[0] <= e <= PLOT_ENERGY_WINDOW_EV[1]]
+            if visible:
+                low, high = min(0.0, min(visible)), max(0.0, max(visible))
+                ax.set_ylim(low * 1.08, high * 1.08 if high else 1.0)
+            ax.legend(frameon=False, ncol=min(4, max(1, len(groups))), fontsize=10, loc="upper right")
+            artifacts.extend([f"{name}.csv", *_save_figure(fig, output, name)])
+        finally:
+            plt.close(fig)
+    rows = []
+    for element in dos.structure.composition.elements:
+        for orbital, projected in dos.get_element_spd_dos(element).items():
+            for spin, density in projected.densities.items():
+                energy = np.asarray(projected.energies) - reference
+                density = np.asarray(density)
+                if density.shape != energy.shape or not np.isfinite(density).all():
+                    raise ValueError("Nonfinite or inconsistent element-orbital DOS.")
+                rows.extend([float(e), str(element), str(orbital), int(spin), float(value)] for e, value in zip(energy, density))
+    _write_csv(output / "dos_element_orbitals.csv", ["energy_minus_fermi_ev", "element", "orbital", "spin", "dos_states_per_ev"], rows)
+    return [*artifacts, "dos_element_orbitals.csv"]
+
+
+def _export_tables(run: Vasprun, output: Path) -> list[str]:
+    """Keep numerical observations in VASP's units and site order."""
+    artifacts = []
+    structure = run.final_structure
+    _write_json(output / "structure.json", {
+        "formula": structure.composition.reduced_formula,
+        "lattice_angstrom": np.asarray(structure.lattice.matrix).tolist(),
+        "volume_angstrom3": float(structure.volume), "site_order": "POSCAR",
+        "sites": [{"site": i + 1, "element": site.specie.symbol,
+                   "fractional": site.frac_coords.tolist(), "cartesian_angstrom": site.coords.tolist()}
+                  for i, site in enumerate(structure)],
+    })
+    artifacts.append("structure.json")
+    ionic_rows, electronic_rows = [], []
+    for index, step in enumerate(run.ionic_steps, 1):
+        def finite(value):
+            return float(value) if value is not None and math.isfinite(float(value)) else None
+        forces = np.asarray(step.get("forces", []), dtype=float)
+        valid_forces = forces.shape == (len(structure), 3) and np.isfinite(forces).all()
+        maximum = float(np.linalg.norm(forces, axis=1).max()) if valid_forces else None
+        step_structure = step.get("structure")
+        volume = finite(step_structure.volume) if step_structure is not None else None
+        ionic_rows.append([index, finite(step.get("e_0_energy")), finite(step.get("e_fr_energy")), maximum, volume])
+        previous = None
+        for iteration, electronic in enumerate(step.get("electronic_steps", []), 1):
+            free = finite(electronic.get("e_fr_energy"))
+            delta = free - previous if free is not None and previous is not None else None
+            electronic_rows.append([index, iteration, free, finite(electronic.get("e_0_energy")), delta])
+            previous = free
+    if ionic_rows:
+        _write_csv(output / "ionic_steps.csv", ["ionic_step", "energy_ev", "free_energy_ev", "max_force_ev_angstrom", "volume_angstrom3"], ionic_rows)
+        artifacts.append("ionic_steps.csv")
+    if electronic_rows:
+        _write_csv(output / "electronic_steps.csv", ["ionic_step", "electronic_step", "free_energy_ev", "energy_ev", "delta_free_energy_ev"], electronic_rows)
+        artifacts.append("electronic_steps.csv")
+    if run.ionic_steps:
+        final = run.ionic_steps[-1]
+        forces = np.asarray(final.get("forces", []), dtype=float)
+        if forces.shape == (len(structure), 3) and np.isfinite(forces).all():
+            _write_csv(output / "forces.csv", ["site", "element", "fx_ev_angstrom", "fy_ev_angstrom", "fz_ev_angstrom", "norm_ev_angstrom"],
+                       [[i + 1, site.specie.symbol, *force, float(np.linalg.norm(force))] for i, (site, force) in enumerate(zip(structure, forces))])
+            artifacts.append("forces.csv")
+        stress = np.asarray(final.get("stress", []), dtype=float)
+        if stress.shape == (3, 3) and np.isfinite(stress).all():
+            _write_csv(output / "stress.csv", ["component", "stress_kbar"],
+                       [[first + second, float(stress[i, j])] for i, first in enumerate("xyz") for j, second in enumerate("xyz")])
+            artifacts.append("stress.csv")
+    return artifacts
+
+
 def _export_plots(run: Vasprun, output: Path, task: str) -> list[str]:
     import matplotlib
 
     matplotlib.use("Agg")
     from matplotlib import pyplot as plt
 
-    fig, ax = plt.subplots(figsize=(6, 4))
+    fig, ax = plt.subplots(figsize=(8.0, 5.6) if task == "bands" else (7.2, 4.8))
+    _style_axes(ax)
+    details: dict[str, Any] = {"schema_version": 1, "task": task, "csv_contains_full_data": True,
+                               "figure_formats": ["png", "pdf", "svg"]}
     try:
         if task == "relax":
             energies = [float(step["e_0_energy"]) for step in run.ionic_steps]
@@ -346,8 +476,11 @@ def _export_plots(run: Vasprun, output: Path, task: str) -> list[str]:
                 raise ValueError("No finite ionic energy history.")
             name = "relax_energy"
             _write_csv(output / f"{name}.csv", ["ionic_step", "energy_ev"], enumerate(energies, 1))
-            ax.plot(range(1, len(energies) + 1), energies, marker="o", markersize=3)
+            ax.plot(range(1, len(energies) + 1), energies, color="#2366a8", marker="o", markersize=4, linewidth=1.6)
             ax.set(xlabel="Ionic step", ylabel="Energy (eV)")
+            ax.ticklabel_format(axis="y", useOffset=False)
+            from matplotlib.ticker import MaxNLocator
+            ax.xaxis.set_major_locator(MaxNLocator(integer=True))
         elif task == "dos":
             dos = run.complete_dos
             if dos is None or not np.isfinite(dos.energies).all() or not math.isfinite(float(run.efermi)):
@@ -360,14 +493,24 @@ def _export_plots(run: Vasprun, output: Path, task: str) -> list[str]:
             header = ["energy_minus_fermi_ev"] + [f"dos_spin_{int(spin)}" for spin, _ in densities]
             _write_csv(output / f"{name}.csv", header, zip(energies, *(values for _, values in densities)))
             for spin, values in densities:
-                ax.plot(energies, values, label=f"spin {int(spin)}")
-            ax.set(xlabel="Energy − Fermi energy (eV)", ylabel="DOS (states/eV)")
+                signed = -np.asarray(values) if int(spin) == -1 else np.asarray(values)
+                color = "#2366a8" if int(spin) == 1 else "#c26a24"
+                label = "Total" if len(densities) == 1 else ("Spin ↑" if int(spin) == 1 else "Spin ↓")
+                ax.plot(energies, signed, color=color, linewidth=1.6, label=label)
+                ax.fill_between(energies, signed, color=color, alpha=0.12, linewidth=0)
+            ax.set(xlabel=r"$E - E_\mathrm{F}$ (eV)", ylabel="DOS (states/eV)")
+            ax.legend(frameon=False, fontsize=11)
             ax.set_xlim(*PLOT_ENERGY_WINDOW_EV)
             visible = (energies >= PLOT_ENERGY_WINDOW_EV[0]) & (energies <= PLOT_ENERGY_WINDOW_EV[1])
             if visible.any():
                 peak = max(float(np.max(values[visible])) for _, values in densities)
-                ax.set_ylim(0, peak * 1.05 if peak > 0 else 1.0)
-            ax.axvline(0, color="gray", linewidth=0.7)
+                ax.set_ylim(-peak * 1.08 if any(int(spin) == -1 for spin, _ in densities) else 0, peak * 1.08 if peak > 0 else 1.0)
+            ax.axvline(0, color="#687588", linewidth=0.8, linestyle="--")
+            details.update(energy_reference_ev=float(run.efermi), energy_reference_source="dos_run_fermi",
+                           energy_window_ev=list(PLOT_ENERGY_WINDOW_EV), density_unit="states/eV per cell",
+                           down_spin_plot_sign=-1, csv_densities_are_unsigned=True,
+                           projection_note="PAW sphere projections need not sum to the total DOS.",
+                           projected_dos_available=bool(getattr(dos, "pdos", None)))
         elif task == "bands":
             if not run.eigenvalues:
                 raise ValueError("Band eigenvalues are unavailable.")
@@ -403,11 +546,22 @@ def _export_plots(run: Vasprun, output: Path, task: str) -> list[str]:
             segments = path_metadata.get("segments", [])
             if distance.shape != (len(kpts),) or not np.isfinite(distance).all() or not segments:
                 raise ValueError("Frozen band path is missing its distance or segment definition.")
+            covered = np.zeros(len(kpts), dtype=bool)
+            for segment in segments:
+                if len(segment) != 2 or any(type(index) is not int for index in segment):
+                    raise ValueError("Invalid band path segment.")
+                start, stop = segment
+                if not 0 <= start < stop <= len(kpts) or stop - start < 2 or np.any(np.diff(distance[start:stop]) < 0):
+                    raise ValueError("Invalid band path segment bounds or distances.")
+                covered[start:stop] = True
+            if not covered.all():
+                raise ValueError("Band path segments do not cover all output k-points.")
             rows = []
             mesh_rows = []
+            spin_labels = {}
             for spin, eigenvalues in run.eigenvalues.items():
                 all_values = np.asarray(eigenvalues)
-                if len(all_values) != len(all_kpts) or not np.isfinite(all_values).all():
+                if all_values.ndim != 3 or all_values.shape[0] != len(all_kpts) or all_values.shape[2] != 2 or not np.isfinite(all_values).all():
                     raise ValueError("Band eigenvalues do not match the finite k-point path.")
                 for ik, point in enumerate(all_kpts[:offset]):
                     for ib in range(all_values.shape[1]):
@@ -415,7 +569,10 @@ def _export_plots(run: Vasprun, output: Path, task: str) -> list[str]:
                 values = all_values[offset:]
                 energies = values[:, :, 0] - fermi
                 for start, stop in segments:
-                    ax.plot(distance[start:stop], energies[start:stop], color="tab:blue" if int(spin) == 1 else "tab:orange", linewidth=0.6)
+                    lines = ax.plot(distance[start:stop], energies[start:stop], color="#2366a8" if int(spin) == 1 else "#c26a24",
+                                    linestyle="-" if int(spin) == 1 else "--", linewidth=1.15, alpha=0.95)
+                    if lines:
+                        spin_labels[int(spin)] = lines[0]
                 for ik, point in enumerate(kpts):
                     for ib in range(values.shape[1]):
                         rows.append([ik, distance[ik], *point, labels[ik], int(spin), ib + 1, energies[ik, ib], values[ik, ib, 1]])
@@ -428,18 +585,126 @@ def _export_plots(run: Vasprun, output: Path, task: str) -> list[str]:
                 if label:
                     previous = ticks.get(float(x))
                     ticks[float(x)] = label if not previous or previous == label else f"{previous}|{label}"
-            ax.set_xticks(list(ticks), [label.replace("GAMMA", "Γ") for label in ticks.values()])
+            def display_label(label):
+                return "|".join("Γ" if part == "GAMMA" else re.sub(r"_([0-9]+)", r"$_{\1}$", part) for part in label.split("|"))
+            ax.set_xticks(list(ticks), [display_label(label) for label in ticks.values()])
             for position in ticks:
                 ax.axvline(position, color="0.85", linewidth=0.6, zorder=0)
-            ax.set(xlabel="Reciprocal path", ylabel="Energy − Fermi energy (eV)")
+            ax.set(xlabel="", ylabel=r"$E - E_\mathrm{F}$ (eV)")
+            ax.grid(False)
+            if len(spin_labels) > 1:
+                ax.legend(list(spin_labels.values()), ["Spin ↑" if spin == 1 else "Spin ↓" for spin in spin_labels], frameon=False, fontsize=10)
             ax.set_ylim(*PLOT_ENERGY_WINDOW_EV)
             ax.set_xlim(float(distance[0]), float(distance[-1]))
-            ax.axhline(0, color="gray", linewidth=0.7)
+            ax.axhline(0, color="#687588", linewidth=0.85, linestyle="--", zorder=0)
+            details.update(energy_reference_ev=fermi, energy_reference_source="hybrid_scf_mesh" if hybrid else "preceding_scf",
+                           energy_window_ev=list(PLOT_ENERGY_WINDOW_EV), segments=segments,
+                           ticks=[{"distance_inv_angstrom": position, "label": label} for position, label in ticks.items()],
+                           kpoint_count=len(kpts), interpolation="none", band_path_method=path_metadata.get("method"))
         else:
             return []
-        fig.tight_layout()
-        fig.savefig(output / f"{name}.png", dpi=160)
-        return [f"{name}.csv", f"{name}.png"] + (["bands_mesh.csv"] if task == "bands" and mesh_rows else [])
+        artifacts = [f"{name}.csv", *_save_figure(fig, output, name)]
+        if task == "bands" and mesh_rows:
+            artifacts.append("bands_mesh.csv")
+        if task == "dos":
+            artifacts.extend(_projected_dos(run, output, float(run.efermi)))
+        _write_json(output / "plot_metadata.json", details)
+        return [*artifacts, "plot_metadata.json"]
+    finally:
+        plt.close(fig)
+
+
+def export_bands_dos(bands_dir: str | Path, dos_dir: str | Path) -> list[str]:
+    """Align both spectra to the band plot's SCF reference without changing CSVs."""
+    import matplotlib
+    matplotlib.use("Agg")
+    from matplotlib import pyplot as plt
+
+    bands_dir, dos_dir = Path(bands_dir), Path(dos_dir)
+    names = ["bands_dos.png", "bands_dos.pdf", "bands_dos.svg", "bands_dos_metadata.json"]
+    for name in names:
+        (bands_dir / name).unlink(missing_ok=True)
+    def read_json(directory, name):
+        return json.loads((directory / name).read_text(encoding="utf-8"))
+    band_info, dos_info = read_json(bands_dir, "plot_metadata.json"), read_json(dos_dir, "plot_metadata.json")
+    band_input, dos_input = read_json(bands_dir, "metadata.json"), read_json(dos_dir, "metadata.json")
+    if band_info.get("task") != "bands" or dos_info.get("task") != "dos":
+        raise ValueError("A band result and a DOS result are required.")
+    if not band_input.get("method_fingerprint") or band_input["method_fingerprint"] != dos_input.get("method_fingerprint"):
+        raise ValueError("Bands and DOS use different methods.")
+    if not _same_structure(Structure.from_file(bands_dir / "final_structure.vasp"), Structure.from_file(dos_dir / "final_structure.vasp")):
+        raise ValueError("Bands and DOS use different structures.")
+    reference, dos_reference = float(band_info["energy_reference_ev"]), float(dos_info["energy_reference_ev"])
+    if not math.isfinite(reference) or not math.isfinite(dos_reference):
+        raise ValueError("Both spectra need a finite energy reference.")
+    def read_csv(directory, name):
+        with (directory / name).open(newline="", encoding="utf-8") as stream:
+            return list(csv.DictReader(stream))
+    bands = read_csv(bands_dir, "bands.csv")
+    total = read_csv(dos_dir, "dos.csv")
+    if not bands or not total:
+        raise ValueError("Both spectra need numerical data.")
+    grouped = {}
+    for row in bands:
+        grouped.setdefault((int(row["spin"]), int(row["band"])), []).append(row)
+    fig, (left, right) = plt.subplots(1, 2, figsize=(10.8, 5.8), sharey=True, gridspec_kw={"width_ratios": [3.2, 1], "wspace": 0.08})
+    fig.subplots_adjust(left=0.08, right=0.98, bottom=0.12, top=0.92)
+    try:
+        for ax in (left, right):
+            _style_axes(ax)
+            ax.grid(False)
+            ax.axhline(0, color="#687588", linewidth=0.8, linestyle="--")
+        for (spin, _), rows in grouped.items():
+            rows.sort(key=lambda row: int(row["kpoint"]))
+            x = np.asarray([float(row["distance_inv_angstrom"]) for row in rows])
+            y = np.asarray([float(row["energy_minus_fermi_ev"]) for row in rows])
+            if [int(row["kpoint"]) for row in rows] != list(range(band_info["kpoint_count"])) or not np.isfinite([x, y]).all():
+                raise ValueError("Band CSV is incomplete or nonfinite.")
+            for start, stop in band_info["segments"]:
+                left.plot(x[start:stop], y[start:stop], color="#2366a8" if spin == 1 else "#c26a24", linewidth=1.1, linestyle="-" if spin == 1 else "--")
+        ticks = band_info["ticks"]
+        labels = [re.sub(r"_([0-9]+)", r"$_{\1}$", tick["label"].replace("GAMMA", "Γ")) for tick in ticks]
+        left.set_xticks([tick["distance_inv_angstrom"] for tick in ticks], labels)
+        for tick in ticks:
+            left.axvline(tick["distance_inv_angstrom"], color="#e0e4ea", linewidth=0.6, zorder=0)
+        left.set(xlim=(float(x[0]), float(x[-1])), ylim=PLOT_ENERGY_WINDOW_EV, ylabel=r"$E - E_\mathrm{F}$ (eV)", title="Bands")
+        energy = np.asarray([float(row["energy_minus_fermi_ev"]) + dos_reference - reference for row in total])
+        density = np.asarray([sum(float(value) for key, value in row.items() if key.startswith("dos_spin_")) for row in total])
+        if not np.isfinite([energy, density]).all():
+            raise ValueError("DOS CSV is nonfinite.")
+        right.fill_betweenx(energy, density, color="#dfe5ed", alpha=0.8, linewidth=0)
+        right.plot(density, energy, color="#687588", linewidth=1.0, label="Total")
+        projected = dos_dir / "dos_elements.csv"
+        if projected.is_file():
+            groups = {}
+            for row in read_csv(dos_dir, projected.name):
+                key = (row["projection"], float(row["energy_minus_fermi_ev"]))
+                groups[key] = groups.get(key, 0.0) + float(row["dos_states_per_ev"])
+            palette = ("#2366a8", "#c26a24", "#238878", "#8651a2")
+            for index, element in enumerate(dict.fromkeys(key[0] for key in groups)):
+                values = sorted((e + dos_reference - reference, value) for (label, e), value in groups.items() if label == element)
+                if not np.isfinite(values).all():
+                    raise ValueError("Projected DOS CSV is nonfinite.")
+                right.plot([item[1] for item in values], [item[0] for item in values], color=palette[index % len(palette)], linewidth=1.4, label=element)
+        visible = (energy >= PLOT_ENERGY_WINDOW_EV[0]) & (energy <= PLOT_ENERGY_WINDOW_EV[1])
+        right.set(xlim=(0, float(density[visible].max()) * 1.08 if visible.any() and density[visible].max() > 0 else 1.0), xlabel="DOS (states/eV)", title="DOS")
+        right.tick_params(labelleft=False)
+        right.legend(frameon=False, fontsize=10, loc="upper right")
+        artifacts = _save_figure(fig, bands_dir, "bands_dos")
+        sources = {"bands.csv": _sha256(bands_dir / "bands.csv"), "dos.csv": _sha256(dos_dir / "dos.csv"),
+                   "bands/plot_metadata.json": _sha256(bands_dir / "plot_metadata.json"),
+                   "dos/plot_metadata.json": _sha256(dos_dir / "plot_metadata.json")}
+        if projected.is_file():
+            sources["dos_elements.csv"] = _sha256(projected)
+        _write_json(bands_dir / "bands_dos_metadata.json", {
+            "schema_version": 1, "energy_reference_ev": reference,
+            "energy_reference_source": band_info["energy_reference_source"],
+            "dos_original_reference_ev": dos_reference, "dos_energy_shift_ev": dos_reference - reference,
+            "energy_window_ev": list(PLOT_ENERGY_WINDOW_EV), "source_sha256": sources,
+            "kpoint_count": band_info["kpoint_count"], "method_fingerprint": band_input["method_fingerprint"],
+            "spin_channels": "summed DOS; separate bands", "interpolation": "none",
+        })
+        return [*artifacts, "bands_dos_metadata.json"]
     finally:
         plt.close(fig)
 
@@ -511,6 +776,9 @@ def analyze_outputs(output_dir: str | Path, task: str, expected_structure_path: 
     output.mkdir(parents=True, exist_ok=True)
     # Remove stale results before checking new output.
     generated = ["final_structure.cif", "final_structure.vasp", "relax_energy.csv", "relax_energy.png", "bands.csv", "bands.png", "bands_mesh.csv", "dos.csv", "dos.png", "magnetization.json"]
+    generated += [f"{stem}.{extension}" for stem in ("relax_energy", "bands", "dos", "dos_elements", "dos_orbitals") for extension in ("png", "pdf", "svg", "csv")]
+    generated += ["bands_dos.png", "bands_dos.pdf", "bands_dos.svg", "bands_dos_metadata.json"]
+    generated += ["plot_metadata.json", "dos_element_orbitals.csv", "ionic_steps.csv", "electronic_steps.csv", "forces.csv", "stress.csv", "structure.json"]
     for filename in generated:
         (output / filename).unlink(missing_ok=True)
     result: dict[str, Any] = {
@@ -619,10 +887,14 @@ def analyze_outputs(output_dir: str | Path, task: str, expected_structure_path: 
             from .restart import validate_warm_start
             result["warm_start"] = validate_warm_start(output, run, metadata)
         artifacts = _export_plots(run, output, task)
+        artifacts.extend(_export_tables(run, output))
         if task in {"scf", "bands", "dos"}:
             result["band_gap"] = _band_gap(run, task, metadata)
         if task in {"bands", "dos"}:
             result["plot_settings"] = {"energy_window_ev": list(PLOT_ENERGY_WINDOW_EV), "csv_contains_full_data": True}
+        if task == "dos":
+            result["energy_reference_ev"] = float(run.efermi)
+            result["energy_reference_source"] = "dos_run_fermi"
         if task == "bands":
             result["energy_reference_ev"] = float(run.efermi if hybrid else metadata["scf_fermi_energy_ev"])
             result["energy_reference_source"] = "hybrid_scf_mesh" if hybrid else "preceding_scf"

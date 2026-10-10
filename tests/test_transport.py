@@ -344,12 +344,27 @@ def test_corrupt_batch_preserves_all_existing_destinations(config, local_wire, t
     assert sorted(path.name for path in destination.iterdir()) == sorted(names)
 
 
-@pytest.mark.parametrize("name", ["POTCAR", "CHGCAR", "WAVECAR", "../OUTCAR", "/INCAR", "arbitrary.txt"])
+@pytest.mark.parametrize("name", ["POTCAR", "../OUTCAR", "/INCAR", "arbitrary.txt"])
 def test_batch_download_allowlist_rejected_without_network(config, local_wire, tmp_path, name):
     with SSHTransport(config, password="") as transport:
         with pytest.raises(TransportError, match="allowlist"):
             transport.download_many("/remote", tmp_path, [name])
     assert not local_wire.calls
+
+
+@pytest.mark.parametrize("name", ["CHGCAR", "WAVECAR", "LOCPOT", "PROCAR"])
+def test_explicit_solver_output_download(config, local_wire, tmp_path, name):
+    from vasp_slurm_agent.workflow import FILES
+    remote = tmp_path / "remote"
+    remote.mkdir()
+    content = b"solver output\x00\xff"
+    (remote / name).write_bytes(content)
+    with SSHTransport(config, password="") as transport:
+        result = transport.download_many(str(remote), tmp_path / "download", [name])
+    assert (tmp_path / "download" / name).read_bytes() == content
+    assert result[name]["size"] == len(content)
+    if name != "PROCAR":
+        assert name not in FILES
 
 
 def test_batch_upload_allowlist_and_duplicates_rejected_without_network(config, local_wire, tmp_path):

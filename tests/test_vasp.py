@@ -187,7 +187,7 @@ def test_dos_export_contract_with_parser_stub(monkeypatch, tmp_path):
     assert result["success"]
     assert len((tmp_path / "dos.csv").read_text().splitlines()) == 6
     assert "70.0,60.0" in (tmp_path / "dos.csv").read_text()
-    assert result["plot_settings"] == {"energy_window_ev": [-15.0, 10.0], "csv_contains_full_data": True}
+    assert result["plot_settings"] == {"energy_window_ev": [-8.0, 8.0], "csv_contains_full_data": True}
     assert (tmp_path / "dos.png").stat().st_size > 100
 
 
@@ -206,7 +206,7 @@ def test_bands_export_checks_frozen_path_with_parser_stub(monkeypatch, tmp_path)
     result = vasp.analyze_outputs(tmp_path, "bands", EXAMPLES / "Si.cif")
     assert result["success"]
     assert result["energy_reference_ev"] == 0.0
-    assert result["plot_settings"] == {"energy_window_ev": [-15.0, 10.0], "csv_contains_full_data": True}
+    assert result["plot_settings"] == {"energy_window_ev": [-8.0, 8.0], "csv_contains_full_data": True}
     assert ",70.0," in (tmp_path / "bands.csv").read_text()
     assert len((tmp_path / "bands.csv").read_text().splitlines()) == 1 + 2 * len(points)
     assert (tmp_path / "bands.png").stat().st_size > 100

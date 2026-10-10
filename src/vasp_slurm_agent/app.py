@@ -185,6 +185,8 @@ def _config_editor(path: Path, config: ClusterConfig | None) -> None:
             vasp_command = st.text_input(t("VASP command"), value=value("vasp_command", "srun vasp_std"), key=key("vasp_command"))
             ncl_command = st.text_input(t("SOC / noncollinear command"), value=value("vasp_ncl_command", ""),
                                         placeholder="srun vasp_ncl", key=key("ncl"))
+            vaspkit_executable = st.text_input(t("VASPKIT executable"), value=value("vaspkit_executable", "vaspkit"),
+                                              help=t("Optional post-processing tool on the cluster."), key=key("vaspkit"))
         with right:
             partition = st.text_input(t("Slurm partition"), value=value("partition", ""), key=key("partition"))
             account = st.text_input(t("Slurm account (optional)"), value=value("account", ""), key=key("account"))
@@ -216,6 +218,7 @@ def _config_editor(path: Path, config: ClusterConfig | None) -> None:
                 current = {"host": host.strip(), "user": user.strip(), "port": int(port), "ssh_control_path": control_path.strip(),
                            "remote_root": remote_root.strip(), "potcar_root": potcar_root.strip(), "vasp_command": vasp_command.strip(),
                            "vasp_ncl_command": ncl_command.strip(), "partition": partition.strip(), "account": account.strip(),
+                           "vaspkit_executable": vaspkit_executable.strip(),
                            "tasks": int(tasks), "nodes": int(nodes), "walltime": walltime.strip(), "connect_timeout": int(timeout),
                            "extra_sbatch": [line for line in sbatch.splitlines() if line.strip()],
                            "setup_commands": [line for line in setup.splitlines() if line.strip()]}
@@ -244,6 +247,7 @@ def _config_editor(path: Path, config: ClusterConfig | None) -> None:
                 vasp_ncl_command=ncl_command.strip(),
                 ssh_control_path=control_path.strip(),
                 nodes=int(nodes), extra_sbatch=[line for line in sbatch.splitlines() if line.strip()],
+                vaspkit_executable=vaspkit_executable.strip(),
             )
             candidate.save(path)
         except Exception as exc:
@@ -271,69 +275,33 @@ def _config_editor(path: Path, config: ClusterConfig | None) -> None:
 
 
 def _structure_plot(structure: Structure) -> None:
-    fig = plt.figure(figsize=(6, 4))
+    from vasp_slurm_agent.structure_view import display_repeat, structure_figure
+
+    fig = structure_figure(structure)
     try:
-        axis = fig.add_subplot(111, projection="3d")
-        corners = np.asarray(list(product((0, 1), repeat=3)))
-        cartesian = structure.lattice.get_cartesian_coords(corners)
-        for i, first in enumerate(corners):
-            for j in range(i + 1, len(corners)):
-                if np.abs(first - corners[j]).sum() == 1:
-                    edge = cartesian[[i, j]]
-                    axis.plot(edge[:, 0], edge[:, 1], edge[:, 2], color="#8794a3", linewidth=0.8)
-        species = sorted({site.species_string for site in structure})
-        for name in species:
-            positions = np.asarray([site.coords for site in structure if site.species_string == name])
-            axis.scatter(positions[:, 0], positions[:, 1], positions[:, 2], s=75, label=name)
-        axis.set(xlabel="x / Å", ylabel="y / Å", zlabel="z / Å")
-        axis.set_box_aspect(np.maximum(np.ptp(cartesian, axis=0), 1e-6))
-        axis.legend(loc="upper left")
         st.pyplot(fig)
-        st.caption(t("Markers do not show atomic radii."))
+        repeats = " × ".join(str(value) for value in display_repeat(structure))
+        st.caption(f"{repeats} view · {len(structure)} atoms in input")
     finally:
         plt.close(fig)
 
 
-def viewer_html(poscar: str, height: int = 360) -> str:
-    """An interactive 3Dmol.js view of a POSCAR string with a static fallback message."""
-    data = json.dumps(poscar)
-    message = json.dumps(t("The interactive viewer needs internet access to load 3Dmol.js. Turn it off in Preferences to use the static plot."))
-    return f"""<div id="dft-viewer" style="width:100%;height:{height}px;position:relative;border:1px solid #e5e7eb;border-radius:8px;"></div>
-<script>
-(function () {{
-  var data = {data};
-  var message = {message};
-  var box = document.getElementById("dft-viewer");
-  function draw() {{
-    try {{
-      var viewer = $3Dmol.createViewer(box, {{backgroundColor: "white"}});
-      viewer.addModel(data, "vasp");
-      viewer.setStyle({{}}, {{sphere: {{scale: 0.32}}, stick: {{radius: 0.12}}}});
-      viewer.addUnitCell();
-      viewer.zoomTo();
-      viewer.zoom(0.8);
-      viewer.render();
-    }} catch (error) {{ box.innerText = message; }}
-  }}
-  function load(src, next) {{
-    var script = document.createElement("script");
-    script.src = src;
-    script.onload = draw;
-    script.onerror = next;
-    document.head.appendChild(script);
-  }}
-  if (window.$3Dmol) {{ draw(); }}
-  else {{ load({json.dumps(VIEWER_SCRIPT)}, function () {{ load({json.dumps(VIEWER_FALLBACK)}, function () {{ box.innerText = message; }}); }}); }}
-}})();
-</script>"""
+def viewer_html(poscar: str, height: int = 430) -> str:
+    from vasp_slurm_agent.structure_view import viewer_html as render_viewer
+
+    return render_viewer(
+        Structure.from_str(poscar, fmt="poscar"), VIEWER_SCRIPT, VIEWER_FALLBACK,
+        t("The interactive viewer needs internet access to load 3Dmol.js. Turn it off in Preferences to use the static plot."),
+        height=height,
+    )
 
 
 def _structure_viewer(structure: Structure) -> None:
     from pymatgen.io.vasp import Poscar
     import streamlit.components.v1 as components
 
-    components.html(viewer_html(Poscar(structure).get_str()), height=372)
-    st.caption(t("Drag to rotate, scroll to zoom. Spheres are not to scale."))
+    components.html(viewer_html(Poscar(structure).get_str()), height=442)
+    st.caption(t("Drag to rotate, scroll to zoom. Repetition changes the view only."))
 
 
 def _structure_view(structure: Structure) -> None:
@@ -394,7 +362,11 @@ def _stage_results(run_dir: Path, stage: dict, scf_fermi_energy: float | None = 
             metrics[2].metric(t("Energy per atom (eV)"), f"{per_atom:.6f}")
     elif stage["name"] in {"bands", "dos"}:
         mode = (stage.get("metadata") or {}).get("spectral_charge_mode", "fixed")
-        if mode == "self_consistent":
+        if stage["name"] == "dos":
+            fermi = result.get("energy_reference_ev", result.get("fermi_energy_ev"))
+            if fermi is not None:
+                st.metric(t("DOS Fermi energy (eV)"), f"{fermi:.6f}")
+        elif mode == "self_consistent":
             fermi = result.get("energy_reference_ev", result.get("fermi_energy_ev"))
             if fermi is not None:
                 st.metric(t("Fermi energy (eV)"), f"{fermi:.6f}")
@@ -417,7 +389,7 @@ def _stage_results(run_dir: Path, stage: dict, scf_fermi_energy: float | None = 
     if final_structure.is_file():
         try:
             structure = Structure.from_file(final_structure)
-            with st.expander(t("Final structure"), expanded=True):
+            with st.expander(t("Final structure"), expanded=stage["name"] == "relax"):
                 st.write(f"{structure.composition.reduced_formula} · {len(structure)} " + t("atoms") + " · "
                          + t("Cell volume") + f" {structure.volume:.3f} Å³")
                 _structure_view(structure)
@@ -426,6 +398,87 @@ def _stage_results(run_dir: Path, stage: dict, scf_fermi_energy: float | None = 
                                mime="chemical/x-cif", key=f"structure_{run_dir.name}_{stage['folder']}")
         except Exception as exc:
             st.error(t("Cannot display structure: {error}").format(error=exc))
+
+
+def _stage_downloads(run_dir: Path, stage: dict) -> None:
+    output = run_dir / stage["folder"] / "outputs"
+    key = f"files_{run_dir}_{stage['folder']}"
+    available = sorted(path for path in output.rglob("*") if path.is_file() and not path.is_symlink()
+                       and path.name != "POTCAR" and not any(part.startswith(".") for part in path.relative_to(output).parts)
+                       and not any(parent.is_symlink() for parent in path.parents))
+    plots = [path for path in available if path.parent == output and path.suffix == ".png"] if (stage.get("result") or {}).get("success") else []
+    if plots:
+        labels = {"bands": "Bands", "bands_dos": "Bands and DOS", "dos": "Total DOS", "dos_elements": "Element DOS",
+                  "dos_orbitals": "Orbital DOS", "relax_energy": "Relaxation"}
+        selected = st.selectbox(t("Plot"), plots, format_func=lambda p: t(labels.get(p.stem, p.stem)), key=key + "_plot")
+        st.image(str(selected))
+        formats = [selected.with_suffix(suffix) for suffix in (".png", ".pdf", ".svg")]
+        columns = st.columns(3)
+        for column, path in zip(columns, formats):
+            if path in available:
+                column.download_button(path.suffix[1:].upper(), path.read_bytes(), file_name=f"{stage['folder']}-{path.name}",
+                                       key=key + path.name)
+    with st.expander(t("Data and files")):
+        if available:
+            chosen = st.selectbox(t("File"), available, format_func=lambda p: p.relative_to(output).as_posix(), key=key + "_file")
+            st.caption(f"{chosen.stat().st_size / 1024:.1f} KiB")
+            if chosen.suffix == ".csv":
+                import pandas as pd
+                try:
+                    st.dataframe(pd.read_csv(chosen, nrows=200), hide_index=True)
+                except (OSError, ValueError, pd.errors.ParserError, pd.errors.EmptyDataError):
+                    st.caption(t("Preview unavailable."))
+            if chosen.stat().st_size <= 50 * 1024 * 1024:
+                st.download_button(t("Download file"), chosen.read_bytes(), file_name=chosen.name, key=key + "_download")
+            else:
+                st.caption(t("Included in Download results (.zip)."))
+        _postprocess_panel(run_dir, stage, key)
+
+
+def _postprocess_panel(run_dir: Path, stage: dict, key: str) -> None:
+    if not has_config(run_dir) or not stage.get("job_id"):
+        return
+    from vasp_slurm_agent.postprocessing import fetch_outputs, list_remote_outputs
+    st.write(t("More files from the cluster"))
+    if st.button(t("List files"), key=key + "_list"):
+        try:
+            st.session_state[key + "_remote"] = _with_password(list_remote_outputs, run_dir, stage["folder"])
+        except Exception as exc:
+            st.error(str(exc))
+    remote = st.session_state.get(key + "_remote", [])
+    if key + "_remote" in st.session_state and not remote:
+        st.caption(t("No additional files found."))
+    if remote:
+        sizes = {row["name"]: row["bytes"] for row in remote}
+        names = st.multiselect(t("Collect files"), list(sizes),
+                               format_func=lambda name: f"{name} · {sizes[name] / (1024 * 1024):.1f} MiB", key=key + "_collect")
+        if st.button(t("Fetch selected files"), key=key + "_fetch", disabled=not names):
+            try:
+                with st.spinner(t("Collecting files…")):
+                    _with_password(fetch_outputs, run_dir, stage["folder"], names)
+                st.session_state.pop(f"bundle_{run_dir}", None)
+                st.rerun()
+            except Exception as exc:
+                st.error(str(exc))
+    if stage["name"] not in {"bands", "dos"} or not (stage.get("result") or {}).get("success"):
+        return
+    st.write("VASPKIT")
+    st.caption(t("Uses VASPKIT installed on your cluster. Raw results are kept."))
+    if st.button(t("Run VASPKIT"), key=key + "_vaspkit"):
+        try:
+            from vasp_slurm_agent.postprocessing import postprocess_run
+            with st.spinner(t("Processing results…")):
+                report = _with_password(postprocess_run, run_dir, stage["folder"])
+            st.session_state[key + "_postprocess"] = report
+            st.session_state.pop(f"bundle_{run_dir}", None)
+            st.rerun()
+        except Exception as exc:
+            st.error(str(exc))
+    report = st.session_state.get(key + "_postprocess") or stage.get("postprocessing")
+    if report:
+        st.write(t("Status") + ": " + report.get("status", "unknown"))
+        if report.get("message"):
+            st.caption(report["message"])
 
 
 def _remember_key(provider, key_widget, key):
@@ -1170,9 +1223,8 @@ def _run_panel(run_dir: Path, model_settings=None, config=None) -> None:
             scf_fermi_energy = stage["result"].get("fermi_energy_ev")
         _stage_results(run_dir, stage, scf_fermi_energy)
         folder = stage.get("folder")
-        if folder and (stage.get("result") or {}).get("success"):
-            for plot in sorted((run_dir / folder / "outputs").glob("*.png")):
-                st.image(str(plot), caption=f"{stage.get('name', '')} · {plot.name}")
+        if folder and (run_dir / folder / "outputs").is_dir():
+            _stage_downloads(run_dir, stage)
 
     actions = st.columns(3)
     if awaiting_submission:
@@ -1228,8 +1280,21 @@ def _run_panel(run_dir: Path, model_settings=None, config=None) -> None:
     if bundle_key in st.session_state:
         archive = Path(st.session_state[bundle_key])
         if archive.is_file():
-            st.download_button(t("Download results (.zip)"), archive.read_bytes(), file_name=archive.name,
-                               mime="application/zip", key=f"download_{run_dir.name}")
+            if archive.stat().st_size <= 100 * 1024 * 1024:
+                st.download_button(t("Download results (.zip)"), archive.read_bytes(), file_name=archive.name,
+                                   mime="application/zip", key=f"download_{run_dir.name}")
+            else:
+                st.caption(t("Archive saved to {path}").format(path=archive))
+                if st.button(t("Open results folder"), key=f"open_results_{run_dir.name}"):
+                    import platform
+                    import subprocess
+                    try:
+                        if os.name == "nt":
+                            os.startfile(str(run_dir))
+                        else:
+                            subprocess.Popen(["open" if platform.system() == "Darwin" else "xdg-open", str(run_dir)])
+                    except OSError as exc:
+                        st.error(str(exc))
     if status == "succeeded":
         st.info(t("Complete. Results are ready to download."))
     elif status == "needs_attention":
@@ -1403,7 +1468,7 @@ def _runs_tab(runs_root):
     if st.button(t("Open run"), disabled=not manual.strip()):
         st.session_state["active_run"] = str(Path(manual).expanduser())
     with st.expander(t("Sample runs"), expanded=not rows):
-        st.caption(t("Three completed calculations from the validation set, with placeholder cluster details. Explore results, plots and explanations without a cluster."))
+        st.caption(t("Explore completed calculations without a cluster."))
         for sample in list_samples():
             st.write(f"**{sample.get('title', sample['id'])}** — {sample.get('description', '')}")
         if st.button(t("Load sample runs")):

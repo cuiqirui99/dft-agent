@@ -1,0 +1,66 @@
+{
+  "INCAR": {
+    "sha256": "374a6aad069d0ca03d6677eafd558b78d5faad94bfe23289e9a24d5aa92e0703",
+    "size": 275
+  },
+  "KPOINTS": {
+    "sha256": "b54745262090d70c667ad9d3e69fb8273545834fe4b3d090c949721f8d03a1a6",
+    "size": 38
+  },
+  "POSCAR": {
+    "sha256": "c59743611a65adc89aaac70f2f675bd882fa0c4fe361b1d77bdd51ca2b6a4dc3",
+    "size": 576
+  },
+  "OUTCAR": {
+    "sha256": "67e89826fd15420dc283c15eeab37fff1e09b1ae978b5708739f16ac9c7cb4a5",
+    "size": 254721
+  },
+  "OSZICAR": {
+    "sha256": "7b007755c9c243d97143c40798f558bda7955ef8198b85bb0387f58002f721fa",
+    "size": 3437
+  },
+  "vasprun.xml": {
+    "sha256": "b581351e2179414004fc562d3e0b99727cc1fd3792f6e7f79e1c30be21dd8b5e",
+    "size": 96405
+  },
+  "CONTCAR": {
+    "sha256": "5f76e7b4929baa0e9674de34b2d101fa909f27e235198f8c284d52afa58e7abc",
+    "size": 865
+  },
+  "EIGENVAL": {
+    "sha256": "0c48f8f2090deace950e5c2c9b39423528dedb5ab32d6d196f98c9520934173c",
+    "size": 39325
+  },
+  "DOSCAR": {
+    "sha256": "ee8174c25e60fb2f7ed513038b9d4b6b40fd3ac672a141165db26dcce819c0ab",
+    "size": 11075
+  },
+  "slurm.out": {
+    "sha256": "da1e28365b569dd7e7428502167be8b4ef7ab80df4c8792965e303a3404519fc",
+    "size": 6235
+  },
+  "slurm.err": {
+    "sha256": "9fa473736b4c79caeb3ecc85ca374f6c5c69433cf6155aa9c9908b5ee1a1299c",
+    "size": 158
+  },
+  "execution.json": {
+    "sha256": "1dde77e0716a4452c0cd767206b290e8d02289b85e0492823a5fbba045a73315",
+    "size": 153
+  },
+  "input_hashes.sha256": {
+    "sha256": "75f13737913aa9691ee73ac4a316ea535d927d3b5634883978ba1f275149ef62",
+    "size": 219
+  },
+  "potcar_hash.sha256": {
+    "sha256": "ddd04e572543c20406b7ea62ce1c074bf33722da8d8c9c8c8535370fdd3c6624",
+    "size": 73
+  },
+  "potcar_titles.txt": {
+    "sha256": "f77bb9a9caea9cc28297e63e64898d9225411bab6b1379f05587a5c6f471d9a9",
+    "size": 104
+  },
+  "IBZKPT": {
+    "sha256": "cdb7e2f83cac66aa968d0ed42f2e886675ba534691c8bf963666602fc39ce6e3",
+    "size": 2682
+  }
+}

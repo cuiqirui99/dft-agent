@@ -228,6 +228,17 @@ def main():
     continuation.add_argument("--tasks", nargs="+", choices=("relax", "scf", "bands", "dos"), required=True)
     continuation.add_argument("--parameters", default="{}", help="Changes to inherited settings (JSON)")
     continuation.add_argument("--stage-parameters", default="null", help="Per-stage changes (JSON list)")
+    extra = commands.add_parser("files", help="List or collect additional cluster outputs")
+    extra.add_argument("run_dir", type=Path)
+    extra.add_argument("stage", help="Stage folder, for example 03_bands")
+    extra.add_argument("--fetch", nargs="+", help="Output filenames to collect")
+    extra.add_argument("--password", action="store_true")
+    post = commands.add_parser("postprocess", help="Export bands and DOS with cluster VASPKIT")
+    post.add_argument("run_dir", type=Path)
+    post.add_argument("stage", help="Stage folder, for example 03_bands")
+    post.add_argument("--tasks", nargs="+", choices=("bands", "projected_bands", "total_dos", "projected_dos"))
+    post.add_argument("--executable", help="VASPKIT executable on the cluster")
+    post.add_argument("--password", action="store_true")
     command_help = {
         "watch": "Submit and monitor",
         "watch-batch": "Submit and monitor a batch",
@@ -277,6 +288,17 @@ def main():
             else:
                 print(json.dumps(result, indent=2))
             return 0 if result["ok"] else 1
+        if args.command == "files":
+            from .postprocessing import fetch_outputs, list_remote_outputs
+            result = (fetch_outputs(args.run_dir, args.stage, args.fetch) if args.fetch
+                      else list_remote_outputs(args.run_dir, args.stage))
+            print(json.dumps(result, indent=2))
+            return 0
+        if args.command == "postprocess":
+            from .postprocessing import postprocess_run
+            result = postprocess_run(args.run_dir, args.stage, args.tasks, executable=args.executable)
+            print(json.dumps(result, indent=2))
+            return 0 if result["status"] == "complete" else 1
         if args.command == "detect":
             from .discovery import probe_cluster, probe_config
             saved = None

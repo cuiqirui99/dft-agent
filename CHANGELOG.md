@@ -4,7 +4,11 @@
 
 - Add desktop packaging for Apple Silicon Macs (`.dmg`) and Windows x64 (`.exe`), including Python and model SDKs. Installation and platform acceptance are tracked separately from publication.
 - Prepare and review inputs without a cluster; attach cluster settings at submission.
-- Load three completed sample runs to explore results and plots offline; model explanations require the user's model account.
+- Load four completed sample runs, including SrTiO3 with a 353-point band path.
+- Show periodic crystals with separate lattice axes and element labels.
+- Use denser band paths and export plots as PNG, PDF and SVG.
+- Return projected DOS, forces, stress, convergence tables and selected cluster files.
+- Run cluster VASPKIT for band and DOS tables, with checked inputs and outputs.
 - Detect partitions, accounts, VASP modules and POTCAR folders from the cluster, with presets for known clusters.
 - Remember API keys in the system keychain on request; `dft-agent key` manages them.
 - Open the browser automatically and hide the Streamlit toolbar.

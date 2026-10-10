@@ -1,0 +1,94 @@
+{
+  "formula": "SrTiO3",
+  "lattice_angstrom": [
+    [
+      3.94378201,
+      0.0,
+      0.0
+    ],
+    [
+      -0.0,
+      3.94378201,
+      0.0
+    ],
+    [
+      0.0,
+      0.0,
+      3.94378201
+    ]
+  ],
+  "volume_angstrom3": 61.3392843539521,
+  "site_order": "POSCAR",
+  "sites": [
+    {
+      "site": 1,
+      "element": "Sr",
+      "fractional": [
+        -0.0,
+        0.0,
+        0.0
+      ],
+      "cartesian_angstrom": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "site": 2,
+      "element": "Ti",
+      "fractional": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "cartesian_angstrom": [
+        1.971891005,
+        1.971891005,
+        1.971891005
+      ]
+    },
+    {
+      "site": 3,
+      "element": "O",
+      "fractional": [
+        0.5,
+        0.5,
+        0.0
+      ],
+      "cartesian_angstrom": [
+        1.971891005,
+        1.971891005,
+        0.0
+      ]
+    },
+    {
+      "site": 4,
+      "element": "O",
+      "fractional": [
+        0.5,
+        0.0,
+        0.5
+      ],
+      "cartesian_angstrom": [
+        1.971891005,
+        0.0,
+        1.971891005
+      ]
+    },
+    {
+      "site": 5,
+      "element": "O",
+      "fractional": [
+        0.0,
+        0.5,
+        0.5
+      ],
+      "cartesian_angstrom": [
+        0.0,
+        1.971891005,
+        1.971891005
+      ]
+    }
+  ]
+}

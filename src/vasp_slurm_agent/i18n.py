@@ -131,7 +131,7 @@ ZH = {
     "No runs yet. Load the sample runs to explore completed results without a cluster, or prepare a new calculation.": "还没有计算记录。加载示例计算可以在没有集群的情况下浏览完整结果，或者新建一个计算。",
     "Choose a run": "选择一次计算",
     "Sample runs": "示例计算",
-    "Three completed calculations from the validation set, with placeholder cluster details. Explore results, plots and explanations without a cluster.": "来自验证集的三次已完成计算，集群信息已替换为占位符。无需集群即可浏览结果、图表和解释。",
+    "Explore completed calculations without a cluster.": "无需集群即可查看已完成的计算。",
     "Load sample runs": "加载示例计算",
     "Preferences": "偏好设置",
     "Version": "版本",

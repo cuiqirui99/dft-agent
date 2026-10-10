@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "task": "scf",
+  "success": true,
+  "converged_electronic": true,
+  "converged_ionic": true,
+  "valid_structure": true,
+  "final_energy_ev": -39.9936436,
+  "final_max_force_ev_angstrom": 0.0,
+  "vasp_version": "5.4.4.18apr17-6-g9f103f2a35",
+  "forces_available": true,
+  "ionic_steps_count": null,
+  "ionic_iteration_limit_reached": false,
+  "ionic_force_limit_ev_angstrom": null,
+  "fermi_energy_ev": 3.45106126,
+  "final_energy_ev_per_atom": -7.99872872,
+  "reason": "The calculation finished and its output passed the checks for this task.",
+  "artifacts": [
+    "final_structure.cif",
+    "final_structure.vasp",
+    "structure.json",
+    "ionic_steps.csv",
+    "electronic_steps.csv",
+    "forces.csv",
+    "stress.csv"
+  ],
+  "scientific_accuracy_validated": false,
+  "vasprun_sha256": "ee329b41beb08fbdb24e8f6d30fb55429ca714cfec243acce5eb003308015f1a",
+  "method": {
+    "spin": "none",
+    "magmom": null,
+    "soc": false,
+    "saxis": [
+      0.0,
+      0.0,
+      1.0
+    ],
+    "functional": "PBE",
+    "hubbard_u": {}
+  },
+  "method_fingerprint": "112288ab697a0d3cef88b524c044d207b320228863f113e24e5a57539252d26c",
+  "method_comparison_fingerprint": "a3d2f2ac57b62272004057b6bd365b0dce17911be8bba8f268d2ca867112a377",
+  "band_gap": {
+    "available": true,
+    "status": "gapped",
+    "scope": "sampled_kpoints",
+    "gap_ev": 1.7734000000000005,
+    "direct_gap_ev": 2.1261000000000005,
+    "vbm_ev": 3.2367,
+    "cbm_ev": 5.0101,
+    "partial_occupations": false,
+    "occupation_tolerance": 0.001,
+    "full_bz_validated": false,
+    "reason": "Only the retained k-points were checked; this is not a converged full-zone or optical gap.",
+    "kpoint_count": 35
+  },
+  "magnetization": {
+    "available": false,
+    "unit": "mu_B",
+    "site_order": "POSCAR",
+    "basis": "collinear spin axis",
+    "saxis": [
+      0.0,
+      0.0,
+      1.0
+    ],
+    "site_moments": null,
+    "total_moment": null,
+    "note": "Site moments are PAW sphere projections; their sum is not the full cell moment."
+  },
+  "magnetic_ground_state_validated": false,
+  "final_structure_poscar_sha256": "adbe6ad747cd16dfb620b13f98c5ac2c305d983ef67a7e7083a7e50c154bec71",
+  "input_identity_verified": true,
+  "scheduler_state": "COMPLETED",
+  "final_structure_sha256": "d9e16481e2308c81278dd1777e6a30c80231e7a3c9344a6f5bc8fe091d9af368"
+}

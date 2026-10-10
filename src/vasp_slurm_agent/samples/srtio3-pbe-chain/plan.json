@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "input_policy": 2,
+  "tasks": [
+    "relax",
+    "scf",
+    "bands",
+    "dos"
+  ],
+  "parameters": {
+    "encut": 520,
+    "kspacing": 0.2,
+    "ediff": 1e-06,
+    "ediffg": -0.02,
+    "cell_relax": true,
+    "nsw": 60,
+    "nelm": 120,
+    "line_density": 60,
+    "nedos": 2001,
+    "electronic_type": "insulator"
+  },
+  "sources": {
+    "source/input/SrTiO3.cif": "de5a362d06afa36a457b7e20e93692bd3dae98963997242bab49bfe930e774ed"
+  },
+  "magnetic_seeds": null,
+  "stages": [
+    {
+      "name": "relax",
+      "folder": "01_relax",
+      "parameters": {
+        "encut": 520,
+        "kspacing": 0.2,
+        "ediff": 1e-06,
+        "ediffg": -0.02,
+        "cell_relax": true,
+        "nsw": 60,
+        "nelm": 120,
+        "line_density": 60,
+        "nedos": 2001,
+        "electronic_type": "insulator"
+      },
+      "structure_from": null,
+      "charge_from": null,
+      "source_path": "source/input/SrTiO3.cif"
+    },
+    {
+      "name": "scf",
+      "folder": "02_scf",
+      "parameters": {
+        "encut": 520,
+        "kspacing": 0.2,
+        "ediff": 1e-06,
+        "ediffg": -0.02,
+        "cell_relax": true,
+        "nsw": 60,
+        "nelm": 120,
+        "line_density": 60,
+        "nedos": 2001,
+        "electronic_type": "insulator"
+      },
+      "structure_from": 0,
+      "charge_from": null,
+      "source_path": "source/input/SrTiO3.cif"
+    },
+    {
+      "name": "bands",
+      "folder": "03_bands",
+      "parameters": {
+        "encut": 520,
+        "kspacing": 0.2,
+        "ediff": 1e-06,
+        "ediffg": -0.02,
+        "cell_relax": true,
+        "nsw": 60,
+        "nelm": 120,
+        "line_density": 60,
+        "nedos": 2001,
+        "electronic_type": "insulator"
+      },
+      "structure_from": 0,
+      "charge_from": 1,
+      "source_path": "source/input/SrTiO3.cif"
+    },
+    {
+      "name": "dos",
+      "folder": "04_dos",
+      "parameters": {
+        "encut": 520,
+        "kspacing": 0.2,
+        "ediff": 1e-06,
+        "ediffg": -0.02,
+        "cell_relax": true,
+        "nsw": 60,
+        "nelm": 120,
+        "line_density": 60,
+        "nedos": 2001,
+        "electronic_type": "insulator"
+      },
+      "structure_from": 0,
+      "charge_from": 1,
+      "source_path": "source/input/SrTiO3.cif"
+    }
+  ]
+}

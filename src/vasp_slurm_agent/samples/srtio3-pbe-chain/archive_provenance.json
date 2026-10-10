@@ -1,0 +1,188 @@
+{
+  "schema_version": 1,
+  "operation": "Redact machine identifiers, account and filesystem paths; correct VASPKIT energy-reference labels in the archive copy.",
+  "scientific_inputs_unchanged": true,
+  "numerical_results_unchanged": true,
+  "original_run_unchanged": true,
+  "files": [
+    {
+      "path": "01_relax/inputs/submit.sh",
+      "original_sha256": "2d5528757a4f443c3ed5d64f2f9cc753414ef9225d2e0738ac36fd04055aa32f",
+      "archive_sha256": "2963497e2f763413cfb7a7a587179477105323d9163245935a4d9b7cec9aad14"
+    },
+    {
+      "path": "01_relax/outputs/OUTCAR",
+      "original_sha256": "ac64bb4fa977ea4919a3eb30fc2ea64714c5c10bd663eab38e41ecb18e06699c",
+      "archive_sha256": "67e89826fd15420dc283c15eeab37fff1e09b1ae978b5708739f16ac9c7cb4a5"
+    },
+    {
+      "path": "01_relax/outputs/artifact_manifest.json",
+      "original_sha256": "9c2d2b6afac8aa396d44b1cc2f90c6a196f80b8f8bf9b575f54e5a12e2cb779d",
+      "archive_sha256": "74081dbb75b0a3d68ba6370381bc0cbaa1f96132463aaa13cf4ddd5359c6db3c"
+    },
+    {
+      "path": "01_relax/outputs/result.json",
+      "original_sha256": "4af207e9adcfe97ebd0652eea40a7f4a728fdcbad9955806bc77312db792d17d",
+      "archive_sha256": "5e4d85e40a581c230cde9fe04efcb16a4b37c1eededb28278a04b1025a318dfe"
+    },
+    {
+      "path": "01_relax/outputs/slurm.err",
+      "original_sha256": "9bcfc0c06cf63b03d881fa11229ad2d6824aa2da9ffbeb4b93ed90ceaaee1cbf",
+      "archive_sha256": "9fa473736b4c79caeb3ecc85ca374f6c5c69433cf6155aa9c9908b5ee1a1299c"
+    },
+    {
+      "path": "01_relax/outputs/vasprun.xml",
+      "original_sha256": "981ac6d94e9944f5b33b78a6337fa32911df94c9a773d0ee8937a4b0915d2497",
+      "archive_sha256": "b581351e2179414004fc562d3e0b99727cc1fd3792f6e7f79e1c30be21dd8b5e"
+    },
+    {
+      "path": "02_scf/inputs/submit.sh",
+      "original_sha256": "2d5528757a4f443c3ed5d64f2f9cc753414ef9225d2e0738ac36fd04055aa32f",
+      "archive_sha256": "2963497e2f763413cfb7a7a587179477105323d9163245935a4d9b7cec9aad14"
+    },
+    {
+      "path": "02_scf/outputs/OUTCAR",
+      "original_sha256": "45308c03997c516ed6c9c6a41baccf9a4a9669cb85a04862f420037e490aaa4c",
+      "archive_sha256": "43d86e48463e7137053e7f9fcdf3cce3d0982d586fd77fff3c5b7efc432b3d9c"
+    },
+    {
+      "path": "02_scf/outputs/artifact_manifest.json",
+      "original_sha256": "bee3959958645171e526f701d032f3236e5e99f9da71b59324b818a2c95610c1",
+      "archive_sha256": "d98d6e648610a9428e6392ebaf76709c1b44c856af364751692fadf0cc9cca13"
+    },
+    {
+      "path": "02_scf/outputs/result.json",
+      "original_sha256": "0cf9bca5118c52d401291ae4ebfe1df58f7027703ae116a7c9fe56563e9ab251",
+      "archive_sha256": "dfdde9e6f82f1d2ec0ec533c3980b7c538e51f415df0a7a7bb966670eaabf8c4"
+    },
+    {
+      "path": "02_scf/outputs/slurm.err",
+      "original_sha256": "9bcfc0c06cf63b03d881fa11229ad2d6824aa2da9ffbeb4b93ed90ceaaee1cbf",
+      "archive_sha256": "9fa473736b4c79caeb3ecc85ca374f6c5c69433cf6155aa9c9908b5ee1a1299c"
+    },
+    {
+      "path": "02_scf/outputs/vasprun.xml",
+      "original_sha256": "b24e534e89a5cf997bc929c8d60a32f61538098517ce55c8f88b49f3d6c46fa3",
+      "archive_sha256": "ee329b41beb08fbdb24e8f6d30fb55429ca714cfec243acce5eb003308015f1a"
+    },
+    {
+      "path": "03_bands/inputs/submit.sh",
+      "original_sha256": "42f53f987190e7047b262f9b910b5f32c50d75e79777e79181538f91d2a6c393",
+      "archive_sha256": "33ec8caaece485a3169e58dfa33459f87da619c63c0a7d7c80d0179e0f280dc7"
+    },
+    {
+      "path": "03_bands/outputs/OUTCAR",
+      "original_sha256": "4c4468ac6c62d9c829aab3bcbc5853a6eaa4b08fdf70800989a545f62c59b457",
+      "archive_sha256": "908bf5cf3f629f2ea3cd96adeb834167422a35fd4c3319322b787ece6ac46e0c"
+    },
+    {
+      "path": "03_bands/outputs/artifact_manifest.json",
+      "original_sha256": "76b71ec0685c02b657c07312ba65af0beb5f6b9de77df3327ef302d1c36a41cf",
+      "archive_sha256": "721b79124a3f66ddd18812b0a22d46129ec7cfa2463760abd27fb4d38a3f5e95"
+    },
+    {
+      "path": "03_bands/outputs/result.json",
+      "original_sha256": "05cb09e99aeaaebb0337ae8b0b7cbc084d04a0a6903463dfca0abbc3af0727fc",
+      "archive_sha256": "0ff150952bddfefaea041a85719a0c74dcee73de15abae5e8754e7d65dcbdc21"
+    },
+    {
+      "path": "03_bands/outputs/slurm.err",
+      "original_sha256": "9bcfc0c06cf63b03d881fa11229ad2d6824aa2da9ffbeb4b93ed90ceaaee1cbf",
+      "archive_sha256": "9fa473736b4c79caeb3ecc85ca374f6c5c69433cf6155aa9c9908b5ee1a1299c"
+    },
+    {
+      "path": "03_bands/outputs/vaspkit/479481f8fb0d/bands/FERMI_ENERGY.in",
+      "original_sha256": "f77e0a195fd1f10a1f025f4f8187a7c73e13fbad5539c2595c0bce621f85d21a",
+      "archive_sha256": "65462cce09200c96088fd2fd9f55c14a171f07d39e3194369ca15fdd199835ff",
+      "note": "Correct the energy-reference label; numerical data unchanged."
+    },
+    {
+      "path": "03_bands/outputs/vaspkit/479481f8fb0d/projected_bands/FERMI_ENERGY.in",
+      "original_sha256": "f77e0a195fd1f10a1f025f4f8187a7c73e13fbad5539c2595c0bce621f85d21a",
+      "archive_sha256": "65462cce09200c96088fd2fd9f55c14a171f07d39e3194369ca15fdd199835ff",
+      "note": "Correct the energy-reference label; numerical data unchanged."
+    },
+    {
+      "path": "03_bands/outputs/vaspkit/479481f8fb0d/receipt.json",
+      "original_sha256": "7bbd2d4907df1275b8eb435729eaa1b1ba1b2dce477e0810cd6cc3d06aa3e1a8",
+      "archive_sha256": "0f90bf4d2b58d453564afcca07ceced699da26575477545c512843f121f254e5",
+      "note": "Correct the energy-reference label; numerical data unchanged."
+    },
+    {
+      "path": "03_bands/outputs/vasprun.xml",
+      "original_sha256": "69a3caf0c32d4d2a4082e454e2fcf83ed41f4bb60cdd0ac2833eda4ef20f9ebd",
+      "archive_sha256": "04dccb61972d7353348e0980903cf91b8f62287ba5c7a645f478434f475ecf5e"
+    },
+    {
+      "path": "04_dos/inputs/submit.sh",
+      "original_sha256": "42f53f987190e7047b262f9b910b5f32c50d75e79777e79181538f91d2a6c393",
+      "archive_sha256": "33ec8caaece485a3169e58dfa33459f87da619c63c0a7d7c80d0179e0f280dc7"
+    },
+    {
+      "path": "04_dos/outputs/OUTCAR",
+      "original_sha256": "d35c51c64c5288ed5e41aa748950d797e642dd15048936b6bdc01eb9948b5066",
+      "archive_sha256": "be09c2b7ca64f9ae8682ecc43b251234507a27296f28e9b66baf3a27a4b67907"
+    },
+    {
+      "path": "04_dos/outputs/artifact_manifest.json",
+      "original_sha256": "a2b8f665abad7a58b2b6a4f069399367e3041f223dd670f409e33aad37ace2b3",
+      "archive_sha256": "18a3d33f0c222e786b3b87eaa8005a6663a9e1890b550de6daea616346e5be1d"
+    },
+    {
+      "path": "04_dos/outputs/result.json",
+      "original_sha256": "41c7b9567c9b28062448eb4bad5d55865f05d0a173b40deb52b4309dc15725f4",
+      "archive_sha256": "f1ec4baf3f0bd645c53eeaeca34898c7535c27d0b9e48477e5a463564b2b18b9"
+    },
+    {
+      "path": "04_dos/outputs/slurm.err",
+      "original_sha256": "9bcfc0c06cf63b03d881fa11229ad2d6824aa2da9ffbeb4b93ed90ceaaee1cbf",
+      "archive_sha256": "9fa473736b4c79caeb3ecc85ca374f6c5c69433cf6155aa9c9908b5ee1a1299c"
+    },
+    {
+      "path": "04_dos/outputs/vaspkit/b57674a950b9/projected_dos/FERMI_ENERGY.in",
+      "original_sha256": "1f921bdd07b1b6eba02b50d69b958fcf6c6c9a636018c4fbb51b93ab59df1ec4",
+      "archive_sha256": "a52fbfb2da7a98cfe79e6c12be6a530b5c3cac1f1e7e222f9c0ae82394ef2b4e",
+      "note": "Correct the energy-reference label; numerical data unchanged."
+    },
+    {
+      "path": "04_dos/outputs/vaspkit/b57674a950b9/receipt.json",
+      "original_sha256": "75cfb19289a2844139199c0b378d789ebdfaa5ce37a6d3c14214fb8adca6098c",
+      "archive_sha256": "31062da64f7f13d21691e93b796410b4f51f432a6cfbb2e1311f83c75603e047",
+      "note": "Correct the energy-reference label; numerical data unchanged."
+    },
+    {
+      "path": "04_dos/outputs/vaspkit/b57674a950b9/total_dos/FERMI_ENERGY.in",
+      "original_sha256": "1f921bdd07b1b6eba02b50d69b958fcf6c6c9a636018c4fbb51b93ab59df1ec4",
+      "archive_sha256": "a52fbfb2da7a98cfe79e6c12be6a530b5c3cac1f1e7e222f9c0ae82394ef2b4e",
+      "note": "Correct the energy-reference label; numerical data unchanged."
+    },
+    {
+      "path": "04_dos/outputs/vasprun.xml",
+      "original_sha256": "a088fa50b89cf788054af5f0d803207300e0be0846d0fd472bfe994acda99cf7",
+      "archive_sha256": "7a05ec588c3e751cd95c0134c6351944be44666f185886ea518b2e5be05107d7"
+    },
+    {
+      "path": "run.json",
+      "original_sha256": "0d79cde1e4aae287657d8a19132c0d55003f44b14f35322bf24849a4c0e563c5",
+      "archive_sha256": "925bb2a91da508638b3255a45722dd0c6f3fc42cd0ed7633727f612f238829a7"
+    }
+  ],
+  "postprocessing_exports": [
+    {
+      "folder": "03_bands/outputs/vaspkit/479481f8fb0d",
+      "tool": "VASPKIT",
+      "version": "1.5.1",
+      "source_receipt_sha256": "7bbd2d4907df1275b8eb435729eaa1b1ba1b2dce477e0810cd6cc3d06aa3e1a8",
+      "archive_receipt_sha256": "0f90bf4d2b58d453564afcca07ceced699da26575477545c512843f121f254e5",
+      "input_hash_differences": []
+    },
+    {
+      "folder": "04_dos/outputs/vaspkit/b57674a950b9",
+      "tool": "VASPKIT",
+      "version": "1.5.1",
+      "source_receipt_sha256": "75cfb19289a2844139199c0b378d789ebdfaa5ce37a6d3c14214fb8adca6098c",
+      "archive_receipt_sha256": "31062da64f7f13d21691e93b796410b4f51f432a6cfbb2e1311f83c75603e047",
+      "input_hash_differences": []
+    }
+  ]
+}
