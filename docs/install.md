@@ -15,9 +15,13 @@ checkout for now; after publication, download the installer from the
 
 Python, scientific libraries and model SDKs are included. You do not need
 Python, pip or a terminal to use the desktop app. Windows connects natively;
-WSL is optional. Signing, notarization and successful installation on every
-supported platform are not implied by a local build. See [desktop build and
-acceptance notes](desktop.md) for the checks that accompany each package.
+WSL is optional.
+
+These preview installers are unsigned; the Mac app is not notarized. For a
+trusted Mac download, try opening it, then use **System Settings → Privacy &
+Security → Open Anyway** if offered. [Apple's instructions](https://support.apple.com/102445).
+Windows may also block an unsigned app; a managed PC may need approval from
+your IT team. [Microsoft's guidance](https://learn.microsoft.com/en-us/windows/apps/package-and-deploy/smartscreen-reputation).
 
 ## First use
 
@@ -63,7 +67,7 @@ them. A preset does not grant cluster access or a VASP licence.
 For Linux users and developers, use Python 3.11 or newer. On macOS/Linux:
 
 ```bash
-git clone https://github.com/cuiqirui99/dft-agent.git
+git clone --branch desktop-0.4.2 https://github.com/cuiqirui99/dft-agent.git
 cd dft-agent
 python3 -m venv .venv
 source .venv/bin/activate
@@ -71,9 +75,8 @@ python -m pip install '.[agent]'
 dft-agent ui
 ```
 
-These commands install the checked-out source. For an unpublished preview,
-use the supplied preview checkout; the public repository may still contain
-an earlier version. The Python interface opens in a local browser at
+These commands install the `0.4.2` preview from its test branch.
+The Python interface opens in a local browser at
 `http://127.0.0.1:8501`; `--no-browser` skips opening it and `--port` selects
 another port. OpenSSH is required for macOS/Linux cluster connections.
 
