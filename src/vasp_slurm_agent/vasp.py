@@ -409,6 +409,34 @@ def _projected_dos(run: Vasprun, output: Path, reference: float) -> list[str]:
     return [*artifacts, "dos_element_orbitals.csv"]
 
 
+def _ionic_energy_ev(step: dict[str, Any]) -> float | None:
+    """Read sigma-to-zero energy using Vasprun.final_energy's XML correction."""
+    def finite(value):
+        try:
+            number = float(value)
+        except (TypeError, ValueError):
+            return None
+        return number if math.isfinite(number) else None
+
+    reported = finite(step.get("e_0_energy"))
+    if reported is None:
+        return None
+    electronic = step.get("electronic_steps") or []
+    if electronic:
+        last = electronic[-1]
+        values = [finite(last.get("e_0_energy")), finite(last.get("e_fr_energy")),
+                  finite(step.get("e_fr_energy"))]
+        if all(value is not None for value in values):
+            # Some VASP XML files write a zero ionic E0. Keep the electronic
+            # entropy correction and the ionic free energy, as pymatgen does.
+            corrected = float(np.round(values[0] - values[1] + values[2], 8))
+            if not math.isfinite(corrected):
+                return None
+            if abs(reported - corrected) > 1e-7:
+                return corrected
+    return reported
+
+
 def _export_tables(run: Vasprun, output: Path) -> list[str]:
     """Keep numerical observations in VASP's units and site order."""
     artifacts = []
@@ -431,7 +459,7 @@ def _export_tables(run: Vasprun, output: Path) -> list[str]:
         maximum = float(np.linalg.norm(forces, axis=1).max()) if valid_forces else None
         step_structure = step.get("structure")
         volume = finite(step_structure.volume) if step_structure is not None else None
-        ionic_rows.append([index, finite(step.get("e_0_energy")), finite(step.get("e_fr_energy")), maximum, volume])
+        ionic_rows.append([index, _ionic_energy_ev(step), finite(step.get("e_fr_energy")), maximum, volume])
         previous = None
         for iteration, electronic in enumerate(step.get("electronic_steps", []), 1):
             free = finite(electronic.get("e_fr_energy"))
@@ -471,9 +499,10 @@ def _export_plots(run: Vasprun, output: Path, task: str) -> list[str]:
                                "figure_formats": ["png", "pdf", "svg"]}
     try:
         if task == "relax":
-            energies = [float(step["e_0_energy"]) for step in run.ionic_steps]
-            if not energies or not np.isfinite(energies).all():
+            energies = [_ionic_energy_ev(step) for step in run.ionic_steps]
+            if not energies or any(energy is None for energy in energies):
                 raise ValueError("No finite ionic energy history.")
+            details["energy_definition"] = "sigma_to_zero"
             name = "relax_energy"
             _write_csv(output / f"{name}.csv", ["ionic_step", "energy_ev"], enumerate(energies, 1))
             ax.plot(range(1, len(energies) + 1), energies, color="#2366a8", marker="o", markersize=4, linewidth=1.6)

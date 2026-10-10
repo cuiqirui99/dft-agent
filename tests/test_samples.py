@@ -82,6 +82,10 @@ def test_srtio3_sample_keeps_dense_data_and_honest_sanitized_evidence(tmp_path):
             assert (path / folder / "outputs" / f"{plot}.{extension}").is_file()
     provenance = json.loads((path / "archive_provenance.json").read_text())
     assert provenance["scientific_inputs_unchanged"] and provenance["original_run_unchanged"]
+    for correction in provenance.get("derived_data_corrections", []):
+        assert correction["raw_solver_files_unchanged"]
+        for item in correction["files"]:
+            assert hashlib.sha256((path / item["path"]).read_bytes()).hexdigest() == item["corrected_sha256"]
     for item in provenance["files"]:
         assert item["original_sha256"] != item["archive_sha256"]
         assert hashlib.sha256((path / item["path"]).read_bytes()).hexdigest() == item["archive_sha256"]

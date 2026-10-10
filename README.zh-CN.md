@@ -56,7 +56,7 @@ DFT Agent 根据自然语言目标或手动参数，准备并在你的 HPC 集�
 
 结构修改可以直接写在目标里，也可以用 **Edit structure（编辑结构）** 做几何编辑和格式转换。[18 个示例结构](docs/structures.md)。阶段方法、对比和后续计算见[工作流程](docs/workflows.md)。
 
-在 **Runs** 中下载图表和原始数据。集群已安装 [VASPKIT](docs/vaspkit.md) 时，可在 **Data and files（数据与文件）** 中调用。
+在图旁下载 CSV，在 **Raw data and files** 中下载 VASP 原始文件。集群已安装 [VASPKIT](docs/vaspkit.md) 时，可在 **More files and VASPKIT** 中调用。
 
 计算完成时会发送桌面通知，也可以在偏好设置里填写 Webhook 地址（Slack、Discord、企业微信等）。重新打开应用时会自动恢复已提交计算的监控。
 

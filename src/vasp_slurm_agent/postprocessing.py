@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import math
 from pathlib import Path
 import shlex
 import tempfile
@@ -11,6 +12,41 @@ import uuid
 from .config import ClusterConfig
 from .transport import DOWNLOAD_ALLOWLIST, SSHTransport
 from .workflow import SLURM_TERMINAL, _command, _lock, _save, _write, read_state
+
+
+def refresh_energy_exports(run_dir, stage_folder):
+    """Update old relaxation plots from unchanged XML, without rerunning VASP."""
+    from pymatgen.io.vasp.outputs import Vasprun
+    from .vasp import _export_plots, _export_tables, _sha256
+
+    root = Path(run_dir).expanduser().resolve()
+    with _lock(root):
+        _, stage, _ = _stage(root, stage_folder)
+        result = stage.get("result") or {}
+        if stage["name"] != "relax" or stage.get("status") != "succeeded" or not result.get("success"):
+            return False
+        output = root / stage_folder / "outputs"
+        if output.is_symlink() or (root / stage_folder).is_symlink():
+            raise ValueError("Cannot refresh plots through a linked folder.")
+        marker = output / "plot_metadata.json"
+        if marker.is_file() and json.loads(marker.read_text()).get("energy_definition") == "sigma_to_zero":
+            return False
+        xml = output / "vasprun.xml"
+        manifest = json.loads((output / "artifact_manifest.json").read_text())
+        expected = result.get("vasprun_sha256")
+        if (xml.is_symlink() or not expected or _sha256(xml) != expected
+                or manifest.get("vasprun.xml", {}).get("sha256") != expected):
+            raise ValueError("Saved XML changed; energy plots were not refreshed.")
+        run = Vasprun(xml, parse_potcar_file=False, parse_eigen=False, parse_dos=False)
+        if not math.isclose(float(run.final_energy), result["final_energy_ev"], abs_tol=1e-7, rel_tol=0):
+            raise ValueError("Saved energy differs from XML; energy plots were not refreshed.")
+        with tempfile.TemporaryDirectory(prefix=".energy-", dir=output) as directory:
+            staging = Path(directory)
+            names = [*_export_plots(run, staging, "relax"), *_export_tables(run, staging)]
+            # Write the marker last, so an interrupted refresh can be retried.
+            for name in [item for item in names if item != "plot_metadata.json"] + ["plot_metadata.json"]:
+                (staging / name).replace(output / name)
+        return True
 
 
 def _stage(root, identifier):

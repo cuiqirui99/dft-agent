@@ -81,7 +81,7 @@ Include structure changes in your **Goal**, or use **Edit structure** for geomet
 Structure edits, stage methods, comparisons and follow-up runs are covered in
 [Workflows](docs/workflows.md).
 
-Download plots and raw data from **Runs**. **Data and files** also provides
+Download CSV data beside each plot and VASP outputs under **Raw data and files**. **More files and VASPKIT** provides
 [VASPKIT](docs/vaspkit.md) when it is installed on your cluster.
 
 A desktop notification arrives when a run finishes; add a webhook under

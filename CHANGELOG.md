@@ -7,6 +7,8 @@
 - Load four completed sample runs, including SrTiO3 with a 353-point band path.
 - Show periodic crystals with separate lattice axes and element labels.
 - Use denser band paths and export plots as PNG, PDF and SVG.
+- Correct VASP XML ionic energies in relaxation plots and CSV files; refresh older plots from saved outputs.
+- Add CSV downloads beside plots and show raw files directly.
 - Return projected DOS, forces, stress, convergence tables and selected cluster files.
 - Run cluster VASPKIT for band and DOS tables, with checked inputs and outputs.
 - Detect partitions, accounts, VASP modules and POTCAR folders from the cluster, with presets for known clusters.

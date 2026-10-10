@@ -400,39 +400,92 @@ def _stage_results(run_dir: Path, stage: dict, scf_fermi_energy: float | None = 
             st.error(t("Cannot display structure: {error}").format(error=exc))
 
 
+def _safe_output_file(path: Path, root: Path) -> bool:
+    return (path.is_file() and not path.is_symlink() and path.name != "POTCAR"
+            and not any(part.startswith(".") for part in path.relative_to(root).parts)
+            and not any(parent.is_symlink() for parent in path.parents))
+
+
+def _plot_data_files(run_dir: Path, selected: Path, available: list[Path]) -> list[tuple[str, Path]]:
+    if selected.stem != "bands_dos":
+        source = selected.with_suffix(".csv")
+        return [("CSV", source)] if source in available else []
+
+    metadata = selected.with_name("bands_dos_metadata.json")
+    if metadata not in available or metadata.stat().st_size > 1024 * 1024:
+        return []
+    try:
+        sources = json.loads(metadata.read_text()).get("source_sha256", {})
+    except (OSError, ValueError, AttributeError):
+        return []
+    if not isinstance(sources, dict):
+        return []
+    from vasp_slurm_agent.vasp import _sha256
+
+    datasets = []
+    for name, label in (("bands.csv", "Bands CSV"), ("dos.csv", "DOS CSV"),
+                        ("dos_elements.csv", "Element DOS CSV")):
+        if name not in sources:
+            continue
+        candidates = [selected.with_name(name)] if name == "bands.csv" else sorted(run_dir.glob(f"*/outputs/{name}"))
+        for source in candidates:
+            if (_safe_output_file(source, run_dir) and source.stat().st_size <= 50 * 1024 * 1024
+                    and _sha256(source) == sources[name]):
+                datasets.append((label, source))
+                break
+    return datasets
+
+
 def _stage_downloads(run_dir: Path, stage: dict) -> None:
     output = run_dir / stage["folder"] / "outputs"
     key = f"files_{run_dir}_{stage['folder']}"
-    available = sorted(path for path in output.rglob("*") if path.is_file() and not path.is_symlink()
-                       and path.name != "POTCAR" and not any(part.startswith(".") for part in path.relative_to(output).parts)
-                       and not any(parent.is_symlink() for parent in path.parents))
-    plots = [path for path in available if path.parent == output and path.suffix == ".png"] if (stage.get("result") or {}).get("success") else []
+    show_plots = bool((stage.get("result") or {}).get("success"))
+    if (show_plots and stage["name"] == "relax" and (run_dir / "run.json").is_file()
+            and (output / "relax_energy.png").is_file()):
+        from vasp_slurm_agent.postprocessing import refresh_energy_exports
+        try:
+            if refresh_energy_exports(run_dir, stage["folder"]):
+                st.session_state.pop(f"bundle_{run_dir}", None)
+        except (OSError, ValueError, KeyError, RuntimeError):
+            show_plots = False
+            st.warning(t("Could not refresh the energy plot. Raw files are available below."))
+    available = sorted(path for path in output.rglob("*") if _safe_output_file(path, output))
+    plots = [path for path in available if path.parent == output and path.suffix == ".png"] if show_plots else []
     if plots:
         labels = {"bands": "Bands", "bands_dos": "Bands and DOS", "dos": "Total DOS", "dos_elements": "Element DOS",
                   "dos_orbitals": "Orbital DOS", "relax_energy": "Relaxation"}
         selected = st.selectbox(t("Plot"), plots, format_func=lambda p: t(labels.get(p.stem, p.stem)), key=key + "_plot")
         st.image(str(selected))
-        formats = [selected.with_suffix(suffix) for suffix in (".png", ".pdf", ".svg")]
-        columns = st.columns(3)
-        for column, path in zip(columns, formats):
-            if path in available:
-                column.download_button(path.suffix[1:].upper(), path.read_bytes(), file_name=f"{stage['folder']}-{path.name}",
-                                       key=key + path.name)
-    with st.expander(t("Data and files")):
-        if available:
-            chosen = st.selectbox(t("File"), available, format_func=lambda p: p.relative_to(output).as_posix(), key=key + "_file")
-            st.caption(f"{chosen.stat().st_size / 1024:.1f} KiB")
-            if chosen.suffix == ".csv":
-                import pandas as pd
-                try:
-                    st.dataframe(pd.read_csv(chosen, nrows=200), hide_index=True)
-                except (OSError, ValueError, pd.errors.ParserError, pd.errors.EmptyDataError):
-                    st.caption(t("Preview unavailable."))
-            if chosen.stat().st_size <= 50 * 1024 * 1024:
-                st.download_button(t("Download file"), chosen.read_bytes(), file_name=chosen.name, key=key + "_download")
-            else:
-                st.caption(t("Included in Download results (.zip)."))
-        _postprocess_panel(run_dir, stage, key)
+        downloads = [(suffix[1:].upper(), selected.with_suffix(suffix)) for suffix in (".png", ".pdf", ".svg")
+                     if selected.with_suffix(suffix) in available]
+        downloads += _plot_data_files(run_dir, selected, available)
+        for column, (label, path) in zip(st.columns(len(downloads)), downloads):
+            too_large = path.stat().st_size > 50 * 1024 * 1024
+            column.download_button(t(label), b"" if too_large else path.read_bytes(),
+                                   file_name=f"{path.parent.parent.name}-{path.name}",
+                                   mime="text/csv" if path.suffix == ".csv" else None,
+                                   disabled=too_large,
+                                   help=t("Included in Download results (.zip).") if too_large else None,
+                                   key=key + path.name)
+    if available:
+        st.write(t("Raw data and files"))
+        raw_order = {name: index for index, name in enumerate(("vasprun.xml", "OUTCAR", "OSZICAR", "CONTCAR", "EIGENVAL", "DOSCAR", "PROCAR"))}
+        choices = sorted(available, key=lambda path: (raw_order.get(path.name, len(raw_order)) if path.parent == output else len(raw_order), path))
+        chosen = st.selectbox(t("File"), choices, format_func=lambda p: p.relative_to(output).as_posix(), key=key + "_file")
+        st.caption(f"{chosen.stat().st_size / 1024:.1f} KiB")
+        if chosen.suffix == ".csv" and chosen.stat().st_size <= 50 * 1024 * 1024:
+            import pandas as pd
+            try:
+                st.dataframe(pd.read_csv(chosen, nrows=200), hide_index=True)
+            except (OSError, ValueError, pd.errors.ParserError, pd.errors.EmptyDataError):
+                st.caption(t("Preview unavailable."))
+        if chosen.stat().st_size <= 50 * 1024 * 1024:
+            st.download_button(t("Download file"), chosen.read_bytes(), file_name=chosen.name, key=key + "_download")
+        else:
+            st.caption(t("Included in Download results (.zip)."))
+    if has_config(run_dir) and stage.get("job_id"):
+        with st.expander(t("More files and VASPKIT")):
+            _postprocess_panel(run_dir, stage, key)
 
 
 def _postprocess_panel(run_dir: Path, stage: dict, key: str) -> None:

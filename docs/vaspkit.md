@@ -7,7 +7,7 @@ its tables with the calculation results.
    ask your administrator for its location.
 2. Enter `vaspkit` or its full path in **Cluster setup → VASPKIT executable**.
    Add a module command under **Environment setup commands** if needed.
-3. Finish a bands or DOS calculation. Open **Runs → Data and files** and click
+3. Finish a bands or DOS calculation. Open **Runs → More files and VASPKIT** and click
    **Run VASPKIT**.
 4. Use **Download results** to save the tables, original VASP files, and logs.
 

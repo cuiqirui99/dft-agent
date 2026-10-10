@@ -2,7 +2,7 @@
   "schema_version": 1,
   "operation": "Redact machine identifiers, account and filesystem paths; correct VASPKIT energy-reference labels in the archive copy.",
   "scientific_inputs_unchanged": true,
-  "numerical_results_unchanged": true,
+  "raw_numerical_results_unchanged": true,
   "original_run_unchanged": true,
   "files": [
     {
@@ -183,6 +183,59 @@
       "source_receipt_sha256": "75cfb19289a2844139199c0b378d789ebdfaa5ce37a6d3c14214fb8adca6098c",
       "archive_receipt_sha256": "31062da64f7f13d21691e93b796410b4f51f432a6cfbb2e1311f83c75603e047",
       "input_hash_differences": []
+    }
+  ],
+  "derived_data_corrections": [
+    {
+      "reason": "Read sigma-to-zero ionic energies with the VASP XML correction used by pymatgen; regenerate tables and relaxation plots.",
+      "raw_solver_files_unchanged": true,
+      "files": [
+        {
+          "path": "01_relax/outputs/ionic_steps.csv",
+          "previous_sha256": "c1d47849e204dd20ad753846919003fd12d2445162950275314c37ac5d84b59e",
+          "corrected_sha256": "a43dd62770693edefbd3820e957bc411e2bdd9a8fec3f575832fb657b79ac3ff"
+        },
+        {
+          "path": "01_relax/outputs/plot_metadata.json",
+          "previous_sha256": "7d31e7395e771abf9631e7005874064a9cf1280136b8ca6cf72f3d55bc44e65b",
+          "corrected_sha256": "8e58e9f78fb524e7c3f383edcaa46979d04d732d16db29868c32afaf8f9503a0"
+        },
+        {
+          "path": "01_relax/outputs/relax_energy.csv",
+          "previous_sha256": "89fbe0b83fdf0c01105421a93c1ce1504ef5a142b24182c22a3a100639bec37f",
+          "corrected_sha256": "7461da122b641fc4dbbc71ead24b314e7d0b1f99f86156a40a53b326c984e70e"
+        },
+        {
+          "path": "01_relax/outputs/relax_energy.pdf",
+          "previous_sha256": "4f693a14e6b3fb5c447d21f79ee9b1862e5b25e35a3d1deae0fcb9e7c4eaf2bc",
+          "corrected_sha256": "1ab1a58465a409241f67e580360159856262c0341753199ba2e9f1d3f1c999fe"
+        },
+        {
+          "path": "01_relax/outputs/relax_energy.png",
+          "previous_sha256": "52f6739ff76bc3b6e59fa930b269dbbf9c9aa7edee29b288fc682a52d08e2b95",
+          "corrected_sha256": "5ad51eff3b309229b83dd5fc39b2546e6c5e9853491d905d77b6a1506c719e37"
+        },
+        {
+          "path": "01_relax/outputs/relax_energy.svg",
+          "previous_sha256": "725666904bfac9ac6bb21a695e63eb32c294f070fcc86abe7bcc294f2013af83",
+          "corrected_sha256": "a27811645d90c4648371058d3fa2566e9bc0a3a8cd36e0a55f95e333ab5f9402"
+        },
+        {
+          "path": "02_scf/outputs/ionic_steps.csv",
+          "previous_sha256": "ecab23469d9836977396bf8a4043a48ed87ccf7c8a5e7232364fd8de28c0e8b9",
+          "corrected_sha256": "cd2e7d1e356dc35a9b0390d5390ecb910e640b868a236b0c89eac017e306f32a"
+        },
+        {
+          "path": "03_bands/outputs/ionic_steps.csv",
+          "previous_sha256": "301eef6440d5a656b32bfc055f37e425966c422e866b04d8904a0521c5fc375c",
+          "corrected_sha256": "b1eca6866d5df0e6f59255532a7cd756d333807b430b52b68c6dc55f283ea27c"
+        },
+        {
+          "path": "04_dos/outputs/ionic_steps.csv",
+          "previous_sha256": "bfb89134b763d61bcea20a69ae41cf08d0187803c056a30578143ed0bdb1bcb2",
+          "corrected_sha256": "d284ae22514aa24994bfd61af4f78bf7307d4098b47c5b3b4648b0697e447d5e"
+        }
+      ]
     }
   ]
 }
